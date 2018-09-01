@@ -1,4 +1,5 @@
 * TODO install packages
 * TODO clean scripts
-* TODO st and its config
-* TODO conky
+* DONE st and its config
+* DONE conky
+* TODO xset kb rate not working

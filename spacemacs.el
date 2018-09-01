@@ -432,9 +432,6 @@ you should place your code here."
     (setq buffer-display-table (make-display-table))
     (aset buffer-display-table ?\^M []))
 
-  ;; ---- ARABIC RESHAPE ----
-  (load-file "~/.emacs-stuff/emacs-arabic-reshaper/arabic-reshape.el")
-
   )
 
 ;; Do not write anything past this comment. This is where Emacs will

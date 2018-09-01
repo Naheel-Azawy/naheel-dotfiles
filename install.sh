@@ -71,7 +71,6 @@ git clone https://github.com/syl20bnr/spacemacs "$H/.emacs.d"
 echo "Installing Emacs stuff"
 rm -rf "$H/.emacs-stuff"
 mkdir "$H/.emacs-stuff"
-git clone https://github.com/Naheel-Azawy/c-arabic-reshaper.git "$H/.emacs-stuff/emacs-arabic-reshaper"
 git clone https://github.com/hniksic/emacs-htmlize.git "$H/.emacs-stuff/emacs-htmlize"
 
 # Changing owner
