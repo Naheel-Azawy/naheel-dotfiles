@@ -1,0 +1,14 @@
+#!/bin/bash
+DIR=".__vmfixstuff"
+TAR="/usr/lib/vmware/modules/source/vmmon.tar"
+HIF="https://github.com/mkubecek/vmware-host-modules/raw/fadedd9c8a4dd23f74da2b448572df95666dfe12/vmmon-only/linux/hostif.c"
+mkdir $DIR
+cd $DIR
+cp $TAR .
+tar xf vmmon.tar
+wget $HIF
+sudo cp -n $TAR "$TAR.old"
+sudo tar cf $TAR vmmon-only
+sudo vmware-modconfig --console --install-all
+cd ..
+rm -r $DIR

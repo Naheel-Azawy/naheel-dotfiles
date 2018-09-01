@@ -1,0 +1,56 @@
+#!/bin/bash
+
+function blur-convert {
+    if [ -f /usr/bin/convert ]; then
+        convert $1 -blur 0x09 $2
+        echo $2
+    else
+        echo $1
+    fi
+}
+
+function blur-ffmpeg {
+    if [ -f /usr/bin/ffmpeg ]; then
+        ffmpeg -loglevel quiet -y -i $1 -vf "scale=iw/2:-1, gblur=9, scale=2*iw:-1" $2
+        echo $2
+    else
+        echo $1
+    fi
+}
+
+function blur {
+    #pgrep -x dunst && notify-send -i $DOTFILES_SCRIPTS/lock.png "Locking computer..."
+    #blur-convert $@
+    blur-ffmpeg $@
+}
+
+function gen-bg {
+    W=/tmp/base.png
+    O=/tmp/locked.png
+    rm -f /tmp/locked.png
+    scrot -m -z /tmp/base.png
+    echo $(blur $W $O)
+}
+
+function gen-bg-simple {
+    W=~/.config/wall.png
+    O=~/.config/wall-blur.png
+    if [ ! -f $O ] || [ $O -ot $W ]; then
+        echo $(blur $W $O)
+    else
+        echo $O
+    fi
+}
+
+# Pause music (mocp, mpd and send the pause key to all mpv videos):
+# mocp -P &>/dev/null
+# mpc pause &>/dev/null
+# pauseallmpv &>/dev/null
+
+B=$(gen-bg)
+#B=$(gen-bg-simple)
+
+i3lock -e -f -c 000000 -i $B
+
+# In five seconds, turn off display unless key press in last 4 seconds.
+#sleep 5 && [[ 4000 -lt $(xssstate -i) ]] &&  pgrep -x i3lock && xset dpms force off

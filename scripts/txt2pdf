@@ -1,0 +1,3 @@
+#!/bin/bash
+enscript -p /tmp/txt2pdf.ps $1; ps2pdf /tmp/txt2pdf.ps "1.pdf"
+rm -f /tmp/txt2pdf.ps

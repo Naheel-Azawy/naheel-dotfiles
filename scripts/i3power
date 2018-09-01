@@ -1,0 +1,22 @@
+#!/bin/bash
+RES=$(echo -e "Lock\nSuspend\nReboot\nShutdown\nLogout\nHibernate" | dmenu -i)
+function confirm {
+    R=$(echo -e "Yes\nNo" | dmenu -p "$RES?" -i -sb red -nf red)
+    [[ "$R" = "Yes" ]]
+}
+case "$RES" in
+    Lock)
+        lockscreen;;
+    Logout)
+        confirm && i3-msg exit;;
+    Suspend)
+        systemctl suspend;;
+    Hibernate)
+        confirm && systemctl hibernate;;
+    Reboot)
+        confirm && systemctl reboot;;
+    Shutdown)
+        confirm && systemctl poweroff;;
+    *)
+        exit 1
+esac

@@ -1,0 +1,8 @@
+#!/bin/bash
+IN="$1"
+D="$IN-frames"
+O="$IN.gif"
+mkdir "$D"
+ffmpeg -i "$IN" -vf fps=5 "$D/%05d.png"
+convert -loop 0 "$D/*.png" "$O"
+#rm -rf "$D"

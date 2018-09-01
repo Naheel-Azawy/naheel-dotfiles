@@ -1,0 +1,2 @@
+#!/bin/bash
+echo "l($1)" | bc -l

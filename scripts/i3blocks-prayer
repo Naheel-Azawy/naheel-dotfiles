@@ -1,0 +1,6 @@
+#!/bin/bash
+[[ $BLOCK_BUTTON = "1" ]] && st -e popprayer
+awesome-font-echo '\uf186'
+echo -n ' '
+p n
+echo

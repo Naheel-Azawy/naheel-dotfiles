@@ -1,0 +1,2 @@
+#!/bin/bash
+echo "a($1)" | bc -l

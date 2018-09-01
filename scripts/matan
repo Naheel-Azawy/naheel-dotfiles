@@ -1,0 +1,2 @@
+#!/bin/bash
+echo "a($(d2r $1))" | bc -l;

@@ -1,0 +1,14 @@
+#!/bin/bash
+ARG=$1
+[[ $BLOCK_BUTTON = "1" ]] && ARG=""
+L=$(cat ~/.lang 2> /dev/null)
+if [ "$ARG" != "-v" ]; then
+    if [ "$L" = "us" ]; then
+        L=ar
+    else
+        L=us
+    fi
+    setxkbmap -layout $L
+    pkill -RTMIN+14 i3blocks
+fi
+echo $L | tee ~/.lang

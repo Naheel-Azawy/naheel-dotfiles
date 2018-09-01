@@ -1,0 +1,3 @@
+#!/bin/bash
+export MATLAB_SHELL=/bin/bash
+/mnt/hdd1/GoodStuff2/MATLAB/R2017a/bin/matlab $@

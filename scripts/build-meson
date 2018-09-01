@@ -1,0 +1,5 @@
+#!/bin/sh
+meson build
+cd build
+ninja test
+sudo ninja install

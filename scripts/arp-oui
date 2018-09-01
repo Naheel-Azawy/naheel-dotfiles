@@ -1,0 +1,2 @@
+#!/bin/sh
+arp -e | grep -v incomplete | while read -r line; do echo -n -e "$line\t"; ouiof $(echo $line | awk '{print $3}'); done

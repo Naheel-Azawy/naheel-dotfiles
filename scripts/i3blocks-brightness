@@ -1,0 +1,11 @@
+#!/bin/bash
+# if this doesn't work, run this
+# sudo chmod a+rw /sys/class/backlight/intel_backlight/brightness
+[[ $BLOCK_BUTTON = "1" ]] && arandr
+MAX=661
+MIN=10
+file="/sys/class/backlight/intel_backlight/brightness"
+current=$(cat "$file")
+P=$(echo "$current/$MAX*100" | bc -l)
+awesome-font-echo '\uf108'
+printf " %.0f%%\n" $P

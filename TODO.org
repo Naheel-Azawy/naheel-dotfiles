@@ -1,0 +1,4 @@
+* TODO install packages
+* TODO clean scripts
+* TODO st and its config
+* TODO conky

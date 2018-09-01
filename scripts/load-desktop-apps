@@ -1,0 +1,27 @@
+#!/bin/bash
+DEST="$1"
+[ "$DEST" = "" ] && DEST="$HOME/.apps"
+rm -rf $DEST
+mkdir -p $DEST
+
+function doit() {
+    [ ! -d "$1" ] && return
+    cd "$1"
+    c="$(ls *.desktop 2>/dev/null)"
+    [ "$c" = "" ] && return
+	  for f in "$c"; do
+		    if ! grep -q "NoDisplay=true" $f && \
+			          ! grep -q "NotShowIn=.*GNOME" $f; then
+			      cp $f $DEST
+			      chmod +x $DEST/$f
+		    fi
+	  done
+}
+
+doit /usr/share/applications
+doit $HOME/.local/share/applications
+
+BASHRC_STR="XDG_DATA_DIRS=\"\$XDG_DATA_DIRS:$DEST\""
+if ! grep -q $BASHRC_STR $HOME/.bashrc; then
+	  echo $BASHRC_STR >> $HOME/.bashrc
+fi

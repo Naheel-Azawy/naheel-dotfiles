@@ -1,0 +1,19 @@
+#!/bin/bash
+
+function find {
+    xinput --list | awk -v search="$1" \
+                        '$0 ~ search {match($0, /id=[0-9]+/);\
+                  if (RSTART) \
+                    print substr($0, RSTART+3, RLENGTH-3)\
+                 }'
+}
+
+for i in $(find 'ETPS/2 Elantech Touchpad'); do
+    xinput set-prop $i 'libinput Tapping Enabled' 1
+    xinput set-prop $i 'libinput Accel Speed' 0.9
+    xinput set-prop $i 'libinput Natural Scrolling Enabled' 1
+done
+
+for i in $(find 'Logitech USB Receiver Mouse'); do
+    xinput set-prop $i 'libinput Accel Speed' 1
+done

@@ -1,0 +1,33 @@
+#!/bin/bash
+B=$(acpi -b)
+V=$(echo $B | awk -F'[,:%]' '{print $3}')
+C=$(echo $B | awk '{print $3}')
+R=''
+
+if [ "$1" = "-a" ]; then
+    if [ "$C" != 'Discharging,' ]; then
+        echo -n "~"
+    fi
+    printf "%d%%\n" $V
+    exit
+fi
+
+if [ "$C" != 'Discharging,' ]; then
+    R='gold'
+    awesome-font-echo '\uf1e6' $R
+    echo -n ' '
+elif [ "$V" -le "20" ]; then
+    R='red'
+fi
+
+if [ "$V" -lt "50" ]; then
+    awesome-font-echo '\uf243' $R
+elif [ "$V" -lt "60" ]; then
+    awesome-font-echo '\uf242' $R
+elif [ "$V" -lt "90" ]; then
+    awesome-font-echo '\uf241' $R
+else
+    awesome-font-echo '\uf240' $R
+fi
+
+printf " %d%%\n" $V

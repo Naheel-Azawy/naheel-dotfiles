@@ -1,0 +1,5 @@
+mkdir build
+cd build
+cmake -DCMAKE_INSTALL_PREFIX=/usr ..
+make all test
+sudo make install
