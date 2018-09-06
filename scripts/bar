@@ -1,0 +1,17 @@
+#!/bin/bash
+a=$1
+DATE=$(i3blocks-time $a)
+BATT=$(i3blocks-battery $a)
+BRIG=$(i3blocks-brightness $a)
+VOLU=$(i3blocks-volume $a)
+WEAT=$(i3blocks-weather $a)
+PRAY=$(i3blocks-prayer $a)
+LANG=$(lang-toggle -v)
+
+if [ "$a" = "-a" ]; then
+    S=" | "
+    echo "$LANG${S}p $PRAY${S}w $WEAT${S}v $VOLU${S}g $BRIG${S}b $BATT${S}$DATE"
+else
+    S="  "
+    echo "$LANG${S}$PRAY${S}$WEAT${S}$VOLU${S}$BRIG${S}$BATT${S}$DATE"
+fi

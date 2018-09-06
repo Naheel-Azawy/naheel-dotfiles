@@ -1,0 +1,6 @@
+#!/bin/bash
+### This is only if your location isn't automatically detected, otherwise you can leave it blank.
+location="Doha"
+[[ "$location" != "" ]] && location="~${location// /+}"
+curl -s wttr.in/$location?n > ~/.weatherreport
+

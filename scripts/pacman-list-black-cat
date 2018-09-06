@@ -1,0 +1,6 @@
+#!/bin/bash
+if [ "$1" != "" ]; then
+    pacman -Sgg | grep "blackarch-$1" | cut -d' ' -f2 | sort -u
+    exit
+fi
+pacman -Sg | grep blackarch

@@ -16,7 +16,7 @@ fi
 # Systemd services
 
 echo "Setting up services"
-./setup-services.sh "$U" "$H"
+./setup-services.sh "$U" "$D/scripts/lockscreen"
 
 # Setting the path
 
@@ -59,6 +59,11 @@ cd "$H/.good-stuff/st"
 make
 cp "$D/st-config.h" "$H/.good-stuff/st/config.h"
 make clean install
+
+rm -rf "$H/.tmux"
+mkdir -p "$H/.tmux/plugins/tpm"
+git clone https://github.com/tmux-plugins/tpm "$H/.tmux/plugins/tpm"
+tmux source "$H/.tmux.conf"
 
 # Spacemacs
 

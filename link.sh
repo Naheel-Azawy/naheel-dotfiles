@@ -47,7 +47,6 @@ lnnn "$D/profile"      "$H/.xprofile"
 lnnn "$D/xinitrc"      "$H/.xinitrc"
 lnnn "$D/Xresources"   "$H/.Xresources"
 lnnn "$D/tmux.conf"    "$H/.tmux.conf"
-lnnn "$D/tmux"         "$H/.tmux"
 lnnn "$D/spacemacs.el" "$H/.spacemacs"
 
 mkdir -p "$H/.icons/default"

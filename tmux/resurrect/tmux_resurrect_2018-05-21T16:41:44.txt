@@ -1,3 +1,0 @@
-pane	0	0	:fish	1	:*	0	:/home/naheel	1	fish	:
-window	0	0	1	:*	be9d,75x36,0,0,0
-state	0	

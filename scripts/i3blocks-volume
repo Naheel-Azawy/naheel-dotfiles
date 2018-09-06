@@ -9,11 +9,14 @@ esac
 
 V=$(pamixer --get-volume)
 
-if [ $(pamixer --get-mute) = "true" ] || [ $V = 0 ]; then
-    awesome-font-echo '\uf026\uf00d'
-elif [ "$V" -le "20" ]; then
-    awesome-font-echo '\uf027'
-else
-    awesome-font-echo '\uf028'
+if [ "$1" != "-a" ]; then
+    if [ $(pamixer --get-mute) = "true" ] || [ $V = 0 ]; then
+        awesome-font-echo '\uf026\uf00d'
+    elif [ "$V" -le "20" ]; then
+        awesome-font-echo '\uf027'
+    else
+        awesome-font-echo '\uf028'
+    fi
+    echo -n ' '
 fi
-printf " %d%%" $V
+printf "%d%%\n" $V

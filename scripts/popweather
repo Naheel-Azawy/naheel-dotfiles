@@ -1,2 +1,3 @@
 #!/bin/bash
-cat ~/.weatherreport && read
+i3-msg -q floating enable;i3-msg -q resize set 770px 925px;i3-msg -q move position 1070px 25px
+cat ~/.weatherreport | head -n 37 && read

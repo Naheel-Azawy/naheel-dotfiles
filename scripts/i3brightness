@@ -4,6 +4,11 @@ MIN=10
 set -e
 file="/sys/class/backlight/intel_backlight/brightness"
 current=$(cat "$file")
+if [ "$1" = "-print" ]; then
+    P=$(echo "$current/$MAX*100" | bc -l)
+    printf "%.0f\n" $P
+    exit
+fi
 new="$current"
 if [ "$2" != "" ]; then
     val=$(echo "$2*$MAX/100" | bc)
