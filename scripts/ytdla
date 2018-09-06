@@ -1,2 +1,2 @@
 #!/bin/bash
-youtube-dl --add-metadata -xic $@
+youtube-dl --add-metadata -xic --audio-format mp3 $@
