@@ -1,6 +1,6 @@
 #!/bin/bash
 # if this doesn't work, run this
 # sudo chmod a+rw /sys/class/backlight/intel_backlight/brightness
-[[ $BLOCK_BUTTON = "1" ]] && arandr & sleep 0.2; i3-msg -q floating enable; i3-msg -q resize set 750px 600px; i3-msg -q move position center
+[[ $BLOCK_BUTTON = "1" ]] && arandr
 [ "$1" != "-a" ] && awesome-font-echo '\uf108' && echo -n ' '
 echo "$(i3brightness -print)%"

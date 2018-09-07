@@ -5,7 +5,7 @@
 export EDITOR="emar"
 export VISUAL="$EDITOR"
 export TERMINAL="st"
-export BROWSER="chromium --high-dpi-support=1 --force-device-scale-factor=1.2"
+export BROWSER="browser"
 export READER="evince"
 export GTK_THEME="Adwaita:dark"
 
