@@ -18,6 +18,11 @@ fi
 echo "Setting up services"
 ./setup-services.sh "$U" "$D/scripts/lockscreen"
 
+# Sensors
+
+sensors-detect --auto
+modprobe eeprom
+
 # Setting the path
 
 echo "Linking!!!"

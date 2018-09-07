@@ -16,3 +16,6 @@ system-config-printer
 lxappearance
 net-tools
 libreoffice
+i2c-tools
+lm_sensors
+jq
