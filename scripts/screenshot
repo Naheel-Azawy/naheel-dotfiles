@@ -1,0 +1,28 @@
+#!/bin/bash
+C=0 # clipboard
+W=0 # window
+A=0 # area
+for arg in $@; do
+    case $arg in
+        -c|--clipboard) C=1;;
+        -w|--window)    W=1;;
+        -a|--area)      A=1;;
+        *) echo "Unknown argument '$arg'";;
+    esac
+done
+
+CMD="maim"
+if [ $W = 1 ]; then
+    CMD="$CMD -i $(xdotool getactivewindow)"
+elif [ $A = 1 ]; then
+    CMD="$CMD -s"
+fi
+
+if [ $C = 1 ]; then
+    CMD="$CMD | xclip -selection clipboard -t image/png"
+else
+    mkdir -p "$HOME/Pictures/"
+    CMD="$CMD '$HOME/Pictures/Screenshot from $(date '+%Y-%m-%d %H-%M-%S')'"
+fi
+
+eval "$CMD"

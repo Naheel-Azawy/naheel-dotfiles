@@ -20,3 +20,7 @@ i2c-tools
 lm_sensors
 jq
 firejail
+ispell
+aspell-en
+xdotool
+maim
