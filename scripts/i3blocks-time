@@ -1,3 +1,0 @@
-#!/bin/bash
-[[ $BLOCK_BUTTON = "1" ]] && gnome-calendar
-date '+%a %Y-%m-%d %I:%M:%S %p'

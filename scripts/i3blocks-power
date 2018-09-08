@@ -1,3 +1,0 @@
-#!/bin/bash
-[[ $BLOCK_BUTTON = "1" ]] && i3power
-awesome-font-echo '\uf011'

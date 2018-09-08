@@ -1,8 +1,0 @@
-#!/bin/bash
-DATE=$(i3blocks-time -a)
-BATT=$(i3blocks-battery -a)
-PRAY=$(i3blocks-prayer -a)
-HOST=$(hostname)
-
-S=" | "
-echo "p$PRAY${S}$BATT${S}$DATE${S}$HOST"

@@ -22,7 +22,7 @@ if [ $C = 1 ]; then
     CMD="$CMD | xclip -selection clipboard -t image/png"
 else
     mkdir -p "$HOME/Pictures/"
-    CMD="$CMD '$HOME/Pictures/Screenshot from $(date '+%Y-%m-%d %H-%M-%S')'"
+    CMD="$CMD '$HOME/Pictures/Screenshot from $(date '+%Y-%m-%d %H-%M-%S').png'"
 fi
 
 eval "$CMD"
