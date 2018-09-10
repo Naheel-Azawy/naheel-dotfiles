@@ -1,0 +1,3 @@
+#!/bin/bash
+cd $QU_SCHED/cli
+java -jar qu.jar $@

@@ -16,7 +16,7 @@ export QT_QPA_PLATFORMTHEME="qt5ct"
 export QT_DEVICE_PIXEL_RATIO=1
 
 [[ -f ~/.dotfiles-exports ]] && . ~/.dotfiles-exports
-
+[[ -f ~/.more-paths ]] && . ~/.more-paths
 [[ -f ~/.bashrc ]] && . ~/.bashrc
 
 # Start graphical server if i3 not already running.

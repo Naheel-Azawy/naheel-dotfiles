@@ -4,7 +4,6 @@ HISTSIZE= HISTFILESIZE=
 
 export GPG_TTY=$(tty)
 
-# Some aliases
 alias e="exit"
 alias u="tmux && exit"
 alias uu="tmux && exit"
