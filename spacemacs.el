@@ -68,7 +68,7 @@ values."
    ;; wrapped in a layer. If you need some configuration for these
    ;; packages, then consider creating a layer. You can also put the
    ;; configuration in `dotspacemacs/user-config'.
-   dotspacemacs-additional-packages '(ein julia-mode dumb-jump vala-mode vala-snippets multiple-cursors ace-jump-mode ac-ispell visual-regexp visual-regexp-steroids iedit auto-complete-c-headers auto-complete company-emacs-eclim company-c-headers auto-complete-clang ac-emacs-eclim ac-clang gnuplot-mode dockerfile-mode sparql-mode ttl-mode rainbow-mode free-keys ox-reveal glsl-mode haxe-mode xclip)
+   dotspacemacs-additional-packages '(ein julia-mode dumb-jump vala-mode vala-snippets multiple-cursors ace-jump-mode ac-ispell visual-regexp visual-regexp-steroids iedit auto-complete-c-headers auto-complete company-emacs-eclim company-c-headers auto-complete-clang ac-emacs-eclim ac-clang gnuplot-mode dockerfile-mode sparql-mode ttl-mode rainbow-mode free-keys ox-reveal glsl-mode haxe-mode xclip calfw)
    ;; A list of packages that cannot be updated.
    dotspacemacs-frozen-packages '()
    ;; A list of packages that will not be installed and loaded.
@@ -321,7 +321,8 @@ before packages are loaded. If you are unsure, you should try in setting them in
                             (bg4 . "#070707")
                             (comment-bg . "#000000")
                             (cblk-bg . "#070707")
-                            (cblk-ln-bg . "#1f1f1f"))))
+                            (cblk-ln-bg . "#1f1f1f")
+                            (head1-bg . "#000000"))))
   )
 
 (defun dotspacemacs/user-config ()
@@ -431,6 +432,9 @@ you should place your code here."
     (interactive)
     (setq buffer-display-table (make-display-table))
     (aset buffer-display-table ?\^M []))
+
+  ;; ---- CALFW ----
+  (require 'calfw)
 
   )
 
