@@ -1,16 +1,5 @@
 #!/bin/bash
 
-args=($@)
-for i in ${!args[@]}; do
-    arg=${args[$i]}
-    case $arg in
-        -a|--ascii) a='-a'; args[$i]='';;
-        -l|--loop)  l=1; args[$i]='';;
-    esac
-done
-b=${args[@]}
-b=($b)
-
 time_dura='1'
 batt_dura='1'
 bgig_dura='once'
@@ -19,6 +8,80 @@ sens_dura='3'
 weat_dura='1800'
 pray_dura='10'
 lang_dura='once'
+
+time_sig='1'
+batt_sig='2'
+bgig_sig='3'
+volu_sig='4'
+sens_sig='5'
+weat_sig='6'
+pray_sig='7'
+lang_sig='8'
+first_sig=$time_sig
+last_sig=$lang_sig
+
+selected=$(cat /tmp/bar-selected 2> /dev/null)
+
+function update-all {
+    for sig in $(seq $first_sig $last_sig); do
+        pkill -RTMIN+$sig i3blocks
+    done
+}
+
+args=($@)
+for i in ${!args[@]}; do
+    arg=${args[$i]}
+    case $arg in
+        -a|--ascii)  a='-a'; args[$i]='';;
+        -l|--loop)   l=1; args[$i]='';;
+        -s|--select) s=${args[$i+1]}; args[$i]=''; args[$((i + 1))]='';;
+        -r|--run)
+            [[ "$selected" = "" ]] && exit
+            rm -f /tmp/bar-selected
+            update-all
+            env BLOCK_BUTTON=1 bar $selected
+            exit;;
+    esac
+done
+b=${args[@]}
+b=($b)
+bb=(lang pray weat sens volu brig batt time)
+bblen=${#bb[@]}
+[[ "$b" = "" ]] && b=("${bb[@]}")
+blen=${#b[@]}
+blast=$(($blen-1))
+
+function get-next-prev {
+    cur="$1"
+    chg="$2"
+    for i in "${!bb[@]}"; do
+        if [[ "${bb[$i]}" = "$cur" ]]; then
+            i=$(echo "($i+($chg))%$bblen" | bc)
+            echo "${bb[$i]}";
+            break
+        fi
+    done
+}
+
+[[ "$a" = "-a" ]] && s=''
+
+if [[ "$s" != "" ]]; then
+    old=$selected
+    if [[ "$s" = "next" ]]; then
+        [[ "$old" = "" ]] && old=${bb[0]}
+        s=$(get-next-prev $old 1)
+        echo $s
+    elif [[ "$s" = "prev" ]]; then
+        [[ "$old" = "" ]] && old=${bb[0]}
+        s=$(get-next-prev $old -1)
+        echo $s
+    elif [[ "$s" = "none" ]]; then
+        s=''
+    fi
+    echo $s > /tmp/bar-selected
+    update-all
+    exit
+fi
 
 time_last=''
 batt_last=''
@@ -53,7 +116,9 @@ function get {
         eval $VV=\'"$V"\'
         [ "$DB" != "once" ] && eval $LV=$now
     fi
+    if [[ "$selected" = "$F" ]]; then echo -n '<span color="blue">'; fi
     echo -n $V
+    if [[ "$selected" = "$F" ]]; then echo -n '</span>'; fi
 }
 
 function time {
@@ -109,7 +174,7 @@ function batt {
 function brig {
     [[ $BLOCK_BUTTON = "1" ]] && arandr
     [ "$1" != "-a" ] && awesome-font-echo '\uf108' && echo -n ' '
-    echo -n "$(i3brightness -print)%"
+    echo -n "$(brightness -print)%"
 }
 
 function volu {
@@ -183,8 +248,6 @@ function host {
 
 sep=" "
 [ "$a" = "-a" ] && sep=" | "
-[ "$b" = "" ] && b=(lang pray weat sens volu brig batt time)
-blast=$((${#b[@]}-1))
 
 if [ "$blast" = "0" ]; then
     get ${b[0]} $a

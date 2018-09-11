@@ -109,3 +109,4 @@
 |     | fortune                                                   | some wise quotes                                                                                    |
 |     | lolcat                                                    | colored cat                                                                                         |
 | git | https://github.com/pipeseroni/pipes.sh.git                | pipes screensaver                                                                                   |
+|     | colordiff                                                 | a more colorful diff                                                                                |

@@ -23,5 +23,5 @@ if [ $new -gt $MAX ]; then
 elif [ $new -lt $MIN ]; then
     new=$MIN
 fi
-pkill -RTMIN+13 i3blocks
+pkill -RTMIN+3 i3blocks
 echo $new > "$file"

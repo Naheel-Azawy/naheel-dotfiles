@@ -49,8 +49,10 @@ try-export GAMES_PS $GAMES/psx
 # MATLAB ####################################
 try-export MATLAB /mnt/hdd1/GoodStuff2/MATLAB/R2017a
 
-# QU ########################################
-try-export QU       /mnt/hdd1/Documents/QU/9-\ 2018\ Fall/
-try-export QU_SCHED /mnt/hdd1/Projects/qu-stuff/QUSchedule/
-
+# OTHERS ####################################
+try-export QU       /mnt/hdd1/Documents/QU/9-\ 2018\ Fall
+try-export QU_SCHED /mnt/hdd1/Projects/qu-stuff/QUSchedule
+try-export EVENTS   /mnt/hdd1/Documents/events
+try-export RESEARCH /mnt/hdd1/Documents/research
+try-export CERTS    /mnt/hdd1/Documents/Certifications
 

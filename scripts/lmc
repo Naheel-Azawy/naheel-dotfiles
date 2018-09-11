@@ -2,19 +2,18 @@
 
 # A general audio interface for LARBS.
 
-newvol="pkill -RTMIN+10 i3blocks"
-# Uncomment if i3mpdupdate isn't running:
+newvol="pkill -RTMIN+4 i3blocks"
 
 case "$1" in
 	"up") pamixer --allow-boost -i "$2" ; $newvol ;;
 	"down") pamixer --allow-boost -d "$2" ; $newvol ;;
 	"mute") pamixer --allow-boost -t ; $newvol ;;
 	"truemute") pamixer --allow-boost -m ; $newvol ;;
-	"toggle") mpc toggle ;;
-	"pause") mpc pause ; pauseallmpv ;;
-	"forward") mpc seek +"$2" ;;
-	"back") mpc seek -"$2" ;;
-	"next") mpc next ;;
-	"prev") mpc prev ;;
-	"replay") mpc seek 0% ;;
+	"stop") cmus-remote --stop ;;
+	"pause") cmus-remote --pause ;;
+	"forward") cmus-remote --seek +"$2" ;;
+	"back") cmus-remote --seek -"$2" ;;
+	"next") cmus-remote --next ;;
+	"prev") cmus-remote --prev ;;
+	"replay") cmus-remote --seek 0 ;;
 esac
