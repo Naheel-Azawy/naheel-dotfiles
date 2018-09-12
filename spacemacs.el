@@ -435,6 +435,25 @@ you should place your code here."
 
   ;; ---- CALFW ----
   (require 'calfw)
+  (custom-set-faces
+   '(cfw:face-title ((t (:foreground "#f0dfaf" :weight bold :height 2.0 :inherit variable-pitch))))
+   '(cfw:face-header ((t (:foreground "#ffffff" :weight bold))))
+   '(cfw:face-sunday ((t :foreground "#ffffff" :weight bold)))
+   '(cfw:face-saturday ((t :foreground "#ffffff" :weight bold)))
+   '(cfw:face-holiday ((t :background "grey10" :foreground "#ffffff" :weight bold)))
+   '(cfw:face-grid ((t :foreground "DarkGrey")))
+   '(cfw:face-default-content ((t :foreground "#ffffff")))
+   '(cfw:face-periods ((t :foreground "cyan")))
+   '(cfw:face-day-title ((t :background "grey10")))
+   '(cfw:face-default-day ((t :weight bold :inherit cfw:face-day-title)))
+   '(cfw:face-annotation ((t :foreground "#ffffff" :inherit cfw:face-day-title)))
+   '(cfw:face-disable ((t :foreground "DarkGray" :inherit cfw:face-day-title)))
+   '(cfw:face-today-title ((t :background "#5f5f87" :weight bold)))
+   '(cfw:face-today ((t :background: "grey10" :weight bold)))
+   '(cfw:face-select ((t :background "#2f2f2f")))
+   '(cfw:face-toolbar ((t :foreground "#000000" :background "#000000")))
+   '(cfw:face-toolbar-button-off ((t :foreground "#555555" :weight bold)))
+   '(cfw:face-toolbar-button-on ((t :foreground "#ffffff" :weight bold))))
 
   )
 

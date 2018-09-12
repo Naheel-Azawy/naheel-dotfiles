@@ -1,2 +1,0 @@
-#!/bin/bash
-bicon.bin --reshape-only em $@ 2>/dev/null
