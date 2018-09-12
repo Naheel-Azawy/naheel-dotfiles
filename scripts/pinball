@@ -1,2 +1,2 @@
 #!/bin/bash
-firejail --net=none --private=$HOME/.wine-firejail-dir wine $GAMES_XP/Pinball/PINBALL.EXE
+winejail xp-games $GAMES_XP Pinball/PINBALL.EXE

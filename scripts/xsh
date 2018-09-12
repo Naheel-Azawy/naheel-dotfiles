@@ -1,0 +1,5 @@
+#!/bin/bash
+# Creates a new bash script
+[[ ! -f "$1" ]] && echo '#!/bin/bash' > "$1"
+chmod +x "$1"
+x "$1"

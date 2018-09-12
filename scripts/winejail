@@ -1,0 +1,12 @@
+#!/bin/bash
+N="wine-$1"
+D="$2"
+F="$3"
+JH="$HOME/Firejail/$N"
+mkdir -p "$JH"
+tmp="${D%/}"
+JD="${tmp##*/}"
+JF="$JD/$F"
+[[ ! -e "$JD" ]] && cp -r "$D" "$JH/$JD" # ln -s "$D" "$JH/$JD"
+# firejail-my "$N" --noblacklist="$D" wine "$JF"
+firejail-my "$N" wine "$HOME/$JF"

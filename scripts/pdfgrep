@@ -1,0 +1,30 @@
+#!/bin/bash
+r=0
+grepargs=()
+ftargs=()
+args=($@)
+for i in ${!args[@]}; do
+    arg=${args[$i]}
+    case $arg in
+        -r) r=1; args[$i]='';;
+        -*) grepargs+=("$arg") args[$i]='';;
+        *)  ftargs+=("$arg") args[$i]='';;
+    esac
+done
+
+T="${ftargs[0]}"
+F="${ftargs[1]}"
+
+function doit {
+    f="$1"
+    M=$(pdftotext -layout "$f" - | grep --color=always $grepargs "$T")
+    [[ "$M" != "" ]] && echo "$f: $M"
+}
+
+if [[ "$r" = "1" ]]; then
+    for f in $(find -name "*.pdf"); do
+        doit "$f"
+    done
+else
+    doit "$F"
+fi
