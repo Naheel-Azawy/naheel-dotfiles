@@ -12,19 +12,23 @@ for i in ${!args[@]}; do
     esac
 done
 
-T="${ftargs[0]}"
-F="${ftargs[1]}"
-
 function doit {
     f="$1"
-    M=$(pdftotext -layout "$f" - | grep --color=always $grepargs "$T")
-    [[ "$M" != "" ]] && echo "$f: $M"
+    shift
+    t="$@"
+    #echo "f=$f, t=$t"
+    m=$(pdftotext -layout "$f" - 2>/dev/null | grep --color=always $grepargs "$t")
+    [[ "$m" != "" ]] && echo -e -n "\033[0;35m$f\033[0;36m:\033[0m " && echo "$m"
 }
 
 if [[ "$r" = "1" ]]; then
-    for f in $(find -name "*.pdf"); do
-        doit "$f"
+    T="${ftargs[@]}"
+    for F in $(find -name '*.pdf'); do
+        doit "$F" "$T"
     done
 else
-    doit "$F"
+    F="${ftargs[-1]}"
+    ftargs[-1]=''
+    T="${ftargs[@]}"
+    doit "$F" "$T"
 fi
