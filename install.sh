@@ -13,6 +13,8 @@ fi
 
 # Install packages
 
+sed -i 's/#\[multilib\]/[multilib]\nInclude = \/etc\/pacman.d\/mirrorlist/g' /etc/pacman.conf # Enables multilib. Needed for wine
+pacman -Syu # Upgrade the system
 ./install-packages.sh "$U" "$D"
 
 # Systemd services

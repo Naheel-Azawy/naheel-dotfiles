@@ -1,3 +1,4 @@
 #!/bin/bash
 export MATLAB_SHELL=/bin/bash
-$MATLAB/bin/matlab $@
+mkdir -p $HOME/Firejail/matlab
+firejail --quiet --net=none --private-tmp --private=$HOME/Firejail/matlab $MATLAB/bin/matlab $@

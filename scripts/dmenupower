@@ -10,9 +10,9 @@ case "$RES" in
     Logout)
         confirm && i3-msg exit;;
     Suspend)
-        systemctl suspend;;
+        lockscreen && systemctl suspend;;
     Hibernate)
-        confirm && systemctl hibernate;;
+        confirm && lockscreen && systemctl hibernate;;
     Reboot)
         confirm && systemctl reboot;;
     Shutdown)

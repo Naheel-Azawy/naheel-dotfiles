@@ -2,4 +2,4 @@
 D="$HOME/Firejail/$1"
 mkdir -p "$D"
 shift
-firejail --net=none --private-tmp --blacklist=/mnt --private="$D" $@
+firejail --net=none --private-tmp --blacklist=/mnt --private="$D" "$@"

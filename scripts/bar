@@ -168,7 +168,7 @@ function batt {
         awesome-font-echo '\uf240' $R
     fi
 
-    printf "$RES %d%%" $V
+    printf " %d%%" $V
 }
 
 function brig {

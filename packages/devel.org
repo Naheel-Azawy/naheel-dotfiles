@@ -3,3 +3,4 @@
 | pacman | docker                    | to run docker containers                                          |
 | pacman | vala                      | Vala language                                                     |
 | aur    | android-studio            | Android studio IDE                                                |
+| pacman | cloc                      | Calculates lines of code                                          |

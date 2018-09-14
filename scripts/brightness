@@ -1,27 +1,45 @@
 #!/bin/bash
 MAX=661
 MIN=10
-set -e
 file="/sys/class/backlight/intel_backlight/brightness"
 current=$(cat "$file")
-if [ "$1" = "-print" ]; then
+C="$1"
+V="$2"
+if [[ "$C" = "-print" ]]; then
     P=$(echo "$current/$MAX*100" | bc -l)
     printf "%.0f\n" $P
     exit
 fi
 new="$current"
-if [ "$2" != "" ]; then
-    val=$(echo "$2*$MAX/100" | bc)
+if [[ "$V" != "" ]]; then
+    val=$(echo "$V*$MAX/100" | bc)
 fi
-if [ "$1" = "-inc" ]; then
+if [[ "$C" = "-set" ]]; then
+    new=$val
+    if [[ "$new" -gt "$current" ]]; then
+        C='-inc'
+    else
+        C='-dec'
+    fi
+elif [[ "$C" = "-inc" ]]; then
     new=$(( current + $val ))
-elif [ "$1" = "-dec" ]; then
+elif [[ "$C" = "-dec" ]]; then
     new=$(( current - $val ))
 fi
-if [ $new -gt $MAX ]; then
+if [[ $new -gt $MAX ]]; then
     new=$MAX
-elif [ $new -lt $MIN ]; then
+elif [[ $new -lt $MIN ]]; then
     new=$MIN
 fi
+
+while [[ "$current" != "$new" ]]; do
+    if [[ "$C" = "-inc" ]]; then
+        current=$((current + 1))
+    elif [[ "$C" = "-dec" ]]; then
+        current=$((current - 1))
+    fi
+    echo $current > "$file"
+    sleep 0.0001
+done
+
 pkill -RTMIN+3 i3blocks
-echo $new > "$file"
