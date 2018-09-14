@@ -1,0 +1,71 @@
+| TAG    | NAME IN REPO (or git url)                                 | PURPOSE (should be a verb phrase to sound right while installing)                                   |
+|--------+-----------------------------------------------------------+-----------------------------------------------------------------------------------------------------|
+| pacman | base-devel                                                | is a group package with sudo and compilation software                                               |
+| pacman | git                                                       | is a version control system                                                                         |
+| pacman | i3                                                        | is the main graphical user interface and window manager                                             |
+| pacman | xorg-server                                               | is the graphical server                                                                             |
+| pacman | xorg-xdpyinfo                                             | retrieves screen information for some scripts                                                       |
+| pacman | xorg-xinit                                                | starts the graphical server                                                                         |
+| pacman | xorg-xinput                                               | controls the input devices in xorg                                                                  |
+| pacman | xorg-xprop                                                | property displayer for xorg                                                                         |
+| pacman | xclip                                                     | clipboard manageer for xorg                                                                         |
+| pacman | xterm                                                     | a simple terminal                                                                                   |
+| git    | https://github.com/lukesmithxyz/dmenu.git                 | runs commands and provides a UI for selection                                                       |
+| aur    | ttf-emojione                                              | is a package that gives the system unicode symbols and emojis used in the status bar and elsewhere. |
+| pacman | ttf-liberation                                            | another pretty font                                                                                 |
+| pacman | ttf-dejavu                                                | the preferred monospace font                                                                        |
+| aur    | ttf-font-awesome                                          | used for the icons in the top bar                                                                   |
+| pacman | ranger                                                    | is an extensive terminal file manager that everyone likes                                           |
+| pacman | arandr                                                    | is a UI for screen adjustment                                                                       |
+| pacman | compton                                                   | for transparency and removing screen-tearing                                                        |
+| pacman | cronie                                                    | manages scheduled tasks                                                                             |
+| pacman | dosfstools                                                | allows your computer to access dos-like filesystems                                                 |
+| pacman | dunst                                                     | is a suckless notification system                                                                   |
+| pacman | exfat-utils                                               | allows management of FAT drives                                                                     |
+| pacman | feh                                                       | is a minimal image viewer                                                                           |
+| pacman | ffmpeg                                                    | can record and splice video and audio on the command line                                           |
+| pacman | chromium                                                  | well, in most cases it is faster than firefox...                                                    |
+| pacman | gnome-keyring                                             | serves as the system keyring                                                                        |
+| pacman | gnome-themes-extra                                        | gives the dark GTK theme                                                                            |
+| pacman | i3blocks                                                  | is the status bar                                                                                   |
+| pacman | i3lock                                                    | is the screen lock                                                                                  |
+| pacman | mpv                                                       | is the patrician's choice video/gif player                                                          |
+| pacman | networkmanager                                            | does exactly what it sounds like                                                                    |
+| pacman | network-manager-applet                                    | appears in the top right corner and manages the wi-fi connection                                    |
+| pacman | ntfs-3g                                                   | allows accessing NTFS partitions                                                                    |
+| pacman | pulseaudio                                                | is the audio system (>inb4 bloat)                                                                   |
+| pacman | pulseaudio-alsa                                           | is an audio interface with ALSA                                                                     |
+| pacman | pamixer                                                   | is a terminal audio control interface                                                               |
+| pacman | pulsemixer                                                | is an intuitive ncurses audio controller                                                            |
+| pacman | maim                                                      | can take quick screenshots at your request                                                          |
+| pacman | tmux                                                      | the terminal multiplexer                                                                            |
+| aur    | unclutter-xfixes-git                                      | hides an inactive mouse                                                                             |
+| pacman | unrar                                                     | extracts rar's                                                                                      |
+| pacman | unzip                                                     | unzips zips                                                                                         |
+| aur    | urlview                                                   | parses URLs in the terminal allowing keyboard-based selection                                       |
+| pacman | w3m                                                       | is a terminal browser which can also view images                                                    |
+| pacman | wget                                                      | downloads sites and files on the command line                                                       |
+| pacman | xdotool                                                   | provides window action utilities on the command line.                                               |
+| pacman | xssstate                                                  | times out the screen if locked                                                                      |
+| pacman | poppler                                                   | manipulates .pdfs and gives .pdf previews in ranger                                                 |
+| pacman | mediainfo                                                 | shows audio and video information and is used by ranger as well                                     |
+| pacman | atool                                                     | manages and gives information about archives                                                        |
+| pacman | fzf                                                       | is a fuzzy finder tool                                                                              |
+| pacman | highlight                                                 | can highlight code output                                                                           |
+| git    | https://github.com/alexanderjeurissen/ranger_devicons.git | gives folder and file icons in ranger                                                               |
+| aur    | task-spooler                                              | queues commands or files for download                                                               |
+| pacman | fish                                                      | the friendly shell!                                                                                 |
+| pacman | emacs                                                     | the best editor on this planet                                                                      |
+| pacman | ispell                                                    | spell checker                                                                                       |
+| pacman | aspell-en                                                 | English dictionary for ispell                                                                       |
+| pacman | conky                                                     | brings the lovely widgets at your desktop                                                           |
+| pacman | conky-manager                                             | manages conky using GUI                                                                             |
+| pacman | lxappearance                                              | configures GTK with a simple GUI                                                                    |
+| pacman | cups                                                      | in case you need to use a printer                                                                   |
+| pacman | cups-pdf                                                  | pdf for cups                                                                                        |
+| pacman | system-config-printer                                     | a little GUI to control your printers                                                               |
+| pacman | acpi                                                      | laptop battery information                                                                          |
+| pacman | time                                                      | measures the time taken by a process                                                                |
+| pacman | jq                                                        | json in the shell                                                                                   |
+| pacman | lm_sensors                                                | mainly to monitor the temperature                                                                   |
+| aur    | xbanish                                                   | hide the mouse cursor while typing                                                                  |

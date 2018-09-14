@@ -1,7 +1,5 @@
 #!/bin/bash
 
-# TODO: install packages
-
 # Vars
 
 D=$(pwd)
@@ -12,6 +10,10 @@ if [ "$U" = "root" ]; then
 else
     H="/home/$U"
 fi
+
+# Install packages
+
+./install-packages.sh "$U" "$D"
 
 # Systemd services
 
