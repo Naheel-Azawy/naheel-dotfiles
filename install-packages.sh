@@ -41,7 +41,22 @@ function install-git {
 	  dir=$(mktemp -d)
 	  git clone --depth 1 "$1" "$dir"
 	  cd "$dir" || exit
+    [[ -f autogen.sh ]] && ./autogen.sh
+    [[ -f ./configure ]] && ./configure
 	  make
+	  make install
+	  cd /tmp
+}
+
+function install-suckless {
+    link="$1"
+    name=${link##*/}
+    conf="$D/$name-config.h"
+	  dir=$(mktemp -d)
+	  git clone --depth 1 "$link" "$dir"
+	  cd "$dir" || exit
+	  make
+    [[ -f "$conf" ]] && cp "$conf" ./config.h
 	  make install
 	  cd /tmp
 }
@@ -57,11 +72,12 @@ echo "$pacs" | while read -r tag pac des; do
     echo -e "($i/$total) ${C}INSTALLING${R} $pac ${C}FROM${R} $tag"
     echo -e "${C}REASON:${R} $des"
     case $tag in
-        pacman) install-pacman $pac;;
-        aur)    install-aur    $pac;;
-        pip)    install-pip    $pac;;
-        npm)    install-npm    $pac;;
-        git)    install-git    $pac;;
+        pacman)   install-pacman   $pac;;
+        aur)      install-aur      $pac;;
+        pip)      install-pip      $pac;;
+        npm)      install-npm      $pac;;
+        git)      install-git      $pac;;
+        suckless) install-suckless $pac;;
         *) echo "ERROR: Unknow package tag '$tag'" && exit 1;;
     esac
     i=$((i+1))

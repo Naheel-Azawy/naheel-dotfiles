@@ -43,14 +43,6 @@ echo "Installing some good stuff"
 rm -rf "$H/.good-stuff"
 mkdir -p "$H/.good-stuff"
 
-git clone https://github.com/Naheel-Azawy/bicon.git "$H/.good-stuff/bicon"
-cd "$H/.good-stuff/bicon"
-./autogen.sh
-./configure
-make
-make install
-cd "$D"
-
 git clone https://github.com/Naheel-Azawy/conky-config "$H/.good-stuff/conky-config"
 cd "$H/.good-stuff/conky-config"
 ./install.sh "$H"
@@ -60,12 +52,6 @@ git clone https://github.com/Naheel-Azawy/Executor "$H/.good-stuff/Executor"
 cd "$H/.good-stuff/Executor"
 ./install
 cd "$D"
-
-git clone git://git.suckless.org/st "$H/.good-stuff/st"
-cd "$H/.good-stuff/st"
-make
-cp "$D/st-config.h" "$H/.good-stuff/st/config.h"
-make clean install
 
 rm -rf "$H/.tmux"
 mkdir -p "$H/.tmux/plugins/tpm"

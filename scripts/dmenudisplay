@@ -1,0 +1,12 @@
+#!/bin/bash
+D="$HOME/.dotfiles/display-layouts"
+sel=$((ls -1 "$D/" | awk -F'.' '{print $1}' && echo 'More options') \
+          | dmenu -l 5 -p 'Select the display layout')
+
+if [[ "$sel" = 'More options' ]]; then
+    arandr
+elif [[ "$sel" != "" ]]; then
+    eval "$D/${sel}.sh"
+fi
+
+feh --bg-fill ~/.config/wall.png

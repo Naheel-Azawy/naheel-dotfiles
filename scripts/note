@@ -1,2 +1,0 @@
-#!/bin/bash
-echo "$@" && pgrep -x dunst >/dev/null && notify-send "$@"
