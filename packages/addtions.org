@@ -52,3 +52,5 @@
 | pacman | libpulse                                   | sound related stuff                                                                            |
 | pacman | pulseaudio                                 | sound related stuff                                                                            |
 | pacman | lib32-openal                               | sound related stuff                                                                            |
+| pacman | ttf-hanazono                               | Chinese font                                                                                   |
+| pacman | opendesktop-fonts                          | Japanese font                                                                                  |

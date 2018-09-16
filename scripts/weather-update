@@ -2,5 +2,7 @@
 ### This is only if your location isn't automatically detected, otherwise you can leave it blank.
 location="Doha"
 [[ "$location" != "" ]] && location="~${location// /+}"
-curl -s wttr.in/$location?n > ~/.weatherreport
+res=$(curl -s wttr.in/$location?n)
+[[ "$res" = '' ]] && exit
+echo "$res" > ~/.weatherreport
 pkill -RTMIN+6 i3blocks
