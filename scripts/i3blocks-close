@@ -1,0 +1,3 @@
+#!/bin/bash
+[[ $BLOCK_BUTTON = "1" ]] && xdotool windowclose $(xdotool getactivewindow)
+awesome-font-echo '\uf00d'

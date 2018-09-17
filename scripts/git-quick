@@ -1,2 +1,2 @@
 #!/bin/bash
-git add -A && git commit -m 'couple of things' && git push origin master
+git add -A && git commit -m 'quick update' && git push origin master
