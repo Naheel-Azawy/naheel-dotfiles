@@ -116,7 +116,7 @@ function get {
         eval $VV=\'"$V"\'
         [ "$DB" != "once" ] && eval $LV=$now
     fi
-    if [[ "$selected" = "$F" ]]; then echo -n '<span color="blue">'; fi
+    if [[ "$selected" = "$F" ]]; then echo -n '<span color="#285577">'; fi
     echo -n $V
     if [[ "$selected" = "$F" ]]; then echo -n '</span>'; fi
 }
