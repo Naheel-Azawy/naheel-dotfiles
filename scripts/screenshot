@@ -11,7 +11,7 @@ for arg in $@; do
     esac
 done
 
-CMD="maim"
+CMD="maim --hidecursor"
 if [ $W = 1 ]; then
     CMD="$CMD -i $(xdotool getactivewindow)"
 elif [ $A = 1 ]; then

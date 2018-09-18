@@ -1,0 +1,4 @@
+#!/bin/bash
+# if args provided, run bc. Otherwise run octave or python.
+[[ "$@" != '' ]] && { echo "$@" | bc -l; exit; }
+([[ -e /usr/bin/octave-cli ]] && octave-cli -q) || python -q

@@ -1,0 +1,8 @@
+#!/bin/bash
+[[ "$@" != '' ]] && {
+    tmux new-session "$@"
+    exit
+}
+S=$(tmux ls -F '#{session_name} #{?session_attached,aaa,nnn}' | grep nnn | tail -n 1 | awk '{print $1}')
+[[ "$S" = '' ]] && { tmux; exit; }
+tmux a -t $S
