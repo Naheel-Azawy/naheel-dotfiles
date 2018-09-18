@@ -1,4 +1,17 @@
 #!/bin/bash
-# if args provided, run bc. Otherwise run octave or python.
-[[ "$@" != '' ]] && { echo "$@" | bc -l; exit; }
-([[ -e /usr/bin/octave-cli ]] && octave-cli -q) || python -q
+Q=0 # Q for Quick
+[[ "$1" = '-q' ]] && {
+    Q=1
+    shift
+}
+
+if [[ "$Q" = '0' ]] && [[ -e /usr/bin/octave-cli ]]; then
+    [[ "$@" = '' ]] && (octave-cli -q; exit)
+    echo "$@" | octave-cli -q | sed 's/ans =\s*//g'
+elif [[ "$Q" = '0' ]] && [[ -e /usr/bin/python ]]; then
+    [[ "$@" = '' ]] && (python -q; exit)
+    echo "print($@)" | python -q
+else
+    [[ "$@" = '' ]] && (bc -q; exit)
+    echo "$@" | bc -l
+fi

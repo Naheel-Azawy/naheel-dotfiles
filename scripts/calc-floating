@@ -1,0 +1,7 @@
+#!/bin/bash
+st -e tmux-quick calc &
+sleep 0.2s
+i3-msg floating enable
+i3-msg resize set 600px 1000px
+i3-msg move position 1290px 50px
+wait
