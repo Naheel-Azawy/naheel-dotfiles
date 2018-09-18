@@ -4,3 +4,4 @@
 | pacman | vala                      | Vala language                                                     |
 | aur    | android-studio            | Android studio IDE                                                |
 | pacman | cloc                      | Calculates lines of code                                          |
+| pacman | cmake                     | CMake build system                                                |

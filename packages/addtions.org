@@ -54,3 +54,5 @@
 | pacman | lib32-openal                               | sound related stuff                                                                            |
 | pacman | ttf-hanazono                               | Chinese font                                                                                   |
 | pacman | opendesktop-fonts                          | Japanese font                                                                                  |
+| aut    | adwaita-qt5                                | Adwaita GNOME theme for Qt5                                                                    |
+| aut    | adwaita-qt4                                | Adwaita GNOME theme for Qt4                                                                    |

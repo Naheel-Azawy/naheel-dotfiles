@@ -1,0 +1,2 @@
+#!/bin/bash
+mgba-qt "$GAMES_GB/Super Mario Bros. Deluxe (USA, Europe).gbc" "$@"

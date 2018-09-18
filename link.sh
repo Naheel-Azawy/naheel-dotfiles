@@ -39,6 +39,7 @@ lnnn "$D/zathurarc" "$H/.config/zathura/zathurarc"
 lnnn "$D/compton.conf"   "$H/.config/compton.conf"
 lnnn "$D/user-dirs.dirs" "$H/.config/user-dirs.dirs"
 lnnn "$D/ranger"         "$H/.config/ranger"
+lnnn "$D/mednafen"       "$H/.mednafen"
 
 lnnn "$D/bashrc.sh"     "$H/.bashrc"
 lnnn "$D/profile"       "$H/.profile"
