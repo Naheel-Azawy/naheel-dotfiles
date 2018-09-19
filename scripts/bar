@@ -187,7 +187,9 @@ function volu {
     V=$(pamixer --get-volume)
     if [ "$1" != "-a" ]; then
         if [ $(pamixer --get-mute) = "true" ] || [ $V = 0 ]; then
-            awesome-font-echo '\uf026\uf00d'
+            awesome-font-echo '\uf026'
+            echo -n '<span font="3"> </span>'
+            awesome-font-echo '\uf00d'
         elif [ "$V" -le "20" ]; then
             awesome-font-echo '\uf027'
         else

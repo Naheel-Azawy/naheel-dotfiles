@@ -1,0 +1,2 @@
+#!/bin/bash
+mednafen "$GAMES_PS/Tekken 3/Tekken 3.cue" "$@"
