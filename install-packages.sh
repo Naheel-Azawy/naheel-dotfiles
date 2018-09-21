@@ -64,7 +64,7 @@ function install-suckless {
 install-aur-manual yay
 
 cd "$D/packages"
-files="base.org addtions.org devel.org games.org"
+files="base.org addtions.org themostsignificant.org devel.org games.org"
 pacs="$(for f in $files; do cat $f | tail -n +3 | sed 's/|/ /g' | sed 's/  */ /g'; done)"
 total=$(echo "$pacs" | wc -l)
 i=1

@@ -1,0 +1,6 @@
+| TAG    | NAME IN REPO (or git url) | PURPOSE (should be a verb phrase to sound right while installing) |
+|--------+---------------------------+-------------------------------------------------------------------|
+| aur    | logisim                   | logic circuits design                                             |
+| aur    | fritzing                  | simple and easy circuit design                                    |
+| pacman | arduino                   | well, arduino..                                                   |
+| aur    | qucs                      | circuit simulator                                                 |

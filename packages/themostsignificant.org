@@ -1,0 +1,9 @@
+| TAG    | NAME IN REPO (or git url)                  | PURPOSE (should be a verb phrase to sound right while installing) |
+|--------+--------------------------------------------+-------------------------------------------------------------------|
+| pacman | neofetch                                   | displays system's information                                     |
+| pacman | sl                                         | cures the bad habit of miss-typing                                |
+| pacman | cowsay                                     | a wise cow                                                        |
+| pacman | fortune                                    | some wise quotes                                                  |
+| pacman | lolcat                                     | colored cat                                                       |
+| git    | https://github.com/pipeseroni/pipes.sh.git | pipes screensaver                                                 |
+| pacman | cmatrix                                    | now you are neo                                                   |

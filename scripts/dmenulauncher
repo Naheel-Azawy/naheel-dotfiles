@@ -13,5 +13,5 @@ RUN=`(echo "$MOST_USED"; dmenu_path | grep -vxF "$MOST_USED") | $DMENU $@` &&
 
 case $RUN in
     *\;) exec `echo $TERMI $RUN | sed -e 's/;$//'`;;
-    *)   exec $RUN;;
+    *)   $RUN || $TERMI "bash -c 'calc $RUN && read'";; # TODO: handle this
 esac
