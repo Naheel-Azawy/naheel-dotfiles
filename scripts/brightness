@@ -3,6 +3,8 @@ MAX=661
 MIN=10
 file="/sys/class/backlight/intel_backlight/brightness"
 current=$(cat "$file")
+Q='-q' #"$1"
+#[[ "$Q" != '' ]] && shift
 C="$1"
 V="$2"
 if [[ "$C" = "-print" ]]; then
@@ -32,14 +34,24 @@ elif [[ $new -lt $MIN ]]; then
     new=$MIN
 fi
 
-while [[ "$current" != "$new" ]]; do
-    if [[ "$C" = "-inc" ]]; then
-        current=$((current + 1))
-    elif [[ "$C" = "-dec" ]]; then
-        current=$((current - 1))
-    fi
-    echo $current > "$file"
-    sleep 0.0001
-done
+if [[ "$Q" = "-q" ]]; then
+    echo $new > "$file"
+else
+    while [[ -f /tmp/.brightness-lock ]]; do
+        echo sleeping
+        sleep 0.5
+    done
+    touch /tmp/.brightness-lock
+    while [[ "$current" != "$new" ]]; do
+        if [[ "$C" = "-inc" ]]; then
+            current=$((current + 1))
+        elif [[ "$C" = "-dec" ]]; then
+            current=$((current - 1))
+        fi
+        echo $current > "$file"
+        sleep 0.0001
+    done
+    rm -f /tmp/.brightness-lock
+fi
 
 pkill -RTMIN+3 i3blocks

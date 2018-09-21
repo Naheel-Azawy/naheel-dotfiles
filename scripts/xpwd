@@ -1,0 +1,33 @@
+#!/bin/bash
+# pwd but using x windows
+# based on i3 thread: https://faq.i3wm.org/question/150/how-to-launch-a-terminal-from-here/?answer=152#post-id-152
+
+CMD=$TERMINAL
+CWD=''
+
+# Get window ID
+ID=$(xdpyinfo | grep focus | cut -f4 -d " ")
+
+# Get PID of process whose window this is
+PID=$(xprop -id $ID | grep -m 1 PID | cut -d " " -f 3)
+
+# Get last child process (shell, vim, etc)
+if [[ -n "$PID" ]]; then
+
+    TREE=$(pstree -lpA $PID)
+    PID=$(echo $TREE | awk -F'---' '{print $NF}' | sed -re 's/[^0-9]//g')
+
+    # Get the tmux client connected session PID
+    TMUXC=$(tmux list-clients -F '#{client_pid} #{session_name}' | grep $PID)
+    [[ "$TMUXC" != '' ]] && {
+        TMUXS=$(echo $TMUXC | awk '{print $2}')
+        PID=$(tmux list-sessions -F "#{?#{==:#{session_name},$TMUXS},aaa,nnn} #{pane_pid}" | grep aaa | awk '{print $2}')
+    }
+
+    # If we find the working directory, run the command in that directory
+    if [ -e "/proc/$PID/cwd" ]; then
+        CWD=$(readlink /proc/$PID/cwd)
+    fi
+fi
+
+echo $CWD
