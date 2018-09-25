@@ -14,7 +14,7 @@ sudo -A mount "$chosen" && exit 0
 # You may want to change the line below for more suggestions for mounting.
 # I.e. you can increase the depth of the search, or add directories.
 # This will increase the load time briefly though.
-mp="$(find /mnt -type d -maxdepth 1 2>/dev/null | dmenu -l 5 -i -p "Type in mount point.")"
+mp="$(find /mnt -type d -maxdepth 1 2>/dev/null | sort | dmenu -l 5 -i -p "Type in mount point.")"
 [ "$mp" = "" ] && exit 1
 if [ ! -d "$mp" ]; then
 	mkdiryn=$(printf "No\\nYes" | dmenu -i -p "$mp does not exist. Create it?")

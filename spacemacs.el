@@ -412,9 +412,10 @@ you should place your code here."
          '("\\.m$" . octave-mode)
          auto-mode-alist))
 
-  ;; ---- ORG-BABEL ----
+  ;; ---- ORG MODE ----
   (org-babel-do-load-languages
    'org-babel-load-languages '((C . t)))
+  (add-hook 'org-mode-hook 'toggle-truncate-lines)
 
   ;; ---- HTMLIZE ----
   (add-to-list 'load-path "~/.emacs-stuff/emacs-htmlize")

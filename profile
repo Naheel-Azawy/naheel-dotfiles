@@ -13,6 +13,7 @@ export DESKTOP_SESSION=gnome
 export QT_QPA_PLATFORMTHEME="qt5ct"
 export QT_DEVICE_PIXEL_RATIO=1
 export QT_STYLE_OVERRIDE=adwaita-dark
+export _JAVA_OPTIONS='-Dawt.useSystemAAFontSettings=on'
 
 export PI=3.14159265358979323844
 export EU=2.71828182845904523537
