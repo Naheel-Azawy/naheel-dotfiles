@@ -169,6 +169,8 @@ function batt {
     fi
 
     printf " %d%%" $V
+
+    battery-check "$V" "$C"
 }
 
 function brig {

@@ -5,3 +5,5 @@
 | aur    | android-studio            | Android studio IDE                                                |
 | pacman | cloc                      | Calculates lines of code                                          |
 | pacman | cmake                     | CMake build system                                                |
+| pacman | arm-none-eabi-gcc         | arm toys                                                          |
+| pacman | arm-none-eabi-newlib      | more arm toys                                                     |

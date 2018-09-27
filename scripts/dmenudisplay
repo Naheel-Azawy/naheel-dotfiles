@@ -1,7 +1,7 @@
 #!/bin/bash
 D="$HOME/.dotfiles/display-layouts"
 sel=$((ls -1 "$D/" | awk -F'.' '{print $1}' && echo 'More options') \
-          | dmenu -l 5 -p 'Select the display layout')
+          | dmenu -l 20 -p 'Select the display layout')
 
 if [[ "$sel" = 'More options' ]]; then
     arandr
