@@ -22,6 +22,12 @@ pacman -Syu # Upgrade the system
 echo "Setting up services"
 ./setup-services.sh "$U" "$D/scripts/lockscreen"
 
+# Backlight rules
+
+echo "Setting the backlight rules"
+echo 'ACTION=="add", SUBSYSTEM=="backlight", KERNEL=="acpi_video0", RUN+="/bin/chgrp video /sys/class/backlight/%k/brightness"
+ACTION=="add", SUBSYSTEM=="backlight", KERNEL=="acpi_video0", RUN+="/bin/chmod g+w /sys/class/backlight/%k/brightness"' > /etc/udev/rules.d/backlight.rules
+
 # Sensors
 
 sensors-detect --auto

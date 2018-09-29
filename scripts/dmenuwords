@@ -1,8 +1,10 @@
 #!/bin/bash
-WORDS="السلام عليكم
+WORDS="¯\\_(ツ)_/¯
+السلام عليكم
 السلام عليكم و رحمة الله و بركاته
 و عليكم السلام و رحمة الله و بركاته
 Alsalamu alykum
-¯\\_(ツ)_/¯"
-R=$(echo "$WORDS" | dmenu -l 5)
+naheelazawy@gmail.com
+nk1508530@qu.edu.qa"
+R=$(echo "$WORDS" | dmenu -l 15)
 [[ "$R" != '' ]] && echo -n "$R" | clipboard

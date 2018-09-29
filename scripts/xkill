@@ -1,2 +1,2 @@
 #!/bin/bash
-emacsclient -e '(kill-emacs)'
+exec emacsclient -e '(kill-emacs)'

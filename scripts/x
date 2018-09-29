@@ -1,2 +1,2 @@
 #!/bin/bash
-bicon.bin --reshape-only xnw $@ 2>/dev/null
+exec bicon.bin --reshape-only xnw "$@" 2>/dev/null

@@ -1,2 +1,2 @@
 #!/bin/bash
-java -cp "$DOTFILES_DIR/theprayer" Pt $@
+java -cp "$DOTFILES_DIR/theprayer" Pt "$@" 2>/dev/null

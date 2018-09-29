@@ -1,5 +1,5 @@
 #!/bin/bash
-S=$(tmux ls -F '#{session_name} #{?session_attached,aaa,nnn}' | grep nnn | tail -n 1 | awk '{print $1}')
+S=$(tmux ls -F '#{session_name} #{?session_attached,aaa,nnn}' | grep nnn | grep -v ignored | tail -n 1 | awk '{print $1}')
 # If no unattached sessions, create new one
 [[ "$S" = '' ]] && exec tmux
 # If any tmux session is not attached, attach to it

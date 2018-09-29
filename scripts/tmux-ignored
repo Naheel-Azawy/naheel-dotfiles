@@ -1,0 +1,4 @@
+#!/bin/bash
+N=$(tmux ls -F '#{session_name}' | grep ignored | awk -F'-' '{print $2}' | sort -n | tail -n 1)
+N=$(($N + 1))
+exec tmux new-session -s ignored-$N

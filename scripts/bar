@@ -203,6 +203,7 @@ function volu {
 }
 
 function sens {
+    [[ $BLOCK_BUTTON = "1" ]] && st -e popsensors
     O=$(sensors coretemp-isa-0000 -j | jq '.["coretemp-isa-0000"]["Package id 0"]')
     T=$(echo "$O" | jq '.["temp1_input"]')
     M=$(echo "$O" | jq '.["temp1_max"]')
