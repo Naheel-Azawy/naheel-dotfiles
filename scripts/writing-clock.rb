@@ -1,3 +1,4 @@
+#!/usr/bin/ruby
                          eval(T=%(eval(%(E=27.chr;Z=32.chr;$
                     ><<E+"[2J";K=->q{(q-q*(1-3844.0/q.abs2)**0.5)
                 /2};I=->f,a,b,z,t=p{(a-b).abs>(f<1?1:1-(K[a]-c=K[b]).
@@ -23,3 +24,4 @@
                 =z.map{|b,h|x,y=a.rect;g&&s[y/2+5][x+58]=g;I[1,a,b,s,
                     g];a,g=b,h};sleep(61-Time.now.sec);;;}).gsub(
                          /^(.{26}):.{32}/){$1}.split*"")##))
+

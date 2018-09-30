@@ -1,0 +1,2 @@
+#!/bin/bash
+transset-df 0.8 -t --id $(xdotool getactivewindow)

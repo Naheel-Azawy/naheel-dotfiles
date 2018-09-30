@@ -71,3 +71,4 @@
 | aur      | xbanish                                   | hide the mouse cursor while typing                                                                  |
 | pacman   | clipmenu                                  | a clipboard manger                                                                                  |
 | git      | https://github.com/Naheel-Azawy/bicon.git | bidirectional console                                                                               |
+| pacman   | lynx                                      | a terminal web browser                                                                              |
