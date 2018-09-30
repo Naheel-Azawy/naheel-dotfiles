@@ -25,10 +25,11 @@ Q="$@"
 }
 
 Q=$(echo "$Q" | sed 's/ /+/g')
+U=$(curl -s "https://search.azlyrics.com/search.php?q=$Q")
+U=$(echo "$U" | sed -rn 's/.* 1\. <a href="(.+).html" .+/\1.html/p')
+O=$(lynx -dump "$U")
+S=$(echo "$O" | strbetweenlines 'Print' 'Submit Corrections')
+[[ "$S" = '' ]] && echo "Error on Q='$Q', U='$U'" && echo "$O" && exit
+echo "$S"
 
-curl "https://search.azlyrics.com/search.php?q=$Q" | sed -rn 's/.*1\. <a href="(.+).html" .+/\1.html/p' > /tmp/__lyrics_az
-U=$(cat /tmp/__lyrics_az)
-rm -f /tmp/__lyrics_az
-
-lynx -dump "$U" | strbetweenlines 'Print' 'Submit Corrections'
 
