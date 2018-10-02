@@ -1,6 +1,8 @@
 #!/bin/bash
 # ignore the current tmux session in the x window
-S=$(x-tmux-get-session)
+S="$1"
+[[ "$S" = '' ]] && S=$(x-tmux-get-session)
 [[ "$S" = '' ]] && exit
 echo "$S" | grep -q 'ignored' && exit # only if not already ignored
 tmux rename-session -t "$S" "ignored-$S"
+echo "ignored-$S"
