@@ -1,0 +1,25 @@
+#!/bin/bash
+# gets the tmux session name from the current x window
+
+CMD=$TERMINAL
+CWD=''
+
+# Get window ID
+ID=$(xdpyinfo | grep focus | cut -f4 -d " ")
+
+# Get PID of process whose window this is
+PID=$(xprop -id $ID | grep -m 1 PID | cut -d " " -f 3)
+
+# Get last child process (shell, vim, etc)
+if [[ -n "$PID" ]]; then
+
+    TREE=$(pstree -lpA $PID)
+    PID=$(echo $TREE | awk -F'---' '{print $2}' | sed -re 's/[^0-9]//g')
+
+    # Get the tmux client connected session PID
+    TMUXC=$(tmux list-clients -F '#{client_pid} #{session_name}' | grep $PID)
+    [[ "$TMUXC" != '' ]] && {
+        TMUXS=$(echo $TMUXC | awk '{print $2}')
+        echo $TMUXS
+    }
+fi

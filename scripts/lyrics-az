@@ -18,10 +18,18 @@ function strbetweenlines {
 Q="$@"
 
 [[ "$Q" = '' ]] && {
+    cmus-remote -Q &>/dev/null || {
+        echo 'ERROR: no arguments provided and cmus is not running'
+        exit 1
+    }
     C="$(cmus-remote -Q)"
     T=$(echo "$C" | sed -rn 's/tag title (.+)/\1/p')
     A=$(echo "$C" | sed -rn 's/tag artist (.+)/\1/p')
-    Q="$T $A"
+    [[ "$T" = '' ]] && [[ "$A" = '' ]] && {
+        echo "ERROR: couldn't get info from cmus"
+        exit 1
+    }
+    Q="$T by $A"
 }
 
 Q=$(echo "$Q" | sed 's/ /+/g')
@@ -29,7 +37,7 @@ U=$(curl -s "https://search.azlyrics.com/search.php?q=$Q")
 U=$(echo "$U" | sed -rn 's/.* 1\. <a href="(.+).html" .+/\1.html/p')
 O=$(lynx -dump "$U")
 S=$(echo "$O" | strbetweenlines 'Print' 'Submit Corrections')
-[[ "$S" = '' ]] && echo "Error on Q='$Q', U='$U'" && echo "$O" && exit
-echo "$S"
+[[ "$S" = '' ]] && echo "ERROR on Q='$Q', U='$U'" && echo "$O" && exit
+echo "$S" | more
 
 

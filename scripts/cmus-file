@@ -1,0 +1,2 @@
+#!/bin/bash
+cmus-remote -Q | sed -rn 's/file (.+)/\1/p'
