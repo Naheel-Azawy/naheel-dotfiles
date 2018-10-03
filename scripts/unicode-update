@@ -1,0 +1,9 @@
+#!/bin/bash
+U="$DOTFILES_DIR/unicode"
+echo "Downloading..."
+curl 'https://www.unicode.org/Public/UCD/latest/ucd/UnicodeData.txt' > "$U"
+echo "Processing..."
+cat "$U" | awk -F';' '{print "\\\\u"$1" "$2}' | while read u d; do printf "$u : \\$u : $d\n"; done > "${U}2"
+sed -i 's/[^[:print:]]//g' "${U}2"
+mv "${U}2" "$U"
+echo "Done!"
