@@ -7,6 +7,3 @@ export GPG_TTY=$(tty)
 alias e="exit"
 alias ee="exit"
 alias ث="exit"
-alias u="tmux && exit"
-alias uu="tmux && exit"
-alias ع="lang-toggle && tmux && exit"

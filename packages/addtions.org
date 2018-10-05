@@ -51,3 +51,4 @@
 | aur    | adwaita-qt5                  | Adwaita GNOME theme for Qt5                                                                    |
 | aur    | adwaita-qt4                  | Adwaita GNOME theme for Qt4                                                                    |
 | pacman | transset-df                  | used to change the window opacity                                                              |
+| pacman | translate-shell              | a command-line translator                                                                      |
