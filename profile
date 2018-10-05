@@ -2,7 +2,7 @@
 
 # Profile file. Runs on login.
 
-export EDITOR="emar"
+export EDITOR="x"
 export VISUAL="$EDITOR"
 export TERMINAL="st"
 export BROWSER="browser"
