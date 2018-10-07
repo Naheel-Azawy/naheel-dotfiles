@@ -55,3 +55,5 @@
 | pip    | numpy                        | some actual math in python                                                                     |
 | pip    | matplotlib                   | math plotting in python                                                                        |
 | pacman | python-pmw                   | needed for matplotlib                                                                          |
+| pacman | texlive-most                 | tex stuff                                                                                      |
+| pacman | biber                        | tex biber                                                                                      |
