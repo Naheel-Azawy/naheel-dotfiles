@@ -50,7 +50,31 @@ function gen-bg-simple {
 B=$(gen-bg)
 #B=$(gen-bg-simple)
 
-i3lock -e -f -c 000000 -i $B
+imgcolor=$(convert "$B" -gravity center -crop 100x100+0+0 +repage -colorspace hsb \
+                -resize 1x1 txt:- | awk -F '[%$]' 'NR==2{gsub(",",""); printf "%.0f\n", $(NF-1)}');
+
+FONT='DejaVu Sans Mono'
+if [[ "$imgcolor" -lt 60 ]]; then
+    COLOR='ffffffff'
+else
+    COLOR='000000ff'
+fi
+X=960
+Y=800
+
+i3lock \
+    -e -f -c 000000 -i $B \
+    --clock \
+    --timestr '%H:%M' \
+    --datestr '%Y-%m-%d' \
+    --time-font "$FONT" \
+    --date-font "$FONT" \
+    --timesize 70 \
+    --datesize 50 \
+    --timepos "$X:$Y" \
+    --datepos "$X:$((Y+70))" \
+    --timecolor "$COLOR" \
+    --datecolor "$COLOR"
 
 # In five seconds, turn off display unless key press in last 4 seconds.
 #sleep 5 && [[ 4000 -lt $(xssstate -i) ]] &&  pgrep -x i3lock && xset dpms force off
