@@ -23,6 +23,9 @@ export EU=2.71828182845904523537
 [[ -f ~/.more-paths ]] && . ~/.more-paths
 [[ -f ~/.bashrc ]] && . ~/.bashrc
 
+# To be able to change the brightness. Password is not required as edited in the sudoers
+sudo chmod a+rw /sys/class/backlight/intel_backlight/brightness
+
 # Start graphical server if i3 not already running.
 if [[ "$(tty)" = "/dev/tty1" ]]; then
 	pgrep -x i3 || exec startx

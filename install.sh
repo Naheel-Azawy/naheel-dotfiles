@@ -72,14 +72,6 @@ echo "Cloning Spacemacs"
 rm -rf "$H/.emacs.d"
 git clone https://github.com/syl20bnr/spacemacs "$H/.emacs.d"
 
-# Installing emacs stuff
-
-echo "Installing Emacs stuff"
-rm -rf "$H/.emacs-stuff"
-mkdir "$H/.emacs-stuff"
-git clone https://github.com/hniksic/emacs-htmlize.git "$H/.emacs-stuff/emacs-htmlize"
-
 # Changing owner
 chown "$U" "$H/.good-stuff/*"
-chown "$U" "$H/.emacs-stuff/*"
 chown "$U" "$H/.emacs.d/*"
