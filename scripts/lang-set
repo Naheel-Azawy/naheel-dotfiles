@@ -1,0 +1,9 @@
+#!/bin/bash
+L="$1"
+[[ "$L" = '' ]] && {
+    echo 'ERROR: No language selected'
+    exit 1
+}
+setxkbmap -layout $L
+pkill -RTMIN+8 i3blocks
+echo $L | tee ~/.lang

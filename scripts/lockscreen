@@ -42,10 +42,8 @@ function gen-bg-simple {
     fi
 }
 
-# Pause music (mocp, mpd and send the pause key to all mpv videos):
-# mocp -P &>/dev/null
-# mpc pause &>/dev/null
-# pauseallmpv &>/dev/null
+lang-set us &>/dev/null
+lmc pause &>/dev/null
 
 B=$(gen-bg)
 #B=$(gen-bg-simple)
@@ -65,6 +63,7 @@ Y=800
 i3lock \
     -e -f -c 000000 -i $B \
     --clock \
+    --indicator \
     --timestr '%H:%M' \
     --datestr '%Y-%m-%d' \
     --time-font "$FONT" \
