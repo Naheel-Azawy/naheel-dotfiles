@@ -1,0 +1,28 @@
+#!/bin/bash
+STOP=0
+function end {
+    echo "__ENDING__"
+    STOP=1
+    rm -f *.part *.ytdl *.temp.mp4
+    exit 0
+}
+trap end INT
+FP="$1"
+FD="$1-done"
+[[ ! -f "$FP" ]] && curl "$2" | grep -oP '(?<=href="/watch).+(?=" class="yt)' | awk -F'&' '{ print "https://www.youtube.com/watch"$1 }' > "$FP"
+if [[ -f "$FD" ]]; then
+    L=$(grep -v "$(cat $FD)" "$FP")
+else
+    L=$(cat "$FP")
+fi
+L=($L)
+N=${#L[@]}
+for ((i = 0; i < $N; ++i)); do
+    [[ "$STOP" = '1' ]] && break
+    V=${L[$i]}
+    echo "DOWNLOADING $V ($((i+1))/$N)"
+    youtube-dl --add-metadata -ic "$V"
+    echo "$V" >> "$FD"
+    L[$i]=''
+done
+end

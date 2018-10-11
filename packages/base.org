@@ -72,3 +72,4 @@
 | pacman   | clipmenu                                  | a clipboard manger                                                                                  |
 | git      | https://github.com/Naheel-Azawy/bicon.git | bidirectional console                                                                               |
 | pacman   | lynx                                      | a terminal web browser                                                                              |
+| pacman   | ffmpegthumbnailer                         | video thumbnails. Needed for ranger                                                                 |
