@@ -32,6 +32,7 @@ function gh;       history | grep $argv; end
 function m;        tmux $argv; end
 function r;        ranger $argv; end
 function s;        swallow $argv; end
+function d;        swallow $READER (pwd)/$argv; end
 function mkdircd;  mkdir $argv; and cd $argv; end
 function mkd;      mkdir $argv; end
 function mkdc;     mkdircd $argv; end

@@ -3,8 +3,8 @@
 U="$1"
 D="$2"
 
-C='\033[0;34m' # info color
-R='\033[0m'    # reset color
+C='\e[1;34;40m' # info color
+R='\033[0m'     # reset color
 
 installed=$((pacman -Qet && pacman -Qm) | awk '{print $1}')
 
@@ -31,6 +31,10 @@ function install-aur {
 
 function install-pip {
     pip3 install "$1"
+}
+
+function install-pip {
+    pip2.7 install "$1"
 }
 
 function install-npm {
@@ -75,6 +79,7 @@ echo "$pacs" | while read -r tag pac des; do
         pacman)   install-pacman   $pac;;
         aur)      install-aur      $pac;;
         pip)      install-pip      $pac;;
+        pip2)     install-pip2     $pac;;
         npm)      install-npm      $pac;;
         git)      install-git      $pac;;
         suckless) install-suckless $pac;;

@@ -7,6 +7,7 @@ export VISUAL="$EDITOR"
 export TERMINAL="st"
 export BROWSER="browser"
 export READER="evince"
+export BIB="$HOME/Documents/LaTeX/refs.bib"
 
 export GTK_THEME="Adwaita:dark"
 export DESKTOP_SESSION=gnome

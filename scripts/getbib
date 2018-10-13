@@ -1,15 +1,109 @@
 #!/bin/bash
+# Finds the reference, add the bibleography to $BIB, record history in $BIB.hist,
+# and copy the label to the clipboard
+#
+# providing no arguments will look for details from the current x window
+# if the provided argument is a pdf file the details will be extracted from it
+# otherwise the arguments will be the query string
+#
+# tested with chromium, firefox, and evince
+#
+# sources: crossref, google scholar
+# depends on: xprop, xdotool, pdfinfo, pdftotext, notify-send, clipboard, scholar.py
+#
+# written by Naheel Azawy: https://github.com/Naheel-Azawy/naheel-dotfiles
+# idea from Luke Smith: https://github.com/LukeSmithxyz/voidrice
 
-# Give this script a .pdf and it will attempt
-# to return a proper .bib citation via doi.
-# Internet connection required.
+TITLE=''
+DOI=''
+NOTIF=0
+FILE="$1"
 
-# Get the doi from metadata, if not possible, get
-# doi from pdftotext output, if not possible, exit.
-doi=$(pdfinfo "$1" | grep -o doi:.*) ||
-	doi=$(pdftotext "$1" - | grep -o doi.* -m 1) ||
-	exit 1
+# If no arguments
+[[ "$@" == '' ]] && {
+    # enable notifications
+    NOTIF=1
+    # x window details
+    WIN=$(xprop -id $(xdotool getactivewindow))
+    # x window title
+    TITLE=$(echo "$WIN" | sed -rn 's/_NET_WM_NAME\(UTF8_STRING\) = "(.*)"/\1/p' | \
+                sed 's/ - Chromium//g' | \
+                sed 's/ - Mozilla Firefox//g')
+    # if the title is the pdf file name, ...
+    echo "$TITLE" | grep '\.pdf' &>/dev/null && {
+        # get the PID from the x window
+        PID=$(echo "$WIN" | sed -rn 's/_NET_WM_PID\(CARDINAL\) = (.*)/\1/p')
+        # and then find the full file path from the process commandline
+        FILE=$(cat -v /proc/$PID/cmdline | sed -rn 's/.+\^@(.+)\^@/\1/p')
+        # the title will be found in the next condition
+    }
+}
 
+# if the file was given as an argument or from the previous condition
+[[ -f "$FILE" ]] && {
+    PDF=$(pdfinfo "$FILE")
+    # get the pdf title
+    TITLE=$(echo "$PDF" | sed -rn 's/Title:\s*(.*)/\1/p')
+    # if no title was found find the subject
+    [[ "$TITLE" == '' ]] && \
+        TITLE=$(echo "$PDF" | sed -rn 's/Subject:\s*(.*)/\1/p')
+    # try to find the DOI
+    DOI=$(echo "$PDF" | grep -o doi:.*) || # from the pdf info
+	      DOI=$(pdftotext "$FILE" - | grep -o doi.* -m 1) # or from the content
+}
+
+# if still nothing is found then take the args as a title
+[[ "$TITLE" == '' ]] && \
+    TITLE="$@"
+
+# look into the history file
+HIST=$(grep "$TITLE" "$BIB.hist" 2>/dev/null)
+[[ "$HIST" != '' ]] && {
+    [[ $NOTIF == 1 ]] && \
+        notify-send "Bib found for $TITLE from history<br>$LABEL"
+    echo "$HIST" | awk '{print $2}' | tr -d '\n' | clipboard
+    exit
+}
+
+[[ $NOTIF == 1 ]] && \
+    notify-send "Searching for $TITLE"
+
+# look for the DOI if found
+[[ "$DOI" == '' ]] && \
+    DOI=$(echo "$TITLE" | grep -o doi:.*)
 # Check crossref.org for the bib citation.
-curl -s "http://api.crossref.org/works/$doi/transform/application/x-bibtex" -w "\n" |
-	sed -e "/^[^\(\t\|@\|}\)]/d"
+[[ "$DOI" != '' ]] && \
+    B=$(curl -s "http://api.crossref.org/works/$DOI/transform/application/x-bibtex" -w "\n" | \
+            sed -e "/^[^\(\t\|@\|}\)]/d")
+
+# search google scholar if not found from crossref
+[[ "$B" == '' ]] && \
+    B=$(scholar.py -c 1 --citation bt --phrase "$TITLE")
+
+[[ "$B" == '' ]] && {
+    echo 'Not found'
+    [[ $NOTIF == 1 ]] && \
+        notify-send "Couldn't find $TITLE"
+    exit 1
+}
+
+FTITLE="$TITLE"
+LABEL=$(echo  "$B" | head -n1 | sed -rn 's/.+\{(.+),/\1/p')
+TITLE=$(echo  "$B" | sed -rn 's/\s+title\s*=\s*\{(.+)\},/\1/p')
+AUTHOR=$(echo "$B" | sed -rn 's/\s+author\s*=\s*\{(.+)\},/\1/p')
+YEAR=$(echo   "$B" | sed -rn 's/\s+year\s*=\s*\{?(.+)\}?,/\1/p')
+
+# write to history file
+echo "$(date '+%Y-%m-%d-%H:%M:%S') $LABEL $FTITLE" >> "$BIB.hist"
+
+[[ $NOTIF == 1 ]] && \
+    notify-send "Bib found for $TITLE by $AUTHOR ($YEAR)<br>$LABEL"
+
+# write to bib file if not already there
+if ! grep -q "$LABEL" "$BIB" &>/dev/null; then
+    echo "$B" >> "$BIB"
+    echo >> "$BIB"
+fi
+
+# copy the label to the clipboard
+echo -n "$LABEL" | clipboard

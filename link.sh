@@ -24,9 +24,6 @@ lnnn "$D/fish-config.fish" "$H/.config/fish/config.fish"
 mkdir -p "$H/.config/fontconfig"
 lnnn "$D/fonts.conf" "$H/.config/fontconfig/fonts.conf"
 
-mkdir -p "$H/.config/i3"
-lnnn "$D/i3.conf" "$H/.config/i3/config"
-
 mkdir -p "$H/.config/i3blocks"
 lnnn "$D/i3blocks.conf" "$H/.config/i3blocks/config"
 
