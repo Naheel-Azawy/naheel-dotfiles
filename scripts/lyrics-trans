@@ -1,0 +1,2 @@
+#!/bin/bash
+lyrics | trans -b 2>/dev/null | more
