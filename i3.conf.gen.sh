@@ -38,7 +38,7 @@ out hide_edge_borders smart
 
 # Font for window titles. Will also be used by the bar unless a different font
 # is used in the bar {} block below.
-out font pango:DejaVu Sans Mono 12.5
+out font "pango:$FONT_MONO 12.5"
 
 # Before i3 v4.8, we used to recommend this one as the default:
 # font -misc-fixed-medium-r-normal--13-120-75-75-C-70-iso10646-1
@@ -182,6 +182,12 @@ bindsym $mod+Control+Left  resize shrink width  10 px or 10 ppt
 bindsym $mod+Control+Down  resize grow   height 10 px or 10 ppt
 bindsym $mod+Control+Up    resize shrink height 10 px or 10 ppt
 bindsym $mod+Control+Right resize grow   width  10 px or 10 ppt
+
+# resize window (a little bit)
+bindsym $mod+ShiftControl+Left  resize shrink width  1 px or 1 ppt
+bindsym $mod+ShiftControl+Down  resize grow   height 1 px or 1 ppt
+bindsym $mod+ShiftControl+Up    resize shrink height 1 px or 1 ppt
+bindsym $mod+ShiftControl+Right resize grow   width  1 px or 1 ppt
 
 # Calculator
 bindsym $mod+plus exec --no-startup-id calc-floating

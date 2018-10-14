@@ -9,6 +9,9 @@ export BROWSER="browser"
 export READER="evince"
 export BIB="$HOME/Documents/LaTeX/refs.bib"
 
+export FONT_MONO='DejaVu Sans Mono'
+export FONT_SANS='Liberation Sans'
+export FONT="$FONT_MONO"
 export GTK_THEME="Adwaita:dark"
 export DESKTOP_SESSION=gnome
 export QT_QPA_PLATFORMTHEME="qt5ct"

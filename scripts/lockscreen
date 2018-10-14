@@ -43,7 +43,7 @@ function gen-bg-simple {
 }
 
 lang-set us &>/dev/null
-lmc pause &>/dev/null
+lmc stop &>/dev/null
 
 B=$(gen-bg)
 #B=$(gen-bg-simple)
@@ -51,7 +51,7 @@ B=$(gen-bg)
 imgcolor=$(convert "$B" -gravity center -crop 100x100+0+0 +repage -colorspace hsb \
                 -resize 1x1 txt:- | awk -F '[%$]' 'NR==2{gsub(",",""); printf "%.0f\n", $(NF-1)}');
 
-FONT='DejaVu Sans Mono'
+[[ "$FONT" == '' ]] && FONT='DejaVu Sans Mono'
 if [[ "$imgcolor" -lt 60 ]]; then
     COLOR='ffffffff'
 else
