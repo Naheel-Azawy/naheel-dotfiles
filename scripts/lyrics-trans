@@ -1,2 +1,12 @@
 #!/bin/bash
-lyrics | trans -b 2>/dev/null | more
+O="$@"
+[[ "$O" != '' ]] && {
+    O=$(echo "$O" | sed 's/ /-/g')
+    O="-$O"
+}
+F="$(cmus-file)-lyrics-trans$O.txt"
+[[ -f "$F" ]] && {
+    cat "$F" | fribidi --nopad | more
+    exit
+}
+lyrics | trans -no-bidi -b "$@" 2>/dev/null | tee "$F" | while read line; do echo "$line" | fribidi --nopad; done | more

@@ -1,0 +1,7 @@
+#!/bin/bash
+# Remember, exit cu with ~.
+case "$1" in
+    de0-nano)     sudo cu -l /dev/ttyUSB0 -s 115200;;
+    mbed|arduino) sudo cu -l /dev/ttyACM0 -s 9600;;
+    *)            echo unknown device; exit 1;;
+esac

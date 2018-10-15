@@ -1,4 +1,4 @@
-#!/bin/execute
+#!/usr/bin/env execute
 #include <gtk/gtk.h>
 
 static void

@@ -2,6 +2,7 @@
 
 time_dura='1'
 batt_dura='1'
+wifi_dura='5'
 bgig_dura='once'
 volu_dura='once'
 sens_dura='3'
@@ -11,6 +12,7 @@ lang_dura='once'
 
 time_sig='1'
 batt_sig='2'
+wifi_sig='9'
 bgig_sig='3'
 volu_sig='4'
 sens_sig='5'
@@ -18,7 +20,7 @@ weat_sig='6'
 pray_sig='7'
 lang_sig='8'
 first_sig=$time_sig
-last_sig=$lang_sig
+last_sig=$wifi_sig
 
 selected=$(cat /tmp/bar-selected 2> /dev/null)
 
@@ -35,6 +37,7 @@ for i in ${!args[@]}; do
         -a|--ascii)  a='-a'; args[$i]='';;
         -l|--loop)   l=1; args[$i]='';;
         -s|--select) s=${args[$i+1]}; args[$i]=''; args[$((i + 1))]='';;
+        -u|--update) update-all; exit;;
         -r|--run)
             [[ "$selected" = "" ]] && exit
             rm -f /tmp/bar-selected
@@ -45,7 +48,7 @@ for i in ${!args[@]}; do
 done
 b=${args[@]}
 b=($b)
-bb=(lang pray weat sens volu brig batt time)
+bb=(lang pray weat sens volu brig wifi batt time)
 bblen=${#bb[@]}
 [[ "$b" = "" ]] && b=("${bb[@]}")
 blen=${#b[@]}
@@ -85,6 +88,7 @@ fi
 
 time_last=''
 batt_last=''
+wifi_last=''
 bgig_last=''
 volu_last=''
 sens_last=''
@@ -94,6 +98,7 @@ lang_last=''
 
 time_prev=''
 batt_prev=''
+wifi_prev=''
 bgig_prev=''
 volu_prev=''
 sens_prev=''
@@ -122,7 +127,7 @@ function get {
 }
 
 function time {
-    [[ $BLOCK_BUTTON = "1" ]] && gnome-calendar
+    [[ $BLOCK_BUTTON = "1" ]] && st -e x --eval '(cfw:open-calendar-buffer)'
     echo -n $(date '+%a %Y-%m-%d %I:%M:%S %p')
 }
 
@@ -173,8 +178,24 @@ function batt {
     battery-check "$V" "$C"
 }
 
+function wifi {
+    [[ $BLOCK_BUTTON = "1" ]] && networkmanager_dmenu
+    [[ "$1" != "-a" ]] && awesome-font-echo '\uf1eb'
+    V=$(awk 'NR==3 {print $3}' /proc/net/wireless)
+    if [[ "$V" == '' ]]; then
+        if [[ "$1" == "-a" ]]; then
+            echo -n 'x'
+        else
+            echo -n '<span font="3"> </span>'
+            awesome-font-echo '\uf00d'
+        fi
+    else
+        printf ' %.0f%%' $V
+    fi
+}
+
 function brig {
-    [[ $BLOCK_BUTTON = "1" ]] && arandr
+    [[ $BLOCK_BUTTON = "1" ]] && dmenudisplay
     [ "$1" != "-a" ] && awesome-font-echo '\uf108' && echo -n ' '
     echo -n "$(brightness -print)%"
 }
@@ -229,10 +250,10 @@ function weat {
     [[ $BLOCK_BUTTON = "1" ]] && st -e popweather
     #                          Lines from 3rd to 4th        Remove color codes                Cut
     V=$(cat ~/.weatherreport | sed -n -e "3,4 p" -e "4 q" | sed "s/\x1B\[[0-9;]*[JKmsu]//g" | cut -c 16-)
-    S=$(echo "$V" | head -1 | awk '{print tolower($0)}')
-    W=$(echo "$V" | tail -1 | awk -F'[- ]' '{print $1 $3}')
+    #S=$(echo "$V" | head -1 | awk '{print tolower($0)}')
+    W=$(echo "$V" | tail -1 | awk -F'[- ]' '{print $1}')
     [ "$1" != "-a" ] && awesome-font-echo '\uf0c2' && echo -n ' '
-    echo -n "$W"
+    echo -n "${W}°C"
 }
 
 function pray {

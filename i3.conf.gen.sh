@@ -222,6 +222,9 @@ bindsym $mod+o exec --no-startup-id toggle-opacity
 # Get the bibliography from the current window (PDF view of browser)
 bindsym $mod+r exec --no-startup-id getbib
 
+# Network manager dmenu
+bindsym $mod+n exec --no-startup-id networkmanager_dmenu
+
 # #---Extra XF86 Keys---# #
 # These are the extra media keys that some keyboards have.
 bindsym XF86AudioMute                    exec --no-startup-id lmc mute

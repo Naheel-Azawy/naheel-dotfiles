@@ -4,3 +4,4 @@
 | aur    | fritzing                  | simple and easy circuit design                                    |
 | pacman | arduino                   | well, arduino..                                                   |
 | aur    | qucs                      | circuit simulator                                                 |
+| pacman | uucp                      | to use 'cu' for serial connection                                 |

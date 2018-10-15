@@ -47,6 +47,10 @@ FILE="$1"
     # if no title was found find the subject
     [[ "$TITLE" == '' ]] && \
         TITLE=$(echo "$PDF" | sed -rn 's/Subject:\s*(.*)/\1/p')
+    # if still not found then try to find it from the content
+    [[ "$TITLE" == '' ]] && \
+        TITLE=$(pdftotext -layout "$FILE" - | head -n 3 | xargs \
+                    | sed 's/ /\n/g' | head -n 20 | xargs)
     # try to find the DOI
     DOI=$(echo "$PDF" | grep -o doi:.*) || # from the pdf info
 	      DOI=$(pdftotext "$FILE" - | grep -o doi.* -m 1) # or from the content
@@ -55,6 +59,14 @@ FILE="$1"
 # if still nothing is found then take the args as a title
 [[ "$TITLE" == '' ]] && \
     TITLE="$@"
+
+# nothing was found
+[[ "$TITLE" == '' ]] && {
+    [[ $NOTIF == 1 ]] && \
+        notify-send "No title was found from the current window<br>File: $FILE"
+    echo "No title was found from the current window"
+    exit 1
+}
 
 # look into the history file
 HIST=$(grep "$TITLE" "$BIB.hist" 2>/dev/null)
