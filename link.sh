@@ -3,9 +3,10 @@ D="$1"
 U="$2"
 H="$3"
 
-[ "$D" = "" ] && D=.
-[ "$U" = "" ] && U=$USER
-[ "$H" = "" ] && H=$HOME
+[[ "$D" = "" ]] && D="$DOTFILES_DIR"
+[[ "$D" = "" ]] && D="."
+[[ "$U" = "" ]] && U="$USER"
+[[ "$H" = "" ]] && H="$HOME"
 
 function lnnn {
     rm -rf $2 2> /dev/null
@@ -23,9 +24,6 @@ lnnn "$D/fish-config.fish" "$H/.config/fish/config.fish"
 
 mkdir -p "$H/.config/fontconfig"
 lnnn "$D/fonts.conf" "$H/.config/fontconfig/fonts.conf"
-
-mkdir -p "$H/.config/i3blocks"
-lnnn "$D/i3blocks.conf" "$H/.config/i3blocks/config"
 
 mkdir -p "$H/.config/youtube-viewer"
 lnnn "$D/youtube-viewer.conf" "$H/.config/youtube-viewer/youtube-viewer.conf"

@@ -7,6 +7,6 @@ if [ "$1" != "-v" ]; then
         L=us
     fi
     setxkbmap -layout $L
-    pkill -RTMIN+8 i3blocks
+    pkill -RTMIN+$I3BLOCKS_SIG_LANG i3blocks
 fi
 echo $L | tee ~/.lang

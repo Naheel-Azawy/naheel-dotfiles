@@ -8,7 +8,6 @@
  : \u0007 : <control>
  : \u0008 : <control>
  : \u0009 : <control>
-
  : \u000A : <control>
  : \u000B : <control>
  : \u000C : <control>
@@ -15074,12 +15073,6 @@ z : \u007A : LATIN SMALL LETTER Z
 íŸ¹ : \uD7F9 : HANGUL JONGSEONG SSANGCIEUC
 íŸº : \uD7FA : HANGUL JONGSEONG PHIEUPH-SIOS
 íŸ» : \uD7FB : HANGUL JONGSEONG PHIEUPH-THIEUTH
-í € : \uD800 : <Non Private Use High Surrogate, First>
-í­¿ : \uDB7F : <Non Private Use High Surrogate, Last>
-í®€ : \uDB80 : <Private Use High Surrogate, First>
-í¯¿ : \uDBFF : <Private Use High Surrogate, Last>
-í°€ : \uDC00 : <Low Surrogate, First>
-í¿¿ : \uDFFF : <Low Surrogate, Last>
 î€€ : \uE000 : <Private Use, First>
 ï£¿ : \uF8FF : <Private Use, Last>
 ï¤€ : \uF900 : CJK COMPATIBILITY IDEOGRAPH-F900
@@ -32291,3 +32284,4 @@ F : \u1F5EF : RIGHT ANGER BUBBLE
 D : \uFFFFD : <Plane 15 Private Use, Last>
 á€€00 : \u100000 : <Plane 16 Private Use, First>
 áƒ¿FD : \u10FFFD : <Plane 16 Private Use, Last>
+Binary file (standard input) matches

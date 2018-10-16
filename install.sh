@@ -23,9 +23,8 @@ info "Setting up sensors"
 sensors-detect --auto
 modprobe eeprom
 
-info "Generating i3 config"
-mkdir -p "$H/.config/i3"
-eval "$D/i3.conf.gen.sh $H"
+info "Setting configs"
+eval "$D/update-configs.sh"
 
 info "Setting the path"
 echo "#!/bin/sh
@@ -34,9 +33,6 @@ export DOTFILES_SCRIPTS=\"\$DOTFILES_DIR/scripts\"
 export PATH=\"\$PATH:\$DOTFILES_SCRIPTS\"
 " > "$H/.dotfiles-exports"
 chmod +x "$H/.dotfiles-exports"
-
-info "Linking!!!"
-./link.sh "$D" "$U" "$H"
 
 info "Installing some good stuff"
 rm -rf "$H/.good-stuff"

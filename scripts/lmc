@@ -1,6 +1,6 @@
 #!/bin/bash
 
-newvol="pkill -RTMIN+4 i3blocks"
+newvol="pkill -RTMIN+$I3BLOCKS_SIG_VOLU i3blocks"
 
 V="$2"
 case "$1" in

@@ -36,4 +36,4 @@ fi
 
 echo $new > "$file"
 
-pkill -RTMIN+3 i3blocks
+pkill -RTMIN+$I3BLOCKS_SIG_BRIG i3blocks

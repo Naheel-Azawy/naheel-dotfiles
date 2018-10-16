@@ -5,4 +5,4 @@ location="Doha"
 res=$(curl -s wttr.in/$location?n)
 [[ "$res" = '' ]] && exit
 echo "$res" > ~/.weatherreport
-pkill -RTMIN+6 i3blocks
+pkill -RTMIN+$I3BLOCKS_SIG_WEAT i3blocks

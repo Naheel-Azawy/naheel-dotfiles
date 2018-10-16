@@ -1,31 +1,53 @@
 #!/bin/bash
 
-time_dura='1'
-batt_dura='1'
-wifi_dura='5'
-bgig_dura='once'
-volu_dura='once'
-sens_dura='3'
-weat_dura='1800'
-pray_dura='10'
-lang_dura='once'
+time_dura=$I3BLOCKS_DUR_TIME
+batt_dura=$I3BLOCKS_DUR_BATT
+wifi_dura=$I3BLOCKS_DUR_WIFI
+brig_dura=$I3BLOCKS_DUR_BRIG
+volu_dura=$I3BLOCKS_DUR_VOLU
+sens_dura=$I3BLOCKS_DUR_SENS
+weat_dura=$I3BLOCKS_DUR_WEAT
+pray_dura=$I3BLOCKS_DUR_PRAY
+lang_dura=$I3BLOCKS_DUR_LANG
 
-time_sig='1'
-batt_sig='2'
-wifi_sig='9'
-bgig_sig='3'
-volu_sig='4'
-sens_sig='5'
-weat_sig='6'
-pray_sig='7'
-lang_sig='8'
-first_sig=$time_sig
-last_sig=$wifi_sig
+[[ "$time_dura" == '' ]] && time_dura='1'
+[[ "$batt_dura" == '' ]] && batt_dura='1'
+[[ "$wifi_dura" == '' ]] && wifi_dura='5'
+[[ "$brig_dura" == '' ]] && brig_dura='once'
+[[ "$volu_dura" == '' ]] && volu_dura='once'
+[[ "$sens_dura" == '' ]] && sens_dura='3'
+[[ "$weat_dura" == '' ]] && weat_dura='1800'
+[[ "$pray_dura" == '' ]] && pray_dura='10'
+[[ "$lang_dura" == '' ]] && lang_dura='once'
+
+time_sig=$I3BLOCKS_SIG_TIME
+batt_sig=$I3BLOCKS_SIG_BATT
+wifi_sig=$I3BLOCKS_SIG_WIFI
+brig_sig=$I3BLOCKS_SIG_BRIG
+volu_sig=$I3BLOCKS_SIG_VOLU
+sens_sig=$I3BLOCKS_SIG_SENS
+weat_sig=$I3BLOCKS_SIG_WEAT
+pray_sig=$I3BLOCKS_SIG_PRAY
+lang_sig=$I3BLOCKS_SIG_LANG
+firs_sig=$I3BLOCKS_SIG_FIRS
+last_sig=$I3BLOCKS_SIG_LAST
+
+[[ "$time_sig" == '' ]] && time_sig='1'
+[[ "$batt_sig" == '' ]] && batt_sig='2'
+[[ "$wifi_sig" == '' ]] && wifi_sig='3'
+[[ "$brig_sig" == '' ]] && brig_sig='4'
+[[ "$volu_sig" == '' ]] && volu_sig='5'
+[[ "$sens_sig" == '' ]] && sens_sig='6'
+[[ "$weat_sig" == '' ]] && weat_sig='7'
+[[ "$pray_sig" == '' ]] && pray_sig='8'
+[[ "$lang_sig" == '' ]] && lang_sig='9'
+[[ "$firs_sig" == '' ]] && firs_sig=$time_sig
+[[ "$last_sig" == '' ]] && last_sig=$lang_sig
 
 selected=$(cat /tmp/bar-selected 2> /dev/null)
 
 function update-all {
-    for sig in $(seq $first_sig $last_sig); do
+    for sig in $(seq $firs_sig $last_sig); do
         pkill -RTMIN+$sig i3blocks
     done
 }
@@ -89,7 +111,7 @@ fi
 time_last=''
 batt_last=''
 wifi_last=''
-bgig_last=''
+brig_last=''
 volu_last=''
 sens_last=''
 weat_last=''
@@ -99,7 +121,7 @@ lang_last=''
 time_prev=''
 batt_prev=''
 wifi_prev=''
-bgig_prev=''
+brig_prev=''
 volu_prev=''
 sens_prev=''
 weat_prev=''

@@ -311,7 +311,7 @@ bindsym XF86Documents                    exec $term ranger "$H/Documents"
 bindsym XF86WLAN                         exec $netrefresh
 
 # Network manager applet
-exec --no-startup-id nm-applet
+# exec --no-startup-id nm-applet
 
 # Starts dunst for notifications:
 exec --no-startup-id dunst
