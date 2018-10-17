@@ -46,12 +46,23 @@ last_sig=$I3BLOCKS_SIG_LAST
 
 selected=$(cat /tmp/bar-selected 2> /dev/null)
 
+function update {
+    pkill -RTMIN+$1 i3blocks
+}
+
 function update-all {
     for sig in $(seq $firs_sig $last_sig); do
-        pkill -RTMIN+$sig i3blocks
+        update $sig
     done
 }
 
+function sig2name {
+    (set -o posix ; set) | grep _sig | grep "$1" | grep -v firs | grep -v last | sed -rn 's/(.+)_sig=.+/\1/p'
+}
+
+number_file='/tmp/__bar-show-numbers'
+number=$(test -f "$number_file" && echo 1 || echo 0)
+justaclick=0
 args=($@)
 for i in ${!args[@]}; do
     arg=${args[$i]}
@@ -59,7 +70,21 @@ for i in ${!args[@]}; do
         -a|--ascii)  a='-a'; args[$i]='';;
         -l|--loop)   l=1; args[$i]='';;
         -s|--select) s=${args[$i+1]}; args[$i]=''; args[$((i + 1))]='';;
-        -u|--update) update-all; exit;;
+        --number)
+            touch "$number_file"
+            update-all
+            exit;;
+        --unnumber)
+            rm -f "$number_file"
+            update-all
+            exit;;
+        -u|--update)
+            update-all
+            exit;;
+        -k|--click)
+            justaclick=$(sig2name ${args[$i+1]})
+            args[$i]=''; args[$((i + 1))]=''
+            break;;
         -r|--run)
             [[ "$selected" = "" ]] && exit
             rm -f /tmp/bar-selected
@@ -134,6 +159,7 @@ function get {
     DV=${F}_dura; D=${!DV}; DB=$D
     LV=${F}_last; L=${!LV}
     VV=${F}_prev; V=${!VV}
+    SS=${F}_sig;  S=${!SS}
     now=$(date '+%s')
     [ "$L" = "" ] && L=$now
     diff=$(($now - $L))
@@ -145,6 +171,7 @@ function get {
     fi
     if [[ "$selected" = "$F" ]]; then echo -n '<span color="#285577">'; fi
     echo -n $V
+    [[ $number == 1 ]] && echo -n " ($S)"
     if [[ "$selected" = "$F" ]]; then echo -n '</span>'; fi
 }
 
@@ -293,6 +320,16 @@ function lang {
 function host {
     echo -n $(hostname)
 }
+
+if [[ $justaclick != 0 ]]; then
+    if [[ $justaclick != '' ]]; then
+        BLOCK_BUTTON=1 get $justaclick -a 1>/dev/null
+        exit 0
+    else
+        echo "Unknown signal ($justaclick)"
+        exit 1
+    fi
+fi
 
 sep=" "
 [ "$a" = "-a" ] && sep=" | "

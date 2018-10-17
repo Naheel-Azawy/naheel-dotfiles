@@ -1,0 +1,2 @@
+#!/bin/bash
+test $(imgbrightness "$1") -gt 60

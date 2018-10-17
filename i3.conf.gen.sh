@@ -82,6 +82,17 @@ block bar
 }
 blockend
 
+block mode bar_click
+{
+    bindsym Escape exec --no-startup-id bar --unnumber\; mode default
+    bindsym Return exec --no-startup-id bar --unnumber\; mode default
+    for i in {0..9}; do
+        bindsym $i exec --no-startup-id bar --unnumber\; exec --no-startup-id bar -k $i\; mode default
+    done
+}
+blockend
+bindsym $mod+k exec --no-startup-id bar --number\; mode bar_click
+
 # start a terminal
 bindsym $mod+Return                         exec $term
 bindsym $mod+Control+Return       split t\; exec $term
@@ -102,24 +113,12 @@ bindsym $mod+d exec dmenulauncher
 # bindsym $mod+d exec --no-startup-id i3-dmenu-desktop
 
 # change focus
-bindsym $mod+j focus left
-bindsym $mod+k focus down
-bindsym $mod+l focus up
-bindsym $mod+semicolon focus right
-
-# alternatively, you can use the cursor keys:
 bindsym $mod+Left focus left
 bindsym $mod+Down focus down
 bindsym $mod+Up focus up
 bindsym $mod+Right focus right
 
 # move focused window
-bindsym $mod+Shift+j move left
-bindsym $mod+Shift+k move down
-bindsym $mod+Shift+l move up
-bindsym $mod+Shift+semicolon move right
-
-# alternatively, you can use the cursor keys:
 bindsym $mod+Shift+Left move left
 bindsym $mod+Shift+Down move down
 bindsym $mod+Shift+Up move up

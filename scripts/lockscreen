@@ -48,14 +48,11 @@ lmc stop &>/dev/null
 B=$(gen-bg)
 #B=$(gen-bg-simple)
 
-imgcolor=$(convert "$B" -gravity center -crop 100x100+0+0 +repage -colorspace hsb \
-                -resize 1x1 txt:- | awk -F '[%$]' 'NR==2{gsub(",",""); printf "%.0f\n", $(NF-1)}');
-
 [[ "$FONT" == '' ]] && FONT='DejaVu Sans Mono'
-if [[ "$imgcolor" -lt 60 ]]; then
-    COLOR='ffffffff'
-else
+if imgtoobright "$B"; then
     COLOR='000000ff'
+else
+    COLOR='ffffffff'
 fi
 X=960
 Y=800

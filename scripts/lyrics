@@ -21,7 +21,7 @@ function doit {
     U=$(curl -s "https://search.azlyrics.com/search.php?q=$Q")
     U=$(echo "$U" | sed -rn 's/.* 1\. <a href="(.+).html" .+/\1.html/p')
     O=$(lynx -cfg=<(echo 'CHARACTER_SET:UNICODE (UTF-8)') -dump "$U")
-    S=$(echo "$O" | strbetweenlines 'Print' '\[')
+    S=$(echo "$O" | strbetweenlines 'Print' '\[[0-9]')
     [[ "$S" = '' ]] && echo "ERROR on Q='$Q', U='$U'" && exit 1
     echo "$S" | fribidi --nopad
 }

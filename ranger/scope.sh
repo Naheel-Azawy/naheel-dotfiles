@@ -121,6 +121,7 @@ handle_image() {
                      -singlefile \
                      -jpeg -tiffcompression jpeg \
                      -- "${FILE_PATH}" "${IMAGE_CACHE_PATH%.*}" \
+                && imgdarken "${IMAGE_CACHE_PATH}" \
                 && exit 6 || exit 1;;
     esac
 }
