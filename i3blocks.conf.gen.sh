@@ -16,6 +16,10 @@ out command=/usr/lib/i3blocks/\$BLOCK_NAME
 #out separator_block_width=20
 out markup=pango
 
+# out [full]
+# out command=bar --loop
+# out interval=persist
+
 out [language]
 out command=bar lang
 out interval=$I3BLOCKS_DUR_LANG

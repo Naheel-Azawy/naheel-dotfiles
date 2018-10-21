@@ -123,6 +123,19 @@ handle_image() {
                      -- "${FILE_PATH}" "${IMAGE_CACHE_PATH%.*}" \
                 && imgdarken "${IMAGE_CACHE_PATH}" \
                 && exit 6 || exit 1;;
+        # Office files
+        application/*office*)
+            CACHE_DIR="${IMAGE_CACHE_PATH%/*}"
+            TMP_FILE_PATH="${FILE_PATH##*/}"
+            TMP_FILE_PATH="${CACHE_DIR}/${TMP_FILE_PATH%.*}.png"
+            libreoffice \
+                       --headless \
+                       --convert-to png "${FILE_PATH}" \
+                       --outdir "$CACHE_DIR" \
+                && convert "$TMP_FILE_PATH" "${IMAGE_CACHE_PATH}" \
+                && rm -f "$TMP_FILE_PATH" \
+                && imgdarken "${IMAGE_CACHE_PATH}" \
+                && exit 6 || exit 1;;
     esac
 }
 

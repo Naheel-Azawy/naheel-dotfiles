@@ -44,6 +44,26 @@ last_sig=$I3BLOCKS_SIG_LAST
 [[ "$firs_sig" == '' ]] && firs_sig=$time_sig
 [[ "$last_sig" == '' ]] && last_sig=$lang_sig
 
+time_last=''
+batt_last=''
+wifi_last=''
+brig_last=''
+volu_last=''
+sens_last=''
+weat_last=''
+pray_last=''
+lang_last=''
+
+time_prev=''
+batt_prev=''
+wifi_prev=''
+brig_prev=''
+volu_prev=''
+sens_prev=''
+weat_prev=''
+pray_prev=''
+lang_prev=''
+
 selected=$(cat /tmp/bar-selected 2> /dev/null)
 
 function update {
@@ -133,26 +153,6 @@ if [[ "$s" != "" ]]; then
     exit
 fi
 
-time_last=''
-batt_last=''
-wifi_last=''
-brig_last=''
-volu_last=''
-sens_last=''
-weat_last=''
-pray_last=''
-lang_last=''
-
-time_prev=''
-batt_prev=''
-wifi_prev=''
-brig_prev=''
-volu_prev=''
-sens_prev=''
-weat_prev=''
-pray_prev=''
-lang_prev=''
-
 function get {
     F=$1
     A=$2
@@ -229,18 +229,11 @@ function batt {
 
 function wifi {
     [[ $BLOCK_BUTTON = "1" ]] && networkmanager_dmenu
-    [[ "$1" != "-a" ]] && awesome-font-echo '\uf1eb'
     V=$(awk 'NR==3 {print $3}' /proc/net/wireless)
-    if [[ "$V" == '' ]]; then
-        if [[ "$1" == "-a" ]]; then
-            echo -n 'x'
-        else
-            echo -n '<span font="3"> </span>'
-            awesome-font-echo '\uf00d'
-        fi
-    else
+    [[ "$V" != '' ]] && {
+        [[ "$1" != "-a" ]] && awesome-font-echo '\uf1eb'
         printf ' %.0f%%' $V
-    fi
+    }
 }
 
 function brig {
@@ -331,22 +324,27 @@ if [[ $justaclick != 0 ]]; then
     fi
 fi
 
-sep=" "
-[ "$a" = "-a" ] && sep=" | "
+sep="  "
+[[ "$a" = "-a" ]] && sep=" | "
 
-if [ "$blast" = "0" ]; then
+if [[ "$blast" = "0" ]]; then
     get ${b[0]} $a
     exit
 fi
 
 loop=1
-while [ "$loop" = 1 ]; do
+while [[ "$loop" = 1 ]]; do
+    line=''
     for i in ${!b[@]}; do
         item=${b[$i]}
-        get $item $a
-        [ "$i" != "$blast" ] && echo -n "$sep"
+        out="$(get $item $a)"
+        line="$line$out"
+        [[ "$i" != "$blast" && "$out" != '' ]] && \
+            line="$line$sep"
     done
-    echo
+    echo "$line"
     loop=$l
-    [ "$loop" = "1" ] && sleep 1
+    [[ "$loop" = "1" ]] && sleep 1
 done
+
+exit 0

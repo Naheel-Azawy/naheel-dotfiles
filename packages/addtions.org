@@ -60,3 +60,4 @@
 | pacman | texlive-most                 | tex stuff                                                                                      |
 | pacman | biber                        | tex biber                                                                                      |
 | aur    | screenkey                    | display the pressed keys on the screen. Useful for screen casting                              |
+| pacman | tree                         | list tree of directories                                                                       |

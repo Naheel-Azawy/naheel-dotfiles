@@ -16,8 +16,8 @@ function try-add-path {
 }
 
 # ANDROID ###################################
-try-export ANDROID_HOME /mnt/hdd1/GoodStuff2/Android/Sdk/
-try-add-path "$ANDROID_HOME/platform-tools/"
+try-export ANDROID_HOME /mnt/hdd1/GoodStuff2/Android/Sdk
+try-add-path "$ANDROID_HOME/platform-tools"
 
 # NS2 #######################################
 NS2_PATH=/mnt/hdd1/GoodStuff
