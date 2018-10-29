@@ -159,24 +159,24 @@ function get {
     DV=${F}_dura; D=${!DV}; DB=$D
     LV=${F}_last; L=${!LV}
     VV=${F}_prev; V=${!VV}
-    SS=${F}_sig;  S=${!SS}
+    SV=${F}_sig;  S=${!SV}
     now=$(date '+%s')
-    [ "$L" = "" ] && L=$now
+    [[ "$L" = "" ]] && L=$now
     diff=$(($now - $L))
-    if [ "$D" = "once" ] || [ "$D" = "" ]; then diff=0 && D=1; fi
-    if [ "$V" = "" ] || [ "$L" = "" ] || [ "$diff" -ge "$D" ]; then
+    if [[ "$D" = "once" || "$D" = "" ]]; then diff=0 && D=1; fi
+    if [[ "$V" = "" || "$L" = "" || "$diff" -ge "$D" ]]; then
         V=$($F $A)
         eval $VV=\'"$V"\'
-        [ "$DB" != "once" ] && eval $LV=$now
+        [[ "$DB" != "once" ]] && eval $LV=$now
     fi
     if [[ "$selected" = "$F" ]]; then echo -n '<span color="#285577">'; fi
     echo -n $V
-    [[ $number == 1 ]] && echo -n " ($S)"
+    [[ "$V" != '' && $number == 1 ]] && echo -n " ($S)"
     if [[ "$selected" = "$F" ]]; then echo -n '</span>'; fi
 }
 
 function time {
-    [[ $BLOCK_BUTTON = "1" ]] && st -e x --eval '(cfw:open-calendar-buffer)'
+    [[ $BLOCK_BUTTON = "1" ]] && $TERMINAL -e x --eval '(cfw:open-org-calendar)'
     echo -n $(date '+%a %Y-%m-%d %I:%M:%S %p')
 }
 
@@ -184,7 +184,7 @@ function batt {
     V=$(cat /sys/class/power_supply/BAT1/capacity 2>/dev/null)
     C=$(cat /sys/class/power_supply/BAT1/status 2>/dev/null)
 
-    if [ "$V" = "" ] || [ "$C" = "" ]; then
+    if [[ "$V" = "" || "$C" = "" ]]; then
         B=$(acpi -b)
         V=$(echo $B | awk -F'[,:%]' '{print $3}')
         C=$(echo $B | awk -F'[, ]' '{print $3}')
@@ -192,31 +192,31 @@ function batt {
 
     R=''
 
-    if [ "$1" = "-a" ]; then
-        if [ "$C" != 'Discharging' ]; then
+    if [[ "$1" = "-a" ]]; then
+        if [[ "$C" != 'Discharging' ]]; then
             echo -n "~"
         fi
         printf "%d%%" $V
         exit
     fi
 
-    if [ "$C" != 'Discharging' ]; then
+    if [[ "$C" != 'Discharging' ]]; then
         R='gold'
         awesome-font-echo '\uf1e6' $R
         echo -n ' '
-    elif [ "$V" -le "5" ]; then
+    elif [[ "$V" -le "5" ]]; then
         R='red'
         awesome-font-echo '\uf12a' $R
         echo -n ' '
-    elif [ "$V" -le "20" ]; then
+    elif [[ "$V" -le "20" ]]; then
         R='red'
     fi
 
-    if [ "$V" -lt "50" ]; then
+    if [[ "$V" -lt "50" ]]; then
         awesome-font-echo '\uf243' $R
-    elif [ "$V" -lt "60" ]; then
+    elif [[ "$V" -lt "60" ]]; then
         awesome-font-echo '\uf242' $R
-    elif [ "$V" -lt "90" ]; then
+    elif [[ "$V" -lt "90" ]]; then
         awesome-font-echo '\uf241' $R
     else
         awesome-font-echo '\uf240' $R
@@ -231,14 +231,15 @@ function wifi {
     [[ $BLOCK_BUTTON = "1" ]] && networkmanager_dmenu
     V=$(awk 'NR==3 {print $3}' /proc/net/wireless)
     [[ "$V" != '' ]] && {
-        [[ "$1" != "-a" ]] && awesome-font-echo '\uf1eb'
-        printf ' %.0f%%' $V
+        [[ "$1" != "-a" ]] && \
+            awesome-font-echo '\uf1eb' && echo -n ' '
+        printf '%.0f%%' $V
     }
 }
 
 function brig {
     [[ $BLOCK_BUTTON = "1" ]] && dmenudisplay
-    [ "$1" != "-a" ] && awesome-font-echo '\uf108' && echo -n ' '
+    [[ "$1" != "-a" ]] && awesome-font-echo '\uf108' && echo -n ' '
     echo -n "$(brightness -print)%"
 }
 
@@ -250,13 +251,13 @@ function volu {
 	      5) pamixer -d 5 ;;
     esac
     V=$(pamixer --get-volume)
-    if [ "$1" != "-a" ]; then
-        if [ $(pamixer --get-mute) = "true" ] || [ $V = 0 ]; then
+    if [[ "$1" != "-a" ]]; then
+        if [[ $(pamixer --get-mute) = "true" || $V = 0 ]]; then
             awesome-font-echo '\uf026'
             echo -n '<span font="3"> </span>'
             awesome-font-echo '\uf00d'
-        elif [ "$V" -le "20" ]; then
-            awesome-font-echo '\uf027'
+        #elif [[ "$V" -lt "50" ]]; then
+        #    awesome-font-echo '\uf027'
         else
             awesome-font-echo '\uf028'
         fi
@@ -266,19 +267,19 @@ function volu {
 }
 
 function sens {
-    [[ $BLOCK_BUTTON = "1" ]] && st -e popsensors
+    [[ $BLOCK_BUTTON = "1" ]] && $TERMINAL -e popsensors
     O=$(sensors coretemp-isa-0000 -j | jq '.["coretemp-isa-0000"]["Package id 0"]')
     T=$(echo "$O" | jq '.["temp1_input"]')
     M=$(echo "$O" | jq '.["temp1_max"]')
-    if [ "$1" != "-a" ]; then
+    if [[ "$1" != "-a" ]]; then
         P=$(printf '%.0f' $(echo "$T/$M*100" | bc -l))
-        if [ "$P" -ge "90" ]; then
+        if [[ "$P" -ge "90" ]]; then
             awesome-font-echo '\uf12a' red
             echo -n ' '
             awesome-font-echo '\uf2c7' red
-        elif [ "$P" -gt "50" ]; then
+        elif [[ "$P" -gt "50" ]]; then
             awesome-font-echo '\uf2c8'
-        elif [ "$P" -gt "40" ]; then
+        elif [[ "$P" -gt "40" ]]; then
             awesome-font-echo '\uf2c9'
         else
             awesome-font-echo '\uf2ca'
@@ -289,18 +290,18 @@ function sens {
 }
 
 function weat {
-    [[ $BLOCK_BUTTON = "1" ]] && st -e popweather
+    [[ $BLOCK_BUTTON = "1" ]] && $TERMINAL -e popweather
     #                          Lines from 3rd to 4th        Remove color codes                Cut
     V=$(cat ~/.weatherreport | sed -n -e "3,4 p" -e "4 q" | sed "s/\x1B\[[0-9;]*[JKmsu]//g" | cut -c 16-)
     #S=$(echo "$V" | head -1 | awk '{print tolower($0)}')
     W=$(echo "$V" | tail -1 | awk -F'[- ]' '{print $1}')
-    [ "$1" != "-a" ] && awesome-font-echo '\uf0c2' && echo -n ' '
+    [[ "$1" != "-a" ]] && awesome-font-echo '\uf0c2' && echo -n ' '
     echo -n "${W}°C"
 }
 
 function pray {
-    [[ $BLOCK_BUTTON = "1" ]] && st -e popprayer
-    [ "$1" != "-a" ] && awesome-font-echo '\uf186' && echo -n ' '
+    [[ $BLOCK_BUTTON = "1" ]] && $TERMINAL -e popprayer
+    [[ "$1" != "-a" ]] && awesome-font-echo '\uf186' && echo -n ' '
     p n
 }
 

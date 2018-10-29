@@ -43,7 +43,7 @@ function gen-bg-simple {
 }
 
 lang-set us &>/dev/null
-lmc stop &>/dev/null
+audioctl stop &>/dev/null
 
 B=$(gen-bg)
 #B=$(gen-bg-simple)

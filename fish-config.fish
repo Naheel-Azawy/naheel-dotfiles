@@ -20,10 +20,12 @@ function fish_prompt --description 'Write out the prompt'
 end
 
 function cd..;     cd ..; end
-function e;        exit 0; end
-function ee;       e; end
-function ث;        e; end
+function e;        exit $argv; end
+function ee;       e $argv; end
+function E;        e $argv; end
+function ث;        e $argv; end
 function ls;       command ls --color --group-directories-first $argv; end
+function مس;       lang-toggle >/dev/null; ls $argv; end
 function l;        ls $argv; end
 function ll;       ls -lh $argv | more; end
 function c;        clear; end

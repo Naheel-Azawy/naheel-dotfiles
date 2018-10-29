@@ -86,7 +86,7 @@ block mode bar_click
 {
     bindsym Escape exec --no-startup-id bar --unnumber\; mode default
     bindsym Return exec --no-startup-id bar --unnumber\; mode default
-    for i in {0..9}; do
+    for i in $(seq $I3BLOCKS_SIG_FIRS $I3BLOCKS_SIG_LAST); do
         bindsym $i exec --no-startup-id bar --unnumber\; exec --no-startup-id bar -k $i\; mode default
     done
 }
@@ -95,9 +95,9 @@ bindsym $mod+k exec --no-startup-id bar --number\; mode bar_click
 
 # start a terminal
 bindsym $mod+Return                         exec $term
-bindsym $mod+Control+Return       split t\; exec $term
-bindsym $mod+Shift+Return                   exec st
-bindsym $mod+Shift+Control+Return split t\; exec st
+bindsym $mod+Shift+Return         split t\; exec $term
+bindsym $mod+Control+Return                 exec $TERMINAL
+bindsym $mod+Shift+Control+Return split t\; exec $TERMINAL
 #bindsym $mod+Shift+Return exec $term\; exec "bash -c 'sleep 0.2s;i3-msg floating enable;i3-msg resize set 1100px 610px;i3-msg move position 100px 200px'"
 
 # kill focused window
@@ -124,12 +124,6 @@ bindsym $mod+Shift+Down move down
 bindsym $mod+Shift+Up move up
 bindsym $mod+Shift+Right move right
 
-# split in horizontal orientation
-bindsym $mod+h split h
-
-# split in vertical orientation
-bindsym $mod+v split v
-
 # enter fullscreen mode for the focused container
 bindsym $mod+f fullscreen toggle
 
@@ -143,6 +137,9 @@ bindsym $mod+t floating toggle
 
 # change focus between tiling / floating windows
 bindsym $mod+slash focus mode_toggle
+
+# toggle split
+bindsym $mod+Shift+slash split t
 
 # change language
 bindsym $mod+space exec lang-toggle
@@ -163,6 +160,10 @@ for i in {1..10}; do
     # move focused container to workspace and go there
     bindsym $mod+Shift+$b move container to workspace $i\; workspace $i
 done
+
+# Move left and right between workspaces
+bindsym $mod+Tab       workspace next
+bindsym $mod+Shift+Tab workspace prev
 
 # reload the configuration file
 bindsym $mod+Shift+c reload
@@ -218,7 +219,7 @@ bindsym $mod+u exec --no-startup-id dmenuunicode
 # Togggle opacity
 bindsym $mod+o exec --no-startup-id toggle-opacity
 
-# Get the bibliography from the current window (PDF view of browser)
+# Get the bibliography from the current window (PDF viewer or browser)
 bindsym $mod+r exec --no-startup-id getbib
 
 # Network manager dmenu
@@ -226,12 +227,19 @@ bindsym $mod+n exec --no-startup-id networkmanager_dmenu
 
 # #---Extra XF86 Keys---# #
 # These are the extra media keys that some keyboards have.
-bindsym XF86AudioMute                    exec --no-startup-id lmc mute
-bindsym XF86AudioLowerVolume             exec --no-startup-id lmc down 5
-bindsym XF86AudioRaiseVolume             exec --no-startup-id lmc up 5
-bindsym $mod+XF86AudioMute               exec --no-startup-id lmc pause
-bindsym $mod+XF86AudioLowerVolume        exec --no-startup-id lmc prev
-bindsym $mod+XF86AudioRaiseVolume        exec --no-startup-id lmc next
+bindsym XF86AudioMute                    exec --no-startup-id audioctl mute
+bindsym XF86AudioLowerVolume             exec --no-startup-id audioctl down 5
+bindsym XF86AudioRaiseVolume             exec --no-startup-id audioctl up   5
+bindsym $mod+XF86AudioMute               exec --no-startup-id audioctl pause
+bindsym $mod+XF86AudioLowerVolume        exec --no-startup-id audioctl prev
+bindsym $mod+XF86AudioRaiseVolume        exec --no-startup-id audioctl next
+bindsym XF86AudioNext                    exec --no-startup-id audioctl next
+bindsym XF86AudioPlay                    exec --no-startup-id audioctl pause
+bindsym XF86AudioPrev                    exec --no-startup-id audioctl prev
+bindsym XF86AudioStop                    exec --no-startup-id audioctl stop
+bindsym XF86AudioRewind                  exec --no-startup-id audioctl back    10
+bindsym XF86AudioForward                 exec --no-startup-id audioctl forward 10
+##bindsym XF86AudioRecord                exec
 bindsym XF86PowerOff                     exec --no-startup-id dmenupower
 ##bindsym XF86Copy                       exec
 ##bindsym XF86Open                       exec
@@ -254,13 +262,6 @@ bindsym XF86MyComputer                   exec $term ranger
 ##bindsym XF86Back                       exec
 ##bindsym XF86Forward                    exec
 bindsym XF86Eject                        exec --no-startup-id dmenuumount
-bindsym XF86AudioNext                    exec --no-startup-id lmc next
-bindsym XF86AudioPlay                    exec --no-startup-id lmc pause
-bindsym XF86AudioPrev                    exec --no-startup-id lmc prev
-bindsym XF86AudioStop                    exec --no-startup-id lmc stop
-##bindsym XF86AudioRecord                exec
-bindsym XF86AudioRewind                  exec --no-startup-id lmc back 10
-bindsym XF86AudioForward                 exec --no-startup-id lmc forward 10
 ##bindsym XF86Phone                      exec
 ##bindsym XF86Tools                      exec
 bindsym XF86HomePage                     exec $BROWSER https://www.duckduckgo.com

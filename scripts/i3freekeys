@@ -1,0 +1,4 @@
+#!/bin/bash
+for s in mod+{a..z}; do
+    grep -q "$s" "$DOTFILES_DIR/i3.conf.gen.sh" || echo "$s"
+done

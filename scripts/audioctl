@@ -1,0 +1,34 @@
+#!/bin/bash
+
+MAX_VOL=500
+
+function vol {
+    C="$1"
+    if [[ $C = m ]]; then
+        pamixer -m
+    elif [[ $C = t ]]; then
+        pamixer -t
+    else
+        V=$(pamixer --get-volume)
+        V=$((V+C))
+        [[ $V -gt $MAX_VOL ]] && return
+        V=$((V/5*5))
+        pamixer --allow-boost --set-volume $V
+    fi
+    pkill -RTMIN+$I3BLOCKS_SIG_VOLU i3blocks
+}
+
+V="$2"
+case "$1" in
+	"up")       vol "$V" ;;
+	"down")     vol "-$V" ;;
+	"mute")     vol t ;;
+	"truemute") vol m ;;
+	"stop")     cmus-remote --stop ;;
+	"pause")    cmus-remote --pause ;;
+	"forward")  cmus-remote --seek +"$V" ;;
+	"back")     cmus-remote --seek -"$V" ;;
+	"next")     cmus-remote --next ;;
+	"prev")     cmus-remote --prev ;;
+	"replay")   cmus-remote --seek 0 ;;
+esac
