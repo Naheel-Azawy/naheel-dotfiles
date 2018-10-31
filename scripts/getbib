@@ -16,7 +16,7 @@
 
 TITLE=''
 DOI=''
-NOTIF=0
+NOTIF=1
 FILE="$1"
 
 # If no arguments

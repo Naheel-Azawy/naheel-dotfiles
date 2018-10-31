@@ -220,7 +220,8 @@ bindsym $mod+u exec --no-startup-id dmenuunicode
 bindsym $mod+o exec --no-startup-id toggle-opacity
 
 # Get the bibliography from the current window (PDF viewer or browser)
-bindsym $mod+r exec --no-startup-id getbib
+bindsym $mod+r         exec --no-startup-id getbib
+bindsym $mod+Control+r exec --no-startup-id 'getbib $(clipboard)'
 
 # Network manager dmenu
 bindsym $mod+n exec --no-startup-id networkmanager_dmenu

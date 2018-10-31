@@ -1,0 +1,10 @@
+#!/bin/bash
+traceroute "$@" | while read n h ip others; do
+    g=''
+    [[ $n = traceroute ]] || {
+        g=$(geoiplookup $(echo $ip | sed 's/[\(\)]//g') 2>/dev/null | \
+                awk -F': ' '{print $2}')
+        echo "$g" | grep -q 'IP Address not found' && g=''
+    }
+    echo "$n $g $l $ip $others" | awk '$1=$1'
+done

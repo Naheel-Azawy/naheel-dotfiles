@@ -61,3 +61,10 @@
 | pacman | biber                        | tex biber                                                                                      |
 | aur    | screenkey                    | display the pressed keys on the screen. Useful for screen casting                              |
 | pacman | tree                         | list tree of directories                                                                       |
+| pacman | gnuplot                      | Gnu plotting program                                                                           |
+| pacman | lsof                         | list open files                                                                                |
+| pacman | wireshark-gtk                | Interactively dump and analyze network traffic                                                 |
+| pacman | tcpdump                      | dump network traffic                                                                           |
+| pacman | iotop                        | top for disk io                                                                                |
+| pacman | sysstat                      | a collection of performance monitoring tools (iostat,isag,mpstat,pidstat,sadf,sar)             |
+| pacman | ditta                        | draw with ASCII                                                                                |

@@ -3,6 +3,9 @@
 MAX_VOL=500
 
 function vol {
+    LOCK='/tmp/__audioctl_vol_lock'
+    [[ -f "$LOCK" ]] && return
+    touch "$LOCK"
     C="$1"
     if [[ $C = m ]]; then
         pamixer -m
@@ -16,6 +19,7 @@ function vol {
         pamixer --allow-boost --set-volume $V
     fi
     pkill -RTMIN+$I3BLOCKS_SIG_VOLU i3blocks
+    rm -f "$LOCK"
 }
 
 V="$2"
