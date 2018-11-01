@@ -1,23 +1,51 @@
 #!/bin/bash
 # Finds the reference, add the bibleography to $BIB, record history in $BIB.hist,
-# and copy the label to the clipboard
+# and copy the label to the clipboard.
 #
-# providing no arguments will look for details from the current x window
-# if the provided argument is a pdf file the details will be extracted from it
-# otherwise the arguments will be the query string
+# Providing no arguments will look for details from the current x window
+# If the provided argument is a pdf file the details will be extracted from it,
+# otherwise the arguments will be the query string.
 #
-# tested with chromium, firefox, and evince
+# Tested with chromium, firefox, evince, and zathura.
 #
-# sources: crossref, google scholar
-# depends on: xprop, xdotool, pdfinfo, pdftotext, notify-send, clipboard, scholar.py
+# Sources: crossref, google scholar
+# Depends on: xprop, xdotool, xclip, pdfinfo, pdftotext, python2.7, notify-send
 #
-# written by Naheel Azawy: https://github.com/Naheel-Azawy/naheel-dotfiles
-# idea from Luke Smith: https://github.com/LukeSmithxyz/voidrice
+# Written by Naheel Azawy: https://github.com/Naheel-Azawy/naheel-dotfiles
+# Crossref part from Luke Smith: https://github.com/LukeSmithxyz/voidrice
 
 TITLE=''
 DOI=''
-NOTIF=1
+NOTIF=$(which notify-send &>/dev/null && echo 1 || echo 0)
 FILE="$1"
+
+# if $BIB not found, take the default
+[[ "$BIB" == '' ]] && {
+    BIB="$HOME/Documents"
+    mkdir -p "$BIB"
+    BIB="$BIB/refs.bib"
+}
+
+# create a scripts directory if needed
+[[ "$DOTFILES_SCRIPTS" == '' ]] && \
+    DOTFILES_SCRIPTS="$HOME/.dotfiles/scripts"
+mkdir -p "$DOTFILES_SCRIPTS"
+
+# double checking 'clipboard'
+CLIPBOARD='clipboard'
+command -v clipboard >/dev/null || [[ -f "$DOTFILES_SCRIPTS/clipboard" ]] || {
+    echo "clipboard not found! Downloading to $DOTFILES_SCRIPTS/clipboard"
+    curl 'https://raw.githubusercontent.com/Naheel-Azawy/naheel-dotfiles/master/scripts/clipboard' > "$DOTFILES_SCRIPTS/clipboard"
+    CLIPBOARD="bash '$DOTFILES_SCRIPTS/clipboard'"
+}
+
+# double checking 'scholar.py'
+SCHOLARPY='scholar.py'
+command -v scholar.py >/dev/null || [[ -f "$DOTFILES_SCRIPTS/scholar.py" ]] || {
+    echo "scholar.py not found! Downloading to $DOTFILES_SCRIPTS/scholar.py"
+    curl 'https://github.com/Naheel-Azawy/naheel-dotfiles/blob/master/scripts/scholar.py' > "$DOTFILES_SCRIPTS/scholar.py"
+    SCHOLARPY="python2.7 '$DOTFILES_SCRIPTS/scholar.py'"
+}
 
 # If no arguments
 [[ "$@" == '' ]] && {
@@ -35,6 +63,13 @@ FILE="$1"
         PID=$(echo "$WIN" | sed -rn 's/_NET_WM_PID\(CARDINAL\) = (.*)/\1/p')
         # and then find the full file path from the process commandline
         FILE=$(cat -v /proc/$PID/cmdline | sed -rn 's/.+\^@(.+)\^@/\1/p')
+        # $FILE might be only the file name and not the full path
+        # if $FILE does not exist, try to get the working directory
+        # of the parent process and add it to the name
+        [[ ! -f "$FILE" ]] && {
+            PARENT_DIR=$(readlink /proc/$(ps -p $PID -o ppid --no-headers)/cwd)
+            FILE="$PARENT_DIR/$FILE"
+        }
         # the title will be found in the next condition
     }
 }
@@ -73,7 +108,7 @@ HIST=$(grep "$TITLE" "$BIB.hist" 2>/dev/null)
 [[ "$HIST" != '' ]] && {
     [[ $NOTIF == 1 ]] && \
         notify-send "Bib found for $TITLE from history<br>$LABEL"
-    echo "$HIST" | awk '{print $2}' | tr -d '\n' | clipboard
+    echo "$HIST" | awk '{print $2}' | tr -d '\n' | eval "$CLIPBOARD"
     exit
 }
 
@@ -83,6 +118,7 @@ HIST=$(grep "$TITLE" "$BIB.hist" 2>/dev/null)
 # look for the DOI if found
 [[ "$DOI" == '' ]] && \
     DOI=$(echo "$TITLE" | grep -o doi:.*)
+
 # Check crossref.org for the bib citation.
 [[ "$DOI" != '' ]] && \
     B=$(curl -s "http://api.crossref.org/works/$DOI/transform/application/x-bibtex" -w "\n" | \
@@ -90,7 +126,7 @@ HIST=$(grep "$TITLE" "$BIB.hist" 2>/dev/null)
 
 # search google scholar if not found from crossref
 [[ "$B" == '' ]] && \
-    B=$(scholar.py -c 1 --citation bt --phrase "$TITLE")
+    B=$(eval "$SCHOLARPY" -c 1 --citation bt --phrase "$TITLE")
 
 [[ "$B" == '' ]] && {
     echo 'Not found'
@@ -118,4 +154,4 @@ if ! grep -q "$LABEL" "$BIB" &>/dev/null; then
 fi
 
 # copy the label to the clipboard
-echo -n "$LABEL" | clipboard
+echo -n "$LABEL" | eval "$CLIPBOARD"
