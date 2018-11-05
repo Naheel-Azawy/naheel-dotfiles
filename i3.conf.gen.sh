@@ -50,6 +50,9 @@ out font "pango:$FONT_MONO 12.5"
 # Use Mouse+$mod to drag floating windows to their wanted position
 out floating_modifier $mod
 
+# Prevent mouse focus
+out focus_follows_mouse no
+
 # Setting colors
 #   class                   border    backgr.   text      indicator   child_border
 out client.focused          '#4c7899' '#285577' '#ffffff' '#2e9ef4'   '#285577'
@@ -184,10 +187,10 @@ bindsym $mod+Control+Up    resize shrink height 10 px or 10 ppt
 bindsym $mod+Control+Right resize grow   width  10 px or 10 ppt
 
 # resize window (a little bit)
-bindsym $mod+ShiftControl+Left  resize shrink width  1 px or 1 ppt
-bindsym $mod+ShiftControl+Down  resize grow   height 1 px or 1 ppt
-bindsym $mod+ShiftControl+Up    resize shrink height 1 px or 1 ppt
-bindsym $mod+ShiftControl+Right resize grow   width  1 px or 1 ppt
+bindsym $mod+Shift+Control+Left  resize shrink width  1 px or 1 ppt
+bindsym $mod+Shift+Control+Down  resize grow   height 1 px or 1 ppt
+bindsym $mod+Shift+Control+Up    resize shrink height 1 px or 1 ppt
+bindsym $mod+Shift+Control+Right resize grow   width  1 px or 1 ppt
 
 # Calculator
 bindsym $mod+plus exec --no-startup-id calc-floating
@@ -223,6 +226,9 @@ bindsym $mod+o exec --no-startup-id toggle-opacity
 bindsym $mod+r         exec --no-startup-id getbib
 bindsym $mod+Control+r exec --no-startup-id 'getbib $(clipboard)'
 
+# Youtube stuff FIXME: weird things happen when launched from here
+bindsym $mod+y exec --no-startup-id dmenuyoutube
+
 # Network manager dmenu
 bindsym $mod+n exec --no-startup-id networkmanager_dmenu
 
@@ -234,6 +240,8 @@ bindsym XF86AudioRaiseVolume             exec --no-startup-id audioctl up   5
 bindsym $mod+XF86AudioMute               exec --no-startup-id audioctl pause
 bindsym $mod+XF86AudioLowerVolume        exec --no-startup-id audioctl prev
 bindsym $mod+XF86AudioRaiseVolume        exec --no-startup-id audioctl next
+bindsym $mod+Shift+XF86AudioLowerVolume  exec --no-startup-id audioctl back    10
+bindsym $mod+Shift+XF86AudioRaiseVolume  exec --no-startup-id audioctl forward 10
 bindsym XF86AudioNext                    exec --no-startup-id audioctl next
 bindsym XF86AudioPlay                    exec --no-startup-id audioctl pause
 bindsym XF86AudioPrev                    exec --no-startup-id audioctl prev

@@ -446,8 +446,8 @@ you should place your code here."
     ;; -- HOOKS --
     (add-hook 'org-mode-hook
               '(lambda ()
-                 ;;(toggle-truncate-lines)
-                 ;;(toggle-word-wrap)
+                 (toggle-truncate-lines)
+                 (toggle-word-wrap)
                  ;;(flyspell-mode)
                  (delete '("\\.pdf\\'" . default) org-file-apps)
                  (add-to-list 'org-file-apps '("\\.pdf\\'" . "evince %s"))

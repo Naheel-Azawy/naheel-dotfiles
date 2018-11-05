@@ -1,0 +1,57 @@
+#!/bin/bash
+VIDEO_DIR="$HOME/Videos/YouTube"
+AUDIO_DIR="$HOME/Music/YouTube"
+PROG_FILE="/tmp/__ytdl_prog"
+[[ "$1" == '-p' ]] && {
+    tail -f "$PROG_FILE"
+    exit
+}
+mkdir -p "$VIDEO_DIR"
+mkdir -p "$AUDIO_DIR"
+CLIP=$(clipboard)
+CURRENT=$(xdotool getactivewindow)
+BROWSER=$(xdotool search --onlyvisible --class "chromium") || {
+    notify-send 'Make sure that Chromium is running and is on a YouTube page'
+    exit 1
+}
+xdotool windowfocus $BROWSER
+xdotool key ctrl+l
+xdotool key ctrl+c
+xdotool key Tab
+xdotool windowfocus $CURRENT
+URL=$(clipboard)
+echo "$CLIP" | clipboard
+echo "$URL" | grep -q youtube || {
+    notify-send 'Make sure to be on a YouTube page'
+    exit 1
+}
+TITLE=$(xprop -id $BROWSER | \
+            sed -rn 's/_NET_WM_NAME\(UTF8_STRING\) = "(.*)"/\1/p' | \
+            sed 's/ - YouTube.*//g' | \
+            cut -c -50 | \
+            fribidi --nopad)
+MENU='Download\nDownload audio'
+echo "$URL" | grep -q '&index=' && MENU="$MENU\nDownload playlist\nDownload audio playlist"
+MENU="$MENU\nCopy URL"
+D=1
+RES=$(echo -e "$MENU" | dmenu -l 20 -p "$TITLE" -sb '#E00000' -sf white -nf white) || exit
+[[ "$RES" == 'Copy URL' ]] && D=0
+[[ $D == 1 ]] && notify-send "Downloading $TITLE..."
+case "$RES" in
+    'Download')
+        cd "$VIDEO_DIR"
+        youtube-dl --add-metadata -ic --no-playlist "$URL" &>"$PROG_FILE";;
+    'Download playlist')
+        cd "$VIDEO_DIR"
+        youtube-dl --add-metadata -ic "$URL" &>"$PROG_FILE";;
+    'Download audio')
+        cd "$AUDIO_DIR"
+        youtube-dl --add-metadata -xic --audio-format mp3 --no-playlist "$URL" &>"$PROG_FILE";;
+    'Download audio playlist')
+        cd "$VIDEO_DIR"
+        youtube-dl --add-metadata -xic --audio-format mp3 "$URL" &>"$PROG_FILE";;
+    'Copy URL')
+        echo -n "$URL" | clipboard;;
+esac
+[[ $D == 1 ]] && notify-send "YouTube download for $TITLE completed"
+

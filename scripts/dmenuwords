@@ -5,6 +5,11 @@ WORDS="¯\\_(ツ)_/¯
 و عليكم السلام و رحمة الله و بركاته
 Alsalamu alykum
 naheelazawy@gmail.com
-nk1508530@qu.edu.qa"
+nk1508530@qu.edu.qa
+(☞ﾟヮﾟ)☞ ☜(ﾟヮﾟ☜)
+(☞ﾟ∀ﾟ)☞
+◔ ⌣ ◔
+( ͡° ͜ʖ ͡°)
+( ͡°( ͡° ͜ʖ( ͡° ͜ʖ ͡°)ʖ ͡°) ͡°)"
 R=$(echo "$WORDS" | dmenu -l 15)
 [[ "$R" != '' ]] && echo -n "$R" | clipboard
