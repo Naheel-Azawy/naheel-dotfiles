@@ -229,6 +229,9 @@ bindsym $mod+Control+r exec --no-startup-id 'getbib $(clipboard)'
 # Youtube stuff FIXME: weird things happen when launched from here
 bindsym $mod+y exec --no-startup-id dmenuyoutube
 
+# Open calendar
+bindsym $mod+l exec theterm x --eval '"(cfw:open-org-calendar)"'
+
 # Network manager dmenu
 bindsym $mod+n exec --no-startup-id networkmanager_dmenu
 

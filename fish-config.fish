@@ -34,16 +34,24 @@ function gh;       history | grep $argv; end
 function m;        tmux $argv; end
 function r;        ranger $argv; end
 function s;        swallow $argv; end
-function d;        swallow $READER $argv; end
+function t;        true  $argv; end
+function f;        false $argv; end
 function mkdircd;  mkdir $argv; and cd $argv; end
 function mkd;      mkdir $argv; end
 function mkdc;     mkdircd $argv; end
+function stime;    date '+%s'    $argv; end # time in seconds
+function mtime;    date '+%s%3N' $argv; end # time in milliseconds
+function ntime;    date '+%s%N'  $argv; end # time in nanoseconds
 function diff;     colordiff $argv | more; end
 function wdiff;    command wdiff $argv | colordiff | more; end
-function diffstr;  test (count $argv) -gt 2; and set a $argv[3..-1]; \
+function diffstr;  test (count $argv) -gt 2; and set a $argv[3..-1]
     diff  $a (echo -e $argv[1] | psub) (echo -e $argv[2] | psub); end
-function wdiffstr; test (count $argv) -gt 2; and set a $argv[3..-1]; \
+function wdiffstr; test (count $argv) -gt 2; and set a $argv[3..-1]
     wdiff $a (echo -e $argv[1] | psub) (echo -e $argv[2] | psub); end
-function n;        test (count $argv) -eq 0; and set argv '.'; \
+function d;        set sp (string split '.' $argv[-1])
+    test $sp[-1] != 'pdf'; and set r libreoffice; or set r $READER
+    echo $r
+    swallow $r $argv; end
+function n;        test (count $argv) -eq 0; and set argv '.'
     swallow nautilus $argv; end
 

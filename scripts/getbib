@@ -126,7 +126,7 @@ HIST=$(grep "$TITLE" "$BIB.hist" 2>/dev/null)
 
 # search google scholar if not found from crossref
 [[ "$B" == '' ]] && \
-    B=$(eval "$SCHOLARPY" -c 1 --citation bt --phrase "$TITLE")
+    B=$(eval "$SCHOLARPY" -c 1 --citation bt --phrase \""$TITLE"\")
 
 [[ "$B" == '' ]] && {
     echo 'Not found'

@@ -1,3 +1,3 @@
 #!/bin/bash
 cd "$(xpwd)"
-exec st -e tmux-quick
+exec $TERMINAL -e tmux-quick "$@"
