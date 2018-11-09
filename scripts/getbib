@@ -9,7 +9,7 @@
 # Tested with chromium, firefox, evince, and zathura.
 #
 # Sources: crossref, google scholar
-# Depends on: xprop, xdotool, xclip, pdfinfo, pdftotext, python2.7, notify-send
+# Depends on: xprop, xdotool, xclip, pdfinfo, pdftotext, python2.7, notify-send, dmenu
 #
 # Written by Naheel Azawy: https://github.com/Naheel-Azawy/naheel-dotfiles
 # Crossref part from Luke Smith: https://github.com/LukeSmithxyz/voidrice
@@ -18,6 +18,7 @@ TITLE=''
 DOI=''
 NOTIF=$(which notify-send &>/dev/null && echo 1 || echo 0)
 FILE="$1"
+MENU=1
 
 # if $BIB not found, take the default
 [[ "$BIB" == '' ]] && {
@@ -58,42 +59,60 @@ command -v scholar.py >/dev/null || [[ -f "$DOTFILES_SCRIPTS/scholar.py" ]] || {
                 sed 's/ - Chromium//g' | \
                 sed 's/ - Mozilla Firefox//g')
     # if the title is the pdf file name, ...
-    echo "$TITLE" | grep '\.pdf' &>/dev/null && {
-        # get the PID from the x window
-        PID=$(echo "$WIN" | sed -rn 's/_NET_WM_PID\(CARDINAL\) = (.*)/\1/p')
-        # and then find the full file path from the process commandline
-        FILE=$(cat -v /proc/$PID/cmdline | sed -rn 's/.+\^@(.+)\^@/\1/p')
-        # $FILE might be only the file name and not the full path
-        # if $FILE does not exist, try to get the working directory
-        # of the parent process and add it to the name
-        [[ ! -f "$FILE" ]] && {
-            PARENT_DIR=$(readlink /proc/$(ps -p $PID -o ppid --no-headers)/cwd)
-            FILE="$PARENT_DIR/$FILE"
-        }
-        # the title will be found in the next condition
+    echo "$TITLE" | grep '\.pdf' &>/dev/null && TITLE=''
+    # find the file path
+    # get the PID from the x window
+    PID=$(echo "$WIN" | sed -rn 's/_NET_WM_PID\(CARDINAL\) = (.*)/\1/p')
+    # and then find the full file path from the process commandline
+    FILE=$(cat -v /proc/$PID/cmdline | sed -rn 's/.+\^@(.+)\^@/\1/p')
+    # $FILE might be only the file name and not the full path
+    # if $FILE does not exist, try to get the working directory
+    # of the parent process and add it to the name
+    [[ ! -f "$FILE" ]] && {
+        PARENT_DIR=$(readlink /proc/$(ps -p $PID -o ppid --no-headers)/cwd)
+        FILE="$PARENT_DIR/$FILE"
     }
+    # the title will be found in the next condition
 }
 
 # if the file was given as an argument or from the previous condition
 [[ -f "$FILE" ]] && {
     PDF=$(pdfinfo "$FILE")
     # get the pdf title
-    TITLE=$(echo "$PDF" | sed -rn 's/Title:\s*(.*)/\1/p')
+    TITLE2=$(echo "$PDF" | sed -rn 's/Title:\s*(.*)/\1/p')
     # if no title was found find the subject
-    [[ "$TITLE" == '' ]] && \
-        TITLE=$(echo "$PDF" | sed -rn 's/Subject:\s*(.*)/\1/p')
+    [[ "$TITLE2" == '' ]] && \
+        TITLE2=$(echo "$PDF" | sed -rn 's/Subject:\s*(.*)/\1/p')
     # if still not found then try to find it from the content
-    [[ "$TITLE" == '' ]] && \
-        TITLE=$(pdftotext -layout "$FILE" - | head -n 3 | xargs \
+    [[ "$TITLE2" == '' ]] && \
+        TITLE2=$(pdftotext -layout "$FILE" - | head -n 3 | xargs \
                     | sed 's/ /\n/g' | head -n 20 | xargs)
     # try to find the DOI
     DOI=$(echo "$PDF" | grep -o doi:.*) || # from the pdf info
 	      DOI=$(pdftotext "$FILE" - | grep -o doi.* -m 1) # or from the content
+    # if original TITLE was not found
+    [[ $TITLE == '' ]] && {
+        TITLE="$TITLE2"
+        TITLE2=''
+    }
+    # if TITLE and TITLE2 are the same, keep only one
+    [[ "$TITLE" == "$TITLE2" ]] && {
+        TITLE2=''
+    }
 }
 
 # if still nothing is found then take the args as a title
 [[ "$TITLE" == '' ]] && \
     TITLE="$@"
+
+# show menu
+[[ $MENU == 1 ]] && {
+    M="$TITLE"
+    [[ $M != '' ]] && M="$M\n"
+    [[ $TITLE2 != '' ]] && M="${M}$TITLE2\n"
+    M="${M}$(clipboard)"
+    TITLE=$(echo -e "$M" | dmenu -i -l 20 -p 'Cite: ') || exit 1
+}
 
 # nothing was found
 [[ "$TITLE" == '' ]] && {

@@ -456,12 +456,17 @@ you should place your code here."
     ;; -- REVEAL JS --
     (setq org-reveal-root "https://cdn.jsdelivr.net/reveal.js/3.0.0/")
     (setq org-reveal-mathjax t)
-    ;; -- MY "DIRTY" LATEX EXPORT --
-    (defun org-tex-gen-pdf-my ()
-      (interactive)
-      (org-latex-export-to-latex)
-      (async-shell-command
-       (concat "org-tex-gen-pdf '" buffer-file-name "'")))
+    ;; -- IEEE --
+    (add-to-list 'org-latex-classes
+                 '("IEEEtran"
+                   "\\documentclass{IEEEtran}"
+                   ("\\section{%s}" . "\\section*{%s}")
+                   ("\\subsection{%s}" . "\\subsection*{%s}")
+                   ("\\subsubsection{%s}" . "\\subsubsection*{%s}")
+                   ("\\paragraph{%s}" . "\\paragraph*{%s}")
+                   ("\\subparagraph{%s}" . "\\subparagraph*{%s}")))
+    ;; -- MY "DIRTY" LaTeX EXPORT --
+    (setq org-latex-pdf-process '("org-tex-gen-pdf %f"))
     )
 
   ;; ---- DOS EOL ----

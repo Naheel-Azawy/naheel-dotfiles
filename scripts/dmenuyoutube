@@ -1,4 +1,5 @@
 #!/bin/bash
+sleep 0.5 # To give the user a chance to release the keyboard
 VIDEO_DIR="$HOME/Videos/YouTube"
 AUDIO_DIR="$HOME/Music/YouTube"
 PROG_FILE="/tmp/__ytdl_prog"
@@ -14,6 +15,7 @@ BROWSER=$(xdotool search --onlyvisible --class "chromium") || {
     notify-send 'Make sure that Chromium is running and is on a YouTube page'
     exit 1
 }
+BROWSER=$(echo $BROWSER | awk '{print $1}')
 xdotool windowfocus $BROWSER
 xdotool key ctrl+l
 xdotool key ctrl+c
@@ -32,10 +34,10 @@ TITLE=$(xprop -id $BROWSER | \
             fribidi --nopad)
 MENU='Download\nDownload audio'
 echo "$URL" | grep -q '&index=' && MENU="$MENU\nDownload playlist\nDownload audio playlist"
-MENU="$MENU\nCopy URL"
-D=1
+MENU="$MENU\nCopy URL\nWatch in YouTube viewer"
+D=0
 RES=$(echo -e "$MENU" | dmenu -l 20 -p "$TITLE" -sb '#E00000' -sf white -nf white) || exit
-[[ "$RES" == 'Copy URL' ]] && D=0
+echo "$RES" | grep -q Download && D=1
 [[ $D == 1 ]] && notify-send "Downloading $TITLE..."
 case "$RES" in
     'Download')
@@ -50,8 +52,11 @@ case "$RES" in
     'Download audio playlist')
         cd "$VIDEO_DIR"
         youtube-dl --add-metadata -xic --audio-format mp3 "$URL" &>"$PROG_FILE";;
-    'Copy URL')
-        echo -n "$URL" | clipboard;;
+    Copy*)
+        echo -n "$URL" | clipboard
+        exit 0;;
+    Watch*)
+        youtube-viewer "$URL";;
 esac
 [[ $D == 1 ]] && notify-send "YouTube download for $TITLE completed"
 
