@@ -9,16 +9,33 @@
 # Tested with chromium, firefox, evince, and zathura.
 #
 # Sources: crossref, google scholar
-# Depends on: xprop, xdotool, xclip, pdfinfo, pdftotext, python2.7, notify-send, dmenu
+# Depends on: xprop, xdotool, xclip, pdfinfo, pdftotext, python2.7,
+#             notify-send, dmenu, pandoc, pandoc-citeproc
 #
 # Written by Naheel Azawy: https://github.com/Naheel-Azawy/naheel-dotfiles
 # Crossref part from Luke Smith: https://github.com/LukeSmithxyz/voidrice
+
+# if only the final formatted citation is needed
+CITE_ONLY=0
+[[ "$1" == '-c' ]] && {
+    CITE_ONLY=1
+    shift
+    IEEE_URL='https://www.zotero.org/styles/ieee'
+    IEEE_DIR="$HOME/.nbib"
+    [[ ! -f "$IEEE_DIR/ieee.csl" ]] && {
+        mkdir -p "$IEEE_DIR"
+        echo "Downloading IEEE citation style..."
+        curl "$IEEE_URL" > "$IEEE_DIR/ieee.csl"
+    }
+    BIB=/tmp/__tmpbib.bib
+    TMP_TEX='/tmp/__bib_tmp.tex'
+}
 
 TITLE=''
 DOI=''
 NOTIF=$(which notify-send &>/dev/null && echo 1 || echo 0)
 FILE="$1"
-MENU=1
+MENU=0
 
 # if $BIB not found, take the default
 [[ "$BIB" == '' ]] && {
@@ -48,9 +65,21 @@ command -v scholar.py >/dev/null || [[ -f "$DOTFILES_SCRIPTS/scholar.py" ]] || {
     SCHOLARPY="python2.7 '$DOTFILES_SCRIPTS/scholar.py'"
 }
 
+# the final action
+function finalize {
+    if [[ $CITE_ONLY == 0 ]]; then
+        echo "$1" | eval "$CLIPBOARD"
+    else
+        echo "\cite{$1}
+\printbibliography" > "$TMP_TEX"
+        pandoc --bibliography="$BIB" --filter pandoc-citeproc --csl "$IEEE_DIR/ieee.csl" "$TMP_TEX" -o bib.docx
+    fi
+    exit
+}
+
 # If no arguments
 [[ "$@" == '' ]] && {
-    # enable notifications
+    MENU=1
     NOTIF=1
     # x window details
     WIN=$(xprop -id $(xdotool getactivewindow))
@@ -127,8 +156,8 @@ HIST=$(grep "$TITLE" "$BIB.hist" 2>/dev/null)
 [[ "$HIST" != '' ]] && {
     [[ $NOTIF == 1 ]] && \
         notify-send "Bib found for $TITLE from history<br>$LABEL"
-    echo "$HIST" | awk '{print $2}' | tr -d '\n' | eval "$CLIPBOARD"
-    exit
+    LABLE=$(echo "$HIST" | awk '{print $2}' | tr -d '\n')
+    finalize "$LABLE"
 }
 
 [[ $NOTIF == 1 ]] && \
@@ -173,4 +202,5 @@ if ! grep -q "$LABEL" "$BIB" &>/dev/null; then
 fi
 
 # copy the label to the clipboard
-echo -n "$LABEL" | eval "$CLIPBOARD"
+finalize "$LABEL"
+
