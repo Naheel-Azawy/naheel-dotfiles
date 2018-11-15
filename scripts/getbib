@@ -14,6 +14,11 @@
 #
 # Written by Naheel Azawy: https://github.com/Naheel-Azawy/naheel-dotfiles
 # Crossref part from Luke Smith: https://github.com/LukeSmithxyz/voidrice
+#
+# To install pandoc on OS X
+# brew install pandoc
+# brew install pandoc-citeproc
+
 
 # if only the final formatted citation is needed
 CITE_ONLY=0
@@ -51,18 +56,22 @@ mkdir -p "$DOTFILES_SCRIPTS"
 
 # double checking 'clipboard'
 CLIPBOARD='clipboard'
-command -v clipboard >/dev/null || [[ -f "$DOTFILES_SCRIPTS/clipboard" ]] || {
-    echo "clipboard not found! Downloading to $DOTFILES_SCRIPTS/clipboard"
-    curl 'https://raw.githubusercontent.com/Naheel-Azawy/naheel-dotfiles/master/scripts/clipboard' > "$DOTFILES_SCRIPTS/clipboard"
+command -v clipboard >/dev/null || {
     CLIPBOARD="bash '$DOTFILES_SCRIPTS/clipboard'"
+    [[ -f "$DOTFILES_SCRIPTS/clipboard" ]] || {
+        echo "clipboard not found! Downloading to $DOTFILES_SCRIPTS/clipboard"
+        curl 'https://raw.githubusercontent.com/Naheel-Azawy/naheel-dotfiles/master/scripts/clipboard' > "$DOTFILES_SCRIPTS/clipboard"
+    }
 }
 
 # double checking 'scholar.py'
 SCHOLARPY='scholar.py'
-command -v scholar.py >/dev/null || [[ -f "$DOTFILES_SCRIPTS/scholar.py" ]] || {
-    echo "scholar.py not found! Downloading to $DOTFILES_SCRIPTS/scholar.py"
-    curl 'https://github.com/Naheel-Azawy/naheel-dotfiles/blob/master/scripts/scholar.py' > "$DOTFILES_SCRIPTS/scholar.py"
+command -v scholar.py >/dev/null || {
     SCHOLARPY="python2.7 '$DOTFILES_SCRIPTS/scholar.py'"
+    [[ -f "$DOTFILES_SCRIPTS/scholar.py" ]] || {
+        echo "scholar.py not found! Downloading to $DOTFILES_SCRIPTS/scholar.py"
+        curl 'https://raw.githubusercontent.com/Naheel-Azawy/naheel-dotfiles/master/scripts/scholar.py' > "$DOTFILES_SCRIPTS/scholar.py"
+    }
 }
 
 # the final action
@@ -84,16 +93,16 @@ function finalize {
     # x window details
     WIN=$(xprop -id $(xdotool getactivewindow))
     # x window title
-    TITLE=$(echo "$WIN" | sed -rn 's/_NET_WM_NAME\(UTF8_STRING\) = "(.*)"/\1/p' | \
+    TITLE=$(echo "$WIN" | sed -E -n 's/_NET_WM_NAME\(UTF8_STRING\) = "(.*)"/\1/p' | \
                 sed 's/ - Chromium//g' | \
                 sed 's/ - Mozilla Firefox//g')
     # if the title is the pdf file name, ...
     echo "$TITLE" | grep '\.pdf' &>/dev/null && TITLE=''
     # find the file path
     # get the PID from the x window
-    PID=$(echo "$WIN" | sed -rn 's/_NET_WM_PID\(CARDINAL\) = (.*)/\1/p')
+    PID=$(echo "$WIN" | sed -E -n 's/_NET_WM_PID\(CARDINAL\) = (.*)/\1/p')
     # and then find the full file path from the process commandline
-    FILE=$(cat -v /proc/$PID/cmdline | sed -rn 's/.+\^@(.+)\^@/\1/p')
+    FILE=$(cat -v /proc/$PID/cmdline | sed -E -n 's/.+\^@(.+)\^@/\1/p')
     # $FILE might be only the file name and not the full path
     # if $FILE does not exist, try to get the working directory
     # of the parent process and add it to the name
@@ -108,10 +117,10 @@ function finalize {
 [[ -f "$FILE" ]] && {
     PDF=$(pdfinfo "$FILE")
     # get the pdf title
-    TITLE2=$(echo "$PDF" | sed -rn 's/Title:\s*(.*)/\1/p')
+    TITLE2=$(echo "$PDF" | sed -E -n 's/Title:\s*(.*)/\1/p')
     # if no title was found find the subject
     [[ "$TITLE2" == '' ]] && \
-        TITLE2=$(echo "$PDF" | sed -rn 's/Subject:\s*(.*)/\1/p')
+        TITLE2=$(echo "$PDF" | sed -E -n 's/Subject:\s*(.*)/\1/p')
     # if still not found then try to find it from the content
     [[ "$TITLE2" == '' ]] && \
         TITLE2=$(pdftotext -layout "$FILE" - | head -n 3 | xargs \
@@ -184,10 +193,10 @@ HIST=$(grep "$TITLE" "$BIB.hist" 2>/dev/null)
 }
 
 FTITLE="$TITLE"
-LABEL=$(echo  "$B" | head -n1 | sed -rn 's/.+\{(.+),/\1/p')
-TITLE=$(echo  "$B" | sed -rn 's/\s+title\s*=\s*\{(.+)\},/\1/p')
-AUTHOR=$(echo "$B" | sed -rn 's/\s+author\s*=\s*\{(.+)\},/\1/p')
-YEAR=$(echo   "$B" | sed -rn 's/\s+year\s*=\s*\{?(.+)\}?,/\1/p')
+LABEL=$(echo  "$B" | head -n1 | sed -E -n 's/.+\{(.+),/\1/p')
+TITLE=$(echo  "$B" | sed -E -n 's/\s+title\s*=\s*\{(.+)\},/\1/p')
+AUTHOR=$(echo "$B" | sed -E -n 's/\s+author\s*=\s*\{(.+)\},/\1/p')
+YEAR=$(echo   "$B" | sed -E -n 's/\s+year\s*=\s*\{?(.+)\}?,/\1/p')
 
 # write to history file
 echo "$(date '+%Y-%m-%d-%H:%M:%S') $LABEL $FTITLE" >> "$BIB.hist"
