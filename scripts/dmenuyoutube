@@ -32,9 +32,9 @@ TITLE=$(xprop -id $BROWSER | \
             sed 's/ - YouTube.*//g' | \
             cut -c -50 | \
             fribidi --nopad)
-MENU='Download\nDownload audio'
-echo "$URL" | grep -q '&index=' && MENU="$MENU\nDownload playlist\nDownload audio playlist"
-MENU="$MENU\nCopy URL\nWatch in YouTube viewer"
+echo "$URL" | grep -q 'playlist' || MENU='Download\nDownload audio\n'
+echo "$URL" | grep -q 'list=' && MENU="${MENU}Download playlist\nDownload audio playlist\n"
+MENU="${MENU}Copy URL\nWatch in YouTube viewer"
 D=0
 RES=$(echo -e "$MENU" | dmenu -l 20 -p "$TITLE" -sb '#E00000' -sf white -nf white) || exit
 echo "$RES" | grep -q Download && D=1
@@ -50,7 +50,7 @@ case "$RES" in
         cd "$AUDIO_DIR"
         youtube-dl --add-metadata -xic --audio-format mp3 --no-playlist "$URL" &>"$PROG_FILE";;
     'Download audio playlist')
-        cd "$VIDEO_DIR"
+        cd "$AUDIO_DIR"
         youtube-dl --add-metadata -xic --audio-format mp3 "$URL" &>"$PROG_FILE";;
     Copy*)
         echo -n "$URL" | clipboard

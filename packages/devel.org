@@ -8,3 +8,5 @@
 | pacman | clang                     | another cool c compiler                                           |
 | pacman | arm-none-eabi-gcc         | arm toys                                                          |
 | pacman | arm-none-eabi-newlib      | more arm toys                                                     |
+| pacman | emscripten                | llvm to javascript                                                |
+| aur    | umlet                     | UML builder                                                       |

@@ -226,7 +226,7 @@ bindsym $mod+o exec --no-startup-id toggle-opacity
 bindsym $mod+r         exec --no-startup-id getbib
 bindsym $mod+Control+r exec --no-startup-id 'getbib $(clipboard)'
 
-# Youtube stuff FIXME: weird things happen when launched from here
+# Youtube stuff
 bindsym $mod+y exec --no-startup-id dmenuyoutube
 
 # Open calendar
