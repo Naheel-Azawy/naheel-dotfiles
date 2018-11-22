@@ -438,7 +438,8 @@ you should place your code here."
        (sed        . t)
        (gnuplot    . t)
        (perl       . t)
-       (ditaa      . t)))
+       (ditaa      . t)
+       (shell      . t)))
     ;; -- OX --
     (require 'ox-groff)
     (require 'ox-pandoc)

@@ -45,10 +45,10 @@ out command=bar volu
 out interval=$I3BLOCKS_DUR_VOLU
 out signal=$I3BLOCKS_SIG_VOLU
 
-out [brightness]
-out command=bar brig
-out interval=$I3BLOCKS_DUR_BRIG
-out signal=$I3BLOCKS_SIG_BRIG
+# out [brightness]
+# out command=bar brig
+# out interval=$I3BLOCKS_DUR_BRIG
+# out signal=$I3BLOCKS_SIG_BRIG
 
 out [wifi]
 out command=bar wifi
