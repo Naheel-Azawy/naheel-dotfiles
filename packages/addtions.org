@@ -69,3 +69,4 @@
 | pacman | iotop                        | top for disk io                                                                                |
 | pacman | sysstat                      | a collection of performance monitoring tools (iostat,isag,mpstat,pidstat,sadf,sar)             |
 | pacman | ditta                        | draw with ASCII                                                                                |
+| npm    | cloudconvert                 | usefull to convert ugly documents written in non-free softwares                                |
