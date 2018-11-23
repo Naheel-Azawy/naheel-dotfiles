@@ -138,8 +138,9 @@ values."
    ;; `recents' `bookmarks' `projects' `agenda' `todos'."
    ;; List sizes may be nil, in which case
    ;; `spacemacs-buffer-startup-lists-length' takes effect.
-   dotspacemacs-startup-lists '((recents . 5)
-                                (projects . 7))
+   dotspacemacs-startup-lists '((recents  . 5)
+                                (projects . 7)
+                                (agenda   . 10))
    ;; True if the home buffer should respond to resize events.
    dotspacemacs-startup-buffer-responsive t
    ;; Default major mode of the scratch buffer (default `text-mode')
@@ -451,7 +452,7 @@ you should place your code here."
                  ;;(toggle-word-wrap)
                  ;;(flyspell-mode)
                  (delete '("\\.pdf\\'" . default) org-file-apps)
-                 (add-to-list 'org-file-apps '("\\.pdf\\'" . "evince %s"))
+                 (add-to-list 'org-file-apps '("\\.pdf\\'" . "zathura %s"))
                  (delete '("\\.html\\'" . default) org-file-apps)
                  (add-to-list 'org-file-apps '("\\.html\\'" . "browser %s"))))
     ;; -- REVEAL JS --

@@ -6,7 +6,7 @@ export EDITOR="x"
 export VISUAL="$EDITOR"
 export TERMINAL="st"
 export BROWSER="browser"
-export READER="evince"
+export READER="zathura"
 export BIB="$HOME/Documents/LaTeX/refs.bib"
 
 export FONT_MONO='DejaVu Sans Mono'
