@@ -176,7 +176,8 @@ function get {
 }
 
 function time {
-    [[ $BLOCK_BUTTON = "1" ]] && $TERMINAL -e x --eval '(cfw:open-org-calendar)'
+    [[ $BLOCK_BUTTON = "1" ]] && \
+        $TERMINAL -e bash -c 'cal -y && read -p "Open Emacs calender? (y/n) " ans && test "$ans" == "y" && x --eval "(cfw:open-org-calendar)"'
     echo -n $(date '+%a %Y-%m-%d %I:%M:%S %p')
 }
 

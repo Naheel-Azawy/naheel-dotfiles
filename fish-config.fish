@@ -36,9 +36,10 @@ function r;        ranger $argv; end
 function s;        swallow $argv; end
 function t;        true  $argv; end
 function f;        false $argv; end
-function mkdircd;  mkdir $argv; and cd $argv; end
-function mkd;      mkdir $argv; end
+function mkdircd;  mkdir -p $argv; and cd $argv[-1]; end
+function mkd;      mkdir -p $argv; end
 function mkdc;     mkdircd $argv; end
+function cpprog;   rsync -ah --progress $argv; end
 function stime;    date '+%s'    $argv; end # time in seconds
 function mtime;    date '+%s%3N' $argv; end # time in milliseconds
 function ntime;    date '+%s%N'  $argv; end # time in nanoseconds
