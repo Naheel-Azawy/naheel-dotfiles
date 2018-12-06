@@ -1,0 +1,2 @@
+#!/bin/bash
+tmux ls -F '#{session_name}' | grep 'ignored-' | while read line; do tmux-unignore "$line" >/dev/null; done

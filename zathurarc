@@ -1,3 +1,4 @@
 set recolor true
 set selection-clipboard clipboard
-set scroll-step 70
+set smooth-scroll true
+set scroll-step 100
