@@ -5,3 +5,6 @@
 | pacman | arduino                   | well, arduino..                                                   |
 | aur    | qucs                      | circuit simulator                                                 |
 | pacman | uucp                      | to use 'cu' for serial connection                                 |
+| pacman | kicad                     | schematics and PCB                                                |
+| pacman | kicad-library             | Kicad component and footprint libraries                           |
+| pacman | kicad-library-3d          | Kicad 3D render model libraries                                   |

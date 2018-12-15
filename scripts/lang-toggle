@@ -1,7 +1,7 @@
 #!/bin/bash
-L=$(cat ~/.lang 2> /dev/null)
-if [ "$1" != "-v" ]; then
-    if [ "$L" = "us" ]; then
+L=$(setxkbmap -query | sed -En 's/layout:\s*(.+)/\1/p' 2>/dev/null)
+if [[ "$1" != "-v" ]]; then
+    if [[ "$L" = "us" ]]; then
         L=ar
     else
         L=us
