@@ -316,6 +316,20 @@ function host {
     echo -n $(hostname)
 }
 
+function cmus {
+    Q=$(cmus-remote -Q 2>/dev/null)
+    [[ "$Q" == '' ]] && return
+    T=$(echo "$Q" | sed -rn 's/tag title (.+)/\1/p')
+    A=$(echo "$Q" | sed -rn 's/tag artist (.+)/\1/p')
+    S=$(echo "$Q" | sed -rn 's/status (.+)/\1/p')
+    [[ "$1" != "-a" ]] && {
+        [[ "$S" == 'playing' ]] && awesome-font-echo '\uf04b'
+        [[ "$S" == 'paused' ]]  && awesome-font-echo '\uf04c'
+        echo -n ' '
+    }
+    echo -n "$T - $A"
+}
+
 if [[ $justaclick != 0 ]]; then
     if [[ $justaclick != '' ]]; then
         BLOCK_BUTTON=1 get $justaclick -a 1>/dev/null

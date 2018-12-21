@@ -1,0 +1,7 @@
+#!/bin/bash
+for W in /etc/NetworkManager/system-connections/*; do
+    echo "$W"
+    echo '-------------------------'
+    cat "$W"
+    echo
+done

@@ -1,23 +1,43 @@
-#!/bin/sh
+#!/bin/bash
 # Gives a dmenu prompt to mount unmounted drives.
 # If they're in /etc/fstab, they'll be mounted automatically.
 # Otherwise, you'll be prompted to give a mountpoint from already existsing directories.
 # If you input a novel directory, it will prompt you to create that directory.
-pgrep -x dmenu && exit
-COLS="name,type,size,mountpoint"
+# https://github.com/Naheel-Azawy/naheel-dotfiles
+# Based on https://github.com/LukeSmithxyz/voidrice
 
-drives="$(lsblk -rpo "$COLS" | awk '($2=="part"||$2=="lvm")&&$4==""{printf "%s (%s)\n",$1,$3}')"
-[ -z "$drives" ] && exit 1
-chosen="$(echo "$drives" | dmenu -l 5 -i -p "Mount which drive?" | awk '{print $1}')"
-[ -z "$chosen" ] && exit 1
-sudo -A mount "$chosen" && exit 0
-# You may want to change the line below for more suggestions for mounting.
-# I.e. you can increase the depth of the search, or add directories.
-# This will increase the load time briefly though.
-mp="$(find /mnt -type d -maxdepth 1 2>/dev/null | sort | dmenu -l 5 -i -p "Type in mount point.")"
-[ "$mp" = "" ] && exit 1
-if [ ! -d "$mp" ]; then
-	mkdiryn=$(printf "No\\nYes" | dmenu -i -p "$mp does not exist. Create it?")
-	[ "$mkdiryn" = "Yes" ] && sudo -A mkdir -p "$mp"
-fi
-sudo -A mount "$chosen" "$mp" && pgrep -x dunst && notify-send "$chosen mounted to $mp."
+LEN=20
+
+function getmount {
+	  [ -z "$chosen" ] && exit 1
+	  mp="$(find $1 | dmenu -l $LEN -i -p "Type in mount point.")"
+	  [ "$mp" = "" ] && exit 1
+	  if [ ! -d "$mp" ]; then
+		    mkdiryn=$(printf "No\\nYes" | dmenu -i -p "$mp does not exist. Create it?")
+		    [ "$mkdiryn" = "Yes" ] && (mkdir -p "$mp" || sudo -A mkdir -p "$mp")
+	  fi
+}
+
+function mountusb {
+	  chosen=$(echo "$1" | awk '{print $2}')
+	  sudo -A mount "$chosen" && notify-send "$chosen mounted." && exit 0
+	  getmount "/mnt -maxdepth 1 -type d"
+	  sudo -A mount "$chosen" "$mp" && notify-send "$chosen mounted to $mp."
+}
+
+function mountmtp {
+	  chosen=$(echo "$1" | awk -F':' '{print $2}' | xargs)
+	  getmount "/mnt -maxdepth 1 -type d"
+	  simple-mtpfs --device "$chosen" "$mp"
+	  notify-send "MTP device mounted to $mp."
+}
+
+mtpdrives=$(simple-mtpfs -l 2>/dev/null | awk '{print "MTP:   "$0}')
+usbdrives=$(test ! -z "$mtpdrives" && echo "$mtpdrives"; \
+            lsblk -rpo "name,type,size,mountpoint" | awk '($2=="part"||$2=="lvm")&&$4==""{printf "DRIVE: %s (%s)\n",$1,$3}')
+
+chosen=$(echo "$usbdrives" | dmenu -l $LEN -i -p "Mount which drive?")
+echo "$chosen" | grep -q "MTP:" && mountmtp "$chosen" || mountusb "$chosen" && {
+            open=$(printf "No\\nYes" | dmenu -i -p "Open $mp?")
+            [[ "$open" == 'Yes' ]] && theterm ranger "$mp"
+        }

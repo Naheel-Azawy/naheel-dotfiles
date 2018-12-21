@@ -208,7 +208,7 @@ bindsym $mod+m       exec --no-startup-id dmenumount
 bindsym $mod+Shift+m exec --no-startup-id dmenuumount
 
 # Display options
-bindsym $mod+s exec --no-startup-id dmenudisplay
+bindsym $mod+p exec --no-startup-id dmenudisplay
 
 # Clipboard manager
 bindsym $mod+c exec --no-startup-id clipmenu
@@ -218,6 +218,9 @@ bindsym $mod+w exec --no-startup-id dmenuwords
 
 # Unicodes
 bindsym $mod+u exec --no-startup-id dmenuunicode
+
+# Web search
+bindsym $mod+s exec --no-startup-id dmenuduck
 
 # Togggle opacity
 bindsym $mod+o exec --no-startup-id toggle-opacity
