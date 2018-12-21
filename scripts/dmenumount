@@ -38,6 +38,11 @@ usbdrives=$(test ! -z "$mtpdrives" && echo "$mtpdrives"; \
 
 chosen=$(echo "$usbdrives" | dmenu -l $LEN -i -p "Mount which drive?")
 echo "$chosen" | grep -q "MTP:" && mountmtp "$chosen" || mountusb "$chosen" && {
-            open=$(printf "No\\nYes" | dmenu -i -p "Open $mp?")
-            [[ "$open" == 'Yes' ]] && theterm ranger "$mp"
+            open=$(echo -e "No\nRanger\nLF\nTerminal" | dmenu -i -p "Open $mp?")
+            cd "$mp"
+            case "$open" in
+                Ranger)   exec $TERMINAL -e tmux-quick ranger;;
+                LF)       exec $TERMINAL -e tmux-quick lf;;
+                Terminal) exec $TERMINAL -e tmux-quick;;
+            esac
         }
