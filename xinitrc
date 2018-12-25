@@ -2,10 +2,10 @@
 xset r rate 230 50
 
 # Update the x resources
-xrdb ~/.Xresources
+[ -f ~/.Xresources ] && xrdb ~/.Xresources
 
 # Remap Menu button to another super key
-xmodmap -e "keycode 135 = Super_R"
+[ -f ~/.Xmodmap ] && xmodmap ~/.Xmodmap
 
 
 # Start the window manager

@@ -7,11 +7,11 @@ F="${F%.*}"
 B=$(sed -E -rn 's/\\(bibliography|addbibresource)\{(.+)\}/\2/p' "$F.tex")
 [[ "$B" != '' ]] && {
     sed -E -i -r 's/\\(bibliography|addbibresource)\{.+//g' "$F.tex"
-    sed -i -r "s/\\\\documentclass(.+)/\\\\documentclass\1\\n\\\\usepackage[backend=biber,sorting=none]{biblatex}\\n\\\\addbibresource\{$B\}/g" "$F.tex"
+    sed -i -r "s/\\\\documentclass(.+)/\\\\documentclass\1\\n\\\\usepackage[backend=biber,sorting=none,style=ieee]{biblatex}\\n\\\\addbibresource\{$B\}/g" "$F.tex"
 }
 
 pdflatex "$F.tex" && \
     biber "$F" && \
-    pdflatex "$F.tex" && \
     pdflatex "$F.tex"
-rm -f "$F.aux" "$F.bbl" "$F.bcf" "$F.blg" "$F.log" "$F.out" "$F.run.xml" "$F.aux" #"$F.tex"
+pdflatex "$F.tex"
+rm -f "$F.aux" "$F.bbl" "$F.bcf" "$F.blg" "$F.log" "$F.out" "$F.run.xml" "$F.aux" "$F.lof" "$F.lot" "$F.toc" #"$F.tex"

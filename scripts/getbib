@@ -77,7 +77,7 @@ command -v scholar.py >/dev/null || {
 # the final action
 function finalize {
     if [[ $CITE_ONLY == 0 ]]; then
-        echo "$1" | eval "$CLIPBOARD"
+        echo -n "$1" | eval "$CLIPBOARD"
     else
         echo "\cite{$1}
 \printbibliography" > "$TMP_TEX"
