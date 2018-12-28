@@ -1,9 +1,13 @@
 #!/bin/bash
 Q=0 # Q for Quick
-[[ "$1" = '-q' ]] && {
+if [[ "$1" = "-c" ]]; then # calculate with the C compiler
+    shift
+    execute c "printf(\"%d\\n\", $@);"
+    exit
+elif [[ "$1" = '-q' ]]; then
     Q=1
     shift
-}
+fi
 
 if [[ "$Q" = '0' ]] && [[ -e /usr/bin/octave-cli ]]; then
     [[ "$@" = '' ]] && (octave-cli -q; exit)

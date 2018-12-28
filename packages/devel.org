@@ -11,3 +11,4 @@
 | pacman | emscripten                | llvm to javascript                                                |
 | aur    | umlet                     | UML builder                                                       |
 | pacman | yarn                      | dependency installer                                              |
+| pacman | gdb                       | the gnu debugger                                                  |

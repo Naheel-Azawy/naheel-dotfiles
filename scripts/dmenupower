@@ -1,5 +1,5 @@
 #!/bin/bash
-RES=$(echo -e "Lock\nSuspend\nReboot\nShutdown\nLogout\nHibernate" | dmenu -i)
+RES=$(echo -e "Suspend\nShutdown\nReboot\nLogout\nLock\nHibernate" | dmenu -i)
 function confirm {
     R=$(echo -e "Yes\nNo" | dmenu -p "$RES?" -i -sb red -nf red)
     [[ "$R" = "Yes" ]]

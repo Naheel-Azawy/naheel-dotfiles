@@ -55,7 +55,7 @@ out focus_follows_mouse no
 
 # Setting colors
 #   class                   border    backgr.   text      indicator   child_border
-out client.focused          '#4c7899' '#285577' '#ffffff' '#2e9ef4'   '#285577'
+out client.focused          '#4c7899' $color_bl '#ffffff' '#2e9ef4'   $color_bl
 out client.focused_inactive '#333333' '#5f676a' '#ffffff' '#484e50'   '#222222'
 out client.unfocused        '#333333' '#222222' '#888888' '#292d2e'   '#111111'
 out client.urgent           '#2f343a' '#900000' '#ffffff' '#900000'   '#900000'
@@ -338,14 +338,21 @@ exec --no-startup-id clipmenud
 exec --no-startup-id conky -c "$H/.conky/naheel/bin.rc"
 exec --no-startup-id conky -c "$H/.conky/naheel/main.rc"
 
-# compton / gives conky transparency
-exec --no-startup-id compton
-
 # mouse setup
 exec --no-startup-id setup-xinput
 
 # Hide the mouse cursor while typing
 exec --no-startup-id xbanish
 
+# start emacs daemon
+exec --no-startup-id xdaemon
+
+# compton / gives conky transparency
+exec_always --no-startup-id compton
+
 # wallpaper
 exec_always --no-startup-id feh --bg-fill "$H/.config/wall.png"
+
+# set language to 'us' by default, runs xmodmap as well
+exec_always --no-startup-id lang-set us
+
