@@ -31,6 +31,9 @@ lnnn "$D/youtube-viewer.conf" "$H/.config/youtube-viewer/youtube-viewer.conf"
 mkdir -p "$H/.config/zathura"
 lnnn "$D/zathurarc" "$H/.config/zathura/zathurarc"
 
+mkdir -p "$H/.config/lf"
+lnnn "$D/lfrc" "$H/.config/lf/lfrc"
+
 lnnn "$D/compton.conf"   "$H/.config/compton.conf"
 lnnn "$D/user-dirs.dirs" "$H/.config/user-dirs.dirs"
 lnnn "$D/ranger"         "$H/.config/ranger"

@@ -19,7 +19,7 @@ function fish_prompt --description 'Write out the prompt'
     echo -n -s "$face$USER" @ (prompt_hostname) ' ' (set_color $color_cwd) (prompt_pwd) (set_color normal) "$suffix "
 end
 
-function cd..;     cd ..; end
+function cd..;     cd .. $argv; end
 function e;        exit $argv; end
 function ee;       e $argv; end
 function E;        e $argv; end
@@ -55,4 +55,16 @@ function d;        set sp (string split '.' $argv[-1])
     swallow $r $argv; end
 function n;        test (count $argv) -eq 0; and set argv '.'
     swallow nautilus $argv; end
-
+function lfcd
+    set tmp (mktemp)
+    lf -last-dir-path=$tmp $argv
+    if test -f "$tmp"
+        set dir (cat $tmp)
+        rm -f $tmp
+        if test -d "$dir"
+            if test "$dir" != (pwd)
+                cd $dir
+            end
+        end
+    end
+end
