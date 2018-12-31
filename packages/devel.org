@@ -12,3 +12,6 @@
 | aur    | umlet                     | UML builder                                                       |
 | pacman | yarn                      | dependency installer                                              |
 | pacman | gdb                       | the gnu debugger                                                  |
+| pacman | strace                    | trace system calls                                                |
+| pacman | ltrace                    | trace library function calls                                      |
+| pacman | radare2                   | the best reverse engineering toy out there                        |

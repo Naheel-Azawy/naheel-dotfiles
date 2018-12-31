@@ -1,0 +1,13 @@
+[Desktop Entry]
+Type=X-GNOME-Metatheme
+Name=AdwaitaRefresh
+Comment=Adwaita refresh
+Encoding=UTF-8
+
+[X-GNOME-Metatheme]
+Type=X-GNOME-Metatheme
+GtkTheme=AdwaitaRefresh
+MetacityTheme=AdwaitaRefresh
+IconTheme=Adwaita
+CursorTheme=Adwaita
+CursorSize=24

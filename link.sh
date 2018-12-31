@@ -4,7 +4,7 @@ U="$2"
 H="$3"
 
 [[ "$D" = "" ]] && D="$DOTFILES_DIR"
-[[ "$D" = "" ]] && D="."
+[[ "$D" = "" ]] && D=$(pwd)
 [[ "$U" = "" ]] && U="$USER"
 [[ "$H" = "" ]] && H="$HOME"
 
@@ -57,5 +57,8 @@ lnnn "$D/gtk-theme/icons.theme" "$H/.icons/default/index.theme"
 
 mkdir -p "$H/.config/gtk-3.0"
 lnnn "$D/gtk-theme/gtk3-settings.ini" "$H/.config/gtk-3.0/settings.ini"
+
+mkdir -p "$H/.local/share/"
+lnnn "$D/gtk-theme/themes" "$H/.local/share/themes"
 
 lnnn "$D/gtk-theme/gtk2rc" "$H/.gtkrc-2.0"
