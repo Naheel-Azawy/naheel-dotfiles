@@ -219,9 +219,6 @@ bindsym $mod+w exec --no-startup-id dmenuwords
 # Unicodes
 bindsym $mod+u exec --no-startup-id dmenuunicode
 
-# Web search
-bindsym $mod+s exec --no-startup-id dmenuduck
-
 # Togggle opacity
 bindsym $mod+o exec --no-startup-id toggle-opacity
 

@@ -1,8 +1,16 @@
 #!/bin/bash
-sleep 0.5 # To give the user a chance to release the keyboard
+
 VIDEO_DIR="$HOME/Videos/YouTube"
 AUDIO_DIR="$HOME/Music/YouTube"
 PROG_FILE="/tmp/__ytdl_prog"
+
+DMENU="dmenu -sb '#E00000' -sf white -nf white"
+
+function search {
+    Q=$(echo | eval "$DMENU -p 'Search YouTube'") && \
+        browser "https://www.youtube.com/results?search_query=$Q"
+}
+
 [[ "$1" == '-p' ]] && {
     tail -f "$PROG_FILE"
     exit
@@ -12,9 +20,10 @@ mkdir -p "$AUDIO_DIR"
 CLIP=$(clipboard)
 CURRENT=$(xdotool getactivewindow)
 BROWSER=$(xdotool search --onlyvisible --class "chromium") || {
-    notify-send 'Make sure that Chromium is running and is on a YouTube page'
-    exit 1
+    search
+    exit
 }
+sleep 0.5 # To give the user a chance to release the keyboard
 BROWSER=$(echo $BROWSER | awk '{print $1}')
 xdotool windowfocus $BROWSER
 xdotool key ctrl+l
@@ -24,8 +33,8 @@ xdotool windowfocus $CURRENT
 URL=$(clipboard)
 echo "$CLIP" | clipboard
 echo "$URL" | grep -q youtube || {
-    notify-send 'Make sure to be on a YouTube page'
-    exit 1
+    search
+    exit
 }
 TITLE=$(xprop -id $BROWSER | \
             sed -rn 's/_NET_WM_NAME\(UTF8_STRING\) = "(.*)"/\1/p' | \
@@ -36,7 +45,7 @@ echo "$URL" | grep -q 'playlist' || MENU='Download\nDownload audio\n'
 echo "$URL" | grep -q 'list=' && MENU="${MENU}Download playlist\nDownload audio playlist\n"
 MENU="${MENU}Copy URL\nWatch in YouTube viewer"
 D=0
-RES=$(echo -e "$MENU" | dmenu -l 20 -p "$TITLE" -sb '#E00000' -sf white -nf white) || exit
+RES=$(echo -e "$MENU" | eval "$DMENU" -l 20 -p "$TITLE") || exit
 echo "$RES" | grep -q Download && D=1
 [[ $D == 1 ]] && notify-send "Downloading $TITLE..."
 case "$RES" in

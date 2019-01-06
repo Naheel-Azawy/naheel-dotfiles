@@ -10,29 +10,80 @@ function say {
     echo "$F" | espeak -v en-us+f2 -p 85 -s 150 -a 200 2>/dev/null
 }
 
-F=$(fortune)
+function think {
+    F=$(fortune)
+}
+
+function remember {
+    [[ "$1" == -1 ]] && \
+        F=$(cat "$D/$(ls "$D" | sort | tac | head -n 1)") || \
+            F=$(cat "$D/$1")
+}
+
+think
 cow
 [[ "$1" == '-p' ]] && say
 
 while read line; do
     case $line in
         # quit
-        q|e) exit;;
+        q|e)
+            exit;;
         # play
-        p) say;;
+        p)
+            say;;
         # save
-        s) echo "$F" > "$D/$(date '+%Y-%m-%d-%H:%M:%S')";;
+        s)
+            echo "$F" > "$D/$(date '+%Y-%m-%d-%H:%M:%S')";;
         # next
-        n) clear; F=$(fortune); cow;;
+        n)
+            clear; F=$(fortune); cow;;
         # next with voice
-        N) clear; F=$(fortune); cow; say;;
+        N)
+            clear; F=$(fortune); cow; say;;
         # last saved
-        l) clear;
-           F=$(cat "$D/$(ls "$D" | sort | tac | head -n 1)")
-           cow;;
+        l)
+            clear
+            remember -1
+            cow;;
         # last saved with voice
-        L) clear;
-           F=$(cat "$D/$(ls "$D" | sort | tac | head -n 1)")
-           cow; say;;
+        L)
+            clear
+            remember -1
+            cow; say;;
+        # list saved and select
+        ls)
+            clear
+            select f in $(ls "$D" | sort | tac); do
+                remember "$f"
+                cow
+                break
+            done;;
+        # list saved and select with voice
+        LS)
+            clear
+            select f in $(ls "$D" | sort | tac); do
+                remember "$f"
+                cow; say;
+                break
+            done;;
+        # list all
+        'ls all')
+            clear
+            counter=1
+            for f in $(ls "$D" | sort); do
+                echo "$counter) $f:"
+                let ++counter
+                remember "$f"
+                cow
+                echo
+            done;;
+        # remove
+        rm)
+            clear
+            select f in $(ls "$D" | sort | tac); do
+                rm "$f"
+                break
+            done;;
     esac
 done

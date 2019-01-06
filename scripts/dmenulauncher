@@ -1,17 +1,53 @@
 #!/bin/bash
-# end a command with ; to run in a terminal
 
 DMENU="dmenu -i"
-TERMI="st -e"
+DMENUL="$DMENU -l 20"
 CACHE="$HOME/.dmenu_cache_recent"
 
+[[ "$1" == '-c' ]] && {
+    rm -f "$CACHE"
+    exit
+}
+
 touch $CACHE
-MOST_USED=`sort $CACHE | uniq -c | sort -r | colrm 1 8`
-RUN=`(echo "$MOST_USED"; dmenu_path | grep -vxF "$MOST_USED") | $DMENU $@` &&
+MOST_USED=$(sort $CACHE | uniq -c | sort -r | colrm 1 8)
+RUN=$((echo "$MOST_USED"; dmenu_path | grep -vxF "$MOST_USED") | $DMENU $@) &&
     (echo $RUN; head -n 99 $CACHE) > $CACHE.$$ &&
     mv $CACHE.$$ $CACHE
 
+function clean {
+    RUN=$(echo "$RUN" | sed -e 's/^!.\s*//')
+}
+
+function term {
+    exec theterm "$RUN; fish"
+}
+
+function calculate {
+    exec theterm "calc \"$RUN\"; calc"
+}
+
+function duck {
+    exec $BROWSER "https://duckduckgo.com/?q=$RUN&t=ffab&atb=v1-1"
+}
+
+function find-file {
+    F=$(locate "$RUN" | eval "$DMENUL") && \
+        case $(echo -e 'Open\nOpen directory' \
+                   | eval "$DMENU -p 'Open $(basename $F)?'") in
+            'Open')
+                exec xdg-open "$F"
+                ;;
+            'Open directory')
+                exec dmenuopendir $(dirname "$F")
+                ;;
+        esac
+}
+
 case $RUN in
-    *\;) exec `echo $TERMI $RUN | sed -e 's/;$//'`;;
-    *)   $RUN || $TERMI "bash -c 'calc $RUN && read'";; # TODO: handle this
+    \!t*) clean; term;;
+    \!c*) clean; calculate;;
+    \!d*) clean; duck;;
+    \!f*) clean; find-file;;
+    *)    exec $RUN;;
 esac
