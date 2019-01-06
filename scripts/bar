@@ -331,7 +331,7 @@ function cmus {
 }
 
 function donno {
-    [[ $BLOCK_BUTTON = "1" ]] && theterm lolcowforune &
+    [[ $BLOCK_BUTTON = "1" ]] && theterm 'lolcowforune -p' &
     echo '¯\_(ツ)_/¯'
 }
 
