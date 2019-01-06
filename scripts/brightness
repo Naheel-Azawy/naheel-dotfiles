@@ -6,7 +6,7 @@ current=$(cat "$file")
 C="$1"
 V="$2"
 current=$(printf '%.0f' $(echo "$current/$MAX*100" | bc -l))
-if [[ "$C" = "-print" ]]; then
+if [[ "$@" = '' || "$C" = "-print" ]]; then
     printf "%.0f\n" $current
     exit
 fi

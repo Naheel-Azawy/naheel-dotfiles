@@ -1,0 +1,38 @@
+#!/bin/bash
+D="$HOME/Documents/donnolol"
+
+function cow {
+    echo "$F" | cowthink | lolcat 2>/dev/null
+    #echo "$F" | cowthink -f $(find /usr/share/cows -type f | shuf -n 1) | lolcat 2>/dev/null
+}
+
+function say {
+    echo "$F" | espeak -v en-us+f2 -p 85 -s 150 -a 200 2>/dev/null
+}
+
+F=$(fortune)
+cow
+[[ "$1" == '-p' ]] && say
+
+while read line; do
+    case $line in
+        # quit
+        q|e) exit;;
+        # play
+        p) say;;
+        # save
+        s) echo "$F" > "$D/$(date '+%Y-%m-%d-%H:%M:%S')";;
+        # next
+        n) clear; F=$(fortune); cow;;
+        # next with voice
+        N) clear; F=$(fortune); cow; say;;
+        # last saved
+        l) clear;
+           F=$(cat "$D/$(ls "$D" | sort | tac | head -n 1)")
+           cow;;
+        # last saved with voice
+        L) clear;
+           F=$(cat "$D/$(ls "$D" | sort | tac | head -n 1)")
+           cow; say;;
+    esac
+done

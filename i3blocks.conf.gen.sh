@@ -20,6 +20,10 @@ out markup=pango
 # out command=bar --loop
 # out interval=persist
 
+out [donno]
+out command=bar donno
+out interval=once
+
 out [language]
 out command=bar lang
 out interval=$I3BLOCKS_DUR_LANG
@@ -64,4 +68,3 @@ out [time]
 out command=bar time
 out interval=$I3BLOCKS_DUR_TIME
 out signal=$I3BLOCKS_SIG_TIME
-

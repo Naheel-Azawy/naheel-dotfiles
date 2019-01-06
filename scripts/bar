@@ -330,6 +330,11 @@ function cmus {
     echo -n "$T - $A"
 }
 
+function donno {
+    [[ $BLOCK_BUTTON = "1" ]] && theterm lolcowforune &
+    echo '¯\_(ツ)_/¯'
+}
+
 if [[ $justaclick != 0 ]]; then
     if [[ $justaclick != '' ]]; then
         BLOCK_BUTTON=1 get $justaclick -a 1>/dev/null

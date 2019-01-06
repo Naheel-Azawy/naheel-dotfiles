@@ -11,3 +11,4 @@
 | pacman | cool-retro-term                            | CRT terminal                                                      |
 | aur    | cli-visualizer                             | a CLI visualizer                                                  |
 | aur    | browsh                                     | a terminal web browser                                            |
+| pip    | termdown                                   | the ultimate countdown and stopwatch                              |

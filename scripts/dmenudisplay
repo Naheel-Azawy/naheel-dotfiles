@@ -10,5 +10,4 @@ if [[ "$sel" = 'More options' ]]; then
 elif [[ "$sel" != "" ]]; then
     eval "$D/${sel}.sh"
 fi
-
-feh --bg-fill ~/.config/wall.png
+setwallpaper

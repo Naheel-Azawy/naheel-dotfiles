@@ -23,7 +23,8 @@
 | pacman   | dosfstools                                | allows your computer to access dos-like filesystems               |
 | pacman   | dunst                                     | is a suckless notification system                                 |
 | pacman   | exfat-utils                               | allows management of FAT drives                                   |
-| pacman   | feh                                       | is a minimal image viewer                                         |
+| pacman   | feh                                       | a minimal image viewer                                            |
+| pacman   | sxiv                                      | another minimal image viewer (a bit less minimal)                 |
 | pacman   | ffmpeg                                    | can record and splice video and audio on the command line         |
 | pacman   | chromium                                  | well, in most cases it is faster than firefox...                  |
 | pacman   | gnome-keyring                             | serves as the system keyring                                      |

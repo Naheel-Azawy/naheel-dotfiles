@@ -238,6 +238,10 @@ bindsym $mod+l exec theterm x --eval '"(cfw:open-org-calendar)"'
 # Network manager dmenu
 bindsym $mod+n exec --no-startup-id networkmanager_dmenu
 
+# ¯\_(ツ)_/¯
+bindsym $mod+backslash       exec theterm lolcowforune
+bindsym $mod+Shift+backslash exec theterm lolcowforune -p
+
 # #---Extra XF86 Keys---# #
 # These are the extra media keys that some keyboards have.
 bindsym XF86AudioMute                    exec --no-startup-id audioctl mute
@@ -351,7 +355,7 @@ exec --no-startup-id xdaemon
 exec_always --no-startup-id compton
 
 # wallpaper
-exec_always --no-startup-id feh --bg-fill "$H/.config/wall.png"
+exec_always --no-startup-id setwallpaper
 
 # set language to 'us' by default, runs xmodmap as well
 exec_always --no-startup-id lang-set us
