@@ -24,6 +24,7 @@ function e;        exit $argv; end
 function ee;       e $argv; end
 function E;        e $argv; end
 function ث;        e $argv; end
+function q;        exit $argv; end
 function ls;       command ls --color --group-directories-first $argv; end
 function مس;       lang-toggle >/dev/null; ls $argv; end
 function l;        ls $argv; end

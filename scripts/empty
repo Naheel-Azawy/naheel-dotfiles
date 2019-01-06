@@ -1,0 +1,25 @@
+#!/usr/bin/python3
+
+import gi
+gi.require_version('Gtk', '3.0')
+from gi.repository import Gtk
+
+window = Gtk.Window()
+window.set_position(Gtk.WindowPosition.CENTER)
+window.set_default_size(400, 400)
+window.set_title("NOTHING!")
+window.connect("delete-event", Gtk.main_quit)
+
+window.set_app_paintable(True)
+
+screen = window.get_screen()
+visual = screen.get_rgba_visual()
+
+if visual is None:
+    print("NO ALPHA :(")
+    visual = screen.get_system_visual()
+
+window.set_visual(visual)
+
+window.show_all()
+Gtk.main()
