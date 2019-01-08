@@ -1,0 +1,34 @@
+#!/bin/bash
+
+function how-can-I-help-you-sir {
+    C=$((echo "Wikipedia"     && \
+             echo "Translate" && \
+             echo "Duck it!"  && \
+             echo "Manual"    && \
+             echo "Wait... What? I'm looking for something else...") \
+            | dmenu -i -l 20 -p "What is ${Q:0:30}?")
+
+    case "$C" in
+        Wiki*)
+            theterm "wikit-quick \"$Q\""
+        ;;
+        Trans*)
+            L=$(echo -e 'en\nar' | dmenu -i -p 'To?')
+            theterm "trans :$L \"$Q\" | more; read"
+        ;;
+        Duck*)
+            Q=$(echo "$Q" | url-encode)
+            $BROWSER "https://duckduckgo.com/?q=$Q&t=ffab&atb=v1-1"
+        ;;
+        Man*)
+            theterm "man \"$Q\""
+        ;;
+        Wait*)
+            Q=$(echo | dmenu -i -p "Which is?")
+            how-can-I-help-you-sir
+        ;;
+    esac
+}
+
+Q=$(clipboard | tr '\n' ' ' | xargs)
+how-can-I-help-you-sir

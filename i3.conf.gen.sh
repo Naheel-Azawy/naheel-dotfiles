@@ -229,6 +229,9 @@ bindsym $mod+Control+r exec --no-startup-id 'getbib $(clipboard)'
 # Youtube stuff
 bindsym $mod+y exec --no-startup-id dmenuyoutube
 
+# WHAT?? HELP!
+bindsym $mod+h exec --no-startup-id dmenuwhat
+
 # Open calendar
 bindsym $mod+l exec theterm x --eval '"(cfw:open-org-calendar)"'
 

@@ -7,7 +7,7 @@ PROG_FILE="/tmp/__ytdl_prog"
 DMENU="dmenu -sb '#E00000' -sf white -nf white"
 
 function search {
-    Q=$(echo | eval "$DMENU -p 'Search YouTube'") && \
+    Q=$(echo | eval "$DMENU -p 'Search YouTube'" | url-encode) && \
         browser "https://www.youtube.com/results?search_query=$Q"
 }
 

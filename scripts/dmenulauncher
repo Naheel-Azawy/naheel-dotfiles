@@ -11,9 +11,7 @@ CACHE="$HOME/.dmenu_cache_recent"
 
 touch $CACHE
 MOST_USED=$(sort $CACHE | uniq -c | sort -r | colrm 1 8)
-RUN=$((echo "$MOST_USED"; dmenu_path | grep -vxF "$MOST_USED") | $DMENU $@) &&
-    (echo $RUN; head -n 99 $CACHE) > $CACHE.$$ &&
-    mv $CACHE.$$ $CACHE
+RUN=$((echo "$MOST_USED"; dmenu_path | grep -vxF "$MOST_USED") | $DMENU $@)
 
 function clean {
     RUN=$(echo "$RUN" | sed -e 's/^!.\s*//')
@@ -28,11 +26,17 @@ function calculate {
 }
 
 function duck {
+    RUN=$(echo "$RUN" | url-encode)
     exec $BROWSER "https://duckduckgo.com/?q=$RUN&t=ffab&atb=v1-1"
 }
 
 function find-file {
-    F=$(locate "$RUN" | eval "$DMENUL") && \
+    L=$(locate "$RUN")
+    [[ "$L" == '' ]] && {
+        notify-send "'$RUN' not found!"
+        return
+    }
+    F=$(echo "$L" | eval "$DMENUL") && \
         case $(echo -e 'Open\nOpen directory' \
                    | eval "$DMENU -p 'Open $(basename $F)?'") in
             'Open')
@@ -44,10 +48,18 @@ function find-file {
         esac
 }
 
+# needed to update the database of locate
+sudo updatedb &
+
 case $RUN in
     \!t*) clean; term;;
     \!c*) clean; calculate;;
     \!d*) clean; duck;;
     \!f*) clean; find-file;;
-    *)    exec $RUN;;
+    *)
+        # updating the history
+        # - bangs are not saved
+        (echo $RUN; head -n 99 $CACHE) > $CACHE.$$ &&
+            mv $CACHE.$$ $CACHE
+        exec $RUN;;
 esac

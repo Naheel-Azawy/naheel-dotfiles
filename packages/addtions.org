@@ -71,3 +71,4 @@
 | pacman | ditta                        | draw with ASCII                                                                                |
 | npm    | cloudconvert                 | usefull to convert ugly documents written in non-free softwares                                |
 | pacman | mlocate                      | find files quickly                                                                             |
+| npm    | wikit                        | cli wikipedia                                                                                  |
