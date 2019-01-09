@@ -45,7 +45,7 @@ echo "$URL" | grep -q 'playlist' || MENU='Download\nDownload audio\n'
 echo "$URL" | grep -q 'list=' && MENU="${MENU}Download playlist\nDownload audio playlist\n"
 MENU="${MENU}Copy URL\nWatch in YouTube viewer"
 D=0
-RES=$(echo -e "$MENU" | eval "$DMENU" -l 20 -p "$TITLE") || exit
+RES=$(echo -e "$MENU" | eval "$DMENU -l 20 -p \"$TITLE\"") || exit
 echo "$RES" | grep -q Download && D=1
 [[ $D == 1 ]] && notify-send "Downloading $TITLE..."
 case "$RES" in

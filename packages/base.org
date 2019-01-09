@@ -75,3 +75,4 @@
 | pacman   | lynx                                      | a terminal web browser                                            |
 | pacman   | ffmpegthumbnailer                         | video thumbnails. Needed for ranger                               |
 | aur      | simple-mtpfs                              | MTP mounter using fuse                                            |
+| aur      | vidir                                     | edit files names in your favorite editor                          |

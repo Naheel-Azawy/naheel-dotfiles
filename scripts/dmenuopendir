@@ -1,9 +1,11 @@
 #!/bin/bash
 D="$1"
-open=$(echo -e "No\nTerminal\nRanger\nLF" | dmenu -i -p "Open $(basename $D)?")
+open=$(echo -e "No\nTerminal\nRanger\nLF\nNNN\nNautilus" | dmenu -i -p "Open $(basename $D)?")
 cd "$D"
 case "$open" in
     Ranger)   exec theterm ranger;;
     LF)       exec theterm lf;;
+    NNN)      exec nnn;;
+    Nautilus) exec nautilus .;;
     Terminal) exec theterm;;
 esac

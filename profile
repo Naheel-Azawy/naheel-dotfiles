@@ -21,6 +21,10 @@ export QT_STYLE_OVERRIDE=adwaita-dark
 export _JAVA_OPTIONS='-Dawt.useSystemAAFontSettings=on'
 export CLOUDCONVERT_API_KEY='bUGujVfvGQ6nkPZo5MvFoIz65C3spOZMtiD4Bz613XxnXsUIVDDwZILqOJZghP3D'
 
+export NNN_BMS='d:~/Documents;D:~/Downloads/;p:~/Projects'
+export NNN_USE_EDITOR=1
+export NNN_SHOW_HIDDEN=0
+
 export PI=3.14159265358979323844
 export EU=2.71828182845904523537
 
