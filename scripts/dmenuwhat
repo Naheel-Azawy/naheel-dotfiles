@@ -1,7 +1,13 @@
 #!/bin/bash
 
+function is-url {
+    [[ $(echo "$1" | sed -rn 's@.*(https?://.+\..+).*@\1@p') != '' ]]
+}
+
 function how-can-I-help-you-sir {
-    C=$((echo "Wikipedia"     && \
+    C=$((is-url "$Q" && \
+             echo "View page";   \
+             echo "Wikipedia" && \
              echo "Translate" && \
              echo "Duck it!"  && \
              echo "Manual"    && \
@@ -9,24 +15,27 @@ function how-can-I-help-you-sir {
             | dmenu -i -l 20 -p "What is ${Q:0:30}?")
 
     case "$C" in
+        View*)
+            theterm "bash -c 'lynx -dump \"$Q\" | more && echo -e \"\nOpen in browser? (y/n)\" && read ans && test \"\$ans\" == y && browser \"$Q\" &>/dev/null'"
+            ;;
         Wiki*)
             theterm "wikit-quick \"$Q\""
-        ;;
+            ;;
         Trans*)
             L=$(echo -e 'en\nar' | dmenu -i -p 'To?')
             theterm "trans :$L \"$Q\" | more; read"
-        ;;
+            ;;
         Duck*)
             Q=$(echo "$Q" | url-encode)
             $BROWSER "https://duckduckgo.com/?q=$Q&t=ffab&atb=v1-1"
-        ;;
+            ;;
         Man*)
             theterm "man \"$Q\""
-        ;;
+            ;;
         Wait*)
             Q=$(echo | dmenu -i -p "Which is?")
             how-can-I-help-you-sir
-        ;;
+            ;;
     esac
 }
 
