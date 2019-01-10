@@ -3,6 +3,7 @@
 | aur    | logisim                   | logic circuits design                                             |
 | aur    | fritzing                  | simple and easy circuit design                                    |
 | pacman | arduino                   | well, arduino..                                                   |
+| pacman | arduino-cli               | cli for arduino                                                   |
 | aur    | qucs                      | circuit simulator                                                 |
 | pacman | uucp                      | to use 'cu' for serial connection                                 |
 | pacman | kicad                     | schematics and PCB                                                |

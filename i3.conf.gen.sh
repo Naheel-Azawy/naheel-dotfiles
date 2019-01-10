@@ -208,7 +208,8 @@ bindsym $mod+m       exec --no-startup-id dmenumount
 bindsym $mod+Shift+m exec --no-startup-id dmenuumount
 
 # Display options
-bindsym $mod+p exec --no-startup-id dmenudisplay
+bindsym $mod+p       exec --no-startup-id dmenudisplay
+bindsym $mod+Shift+p exec --no-startup-id dmenudisplay -d
 
 # Clipboard manager
 bindsym $mod+c exec --no-startup-id clipmenu

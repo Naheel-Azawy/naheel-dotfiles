@@ -52,6 +52,9 @@ lnnn "$D/tmux.conf"     "$H/.tmux.conf"
 lnnn "$D/spacemacs.el"  "$H/.spacemacs"
 lnnn "$D/more-paths.sh" "$H/.more-paths"
 
+mkdir -p "$H/.config/networkmanager-dmenu"
+lnnn "$D/nm-dmenu.ini" "$H/.config/networkmanager-dmenu/config.ini"
+
 mkdir -p "$H/.icons/default"
 lnnn "$D/gtk-theme/icons.theme" "$H/.icons/default/index.theme"
 

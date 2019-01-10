@@ -1,0 +1,13 @@
+#!/bin/bash
+for p in ~/.arduino*/packages/*; do
+    for hw in $p/hardware/*; do
+        path="$hw/$(ls $hw | sort | tac | head -n 1)" # latest version
+        echo -n '> '
+        sed -rn 's/.*name=(.*)/\1/p' "$path/platform.txt" # platform name
+        sed -rn 's/(.+)\.name=(.+)/\1 \2/p' "$path/boards.txt" | \
+            while read n N; do # n: small name, N: full name
+                printf "%s:%s:%s %s\n" \
+                       $(basename "$p") $(basename "$hw") "$n" "$N"
+            done
+    done
+done

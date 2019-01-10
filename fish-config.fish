@@ -34,6 +34,7 @@ function h;        history; end
 function gh;       history | grep $argv; end
 function m;        tmux $argv; end
 function r;        ranger $argv; end
+function n;        nnn $argv; end
 function s;        swallow $argv; end
 function t;        true  $argv; end
 function f;        false $argv; end
@@ -54,8 +55,6 @@ function d;        set sp (string split '.' $argv[-1])
     test $sp[-1] != 'pdf'; and set r libreoffice; or set r $READER
     echo $r
     swallow $r $argv; end
-function n;        test (count $argv) -eq 0; and set argv '.'
-    swallow nautilus $argv; end
 function lfcd
     set tmp (mktemp)
     lf -last-dir-path=$tmp $argv
