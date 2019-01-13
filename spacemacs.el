@@ -347,23 +347,6 @@ you should place your code here."
   ;; ---- XCLIP ----
   (xclip-mode 1)
 
-  ;; ---- AUTO-COMP ----
-  (require 'auto-complete)
-  (require 'auto-complete-config)
-  (auto-complete-mode)
-  (ac-config-default)
-
-  ;; ---- C HEADERS ----
-  (defun my:ac-c-header-init ()
-    (require 'auto-complete-c-headers)
-    (add-to-list 'ac-sources 'ac-source-c-headers)
-    ;; path to includes. `gcc -xc++ -E -v -`
-    (add-to-list 'achead:include-directories '"/usr/include")
-    )
-  ;; hook the above function to c and c++
-  (add-hook 'c-mode-hook 'my:ac-c-header-init)
-  (add-hook 'c++-mode-hook 'my:ac-c-header-init)
-
   ;; ---- EXECUTE ----
   (defun execute-program ()
     (interactive)
@@ -395,17 +378,17 @@ you should place your code here."
   ;; ---- MULTIPLE CURSERS ----
   (require 'multiple-cursors)
   (global-set-key (kbd "C-c C-\\") 'mc/edit-lines)
-  (global-set-key (kbd "M-n") 'mc/mark-next-like-this)
-  (global-set-key (kbd "M-p") 'mc/mark-previous-like-this)
-  (global-set-key (kbd "C-c \\") 'mc/mark-all-like-this)
+  (global-set-key (kbd "M-n")      'mc/mark-next-like-this)
+  (global-set-key (kbd "M-p")      'mc/mark-previous-like-this)
+  (global-set-key (kbd "C-c \\")   'mc/mark-all-like-this)
 
   ;; ---- KEYS ----
-  (global-set-key (kbd "M-/") 'undo-tree-redo)
-  (global-set-key (kbd "C-c SPC") 'evil-toggle-fold)
-  (global-set-key (kbd "C-x <up>") 'windmove-up)
-  (global-set-key (kbd "C-x <down>") 'windmove-down)
+  (global-set-key (kbd "M-/")         'undo-tree-redo)
+  (global-set-key (kbd "C-c SPC")     'evil-toggle-fold)
+  (global-set-key (kbd "C-x <up>")    'windmove-up)
+  (global-set-key (kbd "C-x <down>")  'windmove-down)
   (global-set-key (kbd "C-x <right>") 'windmove-right)
-  (global-set-key (kbd "C-x <left>") 'windmove-left)
+  (global-set-key (kbd "C-x <left>")  'windmove-left)
 
   ;; ---- MODES ----
   (setq auto-mode-alist

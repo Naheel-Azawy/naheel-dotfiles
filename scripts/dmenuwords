@@ -11,5 +11,5 @@ nk1508530@qu.edu.qa
 ◔ ⌣ ◔
 ( ͡° ͜ʖ ͡°)
 ( ͡°( ͡° ͜ʖ( ͡° ͜ʖ ͡°)ʖ ͡°) ͡°)"
-R=$(echo "$WORDS" | dmenu -l 15)
+R=$(echo "$WORDS" | menu-interface -l 15 -p 'Words')
 [[ "$R" != '' ]] && echo -n "$R" | clipboard

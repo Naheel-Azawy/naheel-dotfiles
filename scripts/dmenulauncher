@@ -1,6 +1,6 @@
 #!/bin/bash
 
-DMENU="dmenu -i"
+DMENU="menu-interface -i"
 DMENUL="$DMENU -l 20"
 CACHE="$HOME/.dmenu_cache_recent"
 
@@ -56,6 +56,7 @@ case $RUN in
     \!c*) clean; calculate;;
     \!d*) clean; duck;;
     \!f*) clean; find-file;;
+    \!s*) clean; theterm "sudo $RUN";;
     *)
         # updating the history
         # - bangs are not saved

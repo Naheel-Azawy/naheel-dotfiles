@@ -1,5 +1,0 @@
-#!/bin/bash
-echo -n '<span font="Font Awesome 5 Free" rise="-1024"'
-[[ "$2" != "" ]] && echo -n " color=\"$2\""
-echo -ne ">$1"
-echo -n '</span>'

@@ -1,4 +1,4 @@
 #!/bin/bash
 [[ ! -f "$DOTFILES_DIR/unicode" ]] && unicode-update
-V=$(cat "$DOTFILES_DIR/unicode" | dmenu -i -l 20 | awk -F' : ' '{print $1}')
+V=$(cat "$DOTFILES_DIR/unicode" | menu-interface -i -l 20 | awk -F' : ' '{print $1}')
 [[ "$V" != '' ]] && echo -n "$V" | clipboard

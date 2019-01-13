@@ -83,11 +83,13 @@ function sig2name {
 number_file='/tmp/__bar-show-numbers'
 number=$(test -f "$number_file" && echo 1 || echo 0)
 justaclick=0
+lemon=0
 args=($@)
 for i in ${!args[@]}; do
     arg=${args[$i]}
     case $arg in
         -a|--ascii)  a='-a'; args[$i]='';;
+        -n|--lemon)  lemon=1; args[$i]='';;
         -l|--loop)   l=1; args[$i]='';;
         -s|--select) s=${args[$i+1]}; args[$i]=''; args[$((i + 1))]='';;
         --number)
@@ -175,6 +177,19 @@ function get {
     if [[ "$selected" = "$F" ]]; then echo -n '</span>'; fi
 }
 
+function awesome-font-echo {
+    if [[ $lemon == 1 ]]; then
+        [[ "$2" != '' ]] && echo -n "%{F$2}"
+        echo -ne "$1"
+        [[ "$2" != '' ]] && echo -n "%{F-}"
+    else
+        echo -n '<span font="Font Awesome 5 Free" rise="-1024"'
+        [[ "$2" != "" ]] && echo -n " color=\"$2\""
+        echo -ne ">$1"
+        echo -n '</span>'
+    fi
+}
+
 function time {
     [[ $BLOCK_BUTTON = "1" ]] && \
         $TERMINAL -e bash -c 'cal -y && read -p "Open Emacs calender? (y/n) " ans && test "$ans" == "y" && x --eval "(cfw:open-org-calendar)"'
@@ -202,15 +217,15 @@ function batt {
     fi
 
     if [[ "$C" != 'Discharging' ]]; then
-        R='gold'
+        R='#FFD700'
         awesome-font-echo '\uf1e6' $R
         echo -n ' '
     elif [[ "$V" -le "5" ]]; then
-        R='red'
+        R='#FF0000'
         awesome-font-echo '\uf12a' $R
         echo -n ' '
     elif [[ "$V" -le "20" ]]; then
-        R='red'
+        R='#FF0000'
     fi
 
     if [[ "$V" -lt "50" ]]; then
@@ -255,7 +270,7 @@ function volu {
     if [[ "$1" != "-a" ]]; then
         if [[ $(pamixer --get-mute) = "true" || $V = 0 ]]; then
             awesome-font-echo '\uf026'
-            echo -n '<span font="3"> </span>'
+            [[ $lemon == 0 ]] && echo -n '<span font="3"> </span>'
             awesome-font-echo '\uf00d'
         #elif [[ "$V" -lt "50" ]]; then
         #    awesome-font-echo '\uf027'
@@ -275,9 +290,9 @@ function sens {
     if [[ "$1" != "-a" ]]; then
         P=$(printf '%.0f' $(echo "$T/$M*100" | bc -l))
         if [[ "$P" -ge "90" ]]; then
-            awesome-font-echo '\uf12a' red
+            awesome-font-echo '\uf12a' '#FF0000'
             echo -n ' '
-            awesome-font-echo '\uf2c7' red
+            awesome-font-echo '\uf2c7' '#FF0000'
         elif [[ "$P" -gt "50" ]]; then
             awesome-font-echo '\uf2c8'
         elif [[ "$P" -gt "40" ]]; then
@@ -353,6 +368,13 @@ if [[ "$blast" = "0" ]]; then
     exit
 fi
 
+if [[ $lemon == 1 ]]; then
+    while true; do
+        echo "%{B#ff000000}%{c}$(get time) $(get weat) %{r}$(get donno) $(get lang) $(get pray) $(get sens) $(get volu) $(get brig) $(get wifi) $(get batt)"
+        sleep 0.5
+    done
+fi
+
 loop=1
 while [[ "$loop" = 1 ]]; do
     line=''
@@ -365,7 +387,7 @@ while [[ "$loop" = 1 ]]; do
     done
     echo "$line"
     loop=$l
-    [[ "$loop" = "1" ]] && sleep 1
+    [[ "$loop" = "1" ]] && sleep 0.5
 done
 
 exit 0

@@ -55,7 +55,7 @@ out focus_follows_mouse no
 
 # Setting colors
 #   class                   border    backgr.   text      indicator   child_border
-out client.focused          '#4c7899' $color_bl '#ffffff' '#2e9ef4'   $color_bl
+out client.focused          '#4c7899' '#aaaaaa' '#ffffff' '#2e9ef4'   '#aaaaaa'
 out client.focused_inactive '#333333' '#5f676a' '#ffffff' '#484e50'   '#222222'
 out client.unfocused        '#333333' '#222222' '#888888' '#292d2e'   '#111111'
 out client.urgent           '#2f343a' '#900000' '#ffffff' '#900000'   '#900000'
@@ -71,7 +71,7 @@ block bar
         out background         $color_bg
         out statusline         '#ffffff'
         out separator          '#666666'
-        out focused_workspace  $color_bl  $color_bl    '#ffffff'
+        out focused_workspace  '#eeeeee'  '#eeeeee'    '#000000'
         out active_workspace   $color_gr  $color_gr    '#ffffff'
         out inactive_workspace $color_bg  $color_bg    '#888888'
         out urgent_workspace   $color_rd  $color_rd    '#ffffff'

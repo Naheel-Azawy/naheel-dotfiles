@@ -15,3 +15,4 @@
 | pacman | strace                    | trace system calls                                                |
 | pacman | ltrace                    | trace library function calls                                      |
 | pacman | radare2                   | the best reverse engineering toy out there                        |
+| npm    | tern                      | JavaScript analyzer (needed for Emacs)                            |

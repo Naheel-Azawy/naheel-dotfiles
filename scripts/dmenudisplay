@@ -6,7 +6,7 @@ D="$HOME/.dotfiles/display-layouts"
     sel=$((echo default \
                && ls -1 "$D/" | grep -v default | awk -F'.' '{print $1}' \
                && echo 'More options') \
-              | dmenu -l 20 -p 'Select the display layout')
+              | menu-interface -l 20 -p 'Select the display layout')
 }
 
 if [[ "$sel" = 'More options' ]]; then

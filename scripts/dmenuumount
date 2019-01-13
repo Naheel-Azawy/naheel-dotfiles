@@ -5,12 +5,12 @@
 # https://github.com/Naheel-Azawy/naheel-dotfiles
 # Based on https://github.com/LukeSmithxyz/voidrice
 
-LEN=20
+LEN=15
 
 mtpdrives=$(awk '/simple-mtpfs/ {print $2 ": (MTP)"}' /etc/mtab)
 drives=$(test ! -z "$mtpdrives" && echo "$mtpdrives"; lsblk -nrpo "name,type,size,mountpoint" | awk '($2=="part"||$2=="lvm")&&$4!~/\/boot|\/home$|SWAP/&&length($4)>1{printf "%s: %s (%s)\n",$4,$1,$3}' | sort)
 [ -z "$drives" ] && exit
-chosen=$(echo "$drives" | dmenu -l $LEN -i -p "Unmount which drive?")
+chosen=$(echo "$drives" | menu-interface -l $LEN -i -p "Unmount which drive?")
 MTP=$(echo "$chosen" | grep -q "(MTP)" && echo 1 || echo 0)
 chosen=$(echo "$chosen" | awk -F':' '{print $1}')
 [ -z "$chosen" ] && exit

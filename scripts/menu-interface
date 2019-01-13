@@ -1,0 +1,8 @@
+#!/bin/bash
+ROFI=0
+
+[[ $ROFI == 1 ]] && {
+    exec rofi -lines 10 -width 50 -dmenu -font "$FONT_MONO 18" "$@"
+} || {
+    exec dmenu "$@"
+}

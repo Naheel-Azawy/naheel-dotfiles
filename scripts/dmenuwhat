@@ -1,5 +1,7 @@
 #!/bin/bash
 
+DMENU='menu-interface -i'
+
 function is-url {
     [[ $(echo "$1" | sed -rn 's@.*(https?://.+\..+).*@\1@p') != '' ]]
 }
@@ -11,8 +13,9 @@ function how-can-I-help-you-sir {
              echo "Translate" && \
              echo "Duck it!"  && \
              echo "Manual"    && \
+             echo "ArchWiki"  && \
              echo "Wait... What? I'm looking for something else...") \
-            | dmenu -i -l 20 -p "What is ${Q:0:30}?")
+            | $DMENU -l 20 -p "What is ${Q:0:30}?")
 
     case "$C" in
         View*)
@@ -22,7 +25,7 @@ function how-can-I-help-you-sir {
             theterm "wikit-quick \"$Q\""
             ;;
         Trans*)
-            L=$(echo -e 'en\nar' | dmenu -i -p 'To?')
+            L=$(echo -e 'en\nar' | $DMENU -p 'To?')
             theterm "trans :$L \"$Q\" | more; read"
             ;;
         Duck*)
@@ -32,8 +35,12 @@ function how-can-I-help-you-sir {
         Man*)
             theterm "man \"$Q\""
             ;;
+        Arch*)
+            Q=$(echo "$Q" | url-encode)
+            $BROWSER "https://wiki.archlinux.org/index.php?search=$Q"
+            ;;
         Wait*)
-            Q=$(echo | dmenu -i -p "Which is?")
+            Q=$(echo | $DMENU -p "Which is?")
             how-can-I-help-you-sir
             ;;
     esac

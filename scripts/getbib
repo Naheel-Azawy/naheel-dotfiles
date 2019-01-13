@@ -74,6 +74,11 @@ command -v scholar.py >/dev/null || {
     }
 }
 
+# if menu-interface is not there then just use normal dmenu
+command -v menu-interface >/dev/null || function menu-interface {
+        dmenu "$@"
+    }
+
 # the final action
 function finalize {
     if [[ $CITE_ONLY == 0 ]]; then
@@ -149,7 +154,7 @@ function finalize {
     [[ $M != '' ]] && M="$M\n"
     [[ $TITLE2 != '' ]] && M="${M}$TITLE2\n"
     M="${M}$(clipboard)"
-    TITLE=$(echo -e "$M" | dmenu -i -l 20 -p 'Cite: ') || exit 1
+    TITLE=$(echo -e "$M" | menu-interface -i -l 20 -p 'Cite: ') || exit 1
 }
 
 # nothing was found
