@@ -82,6 +82,11 @@ handle_extension() {
             lynx -dump -- "${FILE_PATH}" && exit 5
             elinks -dump "${FILE_PATH}" && exit 5
             ;; # Continue with next handler on failure
+
+        # JSON
+        json)
+            cat "${FILE_PATH}" | jq -C . && exit 5
+            exit 2;;
     esac
 }
 
@@ -124,7 +129,7 @@ handle_image() {
                 && imgdarken "${IMAGE_CACHE_PATH}" \
                 && exit 6 || exit 1;;
         # Office files
-        application/*office*)
+        application/*office*|application/ms*|application/vnd.ms-*)
             CACHE_DIR="${IMAGE_CACHE_PATH%/*}"
             TMP_FILE_PATH="${FILE_PATH##*/}"
             TMP_FILE_PATH="${CACHE_DIR}/${TMP_FILE_PATH%.*}.png"

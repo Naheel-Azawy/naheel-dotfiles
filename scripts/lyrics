@@ -26,45 +26,60 @@ function doit {
     echo "$S" | fribidi --nopad
 }
 
+function getbrowsertitle {
+    WIN=$(xdotool search --onlyvisible --class "chromium")
+    [[ "$WIN" != '' ]] && xprop -id "$WIN" | sed -E -n 's/_NET_WM_NAME\(UTF8_STRING\) = "(.*)"/\1/p' | \
+            sed 's/ - Chromium//g; s/ - YouTube//g'
+}
+
 SET=0
 [[ "$1" == '-set' ]] && SET=1 && shift
 Q="$@"
 
 if [[ "$Q" = '' ]] || [[ "$SET" = 1 ]]; then
-    cmus-remote -Q &>/dev/null || {
+    cmus-remote -Q &>/dev/null && \
+        [[ $(cmus-remote -Q | sed -rn 's/status (.+)/\1/p') == playing ]] && {
+        C="$(cmus-remote -Q 2>/dev/null)"
+        F=$(echo "$C" | sed -rn 's/file (.+)/\1/p')
+        LF="${F}-lyrics.txt"
         [[ "$SET" == 1 ]] && {
-            echo 'ERROR: `-set` option needs cmus to be playing something'
+            if [[ "$Q" != '' ]]; then
+                echo "$Q" > "$LF"
+            else
+                clipboard > "$LF"
+            fi
+            exit
+        }
+        [[ -f "$LF" ]] && {
+            cat "$LF" | fribidi --nopad | more
+            exit
+        }
+        T=$(echo "$C" | sed -rn 's/tag title (.+)/\1/p')
+        A=$(echo "$C" | sed -rn 's/tag artist (.+)/\1/p')
+        [[ "$T" = '' ]] && [[ "$A" = '' ]] && {
+            echo "ERROR: couldn't get info from cmus or browser"
             exit 1
         }
-        echo 'ERROR: no arguments provided and cmus is not running'
-        exit 1
+        Q="$T by $A"
+        R=$(doit "$Q")
+        echo "$R" | grep -q 'ERROR on' && exit 1
+        echo "$R" > "$LF"
+        echo "$R" | more
+    } || {
+        Q=$(getbrowsertitle)
+        [[ "$Q" != '' ]] && {
+            R=$(doit "$Q")
+            echo "$R" | grep -q 'ERROR on' && exit 1
+            echo "$R" | more
+        } || {
+            [[ "$SET" == 1 ]] && {
+                echo 'ERROR: `-set` option needs cmus to be playing something'
+                exit 1
+            }
+            echo 'ERROR: no arguments provided, cmus is not running, and browser title not found'
+            exit 1
+        }
     }
-    C="$(cmus-remote -Q)"
-    F=$(echo "$C" | sed -rn 's/file (.+)/\1/p')
-    LF="${F}-lyrics.txt"
-    [[ "$SET" == 1 ]] && {
-        if [[ "$Q" != '' ]]; then
-            echo "$Q" > "$LF"
-        else
-            clipboard > "$LF"
-        fi
-        exit
-    }
-    [[ -f "$LF" ]] && {
-        cat "$LF" | fribidi --nopad | more
-        exit
-    }
-    T=$(echo "$C" | sed -rn 's/tag title (.+)/\1/p')
-    A=$(echo "$C" | sed -rn 's/tag artist (.+)/\1/p')
-    [[ "$T" = '' ]] && [[ "$A" = '' ]] && {
-        echo "ERROR: couldn't get info from cmus"
-        exit 1
-    }
-    Q="$T by $A"
-    R=$(doit "$Q")
-    echo "$R" | grep -q 'ERROR on' && exit 1
-    echo "$R" > "$LF"
-    echo "$R" | more
 else
     doit "$Q" | more
 fi

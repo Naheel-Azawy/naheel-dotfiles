@@ -26,7 +26,7 @@ function how-can-I-help-you-sir {
             ;;
         Trans*)
             L=$(echo -e 'en\nar' | $DMENU -p 'To?')
-            theterm "trans :$L \"$Q\" | more; read"
+            theterm "trans :$L \"$Q\" | less -R"
             ;;
         Duck*)
             Q=$(echo "$Q" | url-encode)
