@@ -313,7 +313,7 @@ values."
    ;; `trailing' to delete only the whitespace at end of lines, `changed'to
    ;; delete only whitespace for changed lines or `nil' to disable cleanup.
    ;; (default nil)
-   dotspacemacs-whitespace-cleanup nil
+   dotspacemacs-whitespace-cleanup trailing
    ))
 
 (defun dotspacemacs/user-init ()
@@ -453,6 +453,12 @@ you should place your code here."
                    ("\\subparagraph{%s}" . "\\subparagraph*{%s}")))
     ;; -- MY "DIRTY" LaTeX EXPORT --
     (setq org-latex-pdf-process '("org-tex-gen-pdf %f"))
+    ;; -- TODO --
+    (setq org-todo-keywords
+          '((sequence "TODO" "PROG" "|" "DONE" "CNCL")))
+    (setq org-todo-keyword-faces
+          '(("PROG" . "yellow")
+            ("CNCL" . "blue")))
     )
 
   ;; ---- DOS EOL ----

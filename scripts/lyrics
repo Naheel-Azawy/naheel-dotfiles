@@ -1,5 +1,12 @@
 #!/bin/bash
 
+LYRICS_DIR="$HOME/Music/lyrics"
+[[ ! -d "$LYRICS_DIR" ]] && mkdir -p "$LYRICS_DIR"
+
+function printout {
+    fribidi --nopad | more
+}
+
 function strbetweenlines {
     A="$1"
     B="$2"
@@ -15,72 +22,80 @@ function strbetweenlines {
     done
 }
 
-function doit {
-    Q="$@"
+function getbrowsertitle {
+    WIN=$(xdotool search --onlyvisible --class "chromium")
+    [[ "$WIN" != '' ]] && xprop -id "$WIN" | sed -E -n 's/_NET_WM_NAME\(UTF8_STRING\) = "(.*)"/\1/p' | \
+            sed -rn 's/^\([0-9]+\)\s+(.+).*/\1/; s/\s*\(Official Video\)//; s/ - YouTube - Chromium//p'
+}
+
+SET=0
+TRANS=0
+TRANS_LANG=''
+case "$1" in
+    -s|--set)   SET=1   && shift;;
+    -t|--trans) TRANS=1 && shift && TRANS_LANG="$1" && shift;;
+esac
+[[ $TRANS_LANG == '' ]] && TRANS_LANG=':en'
+
+Q="$@"
+
+if [[ "$Q" == '' ]] || [[ "$SET" == 1 ]]; then
+    cmus-remote -Q &>/dev/null && \
+        [[ $(cmus-remote -Q | sed -rn 's/status (.+)/\1/p') == playing ]] && {
+            C="$(cmus-remote -Q 2>/dev/null)"
+            T=$(echo "$C" | sed -rn 's/tag title (.+)/\1/p')
+            A=$(echo "$C" | sed -rn 's/tag artist (.+)/\1/p')
+            [[ "$T" = '' ]] && [[ "$A" = '' ]] && {
+                echo "ERROR: couldn't get info from cmus or browser"
+                exit 1
+            }
+            Q="$T by $A"
+        } || {
+            Q=$(getbrowsertitle)
+            [[ "$Q" == '' ]] && {
+                echo 'ERROR: no arguments provided, cmus is not running, and browser title not found'
+                exit 1
+            }
+        }
+fi
+
+# remove extra spaces
+Q=$(echo "$Q" | xargs)
+
+F="$LYRICS_DIR/$Q"
+
+[[ "$SET" == 1 ]] && {
+    clipboard > "$F"
+    exit 0
+}
+
+[[ "$TRANS" == 1 ]] && {
+    TF="${F} - trans$TRANS_LANG"
+    [[ -f "$TF" ]] && {
+        cat "$TF" | printout
+        exit 0
+    }
+}
+
+[[ -f "$F" ]] && {
+    S=$(cat "$F")
+} || {
     Q=$(echo "$Q" | sed 's/ /+/g')
     U=$(curl -s "https://search.azlyrics.com/search.php?q=$Q")
     U=$(echo "$U" | sed -rn 's/.* 1\. <a href="(.+).html" .+/\1.html/p')
     O=$(lynx -cfg=<(echo 'CHARACTER_SET:UNICODE (UTF-8)') -dump "$U")
     S=$(echo "$O" | strbetweenlines 'Print' '\[[0-9]')
     [[ "$S" = '' ]] && echo "ERROR on Q='$Q', U='$U'" && exit 1
-    echo "$S" | fribidi --nopad
+    echo "$S" | grep -q 'ERROR on' && exit 1
+    echo "$S" > "$F"
 }
 
-function getbrowsertitle {
-    WIN=$(xdotool search --onlyvisible --class "chromium")
-    [[ "$WIN" != '' ]] && xprop -id "$WIN" | sed -E -n 's/_NET_WM_NAME\(UTF8_STRING\) = "(.*)"/\1/p' | \
-            sed 's/ - Chromium//g; s/ - YouTube//g'
+[[ "$TRANS" == 1 ]] && {
+    echo "$S" | trans -no-bidi -b "$TRANS_LANG" 2>/dev/null | tee "$TF" | \
+        while read line; do
+            echo "$line" | fribidi --nopad
+        done | more
+} || {
+    echo "$S" | printout
 }
-
-SET=0
-[[ "$1" == '-set' ]] && SET=1 && shift
-Q="$@"
-
-if [[ "$Q" = '' ]] || [[ "$SET" = 1 ]]; then
-    cmus-remote -Q &>/dev/null && \
-        [[ $(cmus-remote -Q | sed -rn 's/status (.+)/\1/p') == playing ]] && {
-        C="$(cmus-remote -Q 2>/dev/null)"
-        F=$(echo "$C" | sed -rn 's/file (.+)/\1/p')
-        LF="${F}-lyrics.txt"
-        [[ "$SET" == 1 ]] && {
-            if [[ "$Q" != '' ]]; then
-                echo "$Q" > "$LF"
-            else
-                clipboard > "$LF"
-            fi
-            exit
-        }
-        [[ -f "$LF" ]] && {
-            cat "$LF" | fribidi --nopad | more
-            exit
-        }
-        T=$(echo "$C" | sed -rn 's/tag title (.+)/\1/p')
-        A=$(echo "$C" | sed -rn 's/tag artist (.+)/\1/p')
-        [[ "$T" = '' ]] && [[ "$A" = '' ]] && {
-            echo "ERROR: couldn't get info from cmus or browser"
-            exit 1
-        }
-        Q="$T by $A"
-        R=$(doit "$Q")
-        echo "$R" | grep -q 'ERROR on' && exit 1
-        echo "$R" > "$LF"
-        echo "$R" | more
-    } || {
-        Q=$(getbrowsertitle)
-        [[ "$Q" != '' ]] && {
-            R=$(doit "$Q")
-            echo "$R" | grep -q 'ERROR on' && exit 1
-            echo "$R" | more
-        } || {
-            [[ "$SET" == 1 ]] && {
-                echo 'ERROR: `-set` option needs cmus to be playing something'
-                exit 1
-            }
-            echo 'ERROR: no arguments provided, cmus is not running, and browser title not found'
-            exit 1
-        }
-    }
-else
-    doit "$Q" | more
-fi
 

@@ -1,0 +1,12 @@
+#!/bin/bash
+getCPos () {
+    local v=() t=$(stty -g)
+    stty -echo
+    tput u7
+    IFS='[;' read -rd R -a v
+    stty $t
+    CPos=(${v[@]:1})
+}
+
+getCPos
+echo ${CPos[@]}
