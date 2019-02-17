@@ -17,6 +17,7 @@
 | pacman   | ttf-dejavu                                | the preferred monospace font                                      |
 | aur      | ttf-font-awesome                          | used for the icons in the top bar                                 |
 | pacman   | ranger                                    | is an extensive terminal file manager that everyone likes         |
+| aur      | lf                                        | another terminal file manager cloning ranger but faster           |
 | pacman   | arandr                                    | is a UI for screen adjustment                                     |
 | pacman   | compton                                   | for transparency and removing screen-tearing                      |
 | pacman   | cronie                                    | manages scheduled tasks                                           |

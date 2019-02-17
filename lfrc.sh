@@ -23,17 +23,6 @@ set scrolloff 10
 # set the previewer script
 set previewer ~/.config/lf/pv.sh
 
-# use enter for shell commands
-map <enter> shell
-
-# execute current file (must be executable)
-map x $$f
-map X !$f
-
-# dedicated keys for file opener actions
-map o &mimeopen $f
-map O $mimeopen --ask $f
-
 # define a custom 'open' command
 # This command is called when current file is not a directory. You may want to
 # use either file extensions and/or mime types here. Below uses an editor for
@@ -47,7 +36,6 @@ cmd open ${{
 
 # rename current file without overwrite
 cmd rename %[ -e $1 ] && printf "file exists" || mv $f $1
-map r push :rename<space>
 
 # make sure trash folder exists
 %mkdir -p ~/.trash
@@ -65,7 +53,7 @@ cmd delete ${{
                 [ $ans = "y" ] && rm -rf $fx
             }}
 
-# show progress for file copying
+# show progress for file copying with paste
 cmd paste &{{
                load=$(lf -remote 'load')
                mode=$(echo "$load" | sed -n '1p')
@@ -81,6 +69,11 @@ cmd paste &{{
                fi
                lf -remote 'send load'
                lf -remote 'send clear'
+           }}
+
+# create a symlink
+cmd paste-symlink &{{
+                    # TODO
            }}
 
 # create a new directory
@@ -120,31 +113,59 @@ cmd zip ${{
              rm -rf $1
          }}
 
+# rename all in current directory using vidir
+cmd rename-dirs ${{
+                     vidir .
+                 }}
+
+# use enter for shell commands
+map <enter> shell
+
+# execute current file (must be executable)
+map x $$f
+map X !$f
+
+# dedicated keys for file opener actions
+map o &mimeopen $f
+map O $mimeopen --ask $f
+
+# rename file
+map r push :rename<space>
+
+# rename dir
+map R rename-dirs
+
 # Basic
 map <c-x><c-c> quit
 map <a-x>      console
 
 # Filesystem Operations
 map <c-y>y  paste
-map <c-y>o  paste overwrite=True
-map <c-y>l  paste_symlink relative=False
-map <c-y>L  paste_symlink relative=True
-map <c-y>hl paste_hardlink
-map <c-y>ht paste_hardlinked_subtree
-
-map <c-w>       cut
-map <c-_>w      uncut
-map <c-x><c-w>a cut mode=add
-map <c-x><c-w>r cut mode=remove
-
-map <a-w>       copy
-map <x-x><a-w>a copy mode=add
-map <x-x><a-w>r copy mode=remove
+map <c-y>l  paste-symlink
+map <c-w>   cut
+map <a-w>   copy
 
 map <delete><delete> trash
 map <delete>D        delete
 
+# up and down
+map <esc><lt> top
+map <esc><gt> bottom
+
 # Searching
-map <c-x>s console search_inc%space
-map <c-s>  search_next
-map <c-r>  search_next forward=False
+map <c-s> search
+
+# fuzzy search
+map f $lf -remote "send $id select $(fzf)"
+
+# default stuff
+map zh set hidden!
+map zr set reverse!
+map zn set info
+map zs set info size
+map zt set info time
+map za set info size:time
+map sn :set sortby natural; set info
+map ss :set sortby size; set info size
+map st :set sortby time; set info time
+map gh cd ~
