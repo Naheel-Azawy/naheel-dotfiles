@@ -2,7 +2,7 @@
 
 # Profile file. Runs on login.
 
-export EDITOR="x"
+export EDITOR="emacs-in"
 export VISUAL="$EDITOR"
 export TERMINAL="st"
 export BROWSER="browser"

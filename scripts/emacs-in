@@ -1,0 +1,2 @@
+#!/bin/bash
+exec bicon.bin --reshape-only emacs-nw "$@" 2>/dev/null

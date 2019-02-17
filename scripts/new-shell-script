@@ -2,4 +2,4 @@
 # Creates a new bash script
 [[ ! -f "$1" ]] && echo '#!/bin/bash' > "$1"
 chmod +x "$1"
-exec x "$1"
+exec $EDITOR "$1"

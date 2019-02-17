@@ -3,8 +3,11 @@
 LYRICS_DIR="$HOME/Music/lyrics"
 [[ ! -d "$LYRICS_DIR" ]] && mkdir -p "$LYRICS_DIR"
 
+#PAGER='more'
+PAGER='less -R -F -X'
+
 function printout {
-    fribidi --nopad | more
+    fribidi --nopad | $PAGER
 }
 
 function strbetweenlines {
@@ -25,7 +28,7 @@ function strbetweenlines {
 function getbrowsertitle {
     WIN=$(xdotool search --onlyvisible --class "chromium")
     [[ "$WIN" != '' ]] && xprop -id "$WIN" | sed -E -n 's/_NET_WM_NAME\(UTF8_STRING\) = "(.*)"/\1/p' | \
-            sed -rn 's/^\([0-9]+\)\s+(.+).*/\1/; s/\s*\(Official Video\)//; s/ - YouTube - Chromium//p'
+            sed -rn 's/^\([0-9]+\)\s+(.+).*/\1/; s/\s*\(.+\)//; s/\s*\[.+\]//; s/[lL]yrics//; s/ - YouTube - Chromium//; s/\-//gp'
 }
 
 SET=0
@@ -60,7 +63,7 @@ if [[ "$Q" == '' ]] || [[ "$SET" == 1 ]]; then
 fi
 
 # remove extra spaces
-Q=$(echo "$Q" | xargs)
+Q=$(echo "$Q" | tr -s ' ')
 
 F="$LYRICS_DIR/$Q"
 
@@ -94,7 +97,7 @@ F="$LYRICS_DIR/$Q"
     echo "$S" | trans -no-bidi -b "$TRANS_LANG" 2>/dev/null | tee "$TF" | \
         while read line; do
             echo "$line" | fribidi --nopad
-        done | more
+        done | $PAGER
 } || {
     echo "$S" | printout
 }

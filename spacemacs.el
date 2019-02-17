@@ -405,7 +405,7 @@ you should place your code here."
          auto-mode-alist))
 
   ;; ---- ORG MODE ----
-  (setq org-agenda-files (list "~/Dropbox/orgmode"))
+  (setq org-agenda-files (list "~/MEGA/orgmode"))
   (with-eval-after-load 'org
     ;; -- BABEL LANGS --
     (org-babel-do-load-languages
