@@ -20,6 +20,9 @@ set ifs "\n"
 # leave some space at the top and the bottom of the screen
 set scrolloff 10
 
+# set the previewer script
+set previewer ~/.config/lf/pv.sh
+
 # use enter for shell commands
 map <enter> shell
 
@@ -36,11 +39,11 @@ map O $mimeopen --ask $f
 # use either file extensions and/or mime types here. Below uses an editor for
 # text files and a file opener for the rest.
 cmd open ${{
-    case $(file --mime-type $f -b) in
-        text/*) $EDITOR $fx;;
-        *) for f in $fx; do $OPENER $f > /dev/null 2> /dev/null & done;;
-    esac
-}}
+              case $(file --mime-type $f -b) in
+                  text/*) $EDITOR $fx;;
+                  *) for f in $fx; do $OPENER $f > /dev/null 2> /dev/null & done;;
+              esac
+          }}
 
 # rename current file without overwrite
 cmd rename %[ -e $1 ] && printf "file exists" || mv $f $1
@@ -55,48 +58,71 @@ cmd trash %set -f; mv $fx ~/.trash
 
 # delete current file or selected files (prompting)
 cmd delete ${{
-    set -f
-    printf "$fx\n"
-    printf "delete?[y/n]"
-    read ans
-    [ $ans = "y" ] && rm -rf $fx
-}}
+                set -f
+                printf "$fx\n"
+                printf "delete? [y/n]"
+                read ans
+                [ $ans = "y" ] && rm -rf $fx
+            }}
+
+# show progress for file copying
+cmd paste &{{
+               load=$(lf -remote 'load')
+               mode=$(echo "$load" | sed -n '1p')
+               list=$(echo "$load" | sed '1d')
+               if [ $mode = 'copy' ]; then
+                   rsync -av --ignore-existing --progress $list . \
+                       | stdbuf -i0 -o0 -e0 tr '\r' '\n' \
+                       | while read line; do
+                       lf -remote "send $id echo $line"
+                   done
+               elif [ $mode = 'move' ]; then
+                   mv -n $list .
+               fi
+               lf -remote 'send load'
+               lf -remote 'send clear'
+           }}
+
+# create a new directory
+cmd mkdir ${{
+               mkdir $1
+           }}
 
 # extract the current file with the right command
 # (xkcd link: https://xkcd.com/1168/)
 cmd extract ${{
-    set -f
-    case $f in
-        *.tar.bz|*.tar.bz2|*.tbz|*.tbz2) tar xjvf $f;;
-        *.tar.gz|*.tgz) tar xzvf $f;;
-        *.tar.xz|*.txz) tar xJvf $f;;
-        *.zip) unzip $f;;
-        *.rar) unrar x $f;;
-        *.7z) 7z x $f;;
-    esac
-}}
+                 set -f
+                 case $f in
+                     *.tar.bz|*.tar.bz2|*.tbz|*.tbz2) tar xjvf $f;;
+                     *.tar.gz|*.tgz) tar xzvf $f;;
+                     *.tar.xz|*.txz) tar xJvf $f;;
+                     *.zip) unzip $f;;
+                     *.rar) unrar x $f;;
+                     *.7z) 7z x $f;;
+                 esac
+             }}
 
 # compress current file or selected files with tar and gunzip
 cmd tar ${{
-    set -f
-    mkdir $1
-    cp -r $fx $1
-    tar czf $1.tar.gz $1
-    rm -rf $1
-}}
+             set -f
+             mkdir $1
+             cp -r $fx $1
+             tar czf $1.tar.gz $1
+             rm -rf $1
+         }}
 
 # compress current file or selected files with zip
 cmd zip ${{
-    set -f
-    mkdir $1
-    cp -r $fx $1
-    zip -r $1.zip $1
-    rm -rf $1
-}}
+             set -f
+             mkdir $1
+             cp -r $fx $1
+             zip -r $1.zip $1
+             rm -rf $1
+         }}
 
 # Basic
 map <c-x><c-c> quit
-map <a-x>  console
+map <a-x>      console
 
 # Filesystem Operations
 map <c-y>y  paste
@@ -106,16 +132,19 @@ map <c-y>L  paste_symlink relative=True
 map <c-y>hl paste_hardlink
 map <c-y>ht paste_hardlinked_subtree
 
-map <c-w>  cut
-map <c-_>w uncut
+map <c-w>       cut
+map <c-_>w      uncut
 map <c-x><c-w>a cut mode=add
 map <c-x><c-w>r cut mode=remove
 
-map <a-w>  copy
+map <a-w>       copy
 map <x-x><a-w>a copy mode=add
 map <x-x><a-w>r copy mode=remove
 
+map <delete><delete> trash
+map <delete>D        delete
+
 # Searching
 map <c-x>s console search_inc%space
-map <c-s> search_next
-map <c-r> search_next forward=False
+map <c-s>  search_next
+map <c-r>  search_next forward=False

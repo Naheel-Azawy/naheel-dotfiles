@@ -32,7 +32,8 @@ mkdir -p "$H/.config/zathura"
 lnnn "$D/zathurarc" "$H/.config/zathura/zathurarc"
 
 mkdir -p "$H/.config/lf"
-lnnn "$D/lfrc" "$H/.config/lf/lfrc"
+lnnn "$D/lfrc.sh" "$H/.config/lf/lfrc"
+lnnn "$D/lfpv.sh" "$H/.config/lf/pv.sh"
 
 lnnn "$D/compton.conf"   "$H/.config/compton.conf"
 lnnn "$D/user-dirs.dirs" "$H/.config/user-dirs.dirs"
