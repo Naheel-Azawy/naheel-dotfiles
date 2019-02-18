@@ -234,7 +234,7 @@ bindsym $mod+y exec --no-startup-id dmenuyoutube
 bindsym $mod+h exec --no-startup-id dmenuwhat
 
 # Open calendar
-bindsym $mod+l exec theterm x --eval '"(cfw:open-org-calendar)"'
+bindsym $mod+l exec theterm emacs-in --eval '"(cfw:open-org-calendar)"'
 
 # Network manager dmenu
 bindsym $mod+n exec --no-startup-id networkmanager_dmenu

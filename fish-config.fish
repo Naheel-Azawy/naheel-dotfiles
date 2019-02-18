@@ -19,6 +19,24 @@ function fish_prompt --description 'Write out the prompt'
     echo -n -s "$face$USER" @ (prompt_hostname) ' ' (set_color $color_cwd) (prompt_pwd) (set_color normal) "$suffix "
 end
 
+function lf
+    set tmp (mktemp)
+    command lf -last-dir-path=$tmp $argv
+    if test -f "$tmp"
+        set dir (cat $tmp)
+        rm -f $tmp
+        if test -d "$dir"
+            if test "$dir" != (pwd)
+                cd $dir
+            end
+        end
+    end
+end
+
+function lf-keep-dir
+    command lf $argv
+end
+
 function ls
     command ls --color --group-directories-first $argv
 end

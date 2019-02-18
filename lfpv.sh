@@ -17,16 +17,17 @@ IFS=$'\n'
 
 # Script arguments
 FILE_PATH="${1}"         # Full path of the highlighted file
+IMAGE_CACHE_PATH="$HOME/.cache/lfimg/$(basename $FILE_PATH).jpg"  # Full path that should be used to cache image preview
+PV_IMAGE_ENABLED="True"  # 'True' if image previews are enabled, 'False' otherwise.
 
 FILE_EXTENSION="${FILE_PATH##*.}"
 FILE_EXTENSION_LOWER=$(echo ${FILE_EXTENSION} | tr '[:upper:]' '[:lower:]')
 
 # Settings
 HIGHLIGHT_SIZE_MAX=262143  # 256KiB
-HIGHLIGHT_TABWIDTH=8
+HIGHLIGHT_TABWIDTH=4
 HIGHLIGHT_STYLE='pablo'
 PYGMENTIZE_STYLE='autumn'
-
 
 handle_extension() {
     case "${FILE_EXTENSION_LOWER}" in
@@ -48,7 +49,7 @@ handle_extension() {
         # PDF
         pdf)
             # Preview as text conversion
-            pdftotext -l 10 -nopgbrk -q -- "${FILE_PATH}" -
+            pdftotext -layout -l 10 -nopgbrk -q -- "${FILE_PATH}" -
             mutool draw -F txt -i -- "${FILE_PATH}" 1-10
             exiftool "${FILE_PATH}"
             exit 1;;
@@ -115,15 +116,107 @@ handle_mime() {
     esac
 }
 
+handle_image() {
+    local mimetype="${1}"
+    case "${mimetype}" in
+        # SVG
+        # image/svg+xml)
+        #     convert "${FILE_PATH}" "${IMAGE_CACHE_PATH}" && exit 6
+        #     exit 1;;
+
+        # Image
+        image/*)
+            local orientation
+            orientation="$( identify -format '%[EXIF:Orientation]\n' -- "${FILE_PATH}" )"
+            # If orientation data is present and the image actually
+            # needs rotating ("1" means no rotation)...
+            if [[ -n "$orientation" && "$orientation" != 1 ]]; then
+                # ...auto-rotate the image according to the EXIF data.
+                convert -- "${FILE_PATH}" -auto-orient "${IMAGE_CACHE_PATH}" && return
+            else
+                IMAGE_CACHE_PATH="${FILE_PATH}" && return
+            fi
+
+            # `w3mimgdisplay` will be called for all images (unless overriden as above),
+            # but might fail for unsupported types.
+            exit 1;;
+
+        # Video
+        video/*)
+            # Thumbnail
+            ffmpegthumbnailer -i "${FILE_PATH}" -o "${IMAGE_CACHE_PATH}" -s 0 && return
+            exit 1;;
+        # PDF
+        application/pdf)
+            pdftoppm -f 1 -l 1 \
+                     -scale-to-x 1920 \
+                     -scale-to-y -1 \
+                     -singlefile \
+                     -jpeg -tiffcompression jpeg \
+                     -- "${FILE_PATH}" "${IMAGE_CACHE_PATH%.*}" \
+                && imgdarken "${IMAGE_CACHE_PATH}" \
+                && return || exit 1;;
+        # Office files
+        application/*office*|application/ms*|application/vnd.ms-*)
+            CACHE_DIR="${IMAGE_CACHE_PATH%/*}"
+            TMP_FILE_PATH="${FILE_PATH##*/}"
+            TMP_FILE_PATH="${CACHE_DIR}/${TMP_FILE_PATH%.*}.png"
+            libreoffice \
+                       --headless \
+                       --convert-to png "${FILE_PATH}" \
+                       --outdir "$CACHE_DIR" \
+                && convert "$TMP_FILE_PATH" "${IMAGE_CACHE_PATH}" \
+                && rm -f "$TMP_FILE_PATH" \
+                && imgdarken "${IMAGE_CACHE_PATH}" \
+                && return || exit 1;;
+    esac
+}
+
+preview_img() {
+    echo "
+# lock file
+L=/tmp/lfimglock
+
+# remove lock
+rm -f \$L
+
+source \"`ueberzug library`\"
+
+# considering the ratio 1:2:3 then the preview starts in the middle
+COLS=\$((\$(tput cols) / 2))
+
+# remove the top and bottom lines as they are used by lf
+LINS=\$((\$(tput lines) - 2))
+
+{
+    ImageLayer::add [identifier]=\"img0\" \
+                    [path]=\"$1\" \
+                    [x]=\"\$COLS\" [y]=\"1\" \
+                    [max_width]=\"\$COLS\" [max_height]=\"\$LINS\"
+    sleep 0.1 # make sure others noticed
+    touch \$L
+    while [[ -f \$L ]]; do # wait till someone remove it
+        sleep 0.1
+    done
+    ImageLayer::remove [identifier]=\"img0\"
+} | ImageLayer
+" | bash
+    exit 1
+}
+
 handle_fallback() {
     echo '----- File Type Classification -----' && file --dereference --brief -- "${FILE_PATH}"
     exit 1
 }
 
-
-MIMETYPE="$( file --dereference --brief --mime-type -- "${FILE_PATH}" )"
-handle_extension
-handle_mime "${MIMETYPE}"
-handle_fallback
+{
+    MIMETYPE="$( file --dereference --brief --mime-type -- "${FILE_PATH}" )"
+    [[ "${PV_IMAGE_ENABLED}" == 'True' ]] && \
+        handle_image "${MIMETYPE}" && \
+        preview_img "${IMAGE_CACHE_PATH}"
+    handle_extension
+    handle_mime "${MIMETYPE}"
+    handle_fallback
+} | fribidi
 
 exit 1

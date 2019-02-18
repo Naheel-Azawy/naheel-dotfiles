@@ -48,7 +48,7 @@ cmd trash %set -f; mv $fx ~/.trash
 cmd delete ${{
                 set -f
                 printf "$fx\n"
-                printf "delete? [y/n]"
+                printf "delete? [y/n] "
                 read ans
                 [ $ans = "y" ] && rm -rf $fx
             }}
@@ -73,7 +73,16 @@ cmd paste &{{
 
 # create a symlink
 cmd paste-symlink &{{
-                    # TODO
+                       load=$(lf -remote 'load')
+                       mode=$(echo "$load" | sed -n '1p')
+                       list=$(echo "$load" | sed '1d')
+                       if [ $mode = 'copy' ]; then
+                           for f in $list; do
+                               ln -s "$f" "$(pwd)/$(basename $f)"
+                           done
+                           lf -remote 'send load'
+                           lf -remote 'send clear'
+                       fi
            }}
 
 # create a new directory
@@ -113,11 +122,6 @@ cmd zip ${{
              rm -rf $1
          }}
 
-# rename all in current directory using vidir
-cmd rename-dirs ${{
-                     vidir .
-                 }}
-
 # use enter for shell commands
 map <enter> shell
 
@@ -133,18 +137,17 @@ map O $mimeopen --ask $f
 map r push :rename<space>
 
 # rename dir
-map R rename-dirs
+map R $vidir .
 
-# Basic
+# basic
 map <c-x><c-c> quit
 map <a-x>      console
 
-# Filesystem Operations
-map <c-y>y  paste
-map <c-y>l  paste-symlink
-map <c-w>   cut
-map <a-w>   copy
-
+# filesystem operations
+map <c-y>y           paste
+map <c-y>l           paste-symlink
+map <c-w>            cut
+map <a-w>            copy
 map <delete><delete> trash
 map <delete>D        delete
 
@@ -152,11 +155,21 @@ map <delete>D        delete
 map <esc><lt> top
 map <esc><gt> bottom
 
-# Searching
+# mini view
+map <c-x>m :set nopreview; set ratios 1
+
+# full view
+map <c-x>f :set ratios 1:2:3; set preview
+
+# search
 map <c-s> search
 
 # fuzzy search
 map f $lf -remote "send $id select $(fzf)"
+
+# dirty hack
+map <up>   :up   ; &rm -f /tmp/lfimglock
+map <down> :down ; &rm -f /tmp/lfimglock
 
 # default stuff
 map zh set hidden!
