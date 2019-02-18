@@ -168,8 +168,8 @@ map <c-s> search
 map f $lf -remote "send $id select $(fzf)"
 
 # dirty hack
-map <up>   :up   ; &rm -f /tmp/lfimglock
-map <down> :down ; &rm -f /tmp/lfimglock
+map <up>   :up   #; &rm -f /tmp/lfimglock
+map <down> :down #; &rm -f /tmp/lfimglock
 
 # default stuff
 map zh set hidden!
