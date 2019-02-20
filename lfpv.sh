@@ -172,38 +172,6 @@ handle_image() {
     esac
 }
 
-preview_img() {
-    echo "
-# lock file
-L=/tmp/lfimglock
-
-# remove lock
-rm -f \$L
-
-source \"`ueberzug library`\"
-
-# considering the ratio 1:2:3 then the preview starts in the middle
-COLS=\$((\$(tput cols) / 2))
-
-# remove the top and bottom lines as they are used by lf
-LINS=\$((\$(tput lines) - 2))
-
-{
-    ImageLayer::add [identifier]=\"img0\" \
-                    [path]=\"$1\" \
-                    [x]=\"\$COLS\" [y]=\"1\" \
-                    [max_width]=\"\$COLS\" [max_height]=\"\$LINS\"
-    sleep 0.1 # make sure others noticed
-    touch \$L
-    while [[ -f \$L ]]; do # wait till someone remove it
-        sleep 0.1
-    done
-    ImageLayer::remove [identifier]=\"img0\"
-} | ImageLayer
-" | bash
-    exit 1
-}
-
 handle_fallback() {
     echo '----- File Type Classification -----' && file --dereference --brief -- "${FILE_PATH}"
     exit 1
@@ -211,9 +179,10 @@ handle_fallback() {
 
 {
     MIMETYPE="$( file --dereference --brief --mime-type -- "${FILE_PATH}" )"
-    [[ "${PV_IMAGE_ENABLED}" == 'True' ]] && \
+    [[ "${PV_IMAGE_ENABLED}" == 'True' ]] && {
         handle_image "${MIMETYPE}" && \
-        preview_img "${IMAGE_CACHE_PATH}"
+            lfimgpv --add 0 "${IMAGE_CACHE_PATH}"
+    }
     handle_extension
     handle_mime "${MIMETYPE}"
     handle_fallback
