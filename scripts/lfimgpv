@@ -8,7 +8,7 @@
 # $ lfimgpv --end 0
 
 function printerr {
-    echo 'usage: lfimgpv [--listen id] [--add id picture] [--clear id] [--end id]'
+    >&2 echo 'usage: lfimgpv [--listen id] [--add id picture] [--clear id] [--end id]'
     exit 1
 }
 

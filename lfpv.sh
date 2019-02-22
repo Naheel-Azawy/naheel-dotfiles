@@ -18,7 +18,7 @@ IFS=$'\n'
 # Script arguments
 FILE_PATH="${1}"         # Full path of the highlighted file
 IMAGE_CACHE_PATH="$HOME/.cache/lfimg/$(basename $FILE_PATH).jpg"  # Full path that should be used to cache image preview
-PV_IMAGE_ENABLED="False"  # 'True' if image previews are enabled, 'False' otherwise.
+PV_IMAGE_ENABLED="True"  # 'True' if image previews are enabled, 'False' otherwise.
 
 FILE_EXTENSION="${FILE_PATH##*.}"
 FILE_EXTENSION_LOWER=$(echo ${FILE_EXTENSION} | tr '[:upper:]' '[:lower:]')
@@ -89,13 +89,13 @@ handle_mime() {
             if [ "$( stat --printf='%s' -- "${FILE_PATH}" )" -gt "${HIGHLIGHT_SIZE_MAX}" ]; then
                 exit 2
             fi
-            if [ "$( tput colors )" -ge 256 ]; then
-                local pygmentize_format='terminal256'
-                local highlight_format='xterm256'
-            else
-                local pygmentize_format='terminal'
+            # if [ "$( tput colors )" -ge 256 ]; then
+            #     local pygmentize_format='terminal256'
+            #     local highlight_format='xterm256'
+            # else
+            #     local pygmentize_format='terminal'
                 local highlight_format='ansi'
-            fi
+            # fi
             highlight --replace-tabs="${HIGHLIGHT_TABWIDTH}" --out-format="${highlight_format}" \
                 --style="${HIGHLIGHT_STYLE}" --force -- "${FILE_PATH}"
             # pygmentize -f "${pygmentize_format}" -O "style=${PYGMENTIZE_STYLE}" -- "${FILE_PATH}"
@@ -181,7 +181,7 @@ handle_fallback() {
     MIMETYPE="$( file --dereference --brief --mime-type -- "${FILE_PATH}" )"
     [[ "${PV_IMAGE_ENABLED}" == 'True' ]] && {
         handle_image "${MIMETYPE}" && \
-            lfimgpv --add 0 "${IMAGE_CACHE_PATH}"
+            lfimgpv --add 0 "${IMAGE_CACHE_PATH}" 2>/dev/null && exit 1
     }
     handle_extension
     handle_mime "${MIMETYPE}"

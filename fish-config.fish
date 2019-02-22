@@ -95,7 +95,6 @@ abbr g     'grep'
 abbr gr    'grep -r'
 
 abbr t     'true'
-abbr f     'false'
 abbr nil   'false'
 
 abbr stime 'date "+%s"'    # time in seconds
@@ -109,6 +108,7 @@ abbr xk    'emacs-daemon-kill'
 abbr xsh   'new-shell-script'
 
 abbr m     'tmux'
+abbr f     'lf'
 abbr r     'ranger'
 abbr n     'nnn'
 abbr s     'swallow'

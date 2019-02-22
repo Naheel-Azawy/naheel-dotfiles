@@ -178,3 +178,14 @@ map sn :set sortby natural; set info
 map ss :set sortby size; set info size
 map st :set sortby time; set info time
 map gh cd ~
+
+# start the image previewer listener
+&{{
+     lfimgpv --end 0
+     lfimgpv --listen 0
+ }}
+
+map <up>    :up;    &lfimgpv --clear 0
+map <down>  :down;  &lfimgpv --clear 0
+map <left>  :updir; &lfimgpv --clear 0
+

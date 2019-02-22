@@ -10,7 +10,7 @@ function how-can-I-help-you-sir {
     C=$((is-url "$Q" && \
              echo "View page";   \
              echo "Wikipedia" && \
-             echo "Translate" && \
+             echo "Dictionary" && \
              echo "Duck it!"  && \
              echo "Manual"    && \
              echo "ArchWiki"  && \
@@ -24,7 +24,7 @@ function how-can-I-help-you-sir {
         Wiki*)
             theterm "wikit-quick \"$Q\""
             ;;
-        Trans*)
+        Dict*)
             L=$(echo -e 'en\nar' | $DMENU -p 'To?')
             theterm "trans :$L \"$Q\" | less -R"
             ;;

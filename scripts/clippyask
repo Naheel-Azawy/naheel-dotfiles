@@ -1,0 +1,6 @@
+#!/bin/bash
+clippysay $(printf "$@\n [Yes] [No]")
+echo -n '> '
+read c
+[[ $c == Y || $c == y || $c == Yes ]] && exit 0
+exit 1

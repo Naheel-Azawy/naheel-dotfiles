@@ -1,0 +1,19 @@
+# From https://github.com/curusarn/clippy-the-paperclip-cow
+# Clippy 
+# via seznam email scli
+$the_cow = <<EOC;
+   $thoughts     
+    $thoughts __ 
+     /  \\  
+    ~    ~ 
+   / \\  /_\\
+   \\o/  \\o/
+    |    | 
+    ||   |/
+    ||   ||
+    ||   ||
+    | \\_/ |
+    \\     /
+     \\___/  
+
+EOC
