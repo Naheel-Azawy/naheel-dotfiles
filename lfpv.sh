@@ -18,7 +18,7 @@ IFS=$'\n'
 # Script arguments
 FILE_PATH="${1}"         # Full path of the highlighted file
 IMAGE_CACHE_PATH="$HOME/.cache/lfimg/$(basename $FILE_PATH).jpg"  # Full path that should be used to cache image preview
-PV_IMAGE_ENABLED="True"  # 'True' if image previews are enabled, 'False' otherwise.
+PV_IMAGE_ENABLED="False"  # 'True' if image previews are enabled, 'False' otherwise.
 
 FILE_EXTENSION="${FILE_PATH##*.}"
 FILE_EXTENSION_LOWER=$(echo ${FILE_EXTENSION} | tr '[:upper:]' '[:lower:]')
