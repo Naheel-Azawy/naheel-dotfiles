@@ -83,7 +83,28 @@ cmd paste-symlink &{{
                            lf -remote 'send load'
                            lf -remote 'send clear'
                        fi
-           }}
+                   }}
+
+# extract the copied files in the current directory
+cmd paste-extract ${{
+                       load=$(lf -remote 'load')
+                       mode=$(echo "$load" | sed -n '1p')
+                       list=$(echo "$load" | sed '1d')
+                       if [ $mode = 'copy' ]; then
+                           for f in $list; do
+                               case $f in
+                                   *.tar.bz|*.tar.bz2|*.tbz|*.tbz2) tar xjvf $f;;
+                                   *.tar.gz|*.tgz) tar xzvf $f;;
+                                   *.tar.xz|*.txz) tar xJvf $f;;
+                                   *.zip) unzip $f;;
+                                   *.rar) unrar x $f;;
+                                   *.7z) 7z x $f;;
+                               esac
+                           done
+                           lf -remote 'send load'
+                           lf -remote 'send clear'
+                       fi
+                   }}
 
 # create a new directory
 cmd mkdir ${{
@@ -146,6 +167,7 @@ map <a-x>      console
 # filesystem operations
 map <c-y>y           paste
 map <c-y>l           paste-symlink
+map <c-y>e           paste-extract
 map <c-w>            cut
 map <a-w>            copy
 map <delete><delete> trash
@@ -161,11 +183,10 @@ map <c-x>m :set nopreview; set ratios 1
 # full view
 map <c-x>f :set ratios 1:2:3; set preview
 
-# search
-map <c-s> search
-
 # fuzzy search
-map f $lf -remote "send $id select $(fzf)"
+map <c-s> $lf -remote "send $id select \"$(ls | fzf)\""
+map <c-f> $lf -remote "send $id select \"$(ls | fzf)\""
+map f     $lf -remote "send $id select \"$(fzf)\""
 
 # default stuff
 map zh set hidden!
@@ -177,7 +198,18 @@ map za set info size:time
 map sn :set sortby natural; set info
 map ss :set sortby size; set info size
 map st :set sortby time; set info time
+
+# bookmarks
 map gh cd ~
+map gd cd ~/Downloads
+map gc cd ~/Documents
+map gp cd ~/Pictures
+map gm cd ~/Music
+map gv cd ~/Videos
+map gj cd ~/Projects
+map gg cd ~/MEGA/orgmode
+map go $lf -remote "send $id cd \"$DOTFILES_DIR\""
+map gq $lf -remote "send $id cd \"$QU\""
 
 # start the image previewer listener
 # &{{

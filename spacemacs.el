@@ -405,7 +405,10 @@ you should place your code here."
          auto-mode-alist))
 
   ;; ---- ORG MODE ----
-  (setq org-agenda-files (list "~/MEGA/orgmode"))
+  (setq org-agenda-files (list "~/MEGA/orgmode/TODO-major.org"
+                               "~/MEGA/orgmode/m-sched.org"
+                               "~/MEGA/orgmode/qu-sched.org"
+                               "~/MEGA/orgmode/TODO-qu.org"))
   (with-eval-after-load 'org
     ;; -- BABEL LANGS --
     (org-babel-do-load-languages
