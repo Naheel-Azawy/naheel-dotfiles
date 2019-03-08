@@ -435,7 +435,7 @@ you should place your code here."
     ;; -- HOOKS --
     (add-hook 'org-mode-hook
               '(lambda ()
-                 (toggle-truncate-lines)
+                 ;;(toggle-truncate-lines)
                  ;;(toggle-word-wrap)
                  ;;(flyspell-mode)
                  (delete '("\\.pdf\\'" . default) org-file-apps)
@@ -455,7 +455,7 @@ you should place your code here."
                    ("\\paragraph{%s}" . "\\paragraph*{%s}")
                    ("\\subparagraph{%s}" . "\\subparagraph*{%s}")))
     ;; -- MY "DIRTY" LaTeX EXPORT --
-    (setq org-latex-pdf-process '("org-tex-gen-pdf %f"))
+    (setq org-latex-pdf-process '("pdflatexorgwraper %f"))
     ;; -- TODO --
     (setq org-todo-keywords
           '((sequence "TODO" "PROG" "|" "DONE" "CNCL")))

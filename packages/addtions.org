@@ -59,6 +59,7 @@
 | pip    | matplotlib                   | math plotting in python                                                                        |
 | pacman | python-pmw                   | needed for matplotlib                                                                          |
 | pacman | texlive-most                 | tex stuff                                                                                      |
+| pacman | texlive-langextra            | tex extra languages support                                                                    |
 | pacman | biber                        | tex biber                                                                                      |
 | aur    | screenkey                    | display the pressed keys on the screen. Useful for screen casting                              |
 | pacman | tree                         | list tree of directories                                                                       |

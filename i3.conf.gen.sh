@@ -151,7 +151,7 @@ bindsym $mod+space exec lang-toggle
 bindsym $mod+a focus parent
 
 # focus the child container
-#bindsym $mod+d focus child
+bindsym $mod+Shift+a focus child
 
 # Define names for default workspaces for which we configure key bindings later on.
 for i in {1..10}; do

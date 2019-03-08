@@ -185,8 +185,8 @@ map <c-x>f :set ratios 1:2:3; set preview
 
 # fuzzy search
 map <c-s> $lf -remote "send $id select \"$(ls | fzf)\""
-map <c-f> $lf -remote "send $id select \"$(ls | fzf)\""
-map f     $lf -remote "send $id select \"$(fzf)\""
+map f     $lf -remote "send $id select \"$(ls | fzf)\""
+map <c-f> $lf -remote "send $id select \"$(fzf)\""
 
 # default stuff
 map zh set hidden!
@@ -201,7 +201,7 @@ map st :set sortby time; set info time
 
 # bookmarks
 map gh cd ~
-map gd cd ~/Downloads
+map gd :cd ~/Downloads; set sortby time; set info time; set reverse!
 map gc cd ~/Documents
 map gp cd ~/Pictures
 map gm cd ~/Music

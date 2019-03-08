@@ -1,2 +1,0 @@
-#!/bin/bash
-git add -A && git commit -m 'couple of things' && git push origin master

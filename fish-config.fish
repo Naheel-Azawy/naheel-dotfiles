@@ -96,6 +96,7 @@ abbr gr    'grep -r'
 
 abbr t     'true'
 abbr nil   'false'
+abbr fn    'function'
 
 abbr stime 'date "+%s"'    # time in seconds
 abbr mtime 'date "+%s%3N"' # time in milliseconds
@@ -106,6 +107,16 @@ abbr xg    'emacs-gui'
 abbr xd    'emacs-daemon'
 abbr xk    'emacs-daemon-kill'
 abbr xsh   'new-shell-script'
+
+abbr gita  'git add -A'
+abbr gitc  'git commit -m'
+abbr gitp  'git push origin master'
+abbr gits  'git status'
+abbr gitd  'git diff'
+abbr gitl  'git log'
+abbr gito  'git checkout'
+abbr gitq  'git add -A && git commit -m "quick update" && git push origin master'
+abbr gitn  'git add -A && git commit -m "couple of things" && git push origin master'
 
 abbr m     'tmux'
 abbr f     'lf'
