@@ -107,8 +107,8 @@ cmd paste-extract ${{
                    }}
 
 # create a new directory
-cmd mkdir ${{
-               mkdir $1
+cmd mkdir &{{
+               mkdir -p $1
            }}
 
 # extract the current file with the right command
@@ -142,6 +142,25 @@ cmd zip ${{
              zip -r $1.zip $1
              rm -rf $1
          }}
+
+# dynamically set number of columns
+cmd autoratios &{{
+                    w=$(tput cols)
+                    if [ $w -le 60 ]; then
+                        lf -remote "send $id set nopreview"
+                        lf -remote "send $id set ratios 1"
+                    elif [ $w -le 90 ]; then
+                        lf -remote "send $id set ratios 1:2"
+                        lf -remote "send $id set preview"
+                    elif [ $w -le 160 ]; then
+                        lf -remote "send $id set ratios 1:2:3"
+                        lf -remote "send $id set preview"
+                    else
+                        lf -remote "send $id set ratios 1:2:3:5"
+                        lf -remote "send $id set preview"
+                    fi
+                }}
+autoratios # auto-run at start
 
 # use enter for shell commands
 map <enter> shell
@@ -177,11 +196,8 @@ map <delete>D        delete
 map <esc><lt> top
 map <esc><gt> bottom
 
-# mini view
-map <c-x>m :set nopreview; set ratios 1
-
-# full view
-map <c-x>f :set ratios 1:2:3; set preview
+# auto-set ratios
+map a autoratios
 
 # fuzzy search
 map <c-s> $lf -remote "send $id select \"$(ls | fzf)\""
