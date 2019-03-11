@@ -37,12 +37,12 @@ cmd open ${{
 # rename current file without overwrite
 cmd rename %[ -e $1 ] && printf "file exists" || mv $f $1
 
-# make sure trash folder exists
-%mkdir -p ~/.trash
-
 # move current file or selected files to trash folder
-# (also see 'man mv' for backup/overwrite options)
-cmd trash %set -f; mv $fx ~/.trash
+# using trash-cli (https://github.com/andreafrancia/trash-cli)
+cmd trash %trash-put $fx
+
+# create a new directory
+cmd mkdir %mkdir -p "$@"
 
 # delete current file or selected files (prompting)
 cmd delete ${{
@@ -106,11 +106,6 @@ cmd paste-extract ${{
                        fi
                    }}
 
-# create a new directory
-cmd mkdir &{{
-               mkdir -p $1
-           }}
-
 # extract the current file with the right command
 # (xkcd link: https://xkcd.com/1168/)
 cmd extract ${{
@@ -162,6 +157,14 @@ cmd autoratios &{{
                 }}
 autoratios # auto-run at start
 
+# fuzzy search jump
+cmd fzf ${{
+             F="$(ls | fzf)"
+             [ -f "$F" ] && \
+                 lf -remote "send $id select \"$F\"" || \
+                     lf -remote "send $id cd \"$F\""
+         }}
+
 # use enter for shell commands
 map <enter> shell
 
@@ -181,7 +184,10 @@ map R $vidir .
 
 # basic
 map <c-x><c-c> quit
-map <a-x>      console
+map <a-x>      push :
+map <c-x>h     invert
+map <c-g>      clear
+map <f-5>      reload
 
 # filesystem operations
 map <c-y>y           paste
@@ -200,8 +206,8 @@ map <esc><gt> bottom
 map a autoratios
 
 # fuzzy search
-map <c-s> $lf -remote "send $id select \"$(ls | fzf)\""
-map f     $lf -remote "send $id select \"$(ls | fzf)\""
+map <c-s> fzf
+map f     fzf
 map <c-f> $lf -remote "send $id select \"$(fzf)\""
 
 # default stuff
