@@ -22,6 +22,9 @@ end
 function lf
     set tmp (mktemp)
     command lf -last-dir-path=$tmp $argv
+    #command lf -command '$printf $id > '"$fid"'; lfimgpv --listen $id &' -last-dir-path=$tmp $argv
+    #lfimgpv --end (cat $fid)
+    #rm $fid
     if test -f "$tmp"
         set dir (cat $tmp)
         rm -f $tmp

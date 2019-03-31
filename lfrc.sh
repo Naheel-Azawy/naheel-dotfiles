@@ -23,13 +23,15 @@ set scrolloff 10
 # set the previewer script
 set previewer ~/.config/lf/pv.sh
 
+# COMMANDS ------------------------------------------------------------------------
+
 # define a custom 'open' command
 # This command is called when current file is not a directory. You may want to
 # use either file extensions and/or mime types here. Below uses an editor for
 # text files and a file opener for the rest.
 cmd open ${{
               case $(file --mime-type $f -b) in
-                  text/*) $EDITOR $fx;;
+                  text/*|*/json) $EDITOR $fx;;
                   *) for f in $fx; do $OPENER $f > /dev/null 2> /dev/null & done;;
               esac
           }}
@@ -165,6 +167,50 @@ cmd fzf ${{
                      lf -remote "send $id cd \"$F\""
          }}
 
+# rename all files in directory
+cmd bulk-rename ${{
+	                   index=$(mktemp /tmp/lf-bulk-rename-index.XXXXXXXXXX)
+	                   if [ -n "${fs}" ]; then
+		                     echo "$fs" > $index
+	                   else
+		                     echo "$(ls "$(dirname $f)" | tr ' ' "\n")" > $index
+	                   fi
+	                   index_edit=$(mktemp /tmp/lf-bulk-rename.XXXXXXXXXX)
+	                   cat $index > $index_edit
+	                   $EDITOR $index_edit
+	                   if [ $(cat $index | wc -l) -eq $(cat $index_edit | wc -l) ]; then
+		                     max=$(($(cat $index | wc -l)+1))
+		                     counter=1
+		                     while [ $counter -le $max ]; do
+			                       a="$(cat $index | sed "${counter}q;d")"
+			                       b="$(cat $index_edit | sed "${counter}q;d")"
+			                       counter=$(($counter+1))
+			                       [ "$a" = "$b" ] && continue
+			                       [ -e "$b" ] && echo "File exists: $b" && continue
+			                       mv "$a" "$b"
+		                     done
+	                   else
+		                     echo "Number of lines must stay the same"
+	                   fi
+	                   rm $index $index_edit
+                 }}
+
+# open image previewer in thumbnail mode
+cmd pv-all-imgs &{{
+                     file --mime-type ./* | \
+                         grep image/ | \
+                         awk -F':' '{print $1}' | \
+                         sxiv -t -
+                 }}
+
+# select which program to open the current file with
+cmd open-with $mimeopen --ask $f
+
+# set the default program for the current file
+cmd open-with-default $mimeopen -d $f
+
+# MAPPINGS ------------------------------------------------------------------------
+
 # use enter for shell commands
 map <enter> shell
 
@@ -173,8 +219,8 @@ map x $$f
 map X !$f
 
 # dedicated keys for file opener actions
-map o &mimeopen $f
-map O $mimeopen --ask $f
+map o open-with
+map O open-with-default
 
 # rename file
 map r push :rename<space>
@@ -210,6 +256,9 @@ map <c-s> fzf
 map f     fzf
 map <c-f> $lf -remote "send $id select \"$(fzf)\""
 
+# image viewing
+map <c-v> pv-all-imgs
+
 # default stuff
 map zh set hidden!
 map zr set reverse!
@@ -233,6 +282,11 @@ map gg cd ~/MEGA/orgmode
 map go $lf -remote "send $id cd \"$DOTFILES_DIR\""
 map gq $lf -remote "send $id cd \"$QU\""
 
+#cmd imgpv ${{
+#               lfimgpv --add $id $f
+#     }}
+#
+#map <c-v> imgpv
 # start the image previewer listener
 # &{{
 #      lfimgpv --end 0

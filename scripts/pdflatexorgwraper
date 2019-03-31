@@ -2,6 +2,11 @@
 # Quick dirty way to handle generated .tex files from org-mode
 # There's certainly a clean solution but I'm a little busy to figure it out now..
 
+PDF=pdflatex
+#PDF=xelatex
+BIB=biber
+OPT="-interaction=nonstopmode"
+
 DOCX=0
 [[ "$1" == '-d' ]] && {
     DOCX=1
@@ -12,21 +17,21 @@ F="$1"
 E="${F##*.}"
 F="${F%.*}"
 
+E=org # TODO
 [[ "$E" == 'org' ]] && {
-    B=$(sed -E -rn 's/\\(bibliography|addbibresource)\{(.+)\}/\2/p' "$F.tex")
+    B=$(sed -rn 's/\\(bibliography|addbibresource)\{(.+)\}/\2/p' "$F.tex")
     [[ "$B" != '' ]] && {
         sed -i -r 's/\\(bibliography|addbibresource)\{.+//g' "$F.tex"
-        sed -i -r "s/\\\\documentclass(.+)/\\\\documentclass\1\\n\\\\usepackage[backend=biber,sorting=none,style=ieee]{biblatex}\\n\\\\addbibresource\{$B\}/g" "$F.tex"
+        sed -i -r "s@\\\\documentclass(.+)@\\\\documentclass\1\\n\\\\usepackage[backend=biber,sorting=none,style=ieee]{biblatex}\\n\\\\addbibresource\{$B\}@g" "$F.tex"
     }
 }
 
 if [[ $DOCX == 1 ]]; then
     pandoc --bibliography="$BIB" --filter pandoc-citeproc --csl "$HOME/Documents/LaTeX/ieee.csl" "$F.tex" -o "$F.docx"
 else
-    OPT="-interaction=nonstopmode"
-    pdflatex "$OPT" "$F.tex" && \
-        biber "$F" && \
-        pdflatex "$OPT" "$F.tex"
-    pdflatex "$OPT" "$F.tex"
+    $PDF "$OPT" "$F.tex" &>/dev/null && \
+        $BIB "$F" && \
+        $PDF "$OPT" "$F.tex" &>/dev/null
+    $PDF "$OPT" "$F.tex"
     rm -f "$F.aux" "$F.bbl" "$F.bcf" "$F.blg" "$F.log" "$F.out" "$F.run.xml" "$F.aux" "$F.lof" "$F.lot" "$F.toc" #"$F.tex"
 fi

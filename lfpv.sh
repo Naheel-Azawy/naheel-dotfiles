@@ -71,7 +71,7 @@ handle_extension() {
             w3m -dump "${FILE_PATH}"
             lynx -dump -- "${FILE_PATH}"
             elinks -dump "${FILE_PATH}"
-            ;; # Continue with next handler on failure
+            exit 1;;
 
         # JSON
         json)
@@ -84,7 +84,7 @@ handle_mime() {
     local mimetype="${1}"
     case "${mimetype}" in
         # Text
-        text/* | */xml)
+        text/* | */xml | */json)
             # Syntax highlight
             if [ "$( stat --printf='%s' -- "${FILE_PATH}" )" -gt "${HIGHLIGHT_SIZE_MAX}" ]; then
                 exit 2

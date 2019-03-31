@@ -1,10 +1,10 @@
 #!/bin/bash
 
-LYRICS_DIR="$HOME/Music/lyrics"
+LYRICS_DIR="$HOME/Music/Music/lyrics"
 [[ ! -d "$LYRICS_DIR" ]] && mkdir -p "$LYRICS_DIR"
 
-#PAGER='more'
-PAGER='less -R -F -X'
+PAGER='more'
+#PAGER='less -R -F -X'
 
 function printout {
     fribidi --nopad | $PAGER

@@ -1,0 +1,25 @@
+#!/bin/bash
+
+#FILE="$HOME/Mmmm"
+FILE="$HOME/Music/Music/NOW_PLAYING.txt"
+
+update() {
+    touch "$FILE"
+    {
+        echo "updated $(date)"
+        cmus-remote -Q
+    } | tee "$FILE"
+    echo '-------------------------'
+}
+
+update
+prev=""
+while true; do
+    cur="$(cmus-file)"
+    [[ "$prev" != "$cur" ]] && {
+        update
+        prev="$cur"
+    }
+    sleep 1
+done
+
