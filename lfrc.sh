@@ -30,9 +30,20 @@ set previewer ~/.config/lf/pv.sh
 # use either file extensions and/or mime types here. Below uses an editor for
 # text files and a file opener for the rest.
 cmd open ${{
-              case $(file --mime-type $f -b) in
-                  text/*|*/json) $EDITOR $fx;;
-                  *) for f in $fx; do $OPENER $f > /dev/null 2> /dev/null & done;;
+              # file name
+              case "$f" in
+                  *.html)
+                      browser $fx;;
+                  *)
+                      # mime type
+                      case $(file --mime-type $f -b) in
+                          text/*|*/json)
+                              $EDITOR $fx;;
+                          *)
+                              for f in $fx; do
+                                  $OPENER $f > /dev/null 2> /dev/null &
+                              done;;
+                      esac
               esac
           }}
 
@@ -159,6 +170,12 @@ cmd autoratios &{{
                 }}
 autoratios # auto-run at start
 
+# force tiny ratios
+cmd tinyratios &{{
+                    lf -remote "send $id set nopreview"
+                    lf -remote "send $id set ratios 1"
+                }}
+
 # fuzzy search jump
 cmd fzf ${{
              F="$(ls | fzf)"
@@ -248,8 +265,9 @@ map <delete>D        delete
 map <esc><lt> top
 map <esc><gt> bottom
 
-# auto-set ratios
+# ratios
 map a autoratios
+map t tinyratios
 
 # fuzzy search
 map <c-s> fzf
