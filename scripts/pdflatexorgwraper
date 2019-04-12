@@ -13,12 +13,17 @@ DOCX=0
     shift
 }
 
+ORG=0
+[[ "$1" == '-org' ]] && {
+    ORG=1
+    shift
+}
+
 F="$1"
 E="${F##*.}"
 F="${F%.*}"
 
-#E=org # TODO
-[[ "$E" == 'org' ]] && {
+[[ $ORG == 1 ]] && {
     B=$(sed -rn 's/\\(bibliography|addbibresource)\{(.+)\}/\2/p' "$F.tex")
     [[ "$B" != '' ]] && {
         sed -i -r 's/\\(bibliography|addbibresource)\{.+//g' "$F.tex"

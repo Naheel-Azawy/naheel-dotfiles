@@ -455,7 +455,7 @@ you should place your code here."
                    ("\\paragraph{%s}" . "\\paragraph*{%s}")
                    ("\\subparagraph{%s}" . "\\subparagraph*{%s}")))
     ;; -- MY "DIRTY" LaTeX EXPORT --
-    (setq org-latex-pdf-process '("pdflatexorgwraper %f"))
+    (setq org-latex-pdf-process '("pdflatexorgwraper -org %f"))
     ;; -- TODO --
     (setq org-todo-keywords
           '((sequence "TODO" "PROG" "|" "DONE" "CNCL")))
