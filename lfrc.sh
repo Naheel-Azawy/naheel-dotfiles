@@ -277,20 +277,22 @@ map <c-f> $lf -remote "send $id select \"$(fzf)\""
 # image viewing
 map <c-v> pv-all-imgs
 
-# default stuff
+# default stuff with spice
 map zh set hidden!
 map zr set reverse!
 map zn set info
 map zs set info size
 map zt set info time
 map za set info size:time
-map sn :set sortby natural; set info
+map sN :set sortby natural; set info
 map ss :set sortby size; set info size
-map st :set sortby time; set info time
+map sT :set sortby time; set info time
+map sn :set sortby natural; set info; set noreverse
+map st :set sortby time; set info time; set reverse
 
 # bookmarks
 map gh cd ~
-map gd :cd ~/Downloads; set sortby time; set info time; set reverse!
+map gd :cd ~/Downloads; set sortby time; set info time; set reverse
 map gc cd ~/Documents
 map gp cd ~/Pictures
 map gm cd ~/Music
@@ -299,6 +301,7 @@ map gj cd ~/Projects
 map gg cd ~/MEGA/orgmode
 map go $lf -remote "send $id cd \"$DOTFILES_DIR\""
 map gq $lf -remote "send $id cd \"$QU\""
+map gs $lf -remote "send $id cd \"$QU/Senior/mnmspider/senior2\""
 
 #cmd imgpv ${{
 #               lfimgpv --add $id $f

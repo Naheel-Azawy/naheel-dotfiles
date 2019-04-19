@@ -1,0 +1,2 @@
+#!/bin/sh
+pgrep dunst && killall dunst || { dunst & notify-send 'Notifications enabled'; }
