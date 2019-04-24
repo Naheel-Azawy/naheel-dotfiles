@@ -242,6 +242,10 @@ bindsym $mod+l exec theterm emacs-in --eval '"(cfw:open-org-calendar)"'
 # Network manager dmenu
 bindsym $mod+n exec --no-startup-id networkmanager_dmenu
 
+# Emptiness
+bindsym $mod+e                 exec empty
+bindsym $mod+Shift+e split t\; exec empty
+
 # ¯\_(ツ)_/¯
 bindsym $mod+backslash       exec theterm lolcowforune
 bindsym $mod+Shift+backslash exec theterm lolcowforune -p

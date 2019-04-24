@@ -157,11 +157,11 @@ cmd autoratios &{{
                     if [ $w -le 60 ]; then
                         lf -remote "send $id set nopreview"
                         lf -remote "send $id set ratios 1"
-                    elif [ $w -le 90 ]; then
+                    elif [ $w -le 95 ]; then
                         lf -remote "send $id set ratios 1:2"
                         lf -remote "send $id set preview"
                     elif [ $w -le 160 ]; then
-                        lf -remote "send $id set ratios 1:2:3"
+                        lf -remote "send $id set ratios 1:5:6"
                         lf -remote "send $id set preview"
                     else
                         lf -remote "send $id set ratios 1:2:3:5"
