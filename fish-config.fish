@@ -134,3 +134,5 @@ abbr trna  'trans :ar'
 abbr trnp  'trans -b --play'
 abbr ddd   'sudo dd status=progress bs=2048 if=... of=...'
 abbr cath  'highlight --replace-tabs=4 --out-format=xterm256 --force'
+abbr pc    'sudo pacman'
+

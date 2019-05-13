@@ -15,7 +15,7 @@ export FONT="$FONT_MONO"
 export GTK_THEME="AdwaitaRefresh-darker:dark"
 export DESKTOP_SESSION=gnome
 export QT_QPA_PLATFORMTHEME="qt5ct"
-export QT_DEVICE_PIXEL_RATIO=1
+#export QT_DEVICE_PIXEL_RATIO=1
 export QT_AUTO_SCREEN_SCALE_FACTOR=0
 export QT_STYLE_OVERRIDE=adwaita-dark
 export _JAVA_OPTIONS='-Dawt.useSystemAAFontSettings=on'

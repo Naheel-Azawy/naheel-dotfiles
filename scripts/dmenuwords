@@ -4,6 +4,7 @@ WORDS="¯\\_(ツ)_/¯
 السلام عليكم و رحمة الله و بركاته
 و عليكم السلام و رحمة الله و بركاته
 Alsalamu alykum
+Wa alykum alsalam
 naheelazawy@gmail.com
 nk1508530@qu.edu.qa
 (☞ﾟヮﾟ)☞ ☜(ﾟヮﾟ☜)
@@ -11,5 +12,5 @@ nk1508530@qu.edu.qa
 ◔ ⌣ ◔
 ( ͡° ͜ʖ ͡°)
 ( ͡°( ͡° ͜ʖ( ͡° ͜ʖ ͡°)ʖ ͡°) ͡°)"
-R=$(echo "$WORDS" | menu-interface -l 15 -p 'Words')
+R=$(echo "$WORDS" | menu-interface -i -l 15 -p 'Words')
 [[ "$R" != '' ]] && echo -n "$R" | clipboard

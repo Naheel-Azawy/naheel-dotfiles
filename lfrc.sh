@@ -21,7 +21,7 @@ set ifs "\n"
 set scrolloff 10
 
 # set the previewer script
-set previewer ~/.config/lf/pv.sh
+set previewer lfpv
 
 # COMMANDS ------------------------------------------------------------------------
 
@@ -231,9 +231,8 @@ cmd open-with-default $mimeopen -d $f
 # use enter for shell commands
 map <enter> shell
 
-# execute current file (must be executable)
-map x $$f
-map X !$f
+# emacs
+map x push :$emacs-in<space>
 
 # dedicated keys for file opener actions
 map o open-with
@@ -277,6 +276,9 @@ map <c-f> $lf -remote "send $id select \"$(fzf)\""
 # image viewing
 map <c-v> pv-all-imgs
 
+#full screen preview
+map p $lfpv "$f" | less -R
+
 # default stuff with spice
 map zh set hidden!
 map zr set reverse!
@@ -302,6 +304,7 @@ map gg cd ~/MEGA/orgmode
 map go $lf -remote "send $id cd \"$DOTFILES_DIR\""
 map gq $lf -remote "send $id cd \"$QU\""
 map gs $lf -remote "send $id cd \"$QU/Senior/mnmspider/senior2\""
+map gb cd ~/GoodStuff/vbox-shared/
 
 #cmd imgpv ${{
 #               lfimgpv --add $id $f

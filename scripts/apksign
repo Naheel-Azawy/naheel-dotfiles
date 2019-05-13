@@ -1,0 +1,4 @@
+#!/bin/bash
+APK="$1"
+shift
+jarsigner -verbose -sigalg SHA1withRSA -digestalg SHA1 -keystore ~/.android/debug.keystore "$APK" androiddebugkey -storepass android "$@"
