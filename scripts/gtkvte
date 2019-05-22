@@ -1,0 +1,34 @@
+#!/usr/bin/python3
+import os
+import gi
+gi.require_version('Gtk', '3.0')
+gi.require_version('Vte', '2.91')
+from gi.repository import Gtk, Vte, GLib, Pango, Gio
+
+try: cmd = os.environ['DOTFILES_SCRIPTS'] + '/tmux-quick'
+except:
+    try: cmd = os.environ['SHELL']
+    except: cmd = '/bin/sh'
+
+win = Gtk.Window()
+win.set_title("gtkvte")
+win.set_default_size(900, 600)
+
+trm = Vte.Terminal()
+pty = Vte.Pty.new_sync(Vte.PtyFlags.DEFAULT)
+trm.set_pty(pty)
+
+trm.set_cursor_shape(Vte.CursorShape.BLOCK) # BLOCK, IBEAM, UNDERLINE
+trm.set_cursor_blink_mode(Vte.CursorBlinkMode.OFF) # SYSTEM, ON, OFF
+trm.set_scrollback_lines(0)
+trm.set_font_scale(1)
+
+win.connect('destroy', Gtk.main_quit)
+trm.connect('child-exited', Gtk.main_quit) # FIXME
+
+pty.spawn_async(None, [cmd], None, GLib.SpawnFlags.DO_NOT_REAP_CHILD,
+                None, None, -1, None, lambda pty, task: None)
+
+win.add(trm)
+win.show_all()
+Gtk.main()

@@ -34,6 +34,16 @@ cmd open ${{
               case "$f" in
                   *.html)
                       browser $fx;;
+                  *.tar.bz|*.tar.bz2|*.tbz|*.tbz2|*.tar.gz|*.tgz|*.tar.xz|*.txz|*.zip|*.rar|*.iso)
+                      mntdir="$f-archivemount"
+                      [ ! -d "$mntdir" ] && {
+                          mkdir "$mntdir"
+                          archivemount "$f" "$mntdir"
+                          echo "$mntdir" >> "/tmp/__lf_archivemount_$id"
+                      }
+                      lf -remote "send $id cd \"$mntdir\""
+                      lf -remote "send $id reload"
+                      ;;
                   *)
                       # mime type
                       case $(file --mime-type $f -b) in
@@ -46,6 +56,15 @@ cmd open ${{
                       esac
               esac
           }}
+
+cmd umountarchive ${{
+                       cat "/tmp/__lf_archivemount_$id" | \
+                           while read -r line; do
+                               sudo umount "$line"
+                               rmdir "$line"
+                           done
+                       rm -f "/tmp/__lf_archivemount_$id"
+                   }}
 
 # rename current file without overwrite
 cmd rename %[ -e $1 ] && printf "file exists" || mv $f $1
