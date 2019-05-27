@@ -1,6 +1,7 @@
 #!/bin/bash
 D="$1"
-open=$(echo -e "No\nTerminal\nLF\nRanger\nNNN\nNautilus" | menu-interface -i -p "Open $(basename $D)?")
+#open=$(echo -e "Terminal\nLF\nRanger\nNNN\nNautilus" | menu-interface -i -p "Open $(basename $D)?")
+open='Terminal'
 cd "$D"
 case "$open" in
     Ranger)   exec theterm ranger;;

@@ -10,7 +10,12 @@ LEN=15
 
 function getmount {
 	  [ -z "$chosen" ] && exit 1
-	  mp="$(find $1 | menu-interface -l $LEN -i -p "Type in mount point.")"
+    mps=$(diff --changed-group-format='%>' --unchanged-group-format='' \
+               <(lsblk -rpo "mountpoint" | grep . | sort) \
+               <(find /mnt -maxdepth 1 -type d | sort) | \
+              tail -n +2)
+	  #mp=$(echo "$mps" | menu-interface -l $LEN -i -p "Type in mount point.")
+    mp=$(echo "$mps" | head -n 1)
 	  [ "$mp" = "" ] && exit 1
 	  if [ ! -d "$mp" ]; then
 		    mkdiryn=$(printf "No\\nYes" | menu-interface -i -p "$mp does not exist. Create it?")
@@ -21,13 +26,13 @@ function getmount {
 function mountusb {
 	  chosen=$(echo "$1" | awk '{print $2}')
 	  sudo -A mount "$chosen" && notify-send "$chosen mounted." && exit 0
-	  getmount "/mnt -maxdepth 1 -type d"
+	  getmount
 	  sudo -A mount "$chosen" "$mp" && notify-send "$chosen mounted to $mp."
 }
 
 function mountmtp {
 	  chosen=$(echo "$1" | awk -F':' '{print $2}' | xargs)
-	  getmount "/mnt -maxdepth 1 -type d"
+	  getmount
 	  simple-mtpfs --device "$chosen" "$mp"
 	  notify-send "MTP device mounted to $mp."
 }

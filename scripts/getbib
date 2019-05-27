@@ -165,6 +165,22 @@ function finalize {
     exit 1
 }
 
+# bib or pdf
+[[ $MENU == 1 ]] && {
+    echo -e 'Get bibliography\nGet PDF' | \
+        menu-interface -i -p "${TITLE:0:20}" | grep -q PDF && {
+        [[ $NOTIF == 1 ]] && notify-send "Finding PDF for $TITLE"
+        S=$(eval "$SCHOLARPY" -c 1 --phrase \""$TITLE"\")
+        PDF=$(echo "$S" | sed -rn 's@PDF link .*http(.+)@http\1@p' | xargs)
+        [[ "$PDF" == '' ]] && {
+            PDF=$(echo "$S" | sed -rn 's@URL .*http(.+)@http\1@p' | xargs)
+            PDF="https://sci-hub.tw/$PDF"
+        }
+        $BROWSER "$PDF"
+        exit 0
+    }
+}
+
 # look into the history file
 HIST=$(grep "$TITLE" "$BIB.hist" 2>/dev/null)
 [[ "$HIST" != '' ]] && {
