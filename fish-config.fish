@@ -23,8 +23,6 @@ function lf
     set tmp (mktemp)
     set fid (mktemp)
     command lf -command '$printf $id > '"$fid"'' -last-dir-path=$tmp $argv
-    #command lf -last-dir-path=$tmp $argv
-    #command lf -command '$printf $id > '"$fid"'; lfimgpv --listen $id &' -last-dir-path=$tmp $argv
     set id (cat $fid)
     set archivemount_dir "/tmp/__lf_archivemount_$id"
     if test -f "$archivemount_dir"
@@ -34,7 +32,6 @@ function lf
         end
         rm -f "$archivemount_dir"
     end
-    #lfimgpv --end (cat $fid)
     rm $fid
     if test -f "$tmp"
         set dir (cat $tmp)
@@ -147,3 +144,7 @@ abbr ddd   'sudo dd status=progress bs=2048 if=... of=...'
 abbr cath  'highlight --replace-tabs=4 --out-format=xterm256 --force'
 abbr pc    'sudo pacman'
 
+
+# tabtab source for electron-forge package
+# uninstall by removing these lines or running `tabtab uninstall electron-forge`
+[ -f /home/naheel/GoodStuff/gb-studio/node_modules/tabtab/.completions/electron-forge.fish ]; and . /home/naheel/GoodStuff/gb-studio/node_modules/tabtab/.completions/electron-forge.fish

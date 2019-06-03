@@ -19,7 +19,6 @@
 # brew install pandoc
 # brew install pandoc-citeproc
 
-
 # if only the final formatted citation is needed
 CITE_ONLY=0
 [[ "$1" == '-c' ]] && {
@@ -54,16 +53,6 @@ MENU=0
     DOTFILES_SCRIPTS="$HOME/.dotfiles/scripts"
 mkdir -p "$DOTFILES_SCRIPTS"
 
-# double checking 'clipboard'
-CLIPBOARD='clipboard'
-command -v clipboard >/dev/null || {
-    CLIPBOARD="bash '$DOTFILES_SCRIPTS/clipboard'"
-    [[ -f "$DOTFILES_SCRIPTS/clipboard" ]] || {
-        echo "clipboard not found! Downloading to $DOTFILES_SCRIPTS/clipboard"
-        curl 'https://raw.githubusercontent.com/Naheel-Azawy/naheel-dotfiles/master/scripts/clipboard' > "$DOTFILES_SCRIPTS/clipboard"
-    }
-}
-
 # double checking 'scholar.py'
 SCHOLARPY='scholar.py'
 command -v scholar.py >/dev/null || {
@@ -82,7 +71,7 @@ command -v menu-interface >/dev/null || function menu-interface {
 # the final action
 function finalize {
     if [[ $CITE_ONLY == 0 ]]; then
-        echo -n "$1" | eval "$CLIPBOARD"
+        echo -n "$1" | xclip -i -selection clipboard
     else
         echo "\cite{$1}
 \printbibliography" > "$TMP_TEX"
@@ -153,14 +142,15 @@ function finalize {
     M="$TITLE"
     [[ $M != '' ]] && M="$M\n"
     [[ $TITLE2 != '' ]] && M="${M}$TITLE2\n"
-    M="${M}$(clipboard)"
-    TITLE=$(echo -e "$M" | menu-interface -i -l 20 -p 'Cite: ') || exit 1
+    M="${M}$(xclip -o -selection clipboard | tr '\r\n' ' ')"
+    TITLE=$(echo -en "$M" | menu-interface -i -l 20 -p 'Cite: ' | \
+                sed 's/\- *//g; s/[^0-9A-Za-z]/ /g; s/ \+/ /g') || exit 1
 }
 
 # nothing was found
 [[ "$TITLE" == '' ]] && {
     [[ $NOTIF == 1 ]] && \
-        notify-send "No title was found from the current window<br>File: $FILE"
+        notify-send "No title was found from the current window. File: $FILE"
     echo "No title was found from the current window"
     exit 1
 }
@@ -185,7 +175,7 @@ function finalize {
 HIST=$(grep "$TITLE" "$BIB.hist" 2>/dev/null)
 [[ "$HIST" != '' ]] && {
     [[ $NOTIF == 1 ]] && \
-        notify-send "Bib found for $TITLE from history<br>$LABEL"
+        notify-send "Bib found for $TITLE from history ($LABEL)"
     LABLE=$(echo "$HIST" | awk '{print $2}' | tr -d '\n')
     finalize "$LABLE"
 }
@@ -223,7 +213,7 @@ YEAR=$(echo   "$B" | sed -E -n 's/\s+year\s*=\s*\{?(.+)\}?,/\1/p')
 echo "$(date '+%Y-%m-%d-%H:%M:%S') $LABEL $FTITLE" >> "$BIB.hist"
 
 [[ $NOTIF == 1 ]] && \
-    notify-send "Bib found for $TITLE by $AUTHOR ($YEAR)<br>$LABEL"
+    notify-send "Bib found for $TITLE by ${AUTHOR}, $YEAR ($LABEL)"
 
 # write to bib file if not already there
 if ! grep -q "$LABEL" "$BIB" &>/dev/null; then

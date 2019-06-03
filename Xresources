@@ -43,6 +43,6 @@ XTerm.vt100.translations: #override \n\
   Ctrl <Key> plus: larger-vt-font()
 
 ! SXIV options
-Sxiv.foreground: rgb:55/55/55
+Sxiv.foreground: rgb:99/99/99
 Sxiv.background: rgb:00/00/00
 

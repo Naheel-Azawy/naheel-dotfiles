@@ -103,7 +103,8 @@ handle_mime() {
         # Image
         image/*)
             # Preview as text conversion
-            img2txt --gamma=0.6 -- "${FILE_PATH}" && exit 0
+            #viu "${FILE_PATH}" || \
+            #    img2txt --gamma=0.6 -- "${FILE_PATH}"
             exiftool "${FILE_PATH}" && exit 0
             exit 1;;
 
@@ -111,6 +112,17 @@ handle_mime() {
         video/* | audio/*|application/octet-stream)
             exiftool "${FILE_PATH}" && exit 0
             mediainfo "${FILE_PATH}" && exit 0
+            exit 1;;
+        application/*office*|application/ms*|application/vnd.ms-*)
+            TMP_FILE_PATH="${FILE_PATH##*/}"
+            TMP_FILE_PATH="/tmp/${TMP_FILE_PATH%.*}.txt"
+            libreoffice \
+                --headless \
+                --convert-to txt "${FILE_PATH}" \
+                --outdir /tmp >/dev/null \
+                && cat "$TMP_FILE_PATH" \
+                && rm -f "$TMP_FILE_PATH" \
+                && exit 0
             exit 1;;
     esac
 }
