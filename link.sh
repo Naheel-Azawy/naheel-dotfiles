@@ -34,6 +34,9 @@ lnnn "$D/zathurarc" "$H/.config/zathura/zathurarc"
 mkdir -p "$H/.config/lf"
 lnnn "$D/lfrc.sh" "$H/.config/lf/lfrc"
 
+mkdir -p "$H/.config/sxiv/exec/"
+lnnn "$D/sxiv-key-handler.sh" "$H/.config/sxiv/exec/key-handler"
+
 lnnn "$D/compton.conf"   "$H/.config/compton.conf"
 lnnn "$D/user-dirs.dirs" "$H/.config/user-dirs.dirs"
 lnnn "$D/ranger"         "$H/.config/ranger"

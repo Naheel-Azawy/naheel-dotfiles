@@ -142,9 +142,4 @@ abbr trna  'trans :ar'
 abbr trnp  'trans -b --play'
 abbr ddd   'sudo dd status=progress bs=2048 if=... of=...'
 abbr cath  'highlight --replace-tabs=4 --out-format=xterm256 --force'
-abbr pc    'sudo pacman'
-
-
-# tabtab source for electron-forge package
-# uninstall by removing these lines or running `tabtab uninstall electron-forge`
-[ -f /home/naheel/GoodStuff/gb-studio/node_modules/tabtab/.completions/electron-forge.fish ]; and . /home/naheel/GoodStuff/gb-studio/node_modules/tabtab/.completions/electron-forge.fish
+abbr pc    'sudo pacman -S'

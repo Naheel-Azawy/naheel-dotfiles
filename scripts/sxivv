@@ -1,0 +1,16 @@
+#!/bin/bash
+dir=.
+opt='-t'
+[ "$1" != '' ] && {
+    dir=$(dirname "$1")
+    opt=''
+}
+
+{
+    cd "$dir"
+    files="$(file --mime-type ./* | grep image/ | awk -F':' '{print $1}' | sort)"
+    [ "$1" != '' ] && {
+        echo "$1"
+        echo "$files" | grep -v "$1"
+    } || echo "$files"
+} | sxiv $opt -

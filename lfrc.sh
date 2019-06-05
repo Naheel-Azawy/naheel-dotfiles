@@ -46,9 +46,11 @@ cmd open ${{
                       ;;
                   *)
                       # mime type
-                      case $(file --mime-type $f -b) in
-                          text/*|*/json)
+                      case $(file --mime-type $(realpath "$f") -b) in
+                          text/*|*/json|*empty)
                               $EDITOR $fx;;
+                          image/*)
+                              sxivv $fx &;;
                           *)
                               for f in $fx; do
                                   $OPENER $f > /dev/null 2> /dev/null &
@@ -231,14 +233,6 @@ cmd bulk-rename ${{
 	                   rm $index $index_edit
                  }}
 
-# open image previewer in thumbnail mode
-cmd pv-all-imgs &{{
-                     file --mime-type ./* | \
-                         grep image/ | \
-                         awk -F':' '{print $1}' | \
-                         sxiv -t -
-                 }}
-
 # select which program to open the current file with
 cmd open-with $mimeopen --ask $f
 
@@ -293,7 +287,7 @@ map f     fzf
 map <c-f> $lf -remote "send $id select \"$(fzf)\""
 
 # image viewing
-map <c-v> pv-all-imgs
+map <c-v> &sxivv
 
 #full screen preview
 map p $lfpv "$f" | less -R
