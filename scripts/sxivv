@@ -1,16 +1,21 @@
-#!/bin/bash
+#!/bin/sh
 dir=.
+img=
 opt='-t'
 [ "$1" != '' ] && {
-    dir=$(dirname "$1")
-    opt=''
+    [ -f "$1" ] && {
+        dir=$(dirname "$1")
+        img=$(basename "$1")
+        opt=''
+    } || dir="$1"
 }
 
+cd "$dir"
+
 {
-    cd "$dir"
-    files="$(file --mime-type ./* | grep image/ | awk -F':' '{print $1}' | sort)"
-    [ "$1" != '' ] && {
-        echo "$1"
-        echo "$files" | grep -v "$1"
+    files="$(file --mime-type ./* | grep image/ | awk -F':' '{print $1}' | xargs ls -1t)"
+    [ "$img" != '' ] && [ -f "$img" ] && {
+        echo "$img"
+        echo "$files" | grep -v "$img"
     } || echo "$files"
 } | sxiv $opt -

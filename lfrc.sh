@@ -50,7 +50,9 @@ cmd open ${{
                           text/*|*/json|*empty)
                               $EDITOR $fx;;
                           image/*)
-                              sxivv $fx &;;
+                              sxivv $fx > /dev/null 2> /dev/null &;;
+                          video/*)
+                              mpv $fx --loop=inf > /dev/null 2> /dev/null &;;
                           *)
                               for f in $fx; do
                                   $OPENER $f > /dev/null 2> /dev/null &
