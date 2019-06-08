@@ -94,7 +94,7 @@ block mode bar_click
     done
 }
 blockend
-bindsym $mod+k exec --no-startup-id bar --number\; mode bar_click
+#bindsym $mod+k exec --no-startup-id bar --number\; mode bar_click
 
 # start a terminal
 bindsym $mod+Return                         exec $term
@@ -249,6 +249,9 @@ bindsym $mod+Shift+e split t\; exec empty
 # ¯\_(ツ)_/¯
 bindsym $mod+backslash       exec theterm lolcowforune
 bindsym $mod+Shift+backslash exec theterm lolcowforune -p
+
+# Toggle on-screen keyboard
+bindsym $mod+k exec sh -c "'pkill onboard || onboard'"
 
 # #---Extra XF86 Keys---# #
 # These are the extra media keys that some keyboards have.

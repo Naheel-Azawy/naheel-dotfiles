@@ -1,11 +1,17 @@
 #!/bin/bash
+LANGS=(us ar ru)
 L=$(setxkbmap -query | sed -En 's/layout:\s*(.+)/\1/p' 2>/dev/null)
-if [[ "$1" != "-v" ]]; then
-    if [[ "$L" = "us" ]]; then
-        L=ar
-    else
-        L=us
-    fi
+if [ "$1" != "-v" ]; then
+    changed=0
+    for i in ${!LANGS[@]}; do
+        if [ "$L" = ${LANGS[i]} ]; then
+            L=${LANGS[$(( (i + 1) % ${#LANGS[@]} ))]};
+            changed=1
+            break
+        fi
+    done
+    [ $changed = 0 ] && L=us
     lang-set "$L"
+else
+    echo $L
 fi
-echo $L

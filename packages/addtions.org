@@ -74,3 +74,4 @@
 | pacman | mlocate                      | find files quickly                                                                             |
 | npm    | wikit                        | cli wikipedia                                                                                  |
 | pacman | perl-file-mimeinfo           | file opener with mime type                                                                     |
+| pacman | onboard                      | on-screen keyboard                                                                             |
