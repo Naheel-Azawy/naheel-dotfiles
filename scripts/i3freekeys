@@ -1,4 +1,5 @@
 #!/bin/bash
+FILE=$(grep -o '^[^#]*' "$DOTFILES_DIR/i3.conf.gen.sh")
 for s in mod+{a..z}; do
-    grep -q "$s" "$DOTFILES_DIR/i3.conf.gen.sh" || echo "$s"
+    echo "$FILE" | grep -q "$s " || echo "$s"
 done
