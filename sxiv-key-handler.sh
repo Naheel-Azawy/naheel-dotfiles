@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 # Example for $XDG_CONFIG_HOME/sxiv/exec/key-handler
 # Called by sxiv(1) after the external prefix key (C-x by default) is pressed.
@@ -25,7 +25,7 @@ rotate() {
 choice="$1"
 [ "$1" = "C-x" ] && {
     choice=$(echo 'Information
-GIMP
+Open with
 Copy file name
 Copy image
 Set as wallpaper
@@ -39,8 +39,15 @@ Delete' | menu-interface -i -l 20)
 case "$choice" in
     "Information" | "i")
         while read -r file; do theterm "exiftool '$file' | less" & done;;
-    "GIMP" | "g")
-        tr '\n' '\0' | xargs -0 gimp &;;
+    "Open with" | "o")
+        files=()
+        while read -r file; do
+            files+=("$file")
+        done
+        eval $(echo | mimeopen --ask "${files[0]}" 2>/dev/null | \
+                   sed -En 's/.+\)\s+(.+)/\1/p' | \
+                   menu-interface -l 20 -p 'Open with' | \
+                   sed -En 's/.+\((.+)\)/\1/p') "${files[@]}" &;;
     "Copy file name" | "f")
         xclip -in -filter | tr '\n' ' ' | xclip -in -selection clipboard;;
     "Copy image" | "M-w")

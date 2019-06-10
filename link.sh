@@ -9,15 +9,12 @@ H="$3"
 [[ "$H" = "" ]] && H="$HOME"
 
 function lnnn {
-    rm -rf $2 2> /dev/null
-    ln -s $1 $2
+    rm -rf "$2" 2> /dev/null
+    ln -s "$1" "$2"
 }
 
 mkdir -p "$H/.config/dunst"
 lnnn "$D/dunstrc" "$H/.config/dunst/dunstrc"
-
-mkdir -p "$H/.config/feh"
-lnnn "$D/feh-keys" "$H/.config/feh/keys"
 
 mkdir -p "$H/.config/fish"
 lnnn "$D/fish-config.fish" "$H/.config/fish/config.fish"
@@ -39,7 +36,6 @@ lnnn "$D/sxiv-key-handler.sh" "$H/.config/sxiv/exec/key-handler"
 
 lnnn "$D/compton.conf"   "$H/.config/compton.conf"
 lnnn "$D/user-dirs.dirs" "$H/.config/user-dirs.dirs"
-lnnn "$D/ranger"         "$H/.config/ranger"
 
 mkdir -p "$H/.mednafen"
 lnnn "$D/mednafen.cfg" "$H/.mednafen/mednafen.cfg"
@@ -48,7 +44,7 @@ lnnn "$D/bashrc.sh"     "$H/.bashrc"
 lnnn "$D/profile"       "$H/.profile"
 lnnn "$D/profile"       "$H/.bashrc_profile"
 lnnn "$D/profile"       "$H/.xprofile"
-lnnn "$D/xinitrc"       "$H/.xinitrc"
+lnnn "$D/xinitrc.sh"    "$H/.xinitrc"
 lnnn "$D/Xresources"    "$H/.Xresources"
 lnnn "$D/Xmodmap"       "$H/.Xmodmap"
 lnnn "$D/tmux.conf"     "$H/.tmux.conf"

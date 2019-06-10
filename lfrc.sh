@@ -243,8 +243,8 @@ cmd open-with-default $mimeopen -d $f
 
 # MAPPINGS ------------------------------------------------------------------------
 
-# use enter for shell commands
-map <enter> shell
+# use enter to open
+map <enter> open
 
 # emacs
 map x push :$emacs-in<space>
