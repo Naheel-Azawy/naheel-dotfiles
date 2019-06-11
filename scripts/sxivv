@@ -1,4 +1,12 @@
 #!/bin/sh
+
+VIDS_THUMBS_DIR="$HOME/.catch/vidthmbs/"
+vidthumb() {
+    p="$VIDS_THUMBS_DIR$(realpath """$f""").jpg"
+    mkdir -p "$(dirname """$p""")"
+    echo "$p"
+}
+
 dir=.
 img=
 opt='-t'
@@ -13,9 +21,20 @@ opt='-t'
 cd "$dir"
 
 {
-    files="$(file --mime-type ./* | grep image/ | awk -F':' '{print $1}' | xargs ls -1t)"
+    files=$(file --mime-type ./*)
+    images=$({
+                # images
+                echo "$files" | grep image/ | awk -F':' '{print $1}'
+                # videos
+                echo "$files" | grep video/ | awk -F':' '{print $1}' | while read -r f; do
+                    t=$(vidthumb "$f")
+                    [ ! -f "$t" ] && \
+                        ffmpegthumbnailer -i "$f" -o "$t" -s 0
+                    echo "$t"
+                done
+            } | xargs -d '\n' ls -1t)
     [ "$img" != '' ] && [ -f "$img" ] && {
         echo "$img"
-        echo "$files" | grep -v "$img"
-    } || echo "$files"
+        echo "$images" | grep -v "$img"
+    } || echo "$images"
 } | sxiv $opt -

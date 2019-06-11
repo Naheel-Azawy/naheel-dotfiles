@@ -12,6 +12,8 @@
 # where C/M/S indicate Ctrl/Meta(Alt)/Shift modifier states and KEY is the X
 # keysym as listed in /usr/include/X11/keysymdef.h without the "XK_" prefix.
 
+VIDS_THUMBS_DIR="$HOME/.catch/vidthmbs/"
+
 rotate() {
 	  degree="$1"
 	  tr '\n' '\0' | xargs -0 realpath | sort | uniq | while read -r file; do
@@ -64,5 +66,10 @@ case "$choice" in
         while read -r file; do trash-put "$file"; done;;
     "Delete" | "d")
         while read -r file; do rm -f "$file"; done;;
+    "p") # play video (experimental)
+        while read -r file; do
+            echo "$file" | grep -q "^$VIDS_THUMBS_DIR" && \
+                mpv --loop=inf "$(echo """$file""" | sed -En """s@$VIDS_THUMBS_DIR(.+).jpg@\\1@p""")" &
+        done;;
 esac
 
