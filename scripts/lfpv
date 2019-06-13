@@ -17,7 +17,7 @@ IFS=$'\n'
 
 # Script arguments
 FILE_PATH="${1}"         # Full path of the highlighted file
-IMAGE_CACHE_PATH="$HOME/.cache/lfimg/$(basename $FILE_PATH).jpg"  # Full path that should be used to cache image preview
+IMAGE_CACHE_PATH="$HOME/.cache/lfimg/$(basename """$FILE_PATH""").jpg"  # Full path that should be used to cache image preview
 PV_IMAGE_ENABLED="False"  # 'True' if image previews are enabled, 'False' otherwise.
 
 FILE_EXTENSION="${FILE_PATH##*.}"
@@ -28,6 +28,18 @@ HIGHLIGHT_SIZE_MAX=262143  # 256KiB
 HIGHLIGHT_TABWIDTH=4
 HIGHLIGHT_STYLE='pablo'
 PYGMENTIZE_STYLE='autumn'
+
+asciize() {
+    dims=$(identify "$1" | sed -En 's/.+ ([0-9]+x[0-9]+).+/\1/p')
+    w=$(echo "$dims" | awk -F'x' '{print $1}')
+    h=$(echo "$dims" | awk -F'x' '{print $2}')
+    if [ $w -gt $h ]; then
+        opts="--width=$(($(tput cols)/2))"
+    else
+        opts="--height=$(tput lines)"
+    fi
+    jp2a $opts "$1"
+}
 
 handle_extension() {
     case "${FILE_EXTENSION_LOWER}" in
@@ -103,16 +115,34 @@ handle_mime() {
         # Image
         image/*)
             # Preview as text conversion
-            #viu "${FILE_PATH}" || \
-            #    img2txt --gamma=0.6 -- "${FILE_PATH}"
+            # viu "${FILE_PATH}"
+            # img2txt --gamma=0.6 -- "${FILE_PATH}"
+            [ $(du "${FILE_PATH}" | cut -f 1) -le 6000 ] && { # only if <= 6M
+                asciize "${FILE_PATH}" || { # probably if not jpg
+                    j=/tmp/lfjp2atmp.jpg
+                    convert "${FILE_PATH}" "$j"
+                    asciize "$j"
+                    rm -f "$j"
+                } && echo
+            }
             exiftool "${FILE_PATH}" && exit 0
             exit 1;;
 
-        # Video and audio
-        video/* | audio/*|application/octet-stream)
+        # Video
+        video/*)
+            j=/tmp/lfjp2atmp.jpg
+            ffmpegthumbnailer -i "${FILE_PATH}" -o "$j"
+            asciize "$j"
+            rm -f "$j"
+            echo
             exiftool "${FILE_PATH}" && exit 0
-            mediainfo "${FILE_PATH}" && exit 0
             exit 1;;
+
+        # Audio
+        audio/*|application/octet-stream)
+            exiftool "${FILE_PATH}" && exit 0
+            exit 1;;
+
         application/*office*|application/ms*|application/vnd.ms-*)
             TMP_FILE_PATH="${FILE_PATH##*/}"
             TMP_FILE_PATH="/tmp/${TMP_FILE_PATH%.*}.txt"

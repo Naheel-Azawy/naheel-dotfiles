@@ -186,9 +186,6 @@ cmd autoratios &{{
                     elif [ $w -le 160 ]; then
                         lf -remote "send $id set ratios 1:5:6"
                         lf -remote "send $id set preview"
-                    else
-                        lf -remote "send $id set ratios 1:2:3:5"
-                        lf -remote "send $id set preview"
                     fi
                 }}
 autoratios # auto-run at start
@@ -278,6 +275,7 @@ map <delete>D        delete
 # up and down
 map <esc><lt> top
 map <esc><gt> bottom
+map <c-e>     bottom # fix 'end'
 
 # ratios
 map a autoratios
