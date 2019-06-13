@@ -23,22 +23,17 @@ PV_IMAGE_ENABLED="False"  # 'True' if image previews are enabled, 'False' otherw
 FILE_EXTENSION="${FILE_PATH##*.}"
 FILE_EXTENSION_LOWER=$(echo ${FILE_EXTENSION} | tr '[:upper:]' '[:lower:]')
 
-# Settings
-HIGHLIGHT_SIZE_MAX=262143  # 256KiB
-HIGHLIGHT_TABWIDTH=4
-HIGHLIGHT_STYLE='pablo'
-PYGMENTIZE_STYLE='autumn'
-
 asciize() {
-    dims=$(identify "$1" | sed -En 's/.+ ([0-9]+x[0-9]+).+/\1/p')
-    w=$(echo "$dims" | awk -F'x' '{print $1}')
-    h=$(echo "$dims" | awk -F'x' '{print $2}')
-    if [ $w -gt $h ]; then
-        opts="--width=$(($(tput cols)/2))"
-    else
-        opts="--height=$(tput lines)"
-    fi
-    jp2a $opts "$1"
+    identify -format '%w\n%h' "$1" | {
+        read w
+        read h
+        if [ "$w" -gt "$h" ]; then
+            opts="--width=$(($(tput cols)/2))"
+        else
+            opts="--height=$(tput lines)"
+        fi
+        jp2a "$opts" "$1"
+    }
 }
 
 handle_extension() {
@@ -98,18 +93,10 @@ handle_mime() {
         # Text
         text/* | */xml | */json)
             # Syntax highlight
-            if [ "$( stat --printf='%s' -- "${FILE_PATH}" )" -gt "${HIGHLIGHT_SIZE_MAX}" ]; then
+            if [ "$( stat --printf='%s' -- "${FILE_PATH}" )" -gt 262143 ]; then # > 256KiB
                 exit 2
             fi
-            # if [ "$( tput colors )" -ge 256 ]; then
-            #     local pygmentize_format='terminal256'
-            #     local highlight_format='xterm256'
-            # else
-            #     local pygmentize_format='terminal'
-            local highlight_format='ansi'
-            # fi
-            highlight --replace-tabs="${HIGHLIGHT_TABWIDTH}" --out-format="${highlight_format}" --style="${HIGHLIGHT_STYLE}" --force -- "${FILE_PATH}"
-            # pygmentize -f "${pygmentize_format}" -O "style=${PYGMENTIZE_STYLE}" -- "${FILE_PATH}"
+            highlight --replace-tabs=4 --out-format=ansi --style='pablo' --force -- "${FILE_PATH}"
             exit 2;;
 
         # Image
@@ -220,7 +207,7 @@ handle_fallback() {
 
 {
     MIMETYPE="$( file --dereference --brief --mime-type -- "${FILE_PATH}" )"
-    [[ "${PV_IMAGE_ENABLED}" == 'True' ]] && {
+    [ "${PV_IMAGE_ENABLED}" = 'True' ] && {
         handle_image "${MIMETYPE}" && \
             lfimgpv --add 0 "${IMAGE_CACHE_PATH}" 2>/dev/null && exit 1
     }
