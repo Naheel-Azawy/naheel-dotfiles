@@ -43,7 +43,7 @@ cmd open ${{
                       lf -remote "send $id reload"
                       ;;
                   *)
-                      open $fx;;
+                      open $fx > /dev/null 2> /dev/null;;
               esac
           }}
 

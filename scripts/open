@@ -12,10 +12,10 @@ case "$f" in
             text/*|*/json|*empty)
                 $EDITOR "$fx";;
             image/*)
-                sxivv "$fx" > /dev/null 2> /dev/null &;;
+                sxivv "$fx" &;;
             video/*)
-                mpv "$fx" --loop=inf > /dev/null 2> /dev/null &;;
+                mpv "$fx" --loop=inf &;;
             *)
-                $OPENER "$fx" > /dev/null 2> /dev/null &
+                $OPENER "$fx" &
         esac
 esac

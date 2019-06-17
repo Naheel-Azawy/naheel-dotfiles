@@ -19,6 +19,16 @@ function fish_prompt --description 'Write out the prompt'
     echo -n -s "$face$USER" @ (prompt_hostname) ' ' (set_color $color_cwd) (prompt_pwd) (set_color normal) "$suffix "
 end
 
+function open --description "Open file in default application"
+    for i in $argv
+        if test -d $i
+            cd $i
+        else
+            command open $i
+        end
+    end
+end
+
 function lf
     set tmp (mktemp)
     set fid (mktemp)
