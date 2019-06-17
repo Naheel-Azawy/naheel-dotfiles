@@ -1,5 +1,5 @@
 #!/bin/bash
 [[ "$1" != '' ]] && {
-    cp "$1" "$DOTFILES_DIR/wall"
+    cp "$1" "$DOTFILES_DIR/configs/wall"
 }
-feh --bg-fill "$DOTFILES_DIR/wall"
+feh --bg-fill "$DOTFILES_DIR/configs/wall"

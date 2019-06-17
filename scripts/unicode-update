@@ -1,5 +1,5 @@
 #!/bin/bash
-U="$DOTFILES_DIR/unicode"
+U="$DOTFILES_DIR/stuff/unicode"
 echo "Downloading..."
 curl 'https://www.unicode.org/Public/UCD/latest/ucd/UnicodeData.txt' > "$U"
 echo "Processing..."

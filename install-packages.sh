@@ -6,7 +6,7 @@ D="$2"
 C='\e[1;34;40m' # info color
 R='\033[0m'     # reset color
 
-installed=$((pacman -Qet && pacman -Qm) | awk '{print $1}')
+installed=$( (pacman -Qet && pacman -Qm) | awk '{print $1}')
 
 function install-aur-manual { # Installs $1 manually if not installed. Used only for AUR helper here.
 	  [[ -f /usr/bin/$1 ]] || (
@@ -55,7 +55,7 @@ function install-git {
 function install-suckless {
     link="$1"
     name=${link##*/}
-    conf="$D/$name-config.h"
+    conf="$D/configs/$name-config.h"
 	  dir=$(mktemp -d)
 	  git clone --depth 1 "$link" "$dir"
 	  cd "$dir" || exit
