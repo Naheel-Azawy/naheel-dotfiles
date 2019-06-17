@@ -1,0 +1,15 @@
+* Naheel's Personal Dotfiles
+  A collection of toys glued together to buildup my setup on my main machine.
+
+  Warning: This thing is not so stable and might explode at any moment.
+
+** Install
+   Arch Linux is expected to be installed and user is setup.
+   #+begin_src shell 
+     sudo ./install.sh
+   #+end_src
+
+** Update
+   #+begin_src shell 
+     ./update-configs.sh
+   #+end_src
