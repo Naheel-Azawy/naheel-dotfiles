@@ -1,0 +1,9 @@
+#!/bin/sh
+T="$1"
+for schema in $(gsettings list-schemas | grep "$T"); do
+	  for key in $(gsettings list-keys "$schema"); do
+		    value="$(gsettings get """$schema""" """$key""")"
+		    #echo gsettings set $schema $key $(printf '"')$value$(printf '"')
+        echo "gsettings set $schema $key \"$value\""
+	  done
+done
