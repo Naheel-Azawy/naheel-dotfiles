@@ -43,13 +43,13 @@ case "$choice" in
         while read -r file; do theterm "exiftool '$file' | less" & done;;
     "Open with" | "o")
         files=()
-        while read -r file; do
+        while IFS= read -r file; do
             files+=("$file")
         done
-        eval $(echo | mimeopen --ask "${files[0]}" 2>/dev/null | \
-                   sed -En 's/.+\)\s+(.+)/\1/p' | \
-                   menu-interface -l 20 -p 'Open with' | \
-                   sed -En 's/.+\((.+)\)/\1/p') "${files[@]}" &;;
+        eval "$(echo | mimeopen --ask """${files[0]}""" 2>/dev/null |
+                   sed -En 's/.+\)\s+(.+)/\1/p' |
+                   menu-interface -l 20 -p 'Open with' |
+                   sed -En 's/.+\((.+)\)/\1/p')" ${files[@]} &;;
     "Copy file name" | "f")
         xclip -in -filter | tr '\n' ' ' | xclip -in -selection clipboard;;
     "Copy image" | "M-w")

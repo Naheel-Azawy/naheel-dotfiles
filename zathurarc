@@ -2,3 +2,5 @@ set recolor true
 set selection-clipboard clipboard
 set smooth-scroll true
 set scroll-step 100
+set guioptions 'hv'
+map b toggle_statusbar

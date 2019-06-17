@@ -266,8 +266,7 @@ bindsym $mod+Shift+backslash exec theterm lolcowforune -p
 bindsym $mod+k exec sh -c "'pkill onboard || onboard'"
 
 #
-bindsym $mod+v       exec sh -c '"test $(lang-toggle -v) = ru && mpv --loop=inf --mute=yes ~/M/VID_283160929_055638_132.mp4"'
-bindsym $mod+Shift+v exec sh -c '"test $(lang-toggle -v) = ru && sxivv ~/M"'
+bindsym $mod+Shift+v exec sh -c "'sxivv ~/M'"
 
 # #---Extra XF86 Keys---# #
 # These are the extra media keys that some keyboards have.

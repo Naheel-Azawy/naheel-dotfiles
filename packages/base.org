@@ -21,9 +21,10 @@
 | pacman   | compton                                   | for transparency and removing screen-tearing                      |
 | pacman   | cronie                                    | manages scheduled tasks                                           |
 | pacman   | dosfstools                                | allows your computer to access dos-like filesystems               |
-| pacman   | dunst                                     | is a suckless notification system                                 |
 | pacman   | exfat-utils                               | allows management of FAT drives                                   |
-| pacman   | feh                                       | a minimal image viewer                                            |
+| pacman   | ntfs-3g                                   | allows accessing NTFS partitions                                  |
+| pacman   | dunst                                     | is a suckless notification system                                 |
+| pacman   | feh                                       | a minimal image viewer (used to set wallpaper)                    |
 | pacman   | sxiv                                      | another minimal image viewer (a bit less minimal)                 |
 | pacman   | ffmpeg                                    | can record and splice video and audio on the command line         |
 | pacman   | chromium                                  | well, in most cases it is faster than firefox...                  |
@@ -34,27 +35,22 @@
 | pacman   | mpv                                       | is the patrician's choice video/gif player                        |
 | pacman   | networkmanager                            | does exactly what it sounds like                                  |
 | pacman   | network-manager-applet                    | appears in the top right corner and manages the wi-fi connection  |
-| pacman   | ntfs-3g                                   | allows accessing NTFS partitions                                  |
 | pacman   | pulseaudio                                | is the audio system (>inb4 bloat)                                 |
 | pacman   | pulseaudio-alsa                           | is an audio interface with ALSA                                   |
 | pacman   | pamixer                                   | is a terminal audio control interface                             |
 | pacman   | pulsemixer                                | is an intuitive ncurses audio controller                          |
 | pacman   | maim                                      | can take quick screenshots at your request                        |
 | pacman   | tmux                                      | the terminal multiplexer                                          |
-| aur      | unclutter-xfixes-git                      | hides an inactive mouse                                           |
 | pacman   | unrar                                     | extracts rar's                                                    |
 | pacman   | unzip                                     | unzips zips                                                       |
-| aur      | urlview                                   | parses URLs in the terminal allowing keyboard-based selection     |
 | pacman   | w3m                                       | is a terminal browser which can also view images                  |
 | pacman   | wget                                      | downloads sites and files on the command line                     |
 | pacman   | xdotool                                   | provides window action utilities on the command line.             |
 | pacman   | xssstate                                  | times out the screen if locked                                    |
-| pacman   | poppler                                   | manipulates .pdfs and gives .pdf previews in ranger               |
-| pacman   | mediainfo                                 | shows audio and video information and is used by ranger as well   |
+| pacman   | poppler                                   | manipulates pdfs                                                  |
 | pacman   | atool                                     | manages and gives information about archives                      |
 | pacman   | fzf                                       | is a fuzzy finder tool                                            |
 | pacman   | highlight                                 | can highlight code output                                         |
-| aur      | task-spooler                              | queues commands or files for download                             |
 | pacman   | fish                                      | the friendly shell!                                               |
 | pacman   | emacs                                     | the best editor on this planet                                    |
 | pacman   | ispell                                    | spell checker                                                     |

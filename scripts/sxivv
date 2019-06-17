@@ -19,22 +19,23 @@ opt='-t'
 }
 
 cd "$dir"
-
-{
-    files=$(file --mime-type ./*)
-    images=$({
-                # images
-                echo "$files" | grep image/ | awk -F':' '{print $1}'
-                # videos
-                echo "$files" | grep video/ | awk -F':' '{print $1}' | while read -r f; do
+files=$(file --mime-type ./*)
+images=$({
+            # images
+            echo "$files" | grep image/ | awk -F':' '{print $1}'
+            # videos
+            echo "$files" | grep video/ | awk -F':' '{print $1}' | \
+                while read -r f; do
                     t=$(vidthumb "$f")
                     [ ! -f "$t" ] && \
                         ffmpegthumbnailer -i "$f" -o "$t" -s 0
                     echo "$t"
                 done
-            } | xargs -d '\n' ls -1t)
-    [ "$img" != '' ] && [ -f "$img" ] && {
-        echo "$img"
-        echo "$images" | grep -v "$img"
-    } || echo "$images"
-} | sxiv $opt -
+        } | xargs -d '\n' ls -1t)
+
+[ "$img" != '' ] && [ -f "$img" ] && {
+    n=$(echo "$images" | nl | grep "$img" | awk '{print $1}')
+    opt="$opt -n $n"
+}
+
+echo "$images" | sxiv -b $opt -
