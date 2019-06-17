@@ -32,8 +32,6 @@ set previewer lfpv
 cmd open ${{
               # file name
               case "$f" in
-                  *.html)
-                      browser $fx;;
                   *.tar.bz|*.tar.bz2|*.tbz|*.tbz2|*.tar.gz|*.tgz|*.tar.xz|*.txz|*.zip|*.rar|*.iso)
                       mntdir="$f-archivemount"
                       [ ! -d "$mntdir" ] && {
@@ -45,19 +43,7 @@ cmd open ${{
                       lf -remote "send $id reload"
                       ;;
                   *)
-                      # mime type
-                      case $(file --mime-type $(realpath "$f") -b) in
-                          text/*|*/json|*empty)
-                              $EDITOR $fx;;
-                          image/*)
-                              sxivv $fx > /dev/null 2> /dev/null &;;
-                          video/*)
-                              mpv $fx --loop=inf > /dev/null 2> /dev/null &;;
-                          *)
-                              for f in $fx; do
-                                  $OPENER $f > /dev/null 2> /dev/null &
-                              done;;
-                      esac
+                      open $fx;;
               esac
           }}
 
