@@ -138,6 +138,7 @@ abbr gito  'git checkout'
 abbr gitq  'git add -A && git commit -m "quick update" && git push origin master'
 abbr gitn  'git add -A && git commit -m "couple of things" && git push origin master'
 
+abbr o     'open'
 abbr m     'tmux'
 abbr f     'lf'
 abbr r     'ranger'

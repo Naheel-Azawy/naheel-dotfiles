@@ -1,21 +1,21 @@
 #!/bin/sh
 [ "$OPENER" = '' ] && OPENER=xdg-open
-fx="$@"
-f="$1"
-# file name
-case "$f" in
-    *.html)
-        browser "$fx";;
-    *)
-        # mime type
-        case $(file --mime-type "$(realpath """$f""")" -b) in
-            text/*|*/json|*empty)
-                $EDITOR "$fx";;
-            image/*)
-                sxivv "$fx" &;;
-            video/*)
-                mpv "$fx" --loop=inf &;;
-            *)
-                $OPENER "$fx" &
-        esac
-esac
+for f in "$@"; do
+    # file name
+    case "$f" in
+        *.html)
+            browser "$f" >/dev/null 2>/dev/null &;;
+        *)
+            # mime type
+            case $(file --mime-type "$(realpath """$f""")" -b) in
+                text/*|*/json|*empty)
+                    $EDITOR "$f";;
+                image/*)
+                    sxivv "$f" >/dev/null 2>/dev/null &;;
+                video/*)
+                    mpv "$f" --loop=inf >/dev/null 2>/dev/null &;;
+                *)
+                    $OPENER "$f" &
+            esac
+    esac
+done
