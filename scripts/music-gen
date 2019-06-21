@@ -1,0 +1,34 @@
+#!/bin/sh
+cd "$HOME/Music/Music"
+DIR="$HOME/Tmp/Music"
+rm -rf "$DIR"
+mkdir -p "$DIR" "$DIR/Artists" "$DIR/Albums" "$DIR/Artists-Albums"
+clean() { sed 's/\//\-/g'; }
+files=$(find . -iname '*.mp3')
+count=$(echo "$files" | wc -l)
+i=1
+echo "$files" | while read -r f; do
+    f=$(realpath "$f")
+    info=$(exiftool -S "$f")
+
+    title=$(echo "$info"  | sed -En 's/Title: (.+)/\1/p' | clean)
+    [ "$title" = '' ] && title=$(basename "$f")
+
+    artist=$(echo "$info" | sed -En 's/Band: (.+)/\1/p' | clean)
+    [ "$artist" = '' ] && \
+        artist=$(echo "$info" | sed -En 's/Artist: (.+)/\1/p' | clean)
+    [ "$artist" = '' ] && artist='No Name'
+
+    album=$(echo "$info"  | sed -En 's/Album: (.+)/\1/p' | clean)
+    [ "$album" = '' ] && album='No Name'
+
+    mkdir -p "$DIR/Artists/$artist"
+    mkdir -p "$DIR/Albums/$album ($artist)"
+    mkdir -p "$DIR/Artists-Albums/$artist"
+    ln -s "$f" "$DIR/Artists/$artist/$title"
+    ln -s "$f" "$DIR/Albums/$album ($artist)/$title"
+    ln -s "$f" "$DIR/Artists-Albums/$artist/($album) $title"
+
+    echo "$i/$count: $f"
+    i=$((i+1))
+done
