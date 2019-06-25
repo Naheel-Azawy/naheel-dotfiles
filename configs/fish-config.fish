@@ -1,8 +1,14 @@
-set fish_greeting ""
+function fish_greeting
+    echo hi
+end
 
 function fish_prompt --description 'Write out the prompt'
 	  set -l color_cwd
     set -l suffix
+    set -l user
+    set -l host
+    set -l face
+    set -l stat $status
     switch "$USER"
         case root toor
             if set -q fish_color_cwd_root
@@ -11,12 +17,26 @@ function fish_prompt --description 'Write out the prompt'
                 set color_cwd $fish_color_cwd
             end
             set suffix '#'
+            # show user if root
+            set user "$USER@"
         case '*'
             set color_cwd $fish_color_cwd
             set suffix '>'
+            # show user only if multiple users on the machine
+            if test (command ls -1 /home/ | grep -qv lost+found | wc -l) -gt 1
+                set user "$USER@"
+            end
     end
-    set -l face (test $status != 0; and echo -n (set_color brred) ':(' (set_color normal))
-    echo -n -s "$face$USER" @ (prompt_hostname) ' ' (set_color $color_cwd) (prompt_pwd) (set_color normal) "$suffix "
+    # get sad if failed :(
+    if test $stat != 0
+        set face (set_color brred)' :( '(set_color normal)
+    end
+    # show hostname only if sshed and add a new line
+    if test "$SSH_CONNECTION" != ''
+        set host (prompt_hostname)' (SSH '(echo $SSH_CONNECTION | awk '{print $3}')') '
+        set suffix "\n$suffix"
+    end
+    echo -n -s -e $face $user $host (set_color $color_cwd) (prompt_pwd) (set_color normal) "$suffix "
 end
 
 function open --description "Open file in default application"
@@ -155,3 +175,4 @@ abbr cath  'highlight --replace-tabs=4 --out-format=xterm256 --force'
 abbr pc    'sudo pacman -S'
 abbr cm    'cmatrix'
 abbr chx   'chmod +x'
+abbr ch-x  'chmod -x'
