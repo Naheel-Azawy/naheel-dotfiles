@@ -1,14 +1,33 @@
 function fish_greeting
-    echo hi
+    set -l user
+    set -l sshc
+    switch "$USER"
+        case root toor
+            # show user if root
+            set user $USER
+        case '*'
+            # show user only if multiple users on the machine
+            if test (command ls -1 /home/ | grep -qv lost+found | wc -l) -gt 1
+                set user $USER
+            end
+    end
+    # show hostname only if sshed
+    if test "$SSH_CONNECTION" != ''
+        set sshc (string split ' ' $SSH_CONNECTION)
+    end
+    if [ "$user" != '' ] || [ "$sshc" != '' ]
+        echo -n 'New session for '
+        echo -s -n $USER @ (prompt_hostname)
+        printf ' (SSH from %s:%s to %s:%s)' $sshc[1] $sshc[2] $sshc[3] $sshc[4]
+        echo
+    end
 end
 
 function fish_prompt --description 'Write out the prompt'
 	  set -l color_cwd
     set -l suffix
-    set -l user
-    set -l host
     set -l face
-    set -l stat $status
+    set -l cwd
     switch "$USER"
         case root toor
             if set -q fish_color_cwd_root
@@ -17,26 +36,18 @@ function fish_prompt --description 'Write out the prompt'
                 set color_cwd $fish_color_cwd
             end
             set suffix '#'
-            # show user if root
-            set user "$USER@"
         case '*'
             set color_cwd $fish_color_cwd
             set suffix '>'
-            # show user only if multiple users on the machine
-            if test (command ls -1 /home/ | grep -qv lost+found | wc -l) -gt 1
-                set user "$USER@"
-            end
     end
     # get sad if failed :(
-    if test $stat != 0
+    if test $status != 0
         set face (set_color brred)' :( '(set_color normal)
     end
-    # show hostname only if sshed and add a new line
-    if test "$SSH_CONNECTION" != ''
-        set host (prompt_hostname)' (SSH '(echo $SSH_CONNECTION | awk '{print $3}')') '
-        set suffix "\n$suffix"
-    end
-    echo -n -s -e $face $user $host (set_color $color_cwd) (prompt_pwd) (set_color normal) "$suffix "
+    # only current directory
+    set cwd (string replace -r '^'"$HOME"'($|/)' '~$1' $PWD | string split '/')[-1]
+    test "$cwd" = '' && set cwd /
+    echo -n -s -e $face $host (set_color $color_cwd) $cwd (set_color normal) "$suffix "
 end
 
 function open --description "Open file in default application"
@@ -50,10 +61,11 @@ function open --description "Open file in default application"
 end
 
 function lf
-    set tmp (mktemp)
-    set fid (mktemp)
-    command lf -command '$printf $id > '"$fid"'' -last-dir-path=$tmp $argv
+    set fwd (mktemp) # last working directory temp file
+    set fid (mktemp) # lf id temp file
+    command lf -command '$printf $id > '"$fid"'' -last-dir-path=$fwd $argv
     set id (cat $fid)
+    # archivemount integration
     set archivemount_dir "/tmp/__lf_archivemount_$id"
     if test -f "$archivemount_dir"
         for line in (cat "$archivemount_dir")
@@ -62,20 +74,18 @@ function lf
         end
         rm -f "$archivemount_dir"
     end
-    rm $fid
-    if test -f "$tmp"
-        set dir (cat $tmp)
-        rm -f $tmp
+    # cd on exit
+    if test -f "$fwd"
+        set dir (cat $fwd)
+        rm -f $fwd
         if test -d "$dir"
             if test "$dir" != (pwd)
+                echo cd $dir
                 cd $dir
             end
         end
     end
-end
-
-function lf-keep-dir
-    command lf $argv
+    rm $fid
 end
 
 function ls

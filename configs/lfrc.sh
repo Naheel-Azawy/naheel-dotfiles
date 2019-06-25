@@ -23,7 +23,7 @@ set scrolloff 10
 # set the previewer script
 set previewer lfpv
 
-# COMMANDS ------------------------------------------------------------------------
+# COMMANDS -------------------------------------------------------------------
 
 # define a custom 'open' command
 # This command is called when current file is not a directory. You may want to
@@ -72,22 +72,32 @@ cmd delete ${{
                 printf "$fx\n"
                 printf "delete? [y/n] "
                 read ans
-                [ $ans = "y" ] && rm -rf $fx
+                if [ "$ans" = "y" ]; then
+                    if [ -w . ]; then
+                        rm -rf $fx &
+                    else
+                        sudo rm -rf $fx
+                    fi
+                fi
             }}
 
 # show progress for file copying with paste
-cmd paste &{{
+cmd paste ${{
                load=$(lf -remote 'load')
                mode=$(echo "$load" | sed -n '1p')
                list=$(echo "$load" | sed '1d')
-               if [ $mode = 'copy' ]; then
-                   rsync -av --ignore-existing --progress $list . \
-                       | stdbuf -i0 -o0 -e0 tr '\r' '\n' \
-                       | while read line; do
-                       lf -remote "send $id echo $line"
-                   done
-               elif [ $mode = 'move' ]; then
-                   mv -n $list .
+               if [ -w . ]; then
+                   if [ $mode = 'copy' ]; then
+                       cp -rn $list . &
+                   elif [ $mode = 'move' ]; then
+                       mv -n $list . &
+                   fi
+               else
+                   if [ $mode = 'copy' ]; then
+                       sudo cp -rn $list .
+                   elif [ $mode = 'move' ]; then
+                       sudo mv -n $list .
+                   fi
                fi
                lf -remote 'send load'
                lf -remote 'send clear'
@@ -224,7 +234,7 @@ cmd open-with $mimeopen --ask $f
 # set the default program for the current file
 cmd open-with-default $mimeopen -d $f
 
-# MAPPINGS ------------------------------------------------------------------------
+# MAPPINGS -------------------------------------------------------------------
 
 # use enter to open
 map <enter> open
