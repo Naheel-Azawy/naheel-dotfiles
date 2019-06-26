@@ -81,24 +81,20 @@ cmd delete ${{
                 fi
             }}
 
-# show progress for file copying with paste
+# pasting done right
 cmd paste ${{
                load=$(lf -remote 'load')
                mode=$(echo "$load" | sed -n '1p')
                list=$(echo "$load" | sed '1d')
-               if [ -w . ]; then
+               s=''
+               [ ! -w . ] && s='sudo'
+               for f in $list; do
                    if [ $mode = 'copy' ]; then
-                       cp -rn $list . &
+                       $s sh -c "cp -rn \"$f\" . &"
                    elif [ $mode = 'move' ]; then
-                       mv -n $list . &
+                       $s sh -c "mv -n \"$f\" . &"
                    fi
-               else
-                   if [ $mode = 'copy' ]; then
-                       sudo cp -rn $list .
-                   elif [ $mode = 'move' ]; then
-                       sudo mv -n $list .
-                   fi
-               fi
+               done
                lf -remote 'send load'
                lf -remote 'send clear'
            }}
