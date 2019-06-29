@@ -90,9 +90,11 @@ cmd paste ${{
                [ ! -w . ] && s='sudo'
                for f in $list; do
                    if [ $mode = 'copy' ]; then
-                       $s sh -c "cp -rn \"$f\" . &"
+                       lf -remote "send $id echo copying $f to $(pwd)"
+                       $s sh -c "cp -r --backup=numbered \"$f\" . &"
                    elif [ $mode = 'move' ]; then
-                       $s sh -c "mv -n \"$f\" . &"
+                       lf -remote "send $id echo moving $f to $(pwd)"
+                       $s sh -c "mv --backup=numbered \"$f\" . &"
                    fi
                done
                lf -remote 'send load'

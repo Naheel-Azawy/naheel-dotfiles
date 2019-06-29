@@ -21,6 +21,10 @@ function fish_greeting
         printf ' (SSH from %s:%s to %s:%s)' $sshc[1] $sshc[2] $sshc[3] $sshc[4]
         echo
     end
+    # show pwd if not at home
+    if test $PWD != $HOME
+        pwd
+    end
 end
 
 function fish_prompt --description 'Write out the prompt'

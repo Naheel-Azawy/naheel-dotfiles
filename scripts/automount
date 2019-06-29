@@ -1,0 +1,11 @@
+#!/bin/bash
+waiting=$(mktemp)
+{ sleep 5 && rm -f "$waiting" && echo 'Auto mount running'; } &
+dmesg -w --notime | while read -r line; do
+    [ -f "$waiting" ] && continue
+    devs=$(echo "$line" | sed -rn 's/sd\w:\s+(.+)/\1/p')
+    for d in $devs; do
+        sleep 0.5
+        dmenumount "DRIVE: /dev/$d"
+    done
+done
