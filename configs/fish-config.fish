@@ -55,13 +55,7 @@ function fish_prompt --description 'Write out the prompt'
 end
 
 function open --description "Open file in default application"
-    for i in $argv
-        if test -d $i
-            cd $i
-        else
-            command open $i
-        end
-    end
+    command open $argv
 end
 
 function lf

@@ -37,12 +37,21 @@ function mountmtp {
 	  notify-send "MTP device mounted to $mp."
 }
 
+AUTO_DRIVES="/tmp/automountdrives"
+
+function getusb {
+    if false && [ -f "$AUTO_DRIVES" ]; then
+        tac "$AUTO_DRIVES"
+    else
+        lsblk -rpo "name,type,size,mountpoint" | awk '($2=="part"||$2=="lvm")&&$4==""{printf "DRIVE: %s (%s)\n",$1,$3}'
+    fi
+}
+
 if [ $# != 0 ]; then
     chosen="$@"
 else
     mtpdrives=$(simple-mtpfs -l 2>/dev/null | awk '{print "MTP:   "$0}')
-    usbdrives=$(test ! -z "$mtpdrives" && echo "$mtpdrives"; \
-                lsblk -rpo "name,type,size,mountpoint" | awk '($2=="part"||$2=="lvm")&&$4==""{printf "DRIVE: %s (%s)\n",$1,$3}')
+    usbdrives=$(test ! -z "$mtpdrives" && echo "$mtpdrives"; getusb)
     chosen=$(echo "$usbdrives" | menu-interface -l $LEN -i -p "Mount which drive?")
 fi
 

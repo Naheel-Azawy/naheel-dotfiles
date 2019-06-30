@@ -33,10 +33,11 @@ cmd open ${{
               # file name
               case "$f" in
                   *.tar.bz|*.tar.bz2|*.tbz|*.tbz2|*.tar.gz|*.tgz|*.tar.xz|*.txz|*.zip|*.rar|*.iso)
+                      s='' && [ ! -w . ] && s='sudo'
                       mntdir="$f-archivemount"
                       [ ! -d "$mntdir" ] && {
-                          mkdir "$mntdir"
-                          archivemount "$f" "$mntdir"
+                          $s mkdir "$mntdir"
+                          $s archivemount "$f" "$mntdir"
                           echo "$mntdir" >> "/tmp/__lf_archivemount_$id"
                       }
                       lf -remote "send $id cd \"$mntdir\""
@@ -47,24 +48,21 @@ cmd open ${{
               esac
           }}
 
-cmd umountarchive ${{
-                       cat "/tmp/__lf_archivemount_$id" | \
-                           while read -r line; do
-                               sudo umount "$line"
-                               rmdir "$line"
-                           done
-                       rm -f "/tmp/__lf_archivemount_$id"
-                   }}
+# create a new directory
+cmd mkdir ${{
+               s='' && [ ! -w . ] && s='sudo'
+               $s mkdir -p "$@"
+           }}
 
-# rename current file without overwrite
-cmd rename %[ -e $1 ] && printf "file exists" || mv $f $1
+# touch with sudo
+cmd touch ${{
+               s='' && [ ! -w . ] && s='sudo'
+               $s touch "$@"
+           }}
 
 # move current file or selected files to trash folder
 # using trash-cli (https://github.com/andreafrancia/trash-cli)
 cmd trash %trash-put $fx
-
-# create a new directory
-cmd mkdir %mkdir -p "$@"
 
 # delete current file or selected files (prompting)
 cmd delete ${{
@@ -73,11 +71,8 @@ cmd delete ${{
                 printf "delete? [y/n] "
                 read ans
                 if [ "$ans" = "y" ]; then
-                    if [ -w . ]; then
-                        rm -rf $fx &
-                    else
-                        sudo rm -rf $fx
-                    fi
+                    s='' && [ ! -w . ] && s='sudo'
+                    $s rm -rf $fx
                 fi
             }}
 
@@ -86,8 +81,7 @@ cmd paste ${{
                load=$(lf -remote 'load')
                mode=$(echo "$load" | sed -n '1p')
                list=$(echo "$load" | sed '1d')
-               s=''
-               [ ! -w . ] && s='sudo'
+               s='' && [ ! -w . ] && s='sudo'
                for f in $list; do
                    if [ $mode = 'copy' ]; then
                        lf -remote "send $id echo copying $f to $(pwd)"
@@ -102,13 +96,14 @@ cmd paste ${{
            }}
 
 # create a symlink
-cmd paste-symlink &{{
+cmd paste-symlink ${{
                        load=$(lf -remote 'load')
                        mode=$(echo "$load" | sed -n '1p')
                        list=$(echo "$load" | sed '1d')
                        if [ $mode = 'copy' ]; then
+                           s='' && [ ! -w . ] && s='sudo'
                            for f in $list; do
-                               ln -s "$f" "$(pwd)/$(basename $f)"
+                               $s ln -s "$f" "$(pwd)/$(basename $f)"
                            done
                            lf -remote 'send load'
                            lf -remote 'send clear'
@@ -121,14 +116,15 @@ cmd paste-extract ${{
                        mode=$(echo "$load" | sed -n '1p')
                        list=$(echo "$load" | sed '1d')
                        if [ $mode = 'copy' ]; then
+                           s='' && [ ! -w . ] && s='sudo'
                            for f in $list; do
                                case $f in
-                                   *.tar.bz|*.tar.bz2|*.tbz|*.tbz2) tar xjvf $f;;
-                                   *.tar.gz|*.tgz) tar xzvf $f;;
-                                   *.tar.xz|*.txz) tar xJvf $f;;
-                                   *.zip) unzip $f;;
-                                   *.rar) unrar x $f;;
-                                   *.7z) 7z x $f;;
+                                   *.tar.bz|*.tar.bz2|*.tbz|*.tbz2) $s tar xjvf $f;;
+                                   *.tar.gz|*.tgz) $s tar xzvf $f;;
+                                   *.tar.xz|*.txz) $s tar xJvf $f;;
+                                   *.zip) $s unzip $f;;
+                                   *.rar) $s unrar x $f;;
+                                   *.7z) $s 7z x $f;;
                                esac
                            done
                            lf -remote 'send load'
@@ -140,33 +136,87 @@ cmd paste-extract ${{
 # (xkcd link: https://xkcd.com/1168/)
 cmd extract ${{
                  set -f
+                 s='' && [ ! -w . ] && s='sudo'
                  case $f in
-                     *.tar.bz|*.tar.bz2|*.tbz|*.tbz2) tar xjvf $f;;
-                     *.tar.gz|*.tgz) tar xzvf $f;;
-                     *.tar.xz|*.txz) tar xJvf $f;;
-                     *.zip) unzip $f;;
-                     *.rar) unrar x $f;;
-                     *.7z) 7z x $f;;
+                     *.tar.bz|*.tar.bz2|*.tbz|*.tbz2) $s tar xjvf $f;;
+                     *.tar.gz|*.tgz) $s tar xzvf $f;;
+                     *.tar.xz|*.txz) $s tar xJvf $f;;
+                     *.zip) $s unzip $f;;
+                     *.rar) $s unrar x $f;;
+                     *.7z) $s 7z x $f;;
                  esac
              }}
 
 # compress current file or selected files with tar and gunzip
 cmd tar ${{
              set -f
-             mkdir $1
-             cp -r $fx $1
-             tar czf $1.tar.gz $1
-             rm -rf $1
+             s='' && [ ! -w . ] && s='sudo'
+             $s mkdir $1
+             $s cp -r $fx $1
+             $s tar czf $1.tar.gz $1
+             $s rm -rf $1
          }}
 
 # compress current file or selected files with zip
 cmd zip ${{
              set -f
-             mkdir $1
-             cp -r $fx $1
-             zip -r $1.zip $1
-             rm -rf $1
+             s='' && [ ! -w . ] && s='sudo'
+             $s mkdir $1
+             $s cp -r $fx $1
+             $s zip -r $1.zip $1
+             $s rm -rf $1
          }}
+
+# rename current file without overwrite
+cmd rename ${{
+                if [ "$f" != "$1" ]; then
+                    if [ -e "$1" ]; then
+                        lf -remote "send $id echo $1 exist"
+                    else
+                        s='' && [ ! -w . ] && s='sudo'
+                        $s mv "$f" "$1"
+                    fi
+                fi
+            }}
+
+# rename all files in directory
+cmd bulk-rename ${{
+	                   index=$(mktemp /tmp/lf-bulk-rename-index.XXXXXXXXXX)
+	                   if [ -n "${fs}" ]; then
+		                     echo "$fs" > $index
+	                   else
+		                     echo "$(ls "$(dirname $f)" | tr ' ' "\n")" > $index
+	                   fi
+	                   index_edit=$(mktemp /tmp/lf-bulk-rename.XXXXXXXXXX)
+	                   cat $index > $index_edit
+	                   $EDITOR $index_edit
+	                   if [ $(cat $index | wc -l) -eq $(cat $index_edit | wc -l) ]; then
+		                     max=$(($(cat $index | wc -l)+1))
+		                     counter=1
+                         s='' && [ ! -w . ] && s='sudo'
+		                     while [ $counter -le $max ]; do
+			                       a="$(cat $index | sed "${counter}q;d")"
+			                       b="$(cat $index_edit | sed "${counter}q;d")"
+			                       counter=$(($counter+1))
+			                       [ "$a" = "$b" ] && continue
+			                       [ -e "$b" ] && echo "File exists: $b" && continue
+			                       $s mv "$a" "$b"
+		                     done
+	                   else
+		                     echo "Number of lines must stay the same"
+	                   fi
+	                   rm $index $index_edit
+                 }}
+
+cmd umountarchive ${{
+                       s='' && [ ! -w . ] && s='sudo'
+                       cat "/tmp/__lf_archivemount_$id" | \
+                           while read -r line; do
+                               sudo umount "$line"
+                               $s rmdir "$line"
+                           done
+                       $s rm -f "/tmp/__lf_archivemount_$id"
+                   }}
 
 # dynamically set number of columns
 cmd autoratios &{{
@@ -198,34 +248,6 @@ cmd fzf ${{
                      lf -remote "send $id cd \"$F\""
          }}
 
-# rename all files in directory
-cmd bulk-rename ${{
-	                   index=$(mktemp /tmp/lf-bulk-rename-index.XXXXXXXXXX)
-	                   if [ -n "${fs}" ]; then
-		                     echo "$fs" > $index
-	                   else
-		                     echo "$(ls "$(dirname $f)" | tr ' ' "\n")" > $index
-	                   fi
-	                   index_edit=$(mktemp /tmp/lf-bulk-rename.XXXXXXXXXX)
-	                   cat $index > $index_edit
-	                   $EDITOR $index_edit
-	                   if [ $(cat $index | wc -l) -eq $(cat $index_edit | wc -l) ]; then
-		                     max=$(($(cat $index | wc -l)+1))
-		                     counter=1
-		                     while [ $counter -le $max ]; do
-			                       a="$(cat $index | sed "${counter}q;d")"
-			                       b="$(cat $index_edit | sed "${counter}q;d")"
-			                       counter=$(($counter+1))
-			                       [ "$a" = "$b" ] && continue
-			                       [ -e "$b" ] && echo "File exists: $b" && continue
-			                       mv "$a" "$b"
-		                     done
-	                   else
-		                     echo "Number of lines must stay the same"
-	                   fi
-	                   rm $index $index_edit
-                 }}
-
 # select which program to open the current file with
 cmd open-with $mimeopen --ask $f
 
@@ -248,7 +270,7 @@ map O open-with-default
 map r push :rename<space>
 
 # rename dir
-map R $vidir .
+map R bulk-rename
 
 # basic
 map <c-x><c-c> quit

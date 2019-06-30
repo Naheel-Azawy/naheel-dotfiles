@@ -1,11 +1,28 @@
-#!/bin/bash
+#!/bin/sh
+
+F="/tmp/automountdrives"
+
 waiting=$(mktemp)
-{ sleep 5 && rm -f "$waiting" && echo 'Auto mount running'; } &
+{ sleep 1 && rm -f "$waiting" && echo 'Auto mount running'; } &
+
 dmesg -w --notime | while read -r line; do
+
     [ -f "$waiting" ] && continue
     devs=$(echo "$line" | sed -rn 's/sd\w:\s+(.+)/\1/p')
-    for d in $devs; do
-        sleep 0.5
-        dmenumount "DRIVE: /dev/$d"
-    done
+    [ "$devs" = '' ] && continue
+    devs=$(echo "$devs" | sed 's/ /\n/g')
+
+    if [ $(echo "$devs" | wc -l) = 1 ] && false; then
+        dmenumount "DRIVE: /dev/$devs"
+    else
+        notify-send "Connected $devs"
+        echo "$devs" | while read -r d; do
+            echo "DRIVE: /dev/$d" >> "$F"
+        done
+    fi
+
+    #for d in $devs; do
+    #    sleep 0.5
+    #    dmenumount "DRIVE: /dev/$d"
+    #done
 done

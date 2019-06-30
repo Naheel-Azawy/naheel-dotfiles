@@ -1,6 +1,15 @@
 #!/bin/sh
 [ "$OPENER" = '' ] && OPENER=xdg-open
+[ "$#" = 0 ] && {
+    $EDITOR
+    exit 0
+}
 for f in "$@"; do
+    # if no such file
+    [ ! -e "$f" ] && {
+        $EDITOR "$f"
+        exit 0
+    }
     # file name
     case "$f" in
         *.html)
