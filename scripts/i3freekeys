@@ -1,5 +1,5 @@
 #!/bin/bash
-FILE=$(grep -o '^[^#]*' "$DOTFILES_DIR/i3.conf.gen.sh")
-for s in mod+{a..z}; do
-    echo "$FILE" | grep -q "$s " || echo "$s"
+KEYS=$(eval "$DOTFILES_DIR/configs/i3.conf.gen.sh" --used-keys)
+for s in {a..z}; do
+    echo "$KEYS" | grep -Eiq "mod.*\+$s" || echo "mod+$s"
 done

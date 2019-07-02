@@ -118,6 +118,10 @@ function d
     swallow $r $argv
 end
 
+function arduino-cli
+    command arduino-cli --config-file="$DOTFILES_DIR/configs/arduino-cli.yaml" $argv
+end
+
 function ث
     lang-toggle >/dev/null; exit $argv
 end
@@ -184,3 +188,4 @@ abbr pc    'sudo pacman -S'
 abbr cm    'cmatrix'
 abbr chx   'chmod +x'
 abbr ch-x  'chmod -x'
+abbr a     'arduino-cli'
