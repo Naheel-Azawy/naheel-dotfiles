@@ -17,6 +17,7 @@ try_add_path() {
 
 # ANDROID ###################################
 try_export ANDROID_HOME /mnt/hdd1/GoodStuff2/Android/Sdk
+try_export ANDROID_SDK_ROOT "$ANDROID_HOME"
 try_add_path "$ANDROID_HOME/platform-tools"
 
 # NS2 #######################################
