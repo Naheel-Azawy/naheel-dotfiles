@@ -7,6 +7,8 @@ HISTFILESIZE=
 
 export GPG_TTY=$(tty)
 
+export PS1='\W> '
+
 alias e='exit'
 alias l='ls'
 alias ll='ls -lh'

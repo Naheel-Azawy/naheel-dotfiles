@@ -262,6 +262,9 @@ map <enter> open
 # emacs
 map x push :$emacs-in<space>
 
+# open a full shell
+map <c-s> $$SHELL
+
 # dedicated keys for file opener actions
 map o open-with
 map O open-with-default
@@ -298,7 +301,6 @@ map a autoratios
 map t tinyratios
 
 # fuzzy search
-map <c-s> fzf
 map f     fzf
 map <c-f> $lf -remote "send $id select \"$(fzf)\""
 

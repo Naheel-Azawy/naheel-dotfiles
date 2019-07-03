@@ -1,9 +1,0 @@
-#!/bin/bash
-# unignore the current tmux session in the x window
-S="$1"
-[[ "$S" = '' ]] && S=$(x-tmux-get-session)
-[[ "$S" = '' ]] && exit
-N=$(echo "$S" | sed -rn 's/ignored-(.+)/\1/p')
-echo "$S" | grep -q 'ignored' && \
-    tmux rename-session -t "$S" "$N" && \
-    echo "$N"

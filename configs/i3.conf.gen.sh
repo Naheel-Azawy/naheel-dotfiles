@@ -144,9 +144,9 @@ blockend
 # WM BINDINGS ------------------------------------------------------------
 
 bindoc 'Kill focused window' \
-        "$mod+q" "kill"
+       "$mod+q" "kill"
 bindoc 'Ignore the tmux session (if is) and kill focused window' \
-        "$mod+Shift+q" 'exec "tmux-ignore && i3-msg kill"'
+       "$mod+Shift+q" 'exec "theterm --tmux-ignore && i3-msg kill"'
 
 bindoc 'Enter fullscreen mode for the focused container' \
        "$mod+f" "fullscreen toggle"
@@ -223,6 +223,11 @@ bindoc 'Start a terminal (without tmux)' \
        "$mod+Control+Return"       "exec $TERMINAL"
 bindoc 'Start a terminal with opposite split (without tmux)' \
        "$mod+Shift+Control+Return" "split t; exec $TERMINAL"
+
+bindoc 'Start file manager' \
+       "$mod+apostrophe"       "exec $term lf"
+bindoc 'Start file manager with opposite split' \
+       "$mod+Shift+apostrophe" "split t; exec $term lf"
 
 bindoc 'Empty window' \
        "$mod+e"                "exec empty"

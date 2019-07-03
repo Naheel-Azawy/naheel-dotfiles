@@ -3,8 +3,8 @@ CMD=''
 for a in "$@"; do
     CMD="$CMD '$a'"
 done
-S=$(tmux-ignore)
+S=$(theterm --tmux-ignore)
 i3-msg kill &>/dev/null
 eval "$CMD"
-S=$(tmux-unignore "$S")
+S=$(theterm --tmux-unignore "$S")
 st -e tmux a -t "$S" &>/dev/null &
