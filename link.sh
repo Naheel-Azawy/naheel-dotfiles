@@ -55,12 +55,9 @@ mkdir -p "$H/.config/networkmanager-dmenu"
 lnnn "$D/configs/nm-dmenu.ini" "$H/.config/networkmanager-dmenu/config.ini"
 
 mkdir -p "$H/.icons/default"
-lnnn "$D/configs/gtk-theme/icons.theme" "$H/.icons/default/index.theme"
+lnnn "$D/configs/gtk-icons.theme" "$H/.icons/default/index.theme"
 
 mkdir -p "$H/.config/gtk-3.0"
-lnnn "$D/configs/gtk-theme/gtk3-settings.ini" "$H/.config/gtk-3.0/settings.ini"
+lnnn "$D/configs/gtk3-settings.ini" "$H/.config/gtk-3.0/settings.ini"
 
-mkdir -p "$H/.local/share/"
-lnnn "$D/configs/gtk-theme/themes" "$H/.local/share/themes"
-
-lnnn "$D/configs/gtk-theme/gtk2rc" "$H/.gtkrc-2.0"
+lnnn "$D/configs/gtk2rc" "$H/.gtkrc-2.0"

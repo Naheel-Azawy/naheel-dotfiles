@@ -44,7 +44,7 @@ cmd open ${{
                       lf -remote "send $id reload"
                       ;;
                   *)
-                      open $fx;;
+                      open --lfid $id $fx;;
               esac
           }}
 
