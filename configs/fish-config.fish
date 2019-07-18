@@ -23,7 +23,7 @@ function fish_greeting
     end
     # show pwd if not at home
     if test $PWD != $HOME
-        pwd
+        echo cd $PWD
     end
 end
 
@@ -111,22 +111,15 @@ function wdiffstr
     wdiff $a (echo -e $argv[1] | psub) (echo -e $argv[2] | psub)
 end
 
-function d
-    set sp (string split '.' $argv[-1])
-    test $sp[-1] != 'pdf'; and set r libreoffice; or set r $READER
-    echo $r
-    swallow $r $argv
-end
-
 function arduino-cli
     command arduino-cli --config-file="$DOTFILES_DIR/configs/arduino-cli.yaml" $argv
 end
 
 function ث
-    lang-toggle >/dev/null; exit $argv
+    lang-set us >/dev/null; exit $argv
 end
 function مس
-    lang-toggle >/dev/null; ls $argv
+    lang-set us >/dev/null; ls $argv
 end
 
 abbr e     'exit'
@@ -171,11 +164,10 @@ abbr gitq  'git add -A && git commit -m "quick update" && git push origin master
 abbr gitn  'git add -A && git commit -m "couple of things" && git push origin master'
 
 abbr o     'open'
+abbr of    'open -f'
 abbr m     'tmux'
 abbr f     'lf'
-abbr r     'ranger'
-abbr n     'nnn'
-abbr s     'swallow'
+abbr s     'sudo'
 abbr cb    'clipboard'
 abbr py    'python3'
 abbr ly    'lyrics'
@@ -189,4 +181,4 @@ abbr cm    'cmatrix'
 abbr chx   'chmod +x'
 abbr ch-x  'chmod -x'
 abbr a     'arduino-cli'
-abbr do    'open (find $DOTFILES_DIR | fzf)'
+abbr do    'cd $DOTFILES_DIR && open -f'

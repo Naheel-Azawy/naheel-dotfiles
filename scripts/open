@@ -1,15 +1,4 @@
 #!/bin/sh
-[ "$OPENER" = '' ] && OPENER=xdg-open
-
-[ "$1" = '--lfid' ] && {
-    LFID="$2"
-    shift 2
-}
-
-[ "$#" = 0 ] && {
-    $EDITOR
-    exit 0
-}
 
 lfsend() {
     if [ "$LFID" != '' ]; then
@@ -21,12 +10,8 @@ lfsend() {
     fi
 }
 
-for f in "$@"; do
-    # if no such file
-    [ ! -e "$f" ] && {
-        $EDITOR "$f"
-        exit 0
-    }
+openfile() {
+    f="$1"
     # file name
     case "$f" in
         *.html)
@@ -46,4 +31,31 @@ for f in "$@"; do
                     $OPENER "$f" 2>&1 | lfsend &;;
             esac
     esac
+}
+
+[ "$OPENER" = '' ] && OPENER=xdg-open
+
+[ "$1" = '--lfid' ] && {
+    LFID="$2"
+    shift 2
+}
+
+[ "$1" = '-f' ] && {
+    f="$(fzf)"
+    [ "$f" != '' ] && openfile "$f"
+    exit
+}
+
+[ "$#" = 0 ] && {
+    $EDITOR
+    exit 0
+}
+
+for f in "$@"; do
+    # if no such file
+    [ ! -e "$f" ] && {
+        $EDITOR "$f"
+        exit 0
+    }
+    openfile "$f"
 done

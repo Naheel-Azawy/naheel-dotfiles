@@ -1,6 +1,6 @@
 #!/bin/sh
 
-VIDS_THUMBS_DIR="$HOME/.catch/vidthmbs/"
+VIDS_THUMBS_DIR="$HOME/.catch/vidthmbs"
 vidthumb() {
     p="$VIDS_THUMBS_DIR$(realpath """$f""").jpg"
     mkdir -p "$(dirname """$p""")"
@@ -18,19 +18,21 @@ opt='-t'
     } || dir="$1"
 }
 
-cd "$dir"
+cd "$dir" || (echo "Failed cd to $dir" && exit 1)
 files=$(file --mime-type ./*)
+videos=$(echo "$files" | grep video/ | awk -F':' '{print $1}')
+vidsthumbs=$(echo "$videos" | \
+                 while read -r f; do
+                     t=$(vidthumb "$f")
+                     [ ! -f "$t" ] && \
+                         ffmpegthumbnailer -i "$f" -o "$t" -s 0
+                     echo "$t"
+                 done)
 images=$({
             # images
             echo "$files" | grep image/ | awk -F':' '{print $1}'
             # videos
-            echo "$files" | grep video/ | awk -F':' '{print $1}' | \
-                while read -r f; do
-                    t=$(vidthumb "$f")
-                    [ ! -f "$t" ] && \
-                        ffmpegthumbnailer -i "$f" -o "$t" -s 0
-                    echo "$t"
-                done
+            echo "$vidsthumbs"
         } | xargs -d '\n' ls -1)
 
 [ "$img" != '' ] && [ -f "$img" ] && {

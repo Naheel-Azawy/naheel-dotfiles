@@ -32,6 +32,7 @@
 # THETERM is used to automatically open terminal emulators in tmux
 # sessions and connect to deattached sessions. It also tries to start
 # in the directory of the current X window.
+# Depends on: tmux, xprop, xdotool
 
 # Name of this script
 BINAME=$(basename "$0")
@@ -69,7 +70,7 @@ xpwd() {
     CWD=''
 
     # Get window ID
-    ID=$(xdpyinfo | grep focus | cut -f4 -d " ")
+    ID=$(xdotool getactivewindow)
 
     # Get PID of process whose window this is
     PID=$(xprop -id "$ID" | grep -m 1 PID | cut -d " " -f 3)
@@ -166,6 +167,7 @@ main() {
         --tmux-ignore)       shift && tmuxignore      "$@";;
         --tmux-unignore)     shift && tmuxunignore    "$@";;
         --tmux-unignore-all)          tmuxunignoreall     ;;
+        -e)                  shift && starterm        "$@";;
         *)                            starterm        "$@";;
     esac
 }

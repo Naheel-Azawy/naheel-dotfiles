@@ -52,6 +52,7 @@ cmd open ${{
 cmd mkdir ${{
                s='' && [ ! -w . ] && s='sudo'
                $s mkdir -p "$@"
+               lf -remote "send $id cd \"$@\""
            }}
 
 # touch with sudo
@@ -109,6 +110,15 @@ cmd paste-symlink ${{
                            lf -remote 'send clear'
                        fi
                    }}
+
+# copy the load to X clipboard
+cmd paste-xclip &{{
+                     lf -remote load |
+                         sed '1d'    | # remove mode
+                         grep .      | # remove empty lines
+                         head -c -1  | # remove last newline
+                         xclip -i -selection clipboard
+                 }}
 
 # extract the copied files in the current directory
 cmd paste-extract ${{
@@ -180,6 +190,7 @@ cmd rename ${{
             }}
 
 # rename all files in directory
+# from: https://github.com/gokcehan/lf/issues/149#issuecomment-470960434
 cmd bulk-rename ${{
 	                   index=$(mktemp /tmp/lf-bulk-rename-index.XXXXXXXXXX)
 	                   if [ -n "${fs}" ]; then
@@ -208,6 +219,7 @@ cmd bulk-rename ${{
 	                   rm $index $index_edit
                  }}
 
+# unmount archivemount archives if any
 cmd umountarchive ${{
                        s='' && [ ! -w . ] && s='sudo'
                        cat "/tmp/__lf_archivemount_$id" | \
@@ -286,6 +298,7 @@ map <f-5>      reload
 map <c-y>y           paste
 map <c-y>l           paste-symlink
 map <c-y>e           paste-extract
+map <c-y>c           paste-xclip
 map <c-w>            cut
 map <a-w>            copy
 map <delete><delete> trash
@@ -309,6 +322,9 @@ map <c-v> &sxivv
 
 #full screen preview
 map p $lfpv "$f" | less -R
+
+# Nautilus...
+map n &nautilus .
 
 # default stuff with spice
 map zh set hidden!
@@ -334,7 +350,6 @@ map gj cd ~/Projects
 map gg cd ~/MEGA/orgmode
 map go $lf -remote "send $id cd \"$DOTFILES_DIR\""
 map gq $lf -remote "send $id cd \"$QU\""
-map gs $lf -remote "send $id cd \"$QU/Senior/mnmspider/senior2\""
 map gb cd ~/GoodStuff/vbox-shared/
 
 #cmd imgpv ${{
