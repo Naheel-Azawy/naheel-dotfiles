@@ -236,10 +236,10 @@ cmd autoratios &{{
                     if [ $w -le 60 ]; then
                         lf -remote "send $id set nopreview"
                         lf -remote "send $id set ratios 1"
-                    elif [ $w -le 95 ]; then
+                    elif [ $w -le 130 ]; then
                         lf -remote "send $id set ratios 1:2"
                         lf -remote "send $id set preview"
-                    elif [ $w -le 160 ]; then
+                    else
                         lf -remote "send $id set ratios 1:5:6"
                         lf -remote "send $id set preview"
                     fi
@@ -261,7 +261,7 @@ cmd fzf ${{
          }}
 
 # select which program to open the current file with
-cmd open-with $mimeopen --ask $f
+cmd open-with $open --lfid $id --ask $f
 
 # set the default program for the current file
 cmd open-with-default $mimeopen -d $f

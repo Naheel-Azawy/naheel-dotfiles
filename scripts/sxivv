@@ -21,18 +21,20 @@ opt='-t'
 cd "$dir" || (echo "Failed cd to $dir" && exit 1)
 files=$(file --mime-type ./*)
 videos=$(echo "$files" | grep video/ | awk -F':' '{print $1}')
-vidsthumbs=$(echo "$videos" | \
+vidsthumbs=$(echo "$videos" |
                  while read -r f; do
-                     t=$(vidthumb "$f")
-                     [ ! -f "$t" ] && \
-                         ffmpegthumbnailer -i "$f" -o "$t" -s 0
-                     echo "$t"
+                     [ -f "$f" ] && {
+                         t=$(vidthumb "$f")
+                         [ ! -f "$t" ] &&
+                             ffmpegthumbnailer -i "$f" -o "$t" -s 0 >/dev/null 2>/dev/null
+                         [ -f "$t" ] && echo "$t"
+                     }
                  done)
 images=$({
             # images
             echo "$files" | grep image/ | awk -F':' '{print $1}'
             # videos
-            echo "$vidsthumbs"
+            [ "$vidsthumbs" ] && echo "$vidsthumbs"
         } | xargs -d '\n' ls -1)
 
 [ "$img" != '' ] && [ -f "$img" ] && {

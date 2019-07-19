@@ -11,6 +11,7 @@
 | pacman   | xclip                                            | clipboard manageer for xorg                                       |
 | pacman   | xterm                                            | a simple terminal                                                 |
 | suckless | git://git.suckless.org/st                        | THE simple terminal                                               |
+| git      | https://github.com/Naheel-Azawy/theterm          | a wrapper to give the terminal super powers                       |
 | suckless | https://git.suckless.org/dmenu                   | runs commands and provides a UI for selection                     |
 | aur      | ttf-emojione                                     | unicode symbols and emojis                                        |
 | pacman   | ttf-liberation                                   | another pretty font                                               |

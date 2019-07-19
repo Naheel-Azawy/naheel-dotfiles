@@ -16,12 +16,11 @@ VIDS_THUMBS_DIR="$HOME/.catch/vidthmbs/"
 
 rotate() {
 	  degree="$1"
-	  tr '\n' '\0' | xargs -0 realpath | sort | uniq | while read -r file; do
-		    case "$(file -b -i "$file")" in
-		        image/jpeg*) jpegtran -rotate "$degree" -copy all -outfile "$file" "$file" ;;
-		        *)           mogrify  -rotate "$degree" "$file" ;;
-		    esac
-	  done
+    file="$2"
+		case "$(file -b -i "$file")" in
+		    image/jpeg*) jpegtran -rotate "$degree" -copy all -outfile "$file" "$file" ;;
+		    *)           mogrify  -rotate "$degree" "$file" ;;
+		esac
 }
 
 choice="$1"
@@ -38,38 +37,35 @@ Move to trash
 Delete' | menu-interface -i -l 20)
 }
 
+# put files in an array
+files=()
+while IFS= read -r file; do
+    echo "$file" | grep -q "^$VIDS_THUMBS_DIR" && # for videos
+        file="$(echo """$file""" | sed -En """s@$VIDS_THUMBS_DIR(.+).jpg@/\\1@p""")"
+    files+=("$file")
+done
+
 case "$choice" in
     "Information" | "i")
-        while read -r file; do theterm "exiftool '$file' | less" & done;;
+        for file in "${files[@]}"; do theterm "exiftool '$file' | less" & done;;
     "Open with" | "o")
-        files=()
-        while IFS= read -r file; do
-            files+=("$file")
-        done
-        eval "$(echo | mimeopen --ask """${files[0]}""" 2>/dev/null |
-                   sed -En 's/.+\)\s+(.+)/\1/p' |
-                   menu-interface -l 20 -p 'Open with' |
-                   sed -En 's/.+\((.+)\)/\1/p')" ${files[@]} &;;
+        open --ask -nw "${files[@]}" &;;
     "Copy file name" | "f")
-        xclip -in -filter | tr '\n' ' ' | xclip -in -selection clipboard;;
+        printf '%s\n' "${files[@]}" | xclip -in -selection clipboard;;
     "Copy image" | "M-w")
-        while read -r file; do xclip -selection clipboard -target image/png "$file"; done;;
+        for file in "${files[@]}"; do xclip -selection clipboard -target image/png "$file"; done;;
     "Set as wallpaper" | "w")
-        while read -r file; do setwallpaper "$file"; done;;
+        for file in "${files[@]}"; do setwallpaper "$file"; done;;
     "Rotate 270" | "C-comma")
-        rotate 270;;
+        for file in "${files[@]}"; do rotate 270 "$file"; done;;
     "Rotate 90" | "C-period")
-        rotate  90;;
+        for file in "${files[@]}"; do rotate 90 "$file"; done;;
     "Rotate 180" | "C-slash")
-        rotate 180;;
+        for file in "${files[@]}"; do rotate 180 "$file"; done;;
     "Move to trash" | "t")
-        while read -r file; do trash-put "$file"; done;;
+        for file in "${files[@]}"; do trash-put "$file"; done;;
     "Delete" | "d")
-        while read -r file; do rm -f "$file"; done;;
+        for file in "${files[@]}"; do rm -f "$file"; done;;
     "p") # play video (experimental)
-        while read -r file; do
-            echo "$file" | grep -q "^$VIDS_THUMBS_DIR" && \
-                mpv --loop=inf "$(echo """$file""" | sed -En """s@$VIDS_THUMBS_DIR(.+).jpg@\\1@p""")" &
-        done;;
+        open "${files[@]}";;
 esac
-
