@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 MAX=661
 MIN=10
 file="/sys/class/backlight/intel_backlight/brightness"
@@ -6,31 +6,31 @@ current=$(cat "$file")
 C="$1"
 V="$2"
 current=$(printf '%.0f' $(echo "$current/$MAX*100" | bc -l))
-if [[ "$@" = '' || "$C" = "-print" ]]; then
-    printf "%.0f\n" $current
+if [ $# = 0 ] || [ "$C" = "-print" ]; then
+    printf "%.0f\n" "$current"
     exit
 fi
 new="$current"
 val="$V"
-if [[ "$C" = "-set" ]]; then
+if [ "$C" = "-set" ]; then
     new=$val
-    if [[ "$new" -gt "$current" ]]; then
+    if [ "$new" -gt "$current" ]; then
         C='-inc'
     else
         C='-dec'
     fi
-elif [[ "$C" = "-inc" ]]; then
-    new=$(( current + $val ))
-elif [[ "$C" = "-dec" ]]; then
-    new=$(( current - $val ))
+elif [ "$C" = "-inc" ]; then
+    new=$(( current + val ))
+elif [ "$C" = "-dec" ]; then
+    new=$(( current - val ))
 fi
 
 new=$((new/5*5))
 new=$(printf '%.0f' $(echo "$new*$MAX/100" | bc -l))
 
-if [[ $new -gt $MAX ]]; then
+if [ $new -gt $MAX ]; then
     new=$MAX
-elif [[ $new -lt $MIN ]]; then
+elif [ $new -lt $MIN ]; then
     new=$MIN
 fi
 

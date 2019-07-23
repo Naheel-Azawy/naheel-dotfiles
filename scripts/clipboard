@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 # Linux version
 # Use this script to pipe in/out of the clipboard
 #
@@ -8,7 +8,7 @@
 # Written by Bob Enohp: https://stackoverflow.com/a/19458217/3825872
 
 if command -v xclip 1>/dev/null; then
-    if [[ -p /dev/stdin ]] ; then
+    if [ -p /dev/stdin ] ; then
         # stdin is a pipe
         # stdin -> clipboard
         xclip -i -selection clipboard

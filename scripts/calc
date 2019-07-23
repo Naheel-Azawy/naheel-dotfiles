@@ -1,21 +1,21 @@
-#!/bin/bash
+#!/bin/sh
 Q=0 # Q for Quick
-if [[ "$1" = "-c" ]]; then # calculate with the C compiler
+if [ "$1" = "-c" ]; then # calculate with the C compiler
     shift
     execute c "printf(\"%d\\n\", $@);"
     exit
-elif [[ "$1" = '-q' ]]; then
+elif [ "$1" = '-q' ]; then
     Q=1
     shift
 fi
 
-if [[ "$Q" = '0' ]] && [[ -e /usr/bin/octave-cli ]]; then
-    [[ "$@" = '' ]] && (octave-cli -q; exit)
+if [ "$Q" = '0' ] && [ -e /usr/bin/octave-cli ]; then
+    [ "$@" = '' ] && (octave-cli -q; exit)
     echo "$@" | octave-cli -q | sed 's/ans =\s*//g'
-elif [[ "$Q" = '0' ]] && [[ -e /usr/bin/python ]]; then
-    [[ "$@" = '' ]] && (python -q; exit)
+elif [ "$Q" = '0' ] && [ -e /usr/bin/python ]; then
+    [ "$@" = '' ] && (python -q; exit)
     echo "print($@)" | python -q
 else
-    [[ "$@" = '' ]] && (bc -q; exit)
+    [ "$@" = '' ] && (bc -q; exit)
     echo "$@" | bc -l
 fi

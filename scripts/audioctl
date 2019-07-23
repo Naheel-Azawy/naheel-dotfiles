@@ -1,24 +1,25 @@
-#!/bin/bash
+#!/bin/sh
 
 MAX_VOL=500
 
-function vol {
+vol() {
     LOCK='/tmp/__audioctl_vol_lock'
-    [[ -f "$LOCK" ]] && return
+    [ -f "$LOCK" ] && return
     touch "$LOCK"
     C="$1"
-    if [[ $C = m ]]; then
+    if [ "$C" = m ]; then
         pamixer -m
-    elif [[ $C = t ]]; then
+    elif [ "$C" = t ]; then
         pamixer -t
     else
         V=$(pamixer --get-volume)
         V=$((V+C))
-        [[ $V -gt $MAX_VOL ]] && return
-        V=$((V/5*5))
-        pamixer --allow-boost --set-volume $V
+        if [ $V -le $MAX_VOL ]; then
+            V=$((V/5*5))
+            pamixer --allow-boost --set-volume $V
+        fi
     fi
-    pkill -RTMIN+$I3BLOCKS_SIG_VOLU i3blocks
+    pkill "-RTMIN+$I3BLOCKS_SIG_VOLU" i3blocks
     rm -f "$LOCK"
 }
 

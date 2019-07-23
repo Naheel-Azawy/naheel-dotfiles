@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 lfsend() {
     if [ "$LFID" != '' ]; then
@@ -14,7 +14,10 @@ openfile() {
     f="$1"
     # if forced from picker
     if [ "$FORCEOPENER" ]; then
-        $FORCEOPENER "$f" 2>&1 | lfsend &
+        opt=--ask
+        [ "$DEF" ] && opt=--ask-default
+        echo "$FORCEOPENER" |
+            mimeopen $opt "$f" >/dev/null 2>&1 | lfsend & disown
     else
         # file name
         case "$f" in
@@ -25,6 +28,8 @@ openfile() {
                 case $(file --mime-type "$(realpath """$f""")" -b) in
                     text/*|*/json|*empty)
                         $EDITOR "$f";;
+                    image/x-xcf)
+                        $OPENER "$f" 2>&1 | lfsend &;;
                     image/*)
                         sxivv "$f" >/dev/null 2>&1 | lfsend &;;
                     video/*)
@@ -45,9 +50,9 @@ pick() {
         shift
     }
     echo | mimeopen --ask "$1" 2>/dev/null |
-        sed -En 's/.+\)\s+(.+)/\1/p' |
+        sed -En 's/\s*(.+\)\s+.+)/\1/p' |
         $MENU |
-        sed -En 's/.+\((.+)\)/\1/p'
+        sed -En 's/(.+)\).+/\1/p'
 }
 
 [ "$OPENER" = '' ] && OPENER=xdg-open
@@ -64,7 +69,8 @@ FORCEOPENER=''
     exit
 }
 
-[ "$1" = '--ask' ] && {
+[ "$1" = '--ask' ] || [ "$1" = '--ask-default' ] && {
+    [ "$1" = '--ask-default' ] && DEF=1
     shift
     # go for fzf if is in terminal
     [ -t 1 ] && FZF=--fzf

@@ -1,2 +1,2 @@
-#!/bin/bash
+#!/bin/sh
 exec chromium --force-device-scale-factor=1.3 "$@"
