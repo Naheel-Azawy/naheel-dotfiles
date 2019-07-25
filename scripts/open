@@ -12,6 +12,11 @@ lfsend() {
 
 openfile() {
     f="$1"
+    # if directory
+    if [ -d "$f" ]; then
+        echo "$f" > '/tmp/__opendir'
+        return
+    fi
     # if forced from picker
     if [ "$FORCEOPENER" ]; then
         opt=--ask
@@ -46,13 +51,24 @@ openfile() {
 pick() {
     MENU='menu-interface -l 20'
     [ "$1" = '--fzf' ] && {
-        MENU=fzf
+        MENU='z --nopv'
         shift
     }
     echo | mimeopen --ask "$1" 2>/dev/null |
         sed -En 's/\s*(.+\)\s+.+)/\1/p' |
         $MENU |
         sed -En 's/(.+)\).+/\1/p'
+}
+
+search() {
+    if [ "$1" = '--here' ]; then
+        f=$(find "$2" -maxdepth 1 | z)
+    elif [ -d "$1" ]; then
+        f=$(find "$1" -type f | z)
+    else
+        f=$(z)
+    fi
+    [ -e "$f" ] && openfile "$f"
 }
 
 [ "$OPENER" = '' ] && OPENER=xdg-open
@@ -63,9 +79,25 @@ FORCEOPENER=''
     shift 2
 }
 
+FORCEFZF=0
 [ "$1" = '--fzf' ] || [ "$1" = '-f' ] && {
-    f="$(fzf)"
-    [ "$f" != '' ] && openfile "$f"
+    FORCEFZF=1
+    shift
+}
+
+[ "$#" = 0 ] && {
+    search
+    exit
+}
+
+[ "$1" = . ] && {
+    search --here .
+    exit
+}
+
+# if file specified, all fzf stuff will be passed
+[ "$FORCEFZF" = 1 ] && [ -d "$1" ] && {
+    search "$1"
     exit
 }
 
@@ -80,7 +112,7 @@ FORCEOPENER=''
     [ ! "$FORCEOPENER" ] && exit 1
 }
 
-[ "$#" = 0 ] && {
+[ "$1" = '-e' ] && {
     $EDITOR
     exit 0
 }

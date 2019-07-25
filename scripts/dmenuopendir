@@ -4,9 +4,9 @@ D="$1"
 open='LF'
 cd "$D"
 case "$open" in
-    Ranger)   exec theterm ranger;;
-    LF)       exec theterm lf;;
+    Ranger)   exec theterm --nocd ranger;;
+    LF)       exec theterm --nocd lf;;
     NNN)      exec nnn;;
     Nautilus) exec nautilus .;;
-    Terminal) exec theterm;;
+    Terminal) exec theterm --nocd;;
 esac

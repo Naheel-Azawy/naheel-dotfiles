@@ -56,6 +56,14 @@ end
 
 function open --description "Open file in default application"
     command open $argv
+    set -l opendirfile '/tmp/__opendir'
+    if test -f $opendirfile
+        set -l opendir (cat $opendirfile)
+        if test -d $opendir
+            cd $opendir
+        end
+        rm -f $opendirfile
+    end
 end
 
 function lf
@@ -164,7 +172,6 @@ abbr gitq  'git add -A && git commit -m "quick update" && git push origin master
 abbr gitn  'git add -A && git commit -m "couple of things" && git push origin master'
 
 abbr o     'open'
-abbr of    'open -f'
 abbr m     'tmux'
 abbr f     'lf'
 abbr s     'sudo'
@@ -181,4 +188,4 @@ abbr cm    'cmatrix'
 abbr chx   'chmod +x'
 abbr ch-x  'chmod -x'
 abbr a     'arduino-cli'
-abbr do    'cd $DOTFILES_DIR && open -f'
+abbr do    'cd $DOTFILES_DIR && open'

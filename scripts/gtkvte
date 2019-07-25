@@ -6,10 +6,8 @@ gi.require_version('Vte', '2.91')
 from gi.repository import Gtk, Vte, GLib, Pango, Gio
 
 try:
-    cmd = [os.environ['DOTFILES_SCRIPTS'] + '/theterm', '--tmux']
-    os.chdir(os.popen(
-        os.environ['DOTFILES_SCRIPTS'] + '/theterm --xpwd')
-             .read().strip())
+    cmd = ['/usr/bin/theterm', '--tmux']
+    os.chdir(os.popen('theterm --xpwd').read().strip())
 except:
     try: cmd = [os.environ['SHELL']]
     except: cmd = ['/bin/sh']

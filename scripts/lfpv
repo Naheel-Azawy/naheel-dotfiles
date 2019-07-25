@@ -32,7 +32,7 @@ asciize() {
         else
             opts="--height=$(tput lines)"
         fi
-        jp2a "$opts" "$1"
+        jp2a "$opts" "$1" 2>/dev/null
     }
 }
 
@@ -96,6 +96,11 @@ handle_extension() {
 handle_mime() {
     local mimetype="${1}"
     case "${mimetype}" in
+        # Directory
+        inode/directory)
+            ls --color --group-directories-first "${FILE_PATH}"
+            exit 2;;
+
         # Text
         text/* | */xml | */json)
             # Syntax highlight
