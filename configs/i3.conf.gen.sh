@@ -89,6 +89,9 @@ color_gr="#333333"
 # Border size
 out for_window [class='"^.*"'] border pixel 2
 
+# Floating windows main class
+out for_window [class="floatme"] floating enable
+
 # Hide borders if only one window is in the current workspace
 out hide_edge_borders smart
 

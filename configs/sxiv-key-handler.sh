@@ -42,6 +42,7 @@ files=()
 while IFS= read -r file; do
     echo "$file" | grep -q "^$VIDS_THUMBS_DIR" && # for videos
         file="$(echo """$file""" | sed -En """s@$VIDS_THUMBS_DIR(.+).jpg@/\\1@p""")"
+    file=$(realpath "$file")
     files+=("$file")
 done
 
@@ -55,7 +56,7 @@ case "$choice" in
     "Copy image" | "M-w")
         for file in "${files[@]}"; do xclip -selection clipboard -target image/png "$file"; done;;
     "Set as wallpaper" | "w")
-        for file in "${files[@]}"; do setwallpaper "$file"; done;;
+        setwallpaper "${files[-1]}";;
     "Rotate 270" | "C-comma")
         for file in "${files[@]}"; do rotate 270 "$file"; done;;
     "Rotate 90" | "C-period")

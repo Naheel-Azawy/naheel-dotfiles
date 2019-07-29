@@ -10,12 +10,12 @@ elif [ "$1" = '-q' ]; then
 fi
 
 if [ "$Q" = '0' ] && [ -e /usr/bin/octave-cli ]; then
-    [ "$@" = '' ] && (octave-cli -q; exit)
+    [ $# = 0 ] && (octave-cli -q; exit)
     echo "$@" | octave-cli -q | sed 's/ans =\s*//g'
 elif [ "$Q" = '0' ] && [ -e /usr/bin/python ]; then
-    [ "$@" = '' ] && (python -q; exit)
+    [ $# = 0 ] && (python -q; exit)
     echo "print($@)" | python -q
 else
-    [ "$@" = '' ] && (bc -q; exit)
+    [ $# = 0 ] && (bc -q; exit)
     echo "$@" | bc -l
 fi

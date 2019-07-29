@@ -7,7 +7,6 @@ from gi.repository import Gtk, Vte, GLib, Pango, Gio
 
 try:
     cmd = ['/usr/bin/theterm', '--tmux']
-    os.chdir(os.popen('theterm --xpwd').read().strip())
 except:
     try: cmd = [os.environ['SHELL']]
     except: cmd = ['/bin/sh']

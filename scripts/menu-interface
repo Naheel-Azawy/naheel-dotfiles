@@ -1,5 +1,5 @@
 #!/bin/bash
-MENU_INTERFACE='dmenu'
+MENU_INTERFACE='fzf'
 
 case $MENU_INTERFACE in
     dmenu)
@@ -41,7 +41,7 @@ case $MENU_INTERFACE in
         # it won't accept it. Also shoult open a gui
         # terminal and return the value after the terminal
         # exits (donno how!).
-        cmd='fzf'
+        cmd='z --nopv'
         args=("$@")
         inc=0
         for ((i=0; i < ${#args[@]}; ++i)); do
@@ -70,5 +70,13 @@ case $MENU_INTERFACE in
                 && [[ ${args[i]} != '' ]] \
                 && cmd="$cmd '${args[i]}'"
         done
-        eval "$cmd";;
+        TMPI="/tmp/__menui_$$"
+        TMPO="/tmp/__menuo_$$"
+        rm -f "$TMPI" "$TMPO"
+        while read -r line; do
+            echo "$line" >> "$TMPI"
+        done
+        theterm -a '-c floatme -g 60x35' "cat '$TMPI' | $cmd > '$TMPO'"
+        cat "$TMPO"
+        rm -f "$TMPI" "$TMPO";;
 esac

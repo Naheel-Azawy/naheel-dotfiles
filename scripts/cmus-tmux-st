@@ -1,2 +1,2 @@
-#!/bin/bash
-st -e cmus-tmux
+#!/bin/sh
+theterm -s cmus cmus

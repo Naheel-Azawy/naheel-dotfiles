@@ -1,13 +1,2 @@
-#!/bin/bash
-LS=$(tmux ls -F '#{session_name}' | grep ignored-calc)
-if [[ "$LS" = '' ]]; then
-    CMD='tmux new-session -s ignored-calc calc'
-else
-    CMD='tmux a -t ignored-calc'
-fi
-st -e $CMD &
-sleep 0.2s
-i3-msg floating enable
-i3-msg resize set 600px 1000px
-i3-msg move position 1290px 50px
-wait
+#!/bin/sh
+theterm -s ignored-calc -a '-c floatme -g 45x40-40+70' calc

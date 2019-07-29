@@ -1,51 +1,51 @@
-#!/bin/bash
+#!/bin/sh
 
 DMENU="menu-interface -i"
 DMENUL="$DMENU -l 20"
-CACHE="$HOME/.dmenu_cache_recent"
 
-[[ "$1" == '-c' ]] && {
-    rm -f "$CACHE"
+[ "$1" = '-c' ] && {
+    dmenulauncherpy --clear
     exit
 }
 
-touch $CACHE
-MOST_USED=$(sort $CACHE | uniq -c | sort -r | colrm 1 8)
-RUN=$((echo "$MOST_USED"; dmenu_path | grep -vxF "$MOST_USED") | $DMENU $@)
+RUN=$(dmenulauncherpy | $DMENU)
+[ ! "$RUN" ] && exit 1
 
-function clean {
+clean() {
     RUN=$(echo "$RUN" | sed -e 's/^!.\s*//')
 }
 
-function term {
+term() {
     exec theterm "$RUN; fish"
 }
 
-function calculate {
+calculate() {
     exec theterm "calc \"$RUN\"; calc"
 }
 
-function duck {
+duck() {
     RUN=$(echo "$RUN" | url-encode)
-    exec $BROWSER "https://duckduckgo.com/?q=$RUN&t=ffab&atb=v1-1"
+    exec "$BROWSER" "https://duckduckgo.com/?q=$RUN&t=ffab&atb=v1-1"
 }
 
-function find-file {
+findfile() {
     L=$(locate "$RUN")
-    [[ "$L" == '' ]] && {
+    [ ! "$L" ] && {
         notify-send "'$RUN' not found!"
         return
     }
-    F=$(echo "$L" | eval "$DMENUL") && \
-        case $(echo -e 'Open\nOpen directory' \
-                   | eval "$DMENU -p 'Open $(basename $F)?'") in
-            'Open')
-                exec xdg-open "$F"
-                ;;
-            'Open directory')
-                exec dmenuopendir $(dirname "$F")
-                ;;
-        esac
+    F=$(echo "$L" | eval "$DMENUL")
+    N=$(basename "$F")
+    case $(printf 'Open\nOpen directory' |
+               eval "$DMENU -p 'Open $N?'") in
+        'Open')
+            exec open "$F"
+            ;;
+        'Open directory')
+            D=$(dirname "$F")
+            exec dmenuopendir "$D"
+            ;;
+    esac
 }
 
 # needed to update the database of locate
@@ -55,12 +55,11 @@ case $RUN in
     \!t*) clean; term;;
     \!c*) clean; calculate;;
     \!d*) clean; duck;;
-    \!f*) clean; find-file;;
+    \!f*) clean; findfile;;
     \!s*) clean; theterm "sudo $RUN";;
     *)
         # updating the history
         # - bangs are not saved
-        (echo $RUN; head -n 99 $CACHE) > $CACHE.$$ &&
-            mv $CACHE.$$ $CACHE
-        exec $RUN;;
+        dmenulauncherpy --inc "$RUN"
+        exec "$RUN";;
 esac

@@ -1,0 +1,36 @@
+#!/bin/python3
+import os
+import sys
+import json
+
+CACHE = os.getenv("HOME") + "/.launcher_recent_cache.json"
+
+if len(sys.argv) == 2 and sys.argv[1] == "--clear":
+    os.remove(CACHE)
+    exit()
+
+try:
+    recent = json.load(open(CACHE))
+except:
+    recent = {}
+
+if len(sys.argv) == 3 and sys.argv[1] == "--inc":
+    b = sys.argv[2]
+    if b == "":
+        exit()
+    try:
+        recent[b] += 1
+    except:
+        recent[b] = 1
+    json.dump(recent, open(CACHE, 'w'))
+    exit()
+
+bins = os.popen("dmenu_path").read().split("\n")
+bins.pop() # remove last empty line
+
+for b in recent.keys():
+    bins.remove(b)
+
+bins = sorted(recent, key=recent.get, reverse=True) + bins
+
+print("\n".join(bins))

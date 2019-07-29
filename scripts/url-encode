@@ -1,2 +1,2 @@
-#!/bin/bash
+#!/bin/sh
 jq -s -R -r @uri

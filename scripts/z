@@ -16,4 +16,4 @@ else
     fi
 fi
 
-fzf "${PV[@]}" --height $((H-1)) --reverse "$@"
+fzf "${PV[@]}" --reverse "$@"

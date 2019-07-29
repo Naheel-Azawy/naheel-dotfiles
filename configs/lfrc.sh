@@ -254,7 +254,7 @@ cmd tinyratios &{{
 
 # fuzzy search jump
 cmd fzf ${{
-             F="$(ls | fzf)"
+             F="$(ls | z)"
              [ -f "$F" ] && \
                  lf -remote "send $id select \"$F\"" || \
                      lf -remote "send $id cd \"$F\""
@@ -315,7 +315,7 @@ map t tinyratios
 
 # fuzzy search
 map f     fzf
-map <c-f> $lf -remote "send $id select \"$(fzf)\""
+map <c-f> $lf -remote "send $id select \"$(z)\""
 
 # image viewing
 map <c-v> &sxivv
