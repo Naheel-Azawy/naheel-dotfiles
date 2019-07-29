@@ -1,5 +1,5 @@
 #!/bin/bash
-MENU_INTERFACE='fzf'
+MENU_INTERFACE='dmenu'
 
 case $MENU_INTERFACE in
     dmenu)

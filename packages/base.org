@@ -42,6 +42,7 @@
 | pacman   | pulsemixer                                       | is an intuitive ncurses audio controller                          |
 | pacman   | maim                                             | can take quick screenshots at your request                        |
 | pacman   | tmux                                             | the terminal multiplexer                                          |
+| func     | tpm                                              | tmux package manager                                              |
 | pacman   | unrar                                            | extracts rar's                                                    |
 | pacman   | unzip                                            | unzips zips                                                       |
 | pacman   | w3m                                              | is a terminal browser which can also view images                  |
@@ -54,10 +55,12 @@
 | pacman   | highlight                                        | can highlight code output                                         |
 | pacman   | fish                                             | the friendly shell!                                               |
 | pacman   | emacs                                            | the best editor on this planet                                    |
+| func     | spacemacs                                        | tons of toys on top of emacs                                      |
 | pacman   | ispell                                           | spell checker                                                     |
 | pacman   | aspell-en                                        | English dictionary for ispell                                     |
 | pacman   | conky                                            | brings the lovely widgets at your desktop                         |
 | pacman   | conky-manager                                    | manages conky using GUI                                           |
+| git      | https://github.com/Naheel-Azawy/conky-config     | the used conky setup                                              |
 | pacman   | lxappearance                                     | configures GTK with a simple GUI                                  |
 | pacman   | cups                                             | in case you need to use a printer                                 |
 | pacman   | cups-pdf                                         | pdf for cups                                                      |
@@ -75,3 +78,4 @@
 | aur      | vidir                                            | edit files names in your favorite editor                          |
 | pacman   | perl-image-exiftool                              | media details                                                     |
 | git      | https://github.com/Naheel-Azawy/adwaita-too-dark | the used GTK theme                                                |
+| git      | https://github.com/Naheel-Azawy/Executor.git     | executes everything                                               |

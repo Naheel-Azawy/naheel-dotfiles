@@ -1,3 +1,3 @@
-#!/bin/bash
+#!/bin/sh
 exec emacs-nw "$@" 2>/dev/null
 #exec bicon.bin --reshape-only emacs-nw "$@" 2>/dev/null

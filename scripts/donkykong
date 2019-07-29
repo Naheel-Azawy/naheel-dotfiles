@@ -1,2 +1,2 @@
-#!/bin/bash
+#!/bin/sh
 mgba-qt "$GAMES_GB/1521 - Classic Nes - Donkey Kong (U)(Hyperion).gba" "$@"

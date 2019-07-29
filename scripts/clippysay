@@ -1,2 +1,2 @@
-#!/bin/bash
-cowsay -f $DOTFILES_DIR/stuff/clippy.cow "$@"
+#!/bin/sh
+cowsay -f "$DOTFILES_DIR/stuff/clippy.cow" "$@"

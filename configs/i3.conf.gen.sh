@@ -419,8 +419,8 @@ exec_start --no-startup-id dunst
 exec_start --no-startup-id clipmenud
 
 # conky
-exec_start --no-startup-id conky -c "$H/.conky/naheel/bin.rc"
-exec_start --no-startup-id conky -c "$H/.conky/naheel/main.rc"
+exec_start --no-startup-id conky -c "/usr/share/conky/naheel/bin.rc"
+exec_start --no-startup-id conky -c "/usr/share/conky/naheel/main.rc"
 
 # mouse setup
 exec_start --no-startup-id setup-xinput

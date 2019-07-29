@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 
 #FILE="$HOME/Mmmm"
 FILE="$HOME/Music/Music/NOW_PLAYING.txt"
@@ -16,7 +16,7 @@ update
 prev=""
 while true; do
     cur="$(cmus-file)"
-    [[ "$prev" != "$cur" ]] && {
+    [ "$prev" != "$cur" ] && {
         update
         prev="$cur"
     }

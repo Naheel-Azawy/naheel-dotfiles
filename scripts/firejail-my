@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 D="$HOME/Firejail/$1"
 mkdir -p "$D"
 shift

@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 D="$1"
 #open=$(echo -e "Terminal\nLF\nRanger\nNNN\nNautilus" | menu-interface -i -p "Open $(basename $D)?")
 open='LF'

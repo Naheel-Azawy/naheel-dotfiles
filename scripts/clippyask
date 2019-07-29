@@ -1,6 +1,7 @@
-#!/bin/bash
-clippysay $(printf "$@\n [Yes] [No]")
-echo -n '> '
-read c
-[[ $c == Y || $c == y || $c == Yes ]] && exit 0
+#!/bin/sh
+args=$(printf "%s\n [Yes] [No]" "$@")
+clippysay "$args"
+printf '> '
+read -r c
+case "$c" in Y|y|Yes) exit 0;; esac
 exit 1

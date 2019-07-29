@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 WORDS="¯\\_(ツ)_/¯
 السلام عليكم
 السلام عليكم و رحمة الله و بركاته
@@ -13,4 +13,4 @@ nk1508530@qu.edu.qa
 ( ͡° ͜ʖ ͡°)
 ( ͡°( ͡° ͜ʖ( ͡° ͜ʖ ͡°)ʖ ͡°) ͡°)"
 R=$(echo "$WORDS" | menu-interface -i -l 15 -p 'Words')
-[[ "$R" != '' ]] && echo -n "$R" | clipboard
+[ "$R" != '' ] && printf '%s' "$R" | clipboard

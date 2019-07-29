@@ -8,7 +8,7 @@ R='\033[0m'     # reset color
 
 installed=$( (pacman -Qet && pacman -Qm) | awk '{print $1}')
 
-function install-aur-manual { # Installs $1 manually if not installed. Used only for AUR helper here.
+install_aur_manual() { # Installs $1 manually if not installed. Used only for AUR helper here.
 	  [[ -f /usr/bin/$1 ]] || (
 	      echo -e "${C}INSTALLING${R} \"$1\", an AUR helper..."
 	      cd /tmp
@@ -20,28 +20,28 @@ function install-aur-manual { # Installs $1 manually if not installed. Used only
 	      cd /tmp)
 }
 
-function install-pacman {
+install_pacman() {
 	  pacman --noconfirm --needed -S "$1"
 }
 
-function install-aur {
+install_aur() {
 	  grep -q "^$1$" <<< "$installed" && echo "$1 is already installed" && return
 	  sudo -u "$U" yay -S --noconfirm "$1"
 }
 
-function install-pip {
+install_pip() {
     pip3 install "$1"
 }
 
-function install-pip {
+install_pip2() {
     pip2.7 install "$1"
 }
 
-function install-npm {
+install_npm() {
     npm install -g "$1"
 }
 
-function install-git {
+install_git() {
 	  dir=$(mktemp -d)
 	  git clone --depth 1 "$1" "$dir"
 	  cd "$dir" || exit
@@ -52,7 +52,7 @@ function install-git {
 	  cd /tmp
 }
 
-function install-suckless {
+install_suckless() {
     link="$1"
     name=${link##*/}
     conf="$D/configs/$name-config.h"
@@ -63,6 +63,18 @@ function install-suckless {
     [[ -f "$conf" ]] && cp "$conf" ./config.h
 	  make install
 	  cd /tmp
+}
+
+install_tpm() {
+    rm -rf "$H/.tmux"
+    mkdir -p "$H/.tmux/plugins/tpm"
+    sudo -u "$U" git clone https://github.com/tmux-plugins/tpm "$H/.tmux/plugins/tpm"
+    sudo -u "$U" tmux source "$H/.tmux.conf"
+}
+
+install_spacemacs() {
+    rm -rf "$H/.emacs.d"
+    sudo -u "$U" git clone https://github.com/syl20bnr/spacemacs "$H/.emacs.d"
 }
 
 install-aur-manual yay
@@ -76,13 +88,17 @@ echo "$pacs" | while read -r tag pac des; do
     echo -e "($i/$total) ${C}INSTALLING${R} $pac ${C}FROM${R} $tag"
     echo -e "${C}REASON:${R} $des"
     case $tag in
-        pacman)   install-pacman   $pac;;
-        aur)      install-aur      $pac;;
-        pip)      install-pip      $pac;;
-        pip2)     install-pip2     $pac;;
-        npm)      install-npm      $pac;;
-        git)      install-git      $pac;;
-        suckless) install-suckless $pac;;
+        pacman)   install_pacman   "$pac";;
+        aur)      install_aur      "$pac";;
+        pip)      install_pip      "$pac";;
+        pip2)     install_pip2     "$pac";;
+        npm)      install_npm      "$pac";;
+        git)      install_git      "$pac";;
+        suckless) install_suckless "$pac";;
+        func)     case "$pac" in
+                      spacemacs) install_spacemacs;;
+                      tpm)       install_tpm;;
+                  esac;;
         *) echo "ERROR: Unknow package tag '$tag'" && exit 1;;
     esac
     i=$((i+1))

@@ -1,9 +1,11 @@
-#!/bin/bash
-RES=$(echo -e "Suspend\nShutdown\nReboot\nLogout\nLock\nHibernate" | menu-interface -i -p 'Power options')
-function confirm {
-    R=$(echo -e "Yes\nNo" | menu-interface -p "$RES?" -i -sb red -nf red)
-    [[ "$R" = "Yes" ]]
+#!/bin/sh
+RES=$(printf "Suspend\nShutdown\nReboot\nLogout\nLock\nHibernate" | menu-interface -i -p 'Power options')
+
+confirm() {
+    R=$(printf "Yes\nNo" | menu-interface -p "$RES?" -i -sb red -nf red)
+    [ "$R" = "Yes" ]
 }
+
 case "$RES" in
     Lock)
         lockscreen;;
