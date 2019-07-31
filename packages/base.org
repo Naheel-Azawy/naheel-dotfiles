@@ -26,7 +26,7 @@
 | pacman   | ntfs-3g                                          | allows accessing NTFS partitions                                  |
 | pacman   | dunst                                            | is a suckless notification system                                 |
 | pacman   | feh                                              | a minimal image viewer (used to set wallpaper)                    |
-| pacman   | sxiv                                             | another minimal image viewer (a bit less minimal)                 |
+| git      | https://github.com/Naheel-Azawy/sxiv             | another minimal image viewer (a bit less minimal)                 |
 | pacman   | ffmpeg                                           | can record and splice video and audio on the command line         |
 | pacman   | chromium                                         | well, in most cases it is faster than firefox...                  |
 | pacman   | gnome-keyring                                    | serves as the system keyring                                      |

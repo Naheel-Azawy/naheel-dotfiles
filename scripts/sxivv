@@ -1,45 +1,29 @@
 #!/bin/sh
 
-VIDS_THUMBS_DIR="$HOME/.catch/vidthmbs"
-vidthumb() {
-    p="$VIDS_THUMBS_DIR$(realpath """$f""").jpg"
-    mkdir -p "$(dirname """$p""")"
-    echo "$p"
-}
-
 dir=.
 img=
 opt='-t'
-[ "$1" != '' ] && {
+[ "$1" ] && {
     [ -f "$1" ] && {
         dir=$(dirname "$1")
-        img=$(basename "$1")
+        img="$1"
         opt=''
     } || dir="$1"
 }
 
 cd "$dir" || (echo "Failed cd to $dir" && exit 1)
-files=$(file --mime-type ./*)
-videos=$(echo "$files" | grep video/ | awk -F':' '{print $1}')
-vidsthumbs=$(echo "$videos" |
-                 while read -r f; do
-                     [ -f "$f" ] && {
-                         t=$(vidthumb "$f")
-                         [ ! -f "$t" ] &&
-                             ffmpegthumbnailer -i "$f" -o "$t" -s 0 >/dev/null 2>/dev/null
-                         [ -f "$t" ] && echo "$t"
-                     }
-                 done)
-images=$({
-            # images
-            echo "$files" | grep image/ | awk -F':' '{print $1}'
-            # videos
-            [ "$vidsthumbs" ] && echo "$vidsthumbs"
-        } | xargs -d '\n' ls -1)
+
+file --mime-type ./* | grep video/ | awk -F':' '{print $1}' |
+    while read -r f; do
+        [ -f "$f" ] && {
+            t="$f.thumb.jpg"
+            [ ! -f "$t" ] &&
+                ffmpegthumbnailer -i "$f" -o "$t" -s 0 >/dev/null 2>/dev/null
+        }
+    done
 
 [ "$img" != '' ] && [ -f "$img" ] && {
-    n=$(echo "$images" | nl | grep "$img" | awk '{print $1}')
-    opt="$opt -n $n"
+    opt="$opt -F $img"
 }
 
-echo "$images" | sxiv -b $opt -
+sxiv -b $opt .
