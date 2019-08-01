@@ -16,23 +16,25 @@ choice="$1"
 [ "$1" = "C-x" ] && {
     choice=$(echo 'Information
 Open with
+Copy
+Move
+Move to trash
+Delete
 Copy file name
 Copy image
-Set as wallpaper
 Rotate 270
 Rotate 90
 Rotate 180
 Flip horizontally
 Flip vertically
-Move to trash
-Delete' | menu-interface -i -l 20)
+Set as wallpaper' | menu-interface -i -l 20)
 }
 
 # put files in an array
 files=()
 while IFS= read -r file; do
-    echo "$file" | grep -q "^$VIDS_THUMBS_DIR" && # for videos
-        file="$(echo """$file""" | sed -En """s@(.+).thumb.jpg@\\1@p""")"
+    vid=$(echo "$file" | sed -En 's@(.+).thumb.jpg@\1@p')
+    [ "$vid" ] && file="$vid"
     file=$(realpath "$file")
     files+=("$file")
 done
@@ -44,8 +46,14 @@ case "$choice" in
         open --ask -nw "${files[@]}" &;;
     "Copy file name" | "f")
         printf '%s\n' "${files[@]}" | xclip -in -selection clipboard;;
-    "Copy image" | "M-w")
-        for f in "${files[@]}"; do xclip -selection clipboard -target image/png "$f"; done;;
+    "Copy image")
+        xclip -selection clipboard -target image/png "${files[-1]}";;
+    "Copy" | "M-w")
+        S=$(printf 'save\ncopy\n'; printf '%s\n' "${files[@]}")
+        lf -remote "$S";;
+    "Move" | "C-w")
+        S=$(printf 'save\nmove\n'; printf '%s\n' "${files[@]}")
+        lf -remote "$S";;
     "Set as wallpaper" | "w")
         setwallpaper "${files[-1]}";;
     "Rotate 270" | "C-comma")

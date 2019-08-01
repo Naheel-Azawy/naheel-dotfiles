@@ -1,5 +1,6 @@
 #!/bin/bash
-LANGS=(us ar ru)
+#LANGS=(us ar ru)
+LANGS=(us ar)
 L=$(setxkbmap -query | sed -En 's/layout:\s*(.+)/\1/p' 2>/dev/null)
 if [ "$1" != "-v" ]; then
     changed=0
