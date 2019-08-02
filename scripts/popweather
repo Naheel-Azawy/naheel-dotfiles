@@ -1,5 +1,0 @@
-#!/bin/bash
-i3-msg -q floating enable;i3-msg -q resize set 765px 925px;i3-msg -q move position 1070px 25px
-sleep 0.2
-weather-update &
-cat ~/.weatherreport | head -n 37 && read

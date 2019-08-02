@@ -1,9 +1,13 @@
 #!/bin/bash
-MENU_INTERFACE='dmenu'
+
+[ -z "$MENU_INTERFACE" ] && MENU_INTERFACE='dmenu'
 
 case $MENU_INTERFACE in
     dmenu)
-        exec dmenu "$@";;
+        WINID=$(xdotool getactivewindow)
+        dmenu "$@"
+        # Little hack... No idea why but dmenu messes the foucs
+        xdotool windowfocus "$WINID";;
     rofi)
         cmd='rofi -width 50 -dmenu -font "$FONT_MONO 18"'
         args=("$@")
@@ -37,10 +41,6 @@ case $MENU_INTERFACE in
         done
         eval "$cmd -lines $lines";;
     fzf)
-        # FIXME: If the input is not from the selection
-        # it won't accept it. Also shoult open a gui
-        # terminal and return the value after the terminal
-        # exits (donno how!).
         cmd='z --nopv'
         args=("$@")
         inc=0

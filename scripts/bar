@@ -3,13 +3,12 @@
 awesomefontecho() {
     printf '<span font="Font Awesome 5 Free" rise="-1024"'
     [ "$2" ] && printf ' color="%s"' "$2"
-    printf '>'
-    printf "$1" # FIXME for POSIX
-    printf '</span>'
+    printf '>%s</span>' "$1"
 }
 
 clock() {
-    [ "$BLOCK_BUTTON" = "1" ] && theterm "cal -y && read" &
+    [ "$BLOCK_BUTTON" = "1" ] &&
+        theterm -a '-c floatme -g 70x35' 'cal -y && read -p ""'
     D=$(date '+%a %Y-%m-%d %I:%M:%S %p')
     printf '%s' "$D"
 }
@@ -36,24 +35,24 @@ batt() {
 
     if [ "$C" != 'Discharging' ]; then
         R='#FFD700'
-        awesomefontecho '\uf1e6' $R
+        awesomefontecho '' $R
         printf ' '
     elif [ "$V" -le "5" ]; then
         R='#FF0000'
-        awesomefontecho '\uf12a' $R
+        awesomefontecho '' $R
         printf ' '
     elif [ "$V" -le "20" ]; then
         R='#FF0000'
     fi
 
     if [ "$V" -lt "50" ]; then
-        awesomefontecho '\uf243' $R
+        awesomefontecho '' $R
     elif [ "$V" -lt "60" ]; then
-        awesomefontecho '\uf242' $R
+        awesomefontecho '' $R
     elif [ "$V" -lt "90" ]; then
-        awesomefontecho '\uf241' $R
+        awesomefontecho '' $R
     else
-        awesomefontecho '\uf240' $R
+        awesomefontecho '' $R
     fi
 
     printf " %d%%" "$V"
@@ -66,31 +65,32 @@ wifi() {
     V=$(awk 'NR==3 {print $3}' /proc/net/wireless)
     [ "$V" != '' ] && {
         [ "$1" != "-a" ] && \
-            awesomefontecho '\uf1eb' && printf ' '
+            awesomefontecho '' && printf ' '
         printf '%.0f%%' "$V"
     }
 }
 
 brig() {
     [ "$BLOCK_BUTTON" = "1" ] && dmenudisplay
-    [ "$1" != "-a" ] && awesomefontecho '\uf108' && echo -n ' '
+    [ "$1" != "-a" ] && awesomefontecho '' && printf ' '
     printf '%s%%' "$(brightness -print)"
 }
 
 volu() {
     case "$BLOCK_BUTTON" in
-	      1) theterm pulsemixer & ;;
-	      3) pamixer -t ;;
-	      4) pamixer -i 5 ;;
-	      5) pamixer -d 5 ;;
+	      1) theterm pulsemixer ;;
+	      3) pamixer -t         ;;
+	      4) pamixer -i 5       ;;
+	      5) pamixer -d 5       ;;
     esac
     V=$(pamixer --get-volume)
     if [ "$1" != "-a" ]; then
         if [ "$(pamixer --get-mute)" = "true" ] || [ "$V" = 0 ]; then
-            awesomefontecho '\uf026'
-            awesomefontecho '\uf00d'
+            awesomefontecho ''
+            printf '<span font="3"> </span>'
+            awesomefontecho ''
         else
-            awesomefontecho '\uf028'
+            awesomefontecho ''
         fi
         printf ' '
     fi
@@ -98,7 +98,8 @@ volu() {
 }
 
 sens() {
-    [ "$BLOCK_BUTTON" = "1" ] && theterm popsensors &
+    [ "$BLOCK_BUTTON" = "1" ] &&
+        theterm -a '-c floatme -g 65x19' 'watch -tn 1 sensors'
     O=$(sensors coretemp-isa-0000 -j | jq '.["coretemp-isa-0000"]["Package id 0"]')
     T=$(echo "$O" | jq '.["temp1_input"]')
     M=$(echo "$O" | jq '.["temp1_max"]')
@@ -106,15 +107,15 @@ sens() {
         P=$(echo "$T/$M*100" | bc -l)
         P=$(printf '%.0f' "$P")
         if [ "$P" -ge "90" ]; then
-            awesomefontecho '\uf12a' '#FF0000'
+            awesomefontecho '' '#FF0000'
             printf ' '
-            awesomefontecho '\uf2c7' '#FF0000'
+            awesomefontecho '' '#FF0000'
         elif [ "$P" -gt "50" ]; then
-            awesomefontecho '\uf2c8'
+            awesomefontecho ''
         elif [ "$P" -gt "40" ]; then
-            awesomefontecho '\uf2c9'
+            awesomefontecho ''
         else
-            awesomefontecho '\uf2ca'
+            awesomefontecho ''
         fi
         printf ' '
     fi
@@ -122,18 +123,21 @@ sens() {
 }
 
 weat() {
-    [ "$BLOCK_BUTTON" = "1" ] && theterm popweather &
-    #                          Lines from 3rd to 4th        Remove color codes                Cut
+    [ "$BLOCK_BUTTON" = "1" ] &&
+        theterm -a '-c floatme -g 63x38' \
+                'weather-update & head -n 37 ~/.weatherreport && read -p ""'
+    #   Lines from 3rd to 4th                         Remove color codes                Cut
     V=$(sed -n -e "3,4 p" -e "4 q" ~/.weatherreport | sed "s/\x1B\[[0-9;]*[JKmsu]//g" | cut -c 16-)
     #S=$(echo "$V" | head -1 | awk '{print tolower($0)}')
     W=$(echo "$V" | tail -1 | awk -F'[- ]' '{print $1}')
-    [ "$1" != "-a" ] && awesomefontecho '\uf0c2' && printf ' '
+    [ "$1" != "-a" ] && awesomefontecho '' && printf ' '
     printf '%s°C' "$W"
 }
 
 pray() {
-    [ "$BLOCK_BUTTON" = "1" ] && theterm popprayer &
-    [ "$1" != "-a" ] && awesomefontecho '\uf186' && printf ' '
+    [ "$BLOCK_BUTTON" = "1" ] &&
+        theterm -a '-c floatme -g 25x8' 'p && read -p ""'
+    [ "$1" != "-a" ] && awesomefontecho '' && printf ' '
     printf '%s' "$(p n)"
 }
 
@@ -154,8 +158,8 @@ cmus() {
     A=$(echo "$Q" | sed -rn 's/tag artist (.+)/\1/p')
     S=$(echo "$Q" | sed -rn 's/status (.+)/\1/p')
     [ "$1" != "-a" ] && {
-        [ "$S" = 'playing' ] && awesomefontecho '\uf04b'
-        [ "$S" = 'paused' ]  && awesomefontecho '\uf04c'
+        [ "$S" = 'playing' ] && awesomefontecho ''
+        [ "$S" = 'paused' ]  && awesomefontecho ''
         printf ' '
     }
     printf '%s - %s' "$T" "$A"
@@ -164,6 +168,11 @@ cmus() {
 donno() {
     [ "$BLOCK_BUTTON" = "1" ] && theterm 'lolcowforune -p' &
     echo '¯\_(ツ)_/¯'
+}
+
+close() {
+    [ "$BLOCK_BUTTON" = "1" ] && i3-msg kill >/dev/null
+    awesomefontecho ''
 }
 
 if [ "$1" = '-a' ]; then
