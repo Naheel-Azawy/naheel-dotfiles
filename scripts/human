@@ -1,0 +1,17 @@
+#!/bin/sh
+# Based on https://unix.stackexchange.com/questions/44040/a-standard-tool-to-convert-a-byte-count-into-human-kib-mib-etc-like-du-ls1
+
+FUN='function human(x) {
+    s=" B   KiB MiB GiB TiB EiB PiB YiB ZiB"
+    while (x >= 1024 && length(s) > 1) {
+        x /= 1024
+        s = substr(s, 5)
+    }
+    s = substr(s, 1, 4)
+    xf = (s == " B  ") ? "%d" : "%.2f"
+    return sprintf(xf"%s", x, s)
+}'
+
+[ "$1" = -s ] && echo "$FUN" && exit
+
+echo "$1" | awk "$FUN"'{print human($1)}'

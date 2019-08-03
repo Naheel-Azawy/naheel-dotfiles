@@ -79,18 +79,17 @@ cmd delete ${{
 
 # pasting done right
 cmd paste ${{
+               send="while read -r line; do lf -remote \"send $id echo \$line\"; done && lf -remote 'send reload'"
                load=$(lf -remote 'load')
                mode=$(echo "$load" | sed -n '1p')
                list=$(echo "$load" | sed '1d')
                s='' && [ ! -w . ] && s='sudo'
+               case "$mode" in
+                   copy) cmd='cp-p';; move) cmd='mv-p';;
+               esac
+               cmd="$cmd --new-line"
                for f in $list; do
-                   if [ $mode = 'copy' ]; then
-                       lf -remote "send $id echo copying $f to $(pwd)"
-                       $s sh -c "cp -r --backup=numbered \"$f\" . &"
-                   elif [ $mode = 'move' ]; then
-                       lf -remote "send $id echo moving $f to $(pwd)"
-                       $s sh -c "mv --backup=numbered \"$f\" . &"
-                   fi
+                   $s sh -c "$cmd --backup=numbered \"$f\" . | $send &"
                done
                lf -remote 'send load'
                lf -remote 'send clear'
