@@ -7,7 +7,9 @@ case $MENU_INTERFACE in
         WINID=$(xdotool getactivewindow)
         dmenu "$@"
         # Little hack... No idea why but dmenu messes the foucs
-        xdotool windowfocus "$WINID";;
+        if [ "$WINID" ]; then
+            xdotool windowfocus "$WINID"
+        fi;;
     rofi)
         cmd='rofi -width 50 -dmenu -font "$FONT_MONO 18"'
         args=("$@")
