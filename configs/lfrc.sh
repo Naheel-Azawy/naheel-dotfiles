@@ -23,6 +23,9 @@ set scrolloff 10
 # set the previewer script
 set previewer lfpv
 
+# show icons
+set icons
+
 # COMMANDS -------------------------------------------------------------------
 
 # define a custom 'open' command

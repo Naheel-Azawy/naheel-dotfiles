@@ -32,7 +32,7 @@ F="/tmp/lfimgfifo$2"
 
 # exit
 [[ "$1" == '--end' ]] && {
-    echo 'END' >> "$F"
+    echo 'END' >> "$F" &
     rm -f "$F"
     exit 0
 }
@@ -40,7 +40,9 @@ F="/tmp/lfimgfifo$2"
 # continue and create the listener
 [[ "$1" == '--listen' ]] || printerr
 
-rm -f "$F"
+# if already listening, ignore
+[ -e "$F" ] && exit
+
 mkfifo "$F"
 
 source "`ueberzug library`"

@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 set -C -f -u
 IFS=$'\n'
@@ -15,13 +15,25 @@ IFS=$'\n'
 # 1    | no preview | Display no preview at all
 # 2    | plain text | Display the plain content of the file
 
-# Script arguments
-FILE_PATH="${1}"         # Full path of the highlighted file
-IMAGE_CACHE_PATH="$HOME/.cache/lfimg/$(basename """$FILE_PATH""").jpg"  # Full path that should be used to cache image preview
-PV_IMAGE_ENABLED="False"  # 'True' if image previews are enabled, 'False' otherwise.
+# TODO: need from lf: lfid, geometry, clear when not needed
+# TODO: need lf to: if exit code is X: don't cache pv, call again on resize
+
+PV_IMAGE_ENABLED="False" # 'True' if image previews are enabled, 'False' otherwise.
+
+FILE_PATH="${1}"
+LFID=0
+
+if [ "$FILE_PATH" = '--clear' ]; then
+    lfimgpv --clear "$LFID"
+    exit
+fi
+
+IMAGE_CACHE_DIR="$HOME/.cache/lfimg"
+IMAGE_CACHE_HASH=$(echo "$FILE_PATH" | sha1sum | awk '{print $1}')
+IMAGE_CACHE_PATH="$IMAGE_CACHE_DIR/$IMAGE_CACHE_HASH.jpg"
 
 FILE_EXTENSION="${FILE_PATH##*.}"
-FILE_EXTENSION_LOWER=$(echo ${FILE_EXTENSION} | tr '[:upper:]' '[:lower:]')
+FILE_EXTENSION_LOWER=$(echo "$FILE_EXTENSION" | tr '[:upper:]' '[:lower:]')
 
 asciize() {
     identify -format '%w\n%h' "$1" | {
@@ -156,6 +168,10 @@ handle_mime() {
 }
 
 handle_image() {
+    [ -e "${IMAGE_CACHE_PATH}" ] &&
+        [ "${IMAGE_CACHE_PATH}" -nt "${FILE_PATH}" ] && return
+    mkdir -p "$IMAGE_CACHE_DIR"
+
     local mimetype="${1}"
     case "${mimetype}" in
         # SVG
@@ -171,20 +187,16 @@ handle_image() {
             # needs rotating ("1" means no rotation)...
             if [[ -n "$orientation" && "$orientation" != 1 ]]; then
                 # ...auto-rotate the image according to the EXIF data.
-                convert -- "${FILE_PATH}" -auto-orient "${IMAGE_CACHE_PATH}" && return
+                convert -- "${FILE_PATH}" -auto-orient "${IMAGE_CACHE_PATH}"
             else
-                IMAGE_CACHE_PATH="${FILE_PATH}" && return
-            fi
-
-            # `w3mimgdisplay` will be called for all images (unless overriden as above),
-            # but might fail for unsupported types.
-            exit 1;;
+                convert -- "${FILE_PATH}" "${IMAGE_CACHE_PATH}"
+            fi;;
 
         # Video
         video/*)
             # Thumbnail
-            ffmpegthumbnailer -i "${FILE_PATH}" -o "${IMAGE_CACHE_PATH}" -s 0 && return
-            exit 1;;
+            ffmpegthumbnailer -i "${FILE_PATH}" -o "${IMAGE_CACHE_PATH}" -s 0;;
+
         # PDF
         application/pdf)
             pdftoppm -f 1 -l 1 \
@@ -192,9 +204,8 @@ handle_image() {
                      -scale-to-y -1 \
                      -singlefile \
                      -jpeg -tiffcompression jpeg \
-                     -- "${FILE_PATH}" "${IMAGE_CACHE_PATH%.*}" \
-                && imgdarken "${IMAGE_CACHE_PATH}" \
-                && return || exit 1;;
+                     -- "${FILE_PATH}" "${IMAGE_CACHE_PATH%.*}";;
+
         # Office files
         application/*office*|application/ms*|application/vnd.ms-*)
             CACHE_DIR="${IMAGE_CACHE_PATH%/*}"
@@ -205,9 +216,7 @@ handle_image() {
                 --convert-to png "${FILE_PATH}" \
                 --outdir "$CACHE_DIR" \
                 && convert "$TMP_FILE_PATH" "${IMAGE_CACHE_PATH}" \
-                && rm -f "$TMP_FILE_PATH" \
-                && imgdarken "${IMAGE_CACHE_PATH}" \
-                && return || exit 1;;
+                && rm -f "$TMP_FILE_PATH";;
     esac
 }
 
@@ -219,8 +228,8 @@ handle_fallback() {
 {
     MIMETYPE="$( file --dereference --brief --mime-type -- "${FILE_PATH}" )"
     [ "${PV_IMAGE_ENABLED}" = 'True' ] && {
-        handle_image "${MIMETYPE}" && \
-            lfimgpv --add 0 "${IMAGE_CACHE_PATH}" 2>/dev/null && exit 1
+        handle_image "${MIMETYPE}" &>/dev/null && \
+            lfimgpv --add "$LFID" "${IMAGE_CACHE_PATH}" 2>/dev/null && exit 1
     }
     handle_extension
     handle_mime "${MIMETYPE}"
