@@ -1,14 +1,16 @@
 #!/bin/sh
 
+F=$(realpath "$1")
+
 dir=.
 img=
 opt='-t'
-[ "$1" ] && {
-    [ -f "$1" ] && {
-        dir=$(dirname "$1")
-        img="$1"
+[ "$F" ] && {
+    [ -f "$F" ] && {
+        dir=$(dirname "$F")
+        img="$F"
         opt=''
-    } || dir="$1"
+    } || dir="$F"
 }
 
 cd "$dir" || (echo "Failed cd to $dir" && exit 1)

@@ -21,7 +21,7 @@ set ifs "\n"
 set scrolloff 10
 
 # set the previewer script
-set previewer lfpv
+set previewer stpv
 
 # show icons
 set icons
@@ -323,7 +323,7 @@ map <c-f> $lf -remote "send $id select \"$(z)\""
 map <c-v> &sxivv
 
 #full screen preview
-map p $lfpv "$f" | less -R
+map p $stpv "$f" | less -R
 
 # Nautilus...
 map n &nautilus .
@@ -353,18 +353,3 @@ map gg cd ~/MEGA/orgmode
 map go $lf -remote "send $id cd \"$DOTFILES_DIR\""
 map gq $lf -remote "send $id cd \"$QU\""
 map gb cd ~/GoodStuff/vbox-shared/
-
-#cmd imgpv ${{
-#               lfimgpv --add $id $f
-#     }}
-#
-#map <c-v> imgpv
-# start the image previewer listener
-# &{{
-#      lfimgpv --end 0
-#      lfimgpv --listen 0
-#  }}
-# map <up>    :up;    &lfimgpv --clear 0
-# map <down>  :down;  &lfimgpv --clear 0
-# map <left>  :updir; &lfimgpv --clear 0
-

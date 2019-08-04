@@ -18,17 +18,34 @@ IFS=$'\n'
 # TODO: need from lf: lfid, geometry, clear when not needed
 # TODO: need lf to: if exit code is X: don't cache pv, call again on resize
 
-PV_IMAGE_ENABLED="False" # 'True' if image previews are enabled, 'False' otherwise.
+[ $# = 0 ] || [ "$1" = -h ] || [ "$1" = --help ] && {
+    BIN=$(basename "$0")
+    >&2 echo "usage: $BIN FILE [ ID ] [ X Y W H ]"
+    exit 1
+}
 
-FILE_PATH="${1}"
-LFID=0
+# 'True' if image previews are enabled, 'False' otherwise.
+#PV_IMAGE_ENABLED="False"
+PV_IMAGE_ENABLED="True"
 
-if [ "$FILE_PATH" = '--clear' ]; then
-    lfimgpv --clear "$LFID"
+FILE_PATH="$1"
+if [ $# -gt 2 ]; then
+    ID="$2"
+else
+    ID=0
+fi
+
+[ $# = 6 ] && {
+    X="$3"; Y="$4"; W="$5"; H="$6"
+}
+
+if [ "$FILE_PATH" = 'NONE' ]; then
+    stpvimg --clear "$ID"
     exit
 fi
 
-IMAGE_CACHE_DIR="$HOME/.cache/lfimg"
+MAX_IMG_SIZE=300kb
+IMAGE_CACHE_DIR="$HOME/.cache/stpv"
 IMAGE_CACHE_HASH=$(echo "$FILE_PATH" | sha1sum | awk '{print $1}')
 IMAGE_CACHE_PATH="$IMAGE_CACHE_DIR/$IMAGE_CACHE_HASH.jpg"
 
@@ -40,9 +57,11 @@ asciize() {
         read w
         read h
         if [ "$w" -gt "$h" ]; then
-            opts="--width=$(($(tput cols)/2))"
+            [ ! "$W" ] && W=$(($(tput cols)/2))
+            opts="--width=$W"
         else
-            opts="--height=$(tput lines)"
+            [ ! "$H" ] && H=$(tput lines)
+            opts="--height=$H"
         fi
         jp2a "$opts" "$1" 2>/dev/null
     }
@@ -110,8 +129,8 @@ handle_mime() {
     case "${mimetype}" in
         # Directory
         inode/directory)
-            ls --color --group-directories-first "${FILE_PATH}"
-            exit 2;;
+            ls --color --group-directories-first "${FILE_PATH}" && exit 0
+            exit 1;;
 
         # Text
         text/* | */xml | */json)
@@ -119,7 +138,8 @@ handle_mime() {
             if [ "$( stat --printf='%s' -- "${FILE_PATH}" )" -gt 262143 ]; then # > 256KiB
                 exit 2
             fi
-            highlight --replace-tabs=4 --out-format=ansi --style='pablo' --force -- "${FILE_PATH}"
+            highlight --replace-tabs=4 --out-format=ansi \
+                      --style='pablo' --force -- "${FILE_PATH}" && exit 0
             exit 2;;
 
         # Image
@@ -129,7 +149,7 @@ handle_mime() {
             # img2txt --gamma=0.6 -- "${FILE_PATH}"
             [ $(du "${FILE_PATH}" | cut -f 1) -le 6000 ] && { # only if <= 6M
                 asciize "${FILE_PATH}" || { # probably if not jpg
-                    j=/tmp/lfjp2atmp.jpg
+                    j=/tmp/stpvjp2atmp.jpg
                     convert "${FILE_PATH}" "$j"
                     asciize "$j"
                     rm -f "$j"
@@ -140,7 +160,7 @@ handle_mime() {
 
         # Video
         video/*)
-            j=/tmp/lfjp2atmp.jpg
+            j=/tmp/stpvjp2atmp.jpg
             ffmpegthumbnailer -i "${FILE_PATH}" -o "$j"
             asciize "$j"
             rm -f "$j"
@@ -175,9 +195,10 @@ handle_image() {
     local mimetype="${1}"
     case "${mimetype}" in
         # SVG
-        # image/svg+xml)
-        #     convert "${FILE_PATH}" "${IMAGE_CACHE_PATH}" && exit 6
-        #     exit 1;;
+        image/svg+xml)
+            convert "${FILE_PATH}" \
+                    -define jpeg:extent="$MAX_IMG_SIZE" \
+                    "${IMAGE_CACHE_PATH}";;
 
         # Image
         image/*)
@@ -187,9 +208,13 @@ handle_image() {
             # needs rotating ("1" means no rotation)...
             if [[ -n "$orientation" && "$orientation" != 1 ]]; then
                 # ...auto-rotate the image according to the EXIF data.
-                convert -- "${FILE_PATH}" -auto-orient "${IMAGE_CACHE_PATH}"
+                convert -- "${FILE_PATH}" -auto-orient \
+                        -define jpeg:extent="$MAX_IMG_SIZE" \
+                        "${IMAGE_CACHE_PATH}"
             else
-                convert -- "${FILE_PATH}" "${IMAGE_CACHE_PATH}"
+                convert -- "${FILE_PATH}" \
+                        -define jpeg:extent="$MAX_IMG_SIZE" \
+                        "${IMAGE_CACHE_PATH}"
             fi;;
 
         # Video
@@ -215,7 +240,9 @@ handle_image() {
                 --headless \
                 --convert-to png "${FILE_PATH}" \
                 --outdir "$CACHE_DIR" \
-                && convert "$TMP_FILE_PATH" "${IMAGE_CACHE_PATH}" \
+                && convert "$TMP_FILE_PATH" \
+                           -define jpeg:extent="$MAX_IMG_SIZE" \
+                           "${IMAGE_CACHE_PATH}" \
                 && rm -f "$TMP_FILE_PATH";;
     esac
 }
@@ -229,8 +256,11 @@ handle_fallback() {
     MIMETYPE="$( file --dereference --brief --mime-type -- "${FILE_PATH}" )"
     [ "${PV_IMAGE_ENABLED}" = 'True' ] && {
         handle_image "${MIMETYPE}" &>/dev/null && \
-            lfimgpv --add "$LFID" "${IMAGE_CACHE_PATH}" 2>/dev/null && exit 1
+            stpvimg --add "$ID" "${IMAGE_CACHE_PATH}" \
+                    "$X" "$Y" "$W" "$H" \
+                    2>/dev/null && exit 1
     }
+    stpvimg --clear "$ID"
     handle_extension
     handle_mime "${MIMETYPE}"
     handle_fallback
