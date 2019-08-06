@@ -25,8 +25,8 @@ IFS=$'\n'
 }
 
 # 'True' if image previews are enabled, 'False' otherwise.
-#PV_IMAGE_ENABLED="False"
-PV_IMAGE_ENABLED="True"
+PV_IMAGE_ENABLED="False"
+#PV_IMAGE_ENABLED="True"
 
 FILE_PATH="$1"
 if [ $# -gt 2 ]; then
@@ -35,8 +35,16 @@ else
     ID=0
 fi
 
-[ $# = 6 ] && {
+if [ $# -ge 6 ]; then
     X="$3"; Y="$4"; W="$5"; H="$6"
+else
+    COLS=$(($(tput cols) / 2))
+    LINS=$(($(tput lines) - 2))
+    X="$COLS"; Y="1"; W="$COLS"; H="$LINS"
+fi
+
+[ $# = 7 ] && [ "$7" = '--pvimg' ] && {
+    PV_IMAGE_ENABLED="True"
 }
 
 if [ "$FILE_PATH" = 'NONE' ]; then

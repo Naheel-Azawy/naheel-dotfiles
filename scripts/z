@@ -23,7 +23,7 @@ elif [[ "$W" -gt 52 || "$H" -gt 13 ]]; then
         W=$((COLS - 2))
         H=$((((LINS - 1) / 2) - 2))
     fi
-    PV+=(--preview "stpv {} $ID $X $Y $W $H")
+    PV+=(--preview "stpv {} $ID $X $Y $W $H --pvimg")
 fi
 
 stpvimg --listen $ID 2>/dev/null &

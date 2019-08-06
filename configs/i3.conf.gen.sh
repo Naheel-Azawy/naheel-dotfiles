@@ -321,7 +321,7 @@ bindoc '¯\_(ö)_/¯' \
 bindoc 'Show this help screen' \
        "$mod+F1" "exec theterm '\"$(realpath $0)\" -d | less'"
 
-bindsym "$mod+Shift+v" "exec sh -c 'sxivv ~/M'"
+bindsym "$mod+Shift+v" "exec sh -c 'sxivv ~/M/pics'"
 
 # XF86 KEYS BINDINGS -----------------------------------------------------
 

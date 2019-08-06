@@ -24,8 +24,8 @@ file --mime-type ./* | grep video/ | awk -F':' '{print $1}' |
         }
     done
 
-[ "$img" != '' ] && [ -f "$img" ] && {
-    opt="$opt -F $img"
-}
-
-sxiv -b $opt .
+if [ "$img" != '' ] && [ -f "$img" ]; then
+    sxiv -b -F "$img" $opt .
+else
+    sxiv -b $opt .
+fi

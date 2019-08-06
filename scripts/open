@@ -113,7 +113,8 @@ FORCEFZF=0
 }
 
 [ "$1" = '-e' ] && {
-    $EDITOR
+    shift
+    $EDITOR "$@"
     exit 0
 }
 
