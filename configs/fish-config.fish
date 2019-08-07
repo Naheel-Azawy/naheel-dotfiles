@@ -69,8 +69,10 @@ end
 function lf
     set fwd (mktemp) # last working directory temp file
     set fid (mktemp) # lf id temp file
-    command lf -command '$printf $id > '"$fid"'' -last-dir-path=$fwd $argv
+    command lf -command '$printf $id > '"$fid"'; stpvimg --listen $id &' -last-dir-path=$fwd $argv
     set id (cat $fid)
+    # end the image preview listener
+    stpvimg --end $id
     # archivemount integration
     set archivemount_dir "/tmp/__lf_archivemount_$id"
     if test -f "$archivemount_dir"
@@ -99,9 +101,6 @@ function ls
 end
 function mkdircd
     mkdir -p $argv; and cd $argv[-1]
-end
-function cpprog
-    rsync -ah --progress $argv
 end
 
 function diff

@@ -80,3 +80,4 @@
 | git      | https://github.com/Naheel-Azawy/adwaita-too-dark | the used GTK theme                                                |
 | git      | https://github.com/Naheel-Azawy/Executor.git     | executes everything                                               |
 | git      | https://github.com/Naheel-Azawy/cp_p             | cp with progress                                                  |
+| git      | https://github.com/Naheel-Azawy/stpv             | files previewer in the terminal (used for LF and fzf mainly)      |

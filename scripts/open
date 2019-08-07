@@ -51,7 +51,7 @@ openfile() {
 pick() {
     MENU='menu-interface -l 20'
     [ "$1" = '--fzf' ] && {
-        MENU='z --nopv'
+        MENU='fzfp --nopv'
         shift
     }
     echo | mimeopen --ask "$1" 2>/dev/null |
@@ -66,7 +66,7 @@ search() {
     elif [ -d "$1" ]; then
         f=$(find "$1" -type f | z)
     else
-        f=$(z)
+        f=$(fzfp)
     fi
     [ -e "$f" ] && openfile "$f"
 }

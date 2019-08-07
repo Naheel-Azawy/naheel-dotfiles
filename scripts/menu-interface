@@ -43,7 +43,7 @@ case $MENU_INTERFACE in
         done
         eval "$cmd -lines $lines";;
     fzf)
-        cmd='z --nopv'
+        cmd='fzfz --nopv'
         args=("$@")
         inc=0
         for ((i=0; i < ${#args[@]}; ++i)); do
