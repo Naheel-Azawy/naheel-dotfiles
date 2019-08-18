@@ -28,8 +28,18 @@ if len(sys.argv) == 3 and sys.argv[1] == "--inc":
 bins = os.popen("dmenu_path").read().split("\n")
 bins.pop() # remove last empty line
 
+# in case any need to be deleted
+todel = []
+
 for b in recent.keys():
-    bins.remove(b)
+    try:
+        bins.remove(b)
+    except:
+        todel.append(b)
+
+# in case any need to be deleted
+for b in todel:
+    del recent[b]
 
 bins = sorted(recent, key=recent.get, reverse=True) + bins
 

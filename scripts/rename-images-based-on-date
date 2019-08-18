@@ -1,0 +1,8 @@
+#!/bin/sh
+DIR='.'
+[ "$1" ] && DIR="$1"
+IFS='
+'
+for f in $(ls "$DIR"); do
+    mv "$f" 'IMG_'$(exiftool -d '%Y%m%d_%H%M%S' -DateTimeOriginal -s3 "$f")'.jpg'
+done

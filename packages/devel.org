@@ -18,3 +18,4 @@
 | npm    | tern                      | JavaScript analyzer (needed for Emacs)                            |
 | npm    | js-beautify               | beautify web                                                      |
 | npm    | fx                        | a cool way to view JSON                                           |
+| aur    | aha                       | ANSI to HTML                                                      |

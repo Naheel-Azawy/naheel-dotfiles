@@ -1,0 +1,42 @@
+#!/bin/sh
+
+[ $# -lt 2 ] || [ "$1" = -h ] || [ "$1" = --help ] && {
+    BIN=$(basename "$0")
+    echo "usage: $BIN OUT_NAME [ -d DELAY ] [ -r ] FRAMES"
+    echo '  Example:'
+    echo "  \$ $BIN out -d 20 -r *.jpg"
+    echo '  This genrates out.gif and out.mp4 using all .jpg frames'
+    echo '  with a delay of 20ms and reverse it.'
+    exit 1
+}
+
+OUT="$1" && shift
+
+DEL=10
+[ "$1" = -d ] && {
+    DEL="$2"
+    shift 2
+}
+
+echo '>>> BUILDING GIF'
+if [ "$1" = -r ]; then
+    shift
+    convert "$@" \
+            -set delay "$DEL" \
+            -reverse "$@" \
+            -set delay "$DEL" \
+            -loop 0 \
+            "$OUT.gif"
+else
+    convert "$@" \
+            -set delay "$DEL" \
+            -loop 0 \
+            "$OUT.gif"
+fi
+
+echo '>>> BUILDING MP4'
+ffmpeg -i "$OUT.gif" \
+       -movflags faststart \
+       -pix_fmt yuv420p \
+       -vf "scale=trunc(iw/2)*2:trunc(ih/2)*2" \
+       "$OUT.mp4"

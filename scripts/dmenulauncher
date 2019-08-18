@@ -3,6 +3,11 @@
 DMENU="menu-interface -i"
 DMENUL="$DMENU -l 20"
 
+TUIAPPS='ncmpcpp
+cmus
+emacs-in
+lf'
+
 [ "$1" = '-c' ] && {
     dmenulauncherpy --clear
     exit
@@ -61,5 +66,9 @@ case $RUN in
         # updating the history
         # - bangs are not saved
         dmenulauncherpy --inc "$RUN"
-        exec "$RUN";;
+        if echo "$RUN" | grep -q "$TUIAPPS"; then
+            theterm "$RUN"
+        else
+            exec "$RUN"
+        fi;;
 esac

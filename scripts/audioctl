@@ -25,15 +25,15 @@ vol() {
 
 V="$2"
 case "$1" in
-	"up")       vol "$V" ;;
+	"up")       vol "$V"  ;;
 	"down")     vol "-$V" ;;
-	"mute")     vol t ;;
-	"truemute") vol m ;;
-	"stop")     cmus-remote --stop ;;
-	"pause")    cmus-remote --pause ;;
-	"forward")  cmus-remote --seek +"$V" ;;
-	"back")     cmus-remote --seek -"$V" ;;
-	"next")     cmus-remote --next ;;
-	"prev")     cmus-remote --prev ;;
-	"replay")   cmus-remote --seek 0 ;;
-esac
+	"mute")     vol t     ;;
+	"truemute") vol m     ;;
+	"stop")     mpc -q stop       || cmus-remote --stop       ;;
+	"pause")    mpc -q toggle     || cmus-remote --pause      ;;
+	"forward")  mpc -q seek +"$V" || cmus-remote --seek +"$V" ;;
+	"back")     mpc -q seek -"$V" || cmus-remote --seek -"$V" ;;
+	"next")     mpc -q next       || cmus-remote --next       ;;
+	"prev")     mpc -q prev       || cmus-remote --prev       ;;
+	"replay")   mpc seek 0%       || cmus-remote --seek 0     ;;
+esac 2>/dev/null

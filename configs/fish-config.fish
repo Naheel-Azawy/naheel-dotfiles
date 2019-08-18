@@ -129,6 +129,8 @@ function مس
     lang-set us >/dev/null; ls $argv
 end
 
+alias please=sudo
+
 abbr e     'exit'
 abbr ee    'exit'
 abbr E     'exit'
@@ -173,7 +175,7 @@ abbr gitn  'git add -A && git commit -m "couple of things" && git push origin ma
 abbr o     'open'
 abbr m     'tmux'
 abbr f     'lf'
-abbr s     'sudo'
+abbr s     'please'
 abbr cb    'clipboard'
 abbr py    'python3'
 abbr ly    'lyrics'
