@@ -3,8 +3,7 @@
 DMENU="menu-interface -i"
 DMENUL="$DMENU -l 20"
 
-TUIAPPS='ncmpcpp
-cmus
+TUIAPPS='music-player
 emacs-in
 lf'
 

@@ -131,6 +131,7 @@ end
 
 alias please=sudo
 
+abbr bahs  'bash'
 abbr e     'exit'
 abbr ee    'exit'
 abbr E     'exit'

@@ -203,6 +203,19 @@ cmd rename ${{
                 fi
             }}
 
+cmd rename-editor ${{
+                       tmp=$(mktemp)
+                       f=$(basename "$f")
+                       echo -n "$f" > "$tmp"
+                       $EDITOR "$tmp"
+                       s='' && [ ! -w . ] && s='sudo'
+                       new=$(cat "$tmp")
+                       if [ "$new" ] && [ "$new" != "$f" ]; then
+                           $s mv "$f" "$new"
+                       fi
+                       rm -f "$tmp"
+                   }}
+
 # rename all files in directory
 # from: https://github.com/gokcehan/lf/issues/149#issuecomment-470960434
 cmd bulk-rename ${{
@@ -296,16 +309,16 @@ map o open-with
 map O open-with-default
 
 # rename file
-map r push :rename<space>
+map r rename-editor
 
 # rename dir
-map R bulk-rename
+map R $vidir
 
 # basic
 map <c-x><c-c> quit
 map <a-x>      push :
 map <c-x>h     invert
-map <c-g>      clear
+map <c-g>      :unselect; clear
 map <f-5>      reload
 
 # filesystem operations
@@ -332,7 +345,7 @@ map f     fzf
 map <c-f> $lf -remote "send $id select \"$(fzfp)\""
 
 # image viewing
-map <c-v> &sxivv
+map <c-v> &sxivv --lf $id $f
 
 #full screen preview
 map p $stpv "$f" | less -R

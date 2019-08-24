@@ -1,0 +1,3 @@
+#!/bin/sh
+mpd 2>/dev/null >/dev/null
+ncmpcpp

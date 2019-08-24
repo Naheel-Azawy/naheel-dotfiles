@@ -1,6 +1,18 @@
 #!/bin/sh
 
-F=$(realpath "$1")
+LF=
+[ "$1" = --lf ] && {
+    LF=1
+    LFID="$2"
+    LFF="$3"
+    shift 3
+}
+
+F=
+[ "$1" ] &&  [ -e "$1" ] && {
+    F=$(realpath "$1")
+    shift
+}
 
 dir=.
 img=
@@ -13,7 +25,7 @@ opt='-t'
     } || dir="$F"
 }
 
-cd "$dir" || (echo "Failed cd to $dir" && exit 1)
+cd "$dir" || { echo "Failed cd to $dir" && exit 1; }
 
 file --mime-type ./* | grep video/ | awk -F':' '{print $1}' |
     while read -r f; do
@@ -24,8 +36,13 @@ file --mime-type ./* | grep video/ | awk -F':' '{print $1}' |
         }
     done
 
-if [ "$img" != '' ] && [ -f "$img" ]; then
+if [ "$LF" ] && [ "$LFID" ] && [ "$LFF" ]; then
+    sxiv -bot -F "$LFF" . | while read -r f; do
+        lf -remote "send $LFID select '$f'"
+        lf -remote "send $LFID toggle"
+    done
+elif [ "$img" != '' ] && [ -f "$img" ]; then
     sxiv -b -F "$img" $opt .
 else
-    sxiv -b $opt .
+    sxiv -b $opt "$@" .
 fi

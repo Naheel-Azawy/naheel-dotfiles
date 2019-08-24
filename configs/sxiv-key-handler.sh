@@ -12,9 +12,7 @@
 # where C/M/S indicate Ctrl/Meta(Alt)/Shift modifier states and KEY is the X
 # keysym as listed in /usr/include/X11/keysymdef.h without the "XK_" prefix.
 
-choice="$1"
-[ "$1" = "C-x" ] && {
-    choice=$(echo 'Information
+LIST='Information
 Open with
 Copy
 Move
@@ -27,8 +25,7 @@ Rotate 90
 Rotate 180
 Flip horizontally
 Flip vertically
-Set as wallpaper' | menu-interface -i -l 20)
-}
+Set as wallpaper'
 
 # put files in an array
 files=()
@@ -39,9 +36,23 @@ while IFS= read -r file; do
     files+=("$file")
 done
 
+choice="$1"
+[ "$1" = "C-x" ] && {
+    choice=$(echo "$LIST" | menu-interface -i -l 20)
+}
+
 case "$choice" in
+    "Details")
+        theterm "less '$TXT'";;
     "Information" | "i")
-        for f in "${files[@]}"; do theterm "exiftool '$f' | less" & done;;
+        for f in "${files[@]}"; do
+            txt="${f%%.*}.txt"
+            if [ -f "$txt" ]; then
+                theterm bash -c "(cat '$txt' && echo && exiftool '$f') | less"
+            else
+                theterm "exiftool '$f' | less" &
+            fi
+        done;;
     "Open with" | "o")
         open --ask -nw "${files[@]}" &;;
     "Copy file name" | "f")
@@ -66,14 +77,18 @@ case "$choice" in
         for f in "${files[@]}"; do convert "$f" -flop "$f"; done;;
     "Flip vertically")
         for f in "${files[@]}"; do convert "$f" -flip "$f"; done;;
-    "Move to trash" | "t")
-        for f in "${files[@]}"; do trash-put "$f"; done;;
     "Delete" | "d")
-        for f in "${files[@]}"; do
-            R=$(printf "Yes\nNo" | menu-interface -p \
-                "Delete $(basename """$f""") permanently?" -i -sb red -nf red)
-            [ "$R" = "Yes" ] && rm -f "$f";
-        done;;
+        if [ "${#files[@]}" = 1 ]; then
+            P=$(basename "$f")
+        else
+            P="${#files[@]} files"
+        fi
+        R=$(printf "Trash\nDelete permanently\nCancel" |
+                menu-interface -p "Delete $P?" -i -sb red -nf red)
+        case "$R" in
+            #Trash)   for f in "${files[@]}"; do trash-put "$f"; done;;
+            #Delete*) for f in "${files[@]}"; do rm -f "$f";     done;;
+        esac;;
     "p") # play video (experimental)
         open "${files[@]}";;
 esac
