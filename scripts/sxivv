@@ -31,7 +31,8 @@ file --mime-type ./* | grep video/ | awk -F':' '{print $1}' |
     while read -r f; do
         [ -f "$f" ] && {
             t="$f.thumb.jpg"
-            [ ! -f "$t" ] &&
+            t2=$(echo "$f" | sed -En 's@(.+)\.mp4@\1.jpg@p')
+            [ ! -f "$t" ] && [ ! -f "$t2" ] &&
                 ffmpegthumbnailer -i "$f" -o "$t" -s 0 >/dev/null 2>/dev/null
         }
     done

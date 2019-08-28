@@ -30,8 +30,13 @@ Set as wallpaper'
 # put files in an array
 files=()
 while IFS= read -r file; do
-    vid=$(echo "$file" | sed -En 's@(.+).thumb.jpg@\1@p')
-    [ "$vid" ] && file="$vid"
+    vid=$(echo "$file" | sed -En 's@(.+)\.thumb\.jpg@\1@p')
+    vid2=$(echo "$file" | sed -En 's@(.+)\.jpg@\1.mp4@p')
+    if [ -f "$vid" ]; then
+        file="$vid"
+    elif [ -f "$vid2" ]; then
+        file="$vid2"
+    fi
     file=$(realpath "$file")
     files+=("$file")
 done

@@ -341,7 +341,7 @@ map a autoratios
 map t tinyratios
 
 # fuzzy search
-map f     fzf
+map f     $lf -remote "send $id select \"$(ls | fzfp)\""
 map <c-f> $lf -remote "send $id select \"$(fzfp)\""
 
 # image viewing

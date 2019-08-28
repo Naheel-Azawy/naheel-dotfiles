@@ -15,4 +15,5 @@ alias ll='ls -lh'
 alias la='ls -lha'
 alias f='lf'
 alias x='emacs-in'
+alias t='theterm --tmux'
 XDG_DATA_DIRS="$XDG_DATA_DIRS:/home/naheel/.apps"
