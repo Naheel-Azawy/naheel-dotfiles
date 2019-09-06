@@ -358,17 +358,7 @@ you should place your code here."
   ;; ---- LSP ----
   (use-package lsp-mode :ensure t)
   (use-package company-lsp :ensure t)
-  (use-package lsp-java :ensure t :after lsp
-    :config (add-hook 'java-mode-hook 'lsp))
-
-  (add-hook 'c-mode-hook #'lsp)
-  (add-hook 'c++-mode-hook #'lsp)
-  (add-hook 'go-mode-hook #'lsp)
-  (add-hook 'java-mode-hook #'lsp)
-  (add-hook 'typescript-mode-hook #'lsp)
-  (add-hook 'javascript-mode-hook #'lsp)
-  (add-hook 'python-mode-hook #'lsp)
-  (add-hook 'css-mode-hook #'lsp)
+  (use-package lsp-java :ensure t :after lsp)
 
   ;; ---- MULTIPLE CURSERS ----
   (require 'multiple-cursors)
