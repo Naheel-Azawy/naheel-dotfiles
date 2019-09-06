@@ -1,21 +1,26 @@
-| TAG    | NAME IN REPO (or git url) | PURPOSE (should be a verb phrase to sound right while installing) |
-|--------+---------------------------+-------------------------------------------------------------------|
-| pacman | docker                    | to run docker containers                                          |
-| pacman | vala                      | Vala language                                                     |
-| aur    | android-studio            | Android studio IDE                                                |
-| pacman | cloc                      | Calculates lines of code                                          |
-| pacman | cmake                     | CMake build system                                                |
-| pacman | clang                     | another cool c compiler                                           |
-| pacman | arm-none-eabi-gcc         | arm toys                                                          |
-| pacman | arm-none-eabi-newlib      | more arm toys                                                     |
-| pacman | emscripten                | llvm to javascript                                                |
-| aur    | umlet                     | UML builder                                                       |
-| pacman | yarn                      | dependency installer                                              |
-| pacman | gdb                       | the gnu debugger                                                  |
-| pacman | strace                    | trace system calls                                                |
-| pacman | ltrace                    | trace library function calls                                      |
-| pacman | radare2                   | the best reverse engineering toy out there                        |
-| npm    | tern                      | JavaScript analyzer (needed for Emacs)                            |
-| npm    | js-beautify               | beautify web                                                      |
-| npm    | fx                        | a cool way to view JSON                                           |
-| aur    | aha                       | ANSI to HTML                                                      |
+| TAG    | NAME IN REPO (or git url)     | PURPOSE (should be a verb phrase to sound right while installing) |
+|--------+-------------------------------+-------------------------------------------------------------------|
+| pacman | docker                        | to run docker containers                                          |
+| pacman | vala                          | Vala language                                                     |
+| aur    | android-studio                | Android studio IDE                                                |
+| pacman | cloc                          | Calculates lines of code                                          |
+| pacman | cmake                         | CMake build system                                                |
+| pacman | clang                         | another cool c compiler                                           |
+| pacman | arm-none-eabi-gcc             | arm toys                                                          |
+| pacman | arm-none-eabi-newlib          | more arm toys                                                     |
+| pacman | emscripten                    | llvm to javascript                                                |
+| aur    | umlet                         | UML builder                                                       |
+| pacman | yarn                          | dependency installer                                              |
+| pacman | gdb                           | the gnu debugger                                                  |
+| pacman | strace                        | trace system calls                                                |
+| pacman | ltrace                        | trace library function calls                                      |
+| pacman | radare2                       | the best reverse engineering toy out there                        |
+| npm    | tern                          | JavaScript analyzer (needed for Emacs)                            |
+| npm    | js-beautify                   | beautify web                                                      |
+| npm    | fx                            | a cool way to view JSON                                           |
+| aur    | aha                           | ANSI to HTML                                                      |
+| go     | github.com/saibing/bingo      | LSP for GO                                                        |
+| go     | github.com/nsf/gocode         | autocompletion for GO                                             |
+| npm    | vscode-css-languageserver-bin | LSP for CSS                                                       |
+| npm    | typescript-language-server    | LSP for typescript                                                |
+| pip    | python-language-server        | LSP for python                                                    |

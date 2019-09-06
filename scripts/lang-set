@@ -1,10 +1,10 @@
-#!/bin/bash
+#!/bin/sh
 L="$1"
-[[ "$L" = '' ]] && {
+[ ! "$L" ] && {
     echo 'ERROR: No language selected'
     exit 1
 }
-setxkbmap -layout $L
-[[ -f ~/.Xmodmap ]] && xmodmap ~/.Xmodmap
-pkill -RTMIN+$I3BLOCKS_SIG_LANG i3blocks
-echo $L
+setxkbmap -layout "$L"
+[ -f ~/.Xmodmap ] && xmodmap ~/.Xmodmap
+pkill "-RTMIN+$I3BLOCKS_SIG_LANG" i3blocks
+echo "$L"

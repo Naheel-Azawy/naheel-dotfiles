@@ -91,8 +91,8 @@ case "$choice" in
         R=$(printf "Trash\nDelete permanently\nCancel" |
                 menu-interface -p "Delete $P?" -i -sb red -nf red)
         case "$R" in
-            #Trash)   for f in "${files[@]}"; do trash-put "$f"; done;;
-            #Delete*) for f in "${files[@]}"; do rm -f "$f";     done;;
+            Trash)   for f in "${files[@]}"; do trash-put "$f"; done;;
+            Delete*) for f in "${files[@]}"; do rm -f "$f";     done;;
         esac;;
     "p") # play video (experimental)
         open "${files[@]}";;

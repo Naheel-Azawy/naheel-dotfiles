@@ -25,11 +25,11 @@ function blur {
 }
 
 function gen-bg {
-    W=/tmp/base.png
-    O=/tmp/locked.png
-    rm -f /tmp/locked.png
-    scrot -m -z /tmp/base.png
-    echo $(blur $W $O)
+    W=~/.cache/lock-base.png
+    O=~/.cache/lock-lock.png
+    rm -f "$W" "$O"
+    scrot -m -z "$W"
+    blur $W $O
 }
 
 function gen-bg-simple {

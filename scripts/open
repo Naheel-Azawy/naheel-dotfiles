@@ -36,7 +36,11 @@ openfile() {
                     image/x-xcf)
                         $OPENER "$f" 2>&1 | lfsend &;;
                     image/*)
-                        sxivv "$f" >/dev/null 2>&1 | lfsend &;;
+                        if [ "$LFID" ]; then
+                            sxivv --lf "$LFID" "$f" >/dev/null 2>&1 | lfsend &
+                        else
+                            sxivv "$f" >/dev/null 2>&1 | lfsend &
+                        fi;;
                     video/*)
                         mpv "$f" --loop=inf >/dev/null 2>&1 | lfsend &;;
                     audio/*)

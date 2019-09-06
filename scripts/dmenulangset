@@ -1,0 +1,7 @@
+#!/bin/sh
+L=$(echo 'ru
+fr
+us
+ar' | menu-interface -p 'Set language')
+
+[ "$L" ] && lang-set "$L"

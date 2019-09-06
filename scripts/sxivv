@@ -32,13 +32,15 @@ file --mime-type ./* | grep video/ | awk -F':' '{print $1}' |
         [ -f "$f" ] && {
             t="$f.thumb.jpg"
             t2=$(echo "$f" | sed -En 's@(.+)\.mp4@\1.jpg@p')
-            [ ! -f "$t" ] && [ ! -f "$t2" ] &&
+            if [ ! -f "$t" ] && [ ! -f "$t2" ] || [ "$t" -ot "$f" ]; then
+                rm -f "$t"
                 ffmpegthumbnailer -i "$f" -o "$t" -s 0 >/dev/null 2>/dev/null
+            fi
         }
     done
 
 if [ "$LF" ] && [ "$LFID" ] && [ "$LFF" ]; then
-    sxiv -bot -F "$LFF" . | while read -r f; do
+    sxiv -bo "$@" -F "$LFF" . | while read -r f; do
         lf -remote "send $LFID select '$f'"
         lf -remote "send $LFID toggle"
     done

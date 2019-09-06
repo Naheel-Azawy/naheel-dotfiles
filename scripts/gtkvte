@@ -5,11 +5,7 @@ gi.require_version('Gtk', '3.0')
 gi.require_version('Vte', '2.91')
 from gi.repository import Gtk, Vte, GLib, Pango, Gio
 
-try:
-    cmd = ['/usr/bin/theterm', '--tmux']
-except:
-    try: cmd = [os.environ['SHELL']]
-    except: cmd = ['/bin/sh']
+cmd = ['/usr/bin/theterm', '--tmux']
 
 win = Gtk.Window()
 win.set_title("gtkvte")

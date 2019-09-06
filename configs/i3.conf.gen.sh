@@ -246,6 +246,9 @@ bindoc 'Start the program launcher' \
 bindoc 'Switch language' \
        "$mod+space" "exec lang-toggle"
 
+bindoc 'Switch language (extended)' \
+       "$mod+Shift+space" "exec lang-toggle -e"
+
 bindoc 'Toggle on-screen keyboard' \
        "$mod+k" "exec sh -c 'pkill onboard || onboard'"
 

@@ -23,6 +23,9 @@ set scrolloff 10
 # set the previewer script
 set previewer stpv
 
+# set the cleaner script
+set cleaner stpvimgclr
+
 # show icons
 set icons
 
@@ -293,6 +296,20 @@ cmd open-with $open --lfid $id --ask $f
 # set the default program for the current file
 cmd open-with-default $mimeopen -d $f
 
+# chmod +x
+cmd chmod+x &{{
+                 chmod +x $fx
+                 lf -remote "send $id unselect"
+                 lf -remote "send $id reload"
+             }}
+
+# chmod -x
+cmd chmod-x &{{
+                 chmod -x $fx
+                 lf -remote "send $id unselect"
+                 lf -remote "send $id reload"
+             }}
+
 # MAPPINGS -------------------------------------------------------------------
 
 # use enter to open
@@ -345,7 +362,7 @@ map f     $lf -remote "send $id select \"$(ls | fzfp)\""
 map <c-f> $lf -remote "send $id select \"$(fzfp)\""
 
 # image viewing
-map <c-v> &sxivv --lf $id $f
+map <c-v> &sxivv --lf $id $f -t
 
 #full screen preview
 map p $stpv "$f" | less -R

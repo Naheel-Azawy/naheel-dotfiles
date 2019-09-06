@@ -41,6 +41,10 @@ install_npm() {
     npm install -g "$1"
 }
 
+install_go() {
+    sudo -u "$U" go get -u "$1"
+}
+
 install_git() {
 	  dir=$(mktemp -d)
 	  git clone --depth 1 "$1" "$dir"
