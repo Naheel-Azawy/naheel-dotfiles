@@ -24,3 +24,4 @@
 | npm    | vscode-css-languageserver-bin | LSP for CSS                                                       |
 | npm    | typescript-language-server    | LSP for typescript                                                |
 | pip    | python-language-server        | LSP for python                                                    |
+| pacman | jadx                          | Java decompiler                                                   |

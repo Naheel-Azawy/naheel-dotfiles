@@ -83,35 +83,22 @@ cmd delete ${{
                 fi
             }}
 
-# to handle sudo and then run real paste in the background
-cmd paste ${{
-               [ ! -w . ] && sudo true
-               lf -remote "send $id paste-real"
-           }}
-
 # pasting done right
-cmd paste-real &{{
-                    send="while read -r line; do lf -remote \"send $id echo \$line\"; done && lf -remote 'send reload'"
-                    load=$(lf -remote 'load')
-                    mode=$(echo "$load" | sed -n '1p')
-                    list=$(echo "$load" | sed '1d')
-                    s='' && [ ! -w . ] && s='sudo'
-                    case "$mode" in
-                        copy) cmd='cp-p';; move) cmd='mv-p';;
-                    esac
-                    cmd="$cmd --new-line"
-                    for f in $list; do
-                        fname=$(basename "$f")
-                        if [ -e "./$fname" ]; then
-                            dest="./$fname-new"
-                        else
-                            dest="."
-                        fi
-                        $s sh -c "$cmd --backup=numbered \"$f\" \"$dest\" | $send &"
-                    done
-                    lf -remote 'send load'
-                    lf -remote 'send clear'
-                }}
+cmd paste ${{
+               send="while read -r line; do lf -remote \"send $id echo \$line\"; done && lf -remote 'send reload'"
+               load=$(lf -remote 'load')
+               mode=$(echo "$load" | sed -n '1p')
+               srcF=$(mktemp)
+               echo "$load" | sed '1d' > "$srcF"
+               s='' && [ ! -w . ] && s='sudo'
+               case "$mode" in
+                   copy) cmd='cp-p';; move) cmd='mv-p';;
+               esac
+               cmd="$cmd --new-line"
+               $s sh -c "$cmd --backup=numbered -F \"$srcF\" . | $send && rm -f \"$srcF\" &"
+               lf -remote 'send load'
+               lf -remote 'send clear'
+           }}
 
 # create a symlink
 cmd paste-symlink ${{

@@ -5,7 +5,11 @@ DMENUL="$DMENU -l 20"
 
 TUIAPPS='music-player
 emacs-in
-lf'
+lf
+invaders
+nudoku
+tetris
+snake'
 
 [ "$1" = '-c' ] && {
     dmenulauncherpy --clear
