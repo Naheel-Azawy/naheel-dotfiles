@@ -1,6 +1,4 @@
-#!/bin/bash
-# Quick dirty way to handle generated .tex files from org-mode
-# There's certainly a clean solution but I'm a little busy to figure it out now..
+#!/bin/sh
 
 #PDF=pdflatex
 PDF=xelatex
@@ -8,35 +6,45 @@ BIB=biber
 OPT="-interaction=nonstopmode"
 
 DOCX=0
-[[ "$1" == '-d' ]] && {
+[ "$1" = '-d' ] && {
     DOCX=1
     shift
 }
 
-ORG=0
-[[ "$1" == '-org' ]] && {
-    ORG=1
-    shift
-}
-
 F="$1"
-E="${F##*.}"
 F="${F%.*}"
 
-[[ $ORG == 1 ]] && {
-    B=$(sed -rn 's/\\(bibliography|addbibresource)\{(.+)\}/\2/p' "$F.tex")
-    [[ "$B" != '' ]] && {
-        sed -i -r 's/\\(bibliography|addbibresource)\{.+//g' "$F.tex"
-        sed -i -r "s@\\\\documentclass(.+)@\\\\documentclass\1\\n\\\\usepackage[backend=biber,sorting=none,style=ieee]{biblatex}\\n\\\\addbibresource\{$B\}@g" "$F.tex"
-    }
-}
-
-if [[ $DOCX == 1 ]]; then
+if [ $DOCX = 1 ]; then
     pandoc --bibliography="$BIB" --filter pandoc-citeproc --csl "$HOME/Documents/LaTeX/ieee.csl" "$F.tex" -o "$F.docx"
 else
-    $PDF "$OPT" "$F.tex" &>/dev/null && \
-        $BIB "$F" && \
-        $PDF "$OPT" "$F.tex" &>/dev/null
-    $PDF "$OPT" "$F.tex"
-    rm -f "$F.aux" "$F.bbl" "$F.bcf" "$F.blg" "$F.log" "$F.out" "$F.run.xml" "$F.aux" "$F.lof" "$F.lot" "$F.toc" #"$F.tex"
+    if OUT=$($PDF "$OPT" "$F.tex"); then
+        if BIBOUT=$($BIB "$F") &&
+                ! echo "$BIBOUT" | grep -q 'does not contain any citations!'
+        then
+            $PDF "$OPT" "$F.tex" >/dev/null 2>/dev/null &&
+                OUT=$($PDF "$OPT" "$F.tex")
+        fi
+    fi
+    ERRS=$(echo "$OUT" |
+               grep -A 1 -E '^\! .+')
+    WRNS=$(echo "$OUT" |
+               grep -A 1 -E 'Warning:' |
+               grep -E '^[A-Za-z\(]')
+    if [ "$BIBOUT" ]; then
+        printf "\e[1;34m>>> BIBLIOGRAPHY (%s):\e[0m\n" "$BIB"
+        echo "$BIBOUT"
+    fi
+    if [ "$ERRS" ]; then
+        printf "\e[1;31m>>> ERRORS:\e[0m\n"
+        echo "$ERRS"
+    fi
+    if [ "$WRNS" ]; then
+        printf "\e[1;33m>>> WARNINGS:\e[0m\n"
+        echo "$WRNS"
+    fi
+    #echo "$OUT"
+    rm -f "$F.aux" "$F.bbl" "$F.bcf" "$F.blg" "$F.log" "$F.out" "$F.run.xml" "$F.aux" "$F.lof" "$F.lot" "$F.toc"
+    if [ "$ERRS" ]; then
+        exit 1
+    fi
 fi

@@ -81,6 +81,7 @@ cmd delete ${{
                     s='' && [ ! -w . ] && s='sudo'
                     $s rm -rf $fx
                 fi
+                lf -remote "send $id reload"
             }}
 
 # pasting done right

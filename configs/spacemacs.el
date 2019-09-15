@@ -427,7 +427,7 @@ you should place your code here."
                  (delete '("\\.html\\'" . default) org-file-apps)
                  (add-to-list 'org-file-apps '("\\.html\\'" . "browser %s"))))
     ;; -- REVEAL JS --
-    (setq org-reveal-root "https://cdn.jsdelivr.net/reveal.js/3.0.0/")
+    (setq org-reveal-root "https://cdn.jsdelivr.net/npm/reveal.js")
     (setq org-reveal-mathjax t)
     ;; -- IEEE --
     (add-to-list 'org-latex-classes
@@ -438,8 +438,47 @@ you should place your code here."
                    ("\\subsubsection{%s}" . "\\subsubsection*{%s}")
                    ("\\paragraph{%s}" . "\\paragraph*{%s}")
                    ("\\subparagraph{%s}" . "\\subparagraph*{%s}")))
+    ;; -- MY CLASS --
+    (add-to-list 'org-latex-classes
+                 '("usual"
+                   "\\documentclass{article}
+\\usepackage[backend=biber,sorting=none,style=ieee]{biblatex}
+\\usepackage{float}
+\\usepackage[table]{xcolor}
+\\usepackage{geometry}
+\\geometry{a4paper, margin=1in}
+\\renewcommand{\\baselinestretch}{1.15}
+\\setlength{\\parindent}{0pt}"
+                   ("\\section{%s}" . "\\section*{%s}")
+                   ("\\subsection{%s}" . "\\subsection*{%s}")
+                   ("\\subsubsection{%s}" . "\\subsubsection*{%s}")
+                   ("\\paragraph{%s}" . "\\paragraph*{%s}")
+                   ("\\subparagraph{%s}" . "\\subparagraph*{%s}")))
+    ;; -- MY CLASS / IEEE --
+    (add-to-list 'org-latex-classes
+                 '("ieee"
+                   "\\documentclass{IEEEtran}
+\\usepackage[backend=biber,sorting=none,style=ieee]{biblatex}
+\\usepackage{float}
+\\usepackage[table]{xcolor}
+\\usepackage{geometry}
+\\geometry{a4paper, margin=1in}
+\\hypersetup{hidelinks=true}
+\\renewcommand{\\baselinestretch}{1.15}
+\\setlength{\\parindent}{0pt}"
+                   ("\\section{%s}" . "\\section*{%s}")
+                   ("\\subsection{%s}" . "\\subsection*{%s}")
+                   ("\\subsubsection{%s}" . "\\subsubsection*{%s}")
+                   ("\\paragraph{%s}" . "\\paragraph*{%s}")
+                   ("\\subparagraph{%s}" . "\\subparagraph*{%s}")))
+    (add-to-list 'org-latex-classes
+                 '("beamer"
+                   "\\documentclass\[presentation\]\{beamer\}"
+                   ("\\section\{%s\}" . "\\section*\{%s\}")
+                   ("\\subsection\{%s\}" . "\\subsection*\{%s\}")
+                   ("\\subsubsection\{%s\}" . "\\subsubsection*\{%s\}")))
     ;; -- MY "DIRTY" LaTeX EXPORT --
-    (setq org-latex-pdf-process '("pdflatexorgwraper -org %f"))
+    (setq org-latex-pdf-process '("pdflatexorgwraper %f"))
     ;; -- TODO --
     (setq org-todo-keywords
           '((sequence "TODO" "PROG" "|" "DONE" "CNCL")))

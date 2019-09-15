@@ -1,0 +1,21 @@
+#!/bin/sh
+
+# theterm -a '-c floatme -g 80x20' "echo '$GAMES' | fzf --preview 'echo {}'"
+
+GAMES='donkykong
+mariokart
+megaman5
+pacman-game
+pepsiman
+pinball
+pokemon-crystal
+spider
+supermario
+supermario64
+tekken3
+gnome-chess
+invaders
+nudoku
+tetris'
+
+echo "$GAMES" | fzf --preview 'echo {}'
