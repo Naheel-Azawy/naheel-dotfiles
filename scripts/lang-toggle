@@ -1,6 +1,6 @@
 #!/bin/bash
 LANGS=(us ar)
-[ "$1" = '-e' ] && LANGS=(us ru fr de)
+[ "$1" = '-e' ] && LANGS=(us ru ir fr de)
 L=$(setxkbmap -query | sed -En 's/layout:\s*(.+)/\1/p' 2>/dev/null)
 if [ "$1" != "-v" ]; then
     changed=0

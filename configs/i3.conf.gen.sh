@@ -243,6 +243,9 @@ bindoc 'Empty window with opposite split' \
 bindoc 'Start the program launcher' \
        "$mod+d" "exec dmenulauncher"
 
+bindoc 'Start the games launcher' \
+       "$mod+g" "exec dmenugames"
+
 bindoc 'Switch language' \
        "$mod+space" "exec lang-toggle"
 

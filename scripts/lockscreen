@@ -42,6 +42,8 @@ function gen-bg-simple {
     fi
 }
 
+# xset dpms force off
+
 lang-set us &>/dev/null
 #audioctl stop &>/dev/null
 

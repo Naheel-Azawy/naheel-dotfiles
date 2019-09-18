@@ -1,0 +1,10 @@
+#!/bin/sh
+TUIAPPS='music-player
+emacs-in
+lf
+invaders
+nudoku
+tetris
+snake'
+
+echo "$1" | grep -q "$TUIAPPS"

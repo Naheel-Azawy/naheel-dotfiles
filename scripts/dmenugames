@@ -1,0 +1,28 @@
+#!/bin/sh
+GAMES='donkykong
+mariokart
+megaman5
+pacman-game
+pepsiman
+pinball
+pokemon-crystal
+spider
+supermario
+supermario64
+tekken3
+gnome-chess
+invaders
+nudoku
+tetris'
+
+DMENU="menu-interface -i"
+
+RUN=$(dmenulauncherpy | grep "$GAMES" | $DMENU)
+[ ! "$RUN" ] && exit 1
+
+dmenulauncherpy --inc "$RUN"
+if istuiapp "$RUN"; then
+    exec theterm "$RUN"
+else
+    exec "$RUN"
+fi
