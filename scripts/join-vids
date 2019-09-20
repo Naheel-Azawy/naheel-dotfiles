@@ -1,0 +1,16 @@
+#!/bin/sh
+TMP=".join-vids-$$.txt"
+OUT=$(eval echo '$'$#)
+
+if [ -e "$OUT" ]; then
+    echo "'$OUT' already exist"
+    exit 1
+fi
+
+for i in $(seq 1 $(($# - 1))); do
+    f=$(eval echo '$'$i)
+    echo "file $f"
+done > "$TMP"
+
+ffmpeg -f concat -i "$TMP" -c copy "$OUT"
+rm -f "$TMP"

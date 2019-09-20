@@ -51,12 +51,14 @@ findfile() {
 # needed to update the database of locate
 sudo updatedb &
 
+dmenufixfocus -l 2>/dev/null &
+
 case $RUN in
     \!t*) clean; term;;
     \!c*) clean; calculate;;
     \!d*) clean; duck;;
     \!f*) clean; findfile;;
-    \!s*) clean; theterm "sudo $RUN";;
+    \!s*) clean; exec theterm "sudo $RUN";;
     *)
         # updating the history
         # - bangs are not saved

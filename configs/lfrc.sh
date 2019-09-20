@@ -320,6 +320,7 @@ map r rename-editor
 map R $vidir
 
 # basic
+map <c-c>      quit
 map <c-x><c-c> quit
 map <a-x>      push :
 map <c-x>h     invert
