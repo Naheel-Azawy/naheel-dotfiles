@@ -28,6 +28,8 @@ openfile() {
         case "$f" in
             *.html)
                 browser "$f" 2>&1 | lfsend &;;
+            *.drawio)
+                draw.io "$f" 2>&1 | lfsend &;;
             *)
                 # mime type
                 case $(file --mime-type "$(realpath """$f""")" -b) in
