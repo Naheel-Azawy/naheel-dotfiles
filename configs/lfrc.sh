@@ -298,6 +298,12 @@ cmd chmod-x &{{
                  lf -remote "send $id reload"
              }}
 
+# send with wifi
+cmd send $qr-filetransfer $f
+
+# receive from wifi
+cmd receive $qr-filetransfer -receive .
+
 # MAPPINGS -------------------------------------------------------------------
 
 # use enter to open
