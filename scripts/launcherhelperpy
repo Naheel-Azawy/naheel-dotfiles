@@ -1,0 +1,112 @@
+#!/bin/python3
+import os
+import sys
+import json
+
+CACHE = os.getenv("HOME") + "/.launcher_recent_cache.json"
+I3 = os.getenv("DOTFILES_DIR") + "/configs/i3.conf.gen.sh"
+
+TUIAPPS = [
+    "music-player",
+    "emacs-in",
+    "lf",
+    "invaders",
+    "nudoku",
+    "tetris",
+    "snake"
+]
+
+GAMES = [
+    "donkykong",
+    "mariokart",
+    "megaman5",
+    "pacman-game",
+    "pepsiman",
+    "pinball",
+    "pokemon-crystal",
+    "spider",
+    "supermario",
+    "supermario64",
+    "tekken3",
+    "gnome-chess",
+    "invaders",
+    "nudoku",
+    "tetris"
+]
+
+if len(sys.argv) == 3 and sys.argv[1] == "istui":
+    exit(0 if sys.argv[2] in TUIAPPS else 1)
+
+if len(sys.argv) == 3 and sys.argv[1] == "isgame":
+    exit(0 if sys.argv[2] in GAMES else 1)
+
+if len(sys.argv) == 2 and sys.argv[1] == "clear":
+    os.remove(CACHE)
+    exit()
+
+try:
+    recent = json.load(open(CACHE))
+except:
+    recent = {}
+
+if len(sys.argv) == 3 and sys.argv[1] == "inc":
+    b = sys.argv[2]
+    if b == "":
+        exit()
+    try:
+        recent[b] += 1
+    except:
+        recent[b] = 1
+    json.dump(recent, open(CACHE, 'w'))
+    exit()
+
+bins = os.popen("dmenu_path").read().split("\n")
+bins.pop() # remove last empty line
+
+# in case any need to be deleted
+todel = []
+
+for b in recent.keys():
+    try:
+        bins.remove(b)
+    except:
+        todel.append(b)
+
+# in case any need to be deleted
+for b in todel:
+    del recent[b]
+
+recent = sorted(recent, key=recent.get, reverse=True)
+allbins = recent + bins
+
+def ident(i):
+    return ("%9s - ") % i
+
+if len(sys.argv) == 2:
+    if sys.argv[1] == "games":
+        for b in allbins:
+            if b in GAMES:
+                print(b)
+    elif sys.argv[1] == "recent":
+        for b in recent:
+            print(b)
+    elif sys.argv[1] == "notused":
+        for b in bins:
+            print(b)
+    elif sys.argv[1] == "special":
+        for b in recent:
+            print(ident("games" if b in GAMES else "recent") + b)
+
+        for p in [ "Suspend", "Shutdown", "Reboot", "Logout", "Lock", "Hibernate" ]:
+            print(ident("power") + p)
+
+        shortcuts = os.popen(I3 + " -d").read().split("\n")
+        shortcuts.pop() # remove last empty line
+        for s in shortcuts:
+            print(ident("shortcuts") + s)
+
+        for b in bins:
+            print(ident("games" if b in GAMES else "bins") + b)
+else:
+    for b in allbins:
+        print(b)

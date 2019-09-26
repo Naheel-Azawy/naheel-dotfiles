@@ -1,14 +1,9 @@
 #!/bin/sh
 
-DMENU="menu-interface -i"
-DMENUL="$DMENU -l 20"
+DMENU="menu-interface -i -l 20"
+DMENUL="$DMENU"
 
-[ "$1" = '-c' ] && {
-    dmenulauncherpy --clear
-    exit
-}
-
-RUN=$(dmenulauncherpy | $DMENU)
+RUN=$(launcherhelper | $DMENU)
 [ ! "$RUN" ] && exit 1
 
 clean() {
@@ -59,13 +54,5 @@ case $RUN in
     \!d*) clean; duck;;
     \!f*) clean; findfile;;
     \!s*) clean; exec theterm "sudo $RUN";;
-    *)
-        # updating the history
-        # - bangs are not saved
-        dmenulauncherpy --inc "$RUN"
-        if istuiapp "$RUN"; then
-            exec theterm "$RUN"
-        else
-            exec "$RUN"
-        fi;;
+    *)    launcherhelper run "$RUN";;
 esac

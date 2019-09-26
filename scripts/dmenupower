@@ -1,5 +1,10 @@
 #!/bin/sh
-RES=$(printf "Suspend\nShutdown\nReboot\nLogout\nLock\nHibernate" | menu-interface -i -p 'Power options')
+
+if [ ! "$1" ]; then
+    RES=$(printf "Suspend\nShutdown\nReboot\nLogout\nLock\nHibernate" | menu-interface -i -p 'Power options')
+else
+    RES="$1"
+fi
 
 confirm() {
     R=$(printf "Yes\nNo" | menu-interface -p "$RES?" -i -sb red -nf red)

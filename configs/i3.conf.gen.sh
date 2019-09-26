@@ -183,11 +183,8 @@ outbindings() {
     bindoc '¯\_(ö)_/¯' \
            "$mod+Shift+backslash" "exec theterm lolcowforune -p"
 
-    bindoc 'Open quick shortcuts in a menu' \
-           "$mod+grave" "exec '$(realpath "$0")' -m"
-
     bindoc 'Show shortcuts help screen' \
-           "$mod+F1" "exec theterm '\"$(realpath $0)\" -d | less'"
+           "$mod+grave" "exec theterm '\"$(realpath $0)\" -d | less'"
 
     bindsym "$mod+Shift+v" "exec sh -c 'sxivv ~/M/pics'"
 
