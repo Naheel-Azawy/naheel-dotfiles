@@ -128,6 +128,12 @@ end
 function مس
     lang-set us >/dev/null; ls $argv
 end
+function م
+    lang-set us >/dev/null; ls $argv
+end
+function ؤي
+    lang-set us >/dev/null; cd $argv
+end
 
 alias please=sudo
 

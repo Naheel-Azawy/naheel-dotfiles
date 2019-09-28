@@ -1,8 +1,8 @@
 #!/bin/sh
 
 run() {
-    TYPE=$(echo "$1" | sed -En 's/\s*(.+) \- .+/\1/p')
-    RUN=$(echo "$1" | sed -En 's/.+ \- (.+)/\1/p')
+    TYPE=$(echo "$1" | sed -En 's/\s*(.+): .+/\1/p')
+    RUN=$(echo "$1" | sed -En 's/.+: (.+)/\1/p')
 
     [ ! "$RUN" ] && RUN="$TYPE"
     [ ! "$RUN" ] && return 1

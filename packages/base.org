@@ -13,7 +13,7 @@
 | suckless | git://git.suckless.org/st                        | THE simple terminal                                               |
 | git      | https://github.com/Naheel-Azawy/theterm          | a wrapper to give the terminal super powers                       |
 | suckless | https://git.suckless.org/dmenu                   | runs commands and provides a UI for selection                     |
-| paman    | ttf-joypixels                                    | unicode symbols and emojis                                        |
+| paman    | ttf-symbola                                      | unicode symbols and emojis                                        |
 | pacman   | ttf-liberation                                   | another pretty font                                               |
 | pacman   | ttf-dejavu                                       | the preferred monospace font                                      |
 | aur      | ttf-font-awesome                                 | used for the icons in the top bar                                 |

@@ -8,6 +8,7 @@ I3 = os.getenv("DOTFILES_DIR") + "/configs/i3.conf.gen.sh"
 
 TUIAPPS = [
     "music-player",
+    "cmus",
     "emacs-in",
     "lf",
     "invaders",
@@ -31,33 +32,63 @@ GAMES = [
     "gnome-chess",
     "invaders",
     "nudoku",
-    "tetris"
+    "tetris",
+    "snake"
 ]
 
-if len(sys.argv) == 3 and sys.argv[1] == "istui":
-    exit(0 if sys.argv[2] in TUIAPPS else 1)
+def istui(b):
+    return b in TUIAPPS
 
-if len(sys.argv) == 3 and sys.argv[1] == "isgame":
-    exit(0 if sys.argv[2] in GAMES else 1)
+def isgame(b):
+    return b in GAMES
 
-if len(sys.argv) == 2 and sys.argv[1] == "clear":
-    os.remove(CACHE)
-    exit()
+def getjson():
+    try:
+        return json.load(open(CACHE))
+    except:
+        return {}
 
-try:
-    recent = json.load(open(CACHE))
-except:
-    recent = {}
-
-if len(sys.argv) == 3 and sys.argv[1] == "inc":
-    b = sys.argv[2]
-    if b == "":
-        exit()
+def inc(recent, b):
     try:
         recent[b] += 1
     except:
         recent[b] = 1
     json.dump(recent, open(CACHE, 'w'))
+
+def run(str):
+    str  = str.split(": ")
+    type = str[0]
+    if len(str) > 1:
+        del str[0]
+        run = ": ".join(str)
+    else:
+        run = str[0]
+        type = None
+    run  = run.strip()
+    type = type.strip()
+    print(type, run)
+
+cmd = sys.argv[1] if len(sys.argv) > 1 else None
+arg = sys.argv[2] if len(sys.argv) > 2 else None
+
+if cmd == "run":
+    run(arg)
+    exit()
+
+if cmd == "istui":
+    exit(0 if istui(arg) else 1)
+
+if cmd == "isgame":
+    exit(0 if isgame(arg) else 1)
+
+if cmd == "clear":
+    os.remove(CACHE)
+    exit()
+
+recent = getjson()
+
+if cmd == "inc":
+    inc(recent, arg)
     exit()
 
 bins = os.popen("dmenu_path").read().split("\n")
@@ -80,33 +111,32 @@ recent = sorted(recent, key=recent.get, reverse=True)
 allbins = recent + bins
 
 def ident(i):
-    return ("%9s - ") % i
+    return ("%9s: ") % i
 
-if len(sys.argv) == 2:
-    if sys.argv[1] == "games":
-        for b in allbins:
-            if b in GAMES:
-                print(b)
-    elif sys.argv[1] == "recent":
-        for b in recent:
+if cmd == "games":
+    for b in allbins:
+        if b in GAMES:
             print(b)
-    elif sys.argv[1] == "notused":
-        for b in bins:
-            print(b)
-    elif sys.argv[1] == "special":
-        for b in recent:
-            print(ident("games" if b in GAMES else "recent") + b)
-
-        for p in [ "Suspend", "Shutdown", "Reboot", "Logout", "Lock", "Hibernate" ]:
-            print(ident("power") + p)
-
-        shortcuts = os.popen(I3 + " -d").read().split("\n")
-        shortcuts.pop() # remove last empty line
-        for s in shortcuts:
-            print(ident("shortcuts") + s)
-
-        for b in bins:
-            print(ident("games" if b in GAMES else "bins") + b)
-else:
+elif cmd == "recent":
+    for b in recent:
+        print(b)
+elif cmd == "notused":
+    for b in bins:
+        print(b)
+elif cmd == "all":
     for b in allbins:
         print(b)
+else:
+    for b in recent:
+        print(ident("games" if b in GAMES else "recent") + b)
+
+    for p in [ "Suspend", "Shutdown", "Reboot", "Logout", "Lock", "Hibernate" ]:
+        print(ident("power") + p)
+
+    shortcuts = os.popen(I3 + " -d").read().split("\n")
+    shortcuts.pop() # remove last empty line
+    for s in shortcuts:
+        print(ident("shortcuts") + s)
+
+    for b in bins:
+        print(ident("games" if b in GAMES else "bins") + b)
