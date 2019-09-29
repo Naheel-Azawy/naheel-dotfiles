@@ -61,6 +61,9 @@ outbindings() {
     bindoc 'Move to previous workspace' \
            "$mod+Shift+Tab" "workspace prev"
 
+    bindoc 'Move workspace to next monitor' \
+           "$mod+Control+p" "move workspace to output right"
+
     bindoc 'Reload the configuration file' \
            "$mod+Shift+c" "reload"
     bindoc 'Restart i3 inplace' \

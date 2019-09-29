@@ -14,7 +14,8 @@ TUIAPPS = [
     "invaders",
     "nudoku",
     "tetris",
-    "snake"
+    "snake",
+    "vis"
 ]
 
 GAMES = [

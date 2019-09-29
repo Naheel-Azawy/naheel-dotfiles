@@ -11,7 +11,7 @@ if [ ! -e "$TF-$B" ]; then
     touch "$TF-$B"
     if [ "$B" -le "2" ]; then
         echo LOW BATTERY SHUTTING DOWN
-        systemctl poweroff
+        systemctl hibernate
     elif [ "$B" -le "3" ]; then
         notify-send -u critical "VERY LOW BATTERY ${B}% WILL SHUTDOWN AT 2%!!!"
     elif [ "$B" -eq "5" ]; then
