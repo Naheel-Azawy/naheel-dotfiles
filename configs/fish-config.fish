@@ -134,6 +134,9 @@ end
 function ؤي
     lang-set us >/dev/null; cd $argv
 end
+function ب
+    lang-set us >/dev/null; lf $argv
+end
 
 alias please=sudo
 

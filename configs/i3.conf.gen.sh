@@ -105,9 +105,6 @@ outbindings() {
     bindoc 'Start the program launcher' \
            "$mod+d" "exec dmenulauncher"
 
-    bindoc 'Start the games launcher' \
-           "$mod+g" "exec dmenugames"
-
     bindoc 'Switch language' \
            "$mod+space" "exec lang-toggle"
 
@@ -384,6 +381,14 @@ bindoc() {
     printdoc "$key" "$info"
     shift
     bindsym "$@"
+}
+
+bindocmod() {
+    info="$1"
+    key="$mod"
+    printdoc "$key" "$info"
+    shift
+    out bindcode 133 --release "$@"
 }
 
 doc() {

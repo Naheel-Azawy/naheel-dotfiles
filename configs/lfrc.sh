@@ -147,6 +147,25 @@ cmd paste-extract ${{
                        fi
                    }}
 
+# create an executable shell script pointing to copied file
+cmd paste-shell-executable ${{
+                                load=$(lf -remote 'load')
+                                mode=$(echo "$load" | sed -n '1p')
+                                list=$(echo "$load" | sed '1d')
+                                if [ $mode = 'copy' ]; then
+                                    s='' && [ ! -w . ] && s='sudo'
+                                    for f in $list; do
+                                        txt="#!/bin/sh
+exec '$(realpath """$f""")'"
+                                        out="$(basename """$f""").sh"
+                                        $s echo "$txt" > "$out"
+                                        $s chmod +x "$out"
+                                    done
+                                    lf -remote 'send load'
+                                    lf -remote 'send clear'
+                                fi
+                            }}
+
 # extract the current file with the right command
 # (xkcd link: https://xkcd.com/1168/)
 cmd extract ${{
@@ -338,6 +357,7 @@ map <c-y>y           paste
 map <c-y>l           paste-symlink
 map <c-y>e           paste-extract
 map <c-y>c           paste-xclip
+map <c-y>s           paste-shell-executable
 map <c-w>            cut
 map <a-w>            copy
 map <delete><delete> trash
@@ -388,5 +408,6 @@ map gv cd ~/Videos
 map gj cd ~/Projects
 map gg cd ~/MEGA/orgmode
 map go $lf -remote "send $id cd \"$DOTFILES_DIR\""
-map gq $lf -remote "send $id cd \"$QU\""
+map gQ $lf -remote "send $id cd \"$QU\""
+map gq $lf -remote "send $id cd \"$QU/2-Masters/1-fall-2019\""
 map gb cd ~/GoodStuff/vbox-shared/

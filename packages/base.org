@@ -7,6 +7,7 @@
 | pacman   | xorg-xdpyinfo                                    | retrieves screen information for some scripts                     |
 | pacman   | xorg-xinit                                       | starts the graphical server                                       |
 | pacman   | xorg-xinput                                      | controls the input devices in xorg                                |
+| pacman   | xf86-input-synaptics                             | handles the touchpad the right way                                |
 | pacman   | xorg-xprop                                       | property displayer for xorg                                       |
 | pacman   | xclip                                            | clipboard manageer for xorg                                       |
 | pacman   | xterm                                            | a simple terminal                                                 |

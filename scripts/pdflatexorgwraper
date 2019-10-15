@@ -21,9 +21,9 @@ else
         if BIBOUT=$($BIB "$F") &&
                 ! echo "$BIBOUT" | grep -q 'does not contain any citations!'
         then
-            $PDF "$OPT" "$F.tex" >/dev/null 2>/dev/null &&
-                OUT=$($PDF "$OPT" "$F.tex")
+            $PDF "$OPT" "$F.tex" >/dev/null 2>/dev/null
         fi
+        OUT=$($PDF "$OPT" "$F.tex")
     fi
     ERRS=$(echo "$OUT" |
                grep -A 1 -E '^\! .+')

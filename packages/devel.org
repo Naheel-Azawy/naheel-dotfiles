@@ -18,6 +18,7 @@
 | npm    | tern                          | JavaScript analyzer (needed for Emacs)                            |
 | npm    | js-beautify                   | beautify web                                                      |
 | npm    | fx                            | a cool way to view JSON                                           |
+| pip    | yq                            | YAML and XML interface to jq                                      |
 | aur    | aha                           | ANSI to HTML                                                      |
 | go     | github.com/saibing/bingo      | LSP for GO                                                        |
 | go     | github.com/nsf/gocode         | autocompletion for GO                                             |

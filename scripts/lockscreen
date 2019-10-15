@@ -42,8 +42,6 @@ function gen-bg-simple {
     fi
 }
 
-# xset dpms force off
-
 lang-set us &>/dev/null
 #audioctl stop &>/dev/null
 
@@ -73,6 +71,8 @@ i3lock \
     --datepos "$X:$((Y+70))" \
     --timecolor "$COLOR" \
     --datecolor "$COLOR"
+
+#xset dpms force off
 
 # In five seconds, turn off display unless key press in last 4 seconds.
 #sleep 5 && [[ 4000 -lt $(xssstate -i) ]] &&  pgrep -x i3lock && xset dpms force off
