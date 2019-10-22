@@ -122,21 +122,11 @@ function arduino-cli
     command arduino-cli --config-file="$DOTFILES_DIR/configs/arduino-cli.yaml" $argv
 end
 
-function ث
-    lang-set us >/dev/null; exit $argv
-end
-function مس
-    lang-set us >/dev/null; ls $argv
-end
-function م
-    lang-set us >/dev/null; ls $argv
-end
-function ؤي
-    lang-set us >/dev/null; cd $argv
-end
-function ب
-    lang-set us >/dev/null; lf $argv
-end
+abbr ث  'lang-set us >/dev/null; exit'
+abbr مس 'lang-set us >/dev/null; ls'
+abbr م  'lang-set us >/dev/null; ls'
+abbr ؤي 'lang-set us >/dev/null; cd'
+abbr ب  'lang-set us >/dev/null; lf'
 
 alias please=sudo
 

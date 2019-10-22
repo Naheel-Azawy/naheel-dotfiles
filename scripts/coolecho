@@ -3,47 +3,61 @@
 RAND=1
 
 FAV=(larry3d
-isometric3
-graceful
-fraktur
-dotmatrix
-cyberlarge
-chunky
-calgphy2
-broadway
-block
-new_asci
-nvscript
-roman
-r2-d2___
-script
-shadow
-smisome1
-smkeyboard
-starwars
-stellar
-weird
-ticks
-ticksslant
-standard
-speed)
+     isometric3
+     graceful
+     fraktur
+     dotmatrix
+     cyberlarge
+     chunky
+     calgphy2
+     broadway
+     block
+     new_asci
+     nvscript
+     roman
+     r2-d2___
+     script
+     shadow
+     smisome1
+     smkeyboard
+     starwars
+     stellar
+     weird
+     ticks
+     ticksslant
+     standard
+     speed)
 
-[[ $RAND = 0 ]] && {
-    F=/tmp/coolechocount
-    [[ ! -f $F ]] && echo 0 >> $F
-    I=$(cat $F)
-    T=${FAV[$I]}
-} || {
-    T=${FAV[$(($RANDOM % ${#FAV[@]}))]}
-}
+if [ "$1" = '--test' ]; then
+    for T in ${FAV[@]}; do
+        echo "$T"
+        figlet -t -f "$T" "Test" | lolcat
+        echo
+    done
+elif [ "$1" = '-f' ]; then
+    T="$2"
+    shift 2
+    figlet -t -f "$T" "$@" | lolcat
+else
 
-figlet -t -f $T "$@" | lolcat
+    [[ $RAND = 0 ]] && {
+        F=/tmp/coolechocount
+        [[ ! -f $F ]] && echo 0 >> $F
+        I=$(cat $F)
+        T=${FAV[$I]}
+    } || {
+        T=${FAV[$(($RANDOM % ${#FAV[@]}))]}
+    }
 
-[[ $RAND = 0 ]] && {
-    I=$((($I+1) % ${#FAV[@]}))
-    echo $I > $F
-}
+    figlet -t -f "$T" "$@" | lolcat
 
-exit 0
+    [[ $RAND = 0 ]] && {
+        I=$((($I+1) % ${#FAV[@]}))
+        echo $I > $F
+    }
 
-#toilet -t -f mono9 "$@" | lolcat 2>/dev/null
+    exit 0
+
+    #toilet -t -f mono9 "$@" | lolcat 2>/dev/null
+
+fi

@@ -9,12 +9,31 @@ elif [ "$1" = '-q' ]; then
     shift
 fi
 
-if [ "$Q" = '0' ] && [ -e /usr/bin/octave-cli ]; then
+if [ "$Q" = '0' ] && [ -e /usr/bin/ipython ]; then
+    PYH='
+from math import *
+import numpy as np
+import matplotlib.pyplot as plt
+plt.style.use("dark_background")
+def frange(x, y, jump):
+    res = []
+    while x < y:
+        res.append(x)
+        x += jump
+    return res
+def plot(*args, **kwargs):
+    plt.plot(*args, **kwargs)
+    plt.show()
+'
+    [ $# = 0 ] && (ipython --no-banner -i -c "$PYH"; exit)
+    F=$(mktemp)
+    echo "$PYH
+print($@)" > "$F"
+    python "$F"
+    rm -f "$F"
+elif [ "$Q" = '0' ] && [ -e /usr/bin/octave-cli ]; then
     [ $# = 0 ] && (octave-cli -q; exit)
     echo "$@" | octave-cli -q | sed 's/ans =\s*//g'
-elif [ "$Q" = '0' ] && [ -e /usr/bin/python ]; then
-    [ $# = 0 ] && (python -q; exit)
-    echo "print($@)" | python -q
 else
     [ $# = 0 ] && (bc -q; exit)
     echo "$@" | bc -l
