@@ -1,8 +1,10 @@
 #!/bin/sh
 
 run() {
-    TYPE=$(echo "$1" | sed -En 's/\s*(.+): .+/\1/p')
-    RUN=$(echo "$1" | sed -En 's/.+: (.+)/\1/p')
+    TYPE=$(echo "$1" | cut -f 1 -d ':' | xargs)
+    RUN=$(echo "$1" | cut -f 1 -d ':' --complement)
+
+    # echo "$TYPE"; echo "$RUN"
 
     [ ! "$RUN" ] && RUN="$TYPE"
     [ ! "$RUN" ] && return 1
@@ -14,6 +16,8 @@ run() {
             RUN=$(echo "$RUN" | awk '{print $1}')
             msg=$(eval "$DOTFILES_DIR/configs/i3.conf.gen.sh" -r "$RUN")
             i3-msg "$msg";;
+        bar)
+            bar gui;;
         *)
             launcherhelperpy inc "$RUN"
             if launcherhelperpy istui "$RUN"; then

@@ -128,16 +128,22 @@ elif cmd == "all":
     for b in allbins:
         print(b)
 else:
+    res = []
     for b in recent:
-        print(ident("games" if b in GAMES else "recent") + b)
+        res.append(ident("games" if b in GAMES else "recent") + b)
 
     for p in [ "Suspend", "Shutdown", "Reboot", "Logout", "Lock", "Hibernate" ]:
-        print(ident("power") + p)
+        res.append(ident("power") + p)
 
     shortcuts = os.popen(I3 + " -d").read().split("\n")
     shortcuts.pop() # remove last empty line
     for s in shortcuts:
-        print(ident("shortcuts") + s)
+        res.append(ident("shortcuts") + s)
 
     for b in bins:
-        print(ident("games" if b in GAMES else "bins") + b)
+        res.append(ident("games" if b in GAMES else "bins") + b)
+
+    res.insert(5, ident("bar") + os.popen("bar line").read().split('\n')[0])
+
+    for e in res:
+        print(e)

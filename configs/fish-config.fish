@@ -122,6 +122,10 @@ function arduino-cli
     command arduino-cli --config-file="$DOTFILES_DIR/configs/arduino-cli.yaml" $argv
 end
 
+function plot
+    command plot $argv & disown
+end
+
 abbr ث  'lang-set us >/dev/null; exit'
 abbr مس 'lang-set us >/dev/null; ls'
 abbr م  'lang-set us >/dev/null; ls'
@@ -199,3 +203,4 @@ abbr pwdb  'cd $prevpwd'
 abbr zkill 'kill -9 (ps -ef | fzfp --nopv | awk \'{print $2}\')'
 abbr jql   'jq -C . | less -R'
 abbr dsync 'rsync -rtu --delete --info=del,name,stats2'
+abbr run   'execute'

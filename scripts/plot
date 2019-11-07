@@ -1,0 +1,28 @@
+#!/bin/python3
+import sys
+
+path = sys.argv[len(sys.argv) - 1]
+f = open(path, "r")
+txt = f.read().split("\n")
+f.close()
+
+if txt[-1] == "":
+    txt.pop()
+
+if len(txt) == 1 and "," in txt[0]:
+    txt = txt[0].split(",")
+
+data = [ float(s) for s in txt ]
+
+def p(d):
+    import matplotlib.pyplot as plt
+    plt.style.use('dark_background')
+    plt.plot(d, color='g', marker='')
+    plt.show()
+
+if sys.argv[1] == "-f":
+    import scipy
+    freq = scipy.fft(data)
+    p(abs(freq[int(len(freq)/2):]))
+else:
+    p(data)

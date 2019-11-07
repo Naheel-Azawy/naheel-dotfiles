@@ -1,34 +1,19 @@
-#!/bin/bash
-r=0
-grepargs=()
-ftargs=()
-args=($@)
-for i in ${!args[@]}; do
-    arg=${args[$i]}
-    case $arg in
-        -r) r=1; args[$i]='';;
-        -*) grepargs+=("$arg") args[$i]='';;
-        *)  ftargs+=("$arg") args[$i]='';;
-    esac
-done
+#!/bin/sh
 
-function doit {
+doit() {
     f="$1"
     shift
-    t="$@"
-    #echo "f=$f, t=$t"
-    m=$(pdftotext -layout "$f" - 2>/dev/null | grep --color=always $grepargs "$t")
-    [[ "$m" != "" ]] && echo -e -n "\033[0;35m$f\033[0;36m:\033[0m " && echo "$m"
+    m=$(pdftotext -layout "$f" - 2>/dev/null | grep --color=always "$@")
+    [ "$m" != "" ] && printf "\033[0;35m%s\033[0;36m:\033[0m " "$f" && echo "$m"
 }
 
-if [[ "$r" = "1" ]]; then
-    T="${ftargs[@]}"
-    for F in $(find -name '*.pdf'); do
-        doit "$F" "$T"
+if [ "$1" = '-r' ]; then
+    shift
+    ret=1
+    for f in *.pdf; do
+        doit "$f" "$@" && ret=0
     done
+    exit $ret
 else
-    F="${ftargs[-1]}"
-    ftargs[-1]=''
-    T="${ftargs[@]}"
-    doit "$F" "$T"
+    doit "$@"
 fi

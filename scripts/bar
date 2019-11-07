@@ -183,6 +183,45 @@ else
     sep="  "
 fi
 
+MAP='
+D donno
+L lang
+P pray
+W weat
+T sens
+V volu
+S wifi
+B batt
+C clock
+'
+
+MAP_CMDS=$(echo "$MAP" | sed -En "s/. (.+)/\1/p" | tr '\n' ' ')
+
+lines() {
+    for c in $MAP_CMDS; do
+        printf '%s:%s\n' \
+               "$(echo "$MAP" | sed -En "s/(.) $c/\1/p")" \
+               "$(eval "$c" -a)"
+    done
+}
+
+line() {
+    for c in $MAP_CMDS; do
+        printf '%s:%s ' \
+               "$(echo "$MAP" | sed -En "s/(.) $c/\1/p")" \
+               "$(eval "$c" -a)"
+    done
+}
+
+gui() {
+    L=$(lines | menu-interface | awk -F':' '{print $1}')
+    [ "$L" ] && {
+        C=$(echo "$MAP" | sed -En "s/$L (.+)/\1/p")
+        dmenufixfocus -l 2>/dev/null &
+        BLOCK_BUTTON=1 "$C" >/dev/null
+    }
+}
+
 count=0
 end=$(($# - 1))
 for arg in "$@"; do

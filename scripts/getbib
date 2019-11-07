@@ -142,7 +142,10 @@ function finalize {
     M="$TITLE"
     [[ $M != '' ]] && M="$M\n"
     [[ $TITLE2 != '' ]] && M="${M}$TITLE2\n"
-    M="${M}$(xclip -o -selection clipboard | tr '\r\n' ' ')"
+    CB="$(xclip -o -selection clipboard | tr '\r\n' ' ')"
+    if [ $(echo "$CB" | wc -c) -le 500 ]; then
+        M="${M}${CB}"
+    fi
     TITLE=$(echo -en "$M" | menu-interface -i -l 20 -p 'Cite: ' | \
                 sed 's/\- *//g; s/[^0-9A-Za-z]/ /g; s/ \+/ /g') || exit 1
 }

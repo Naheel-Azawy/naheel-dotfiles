@@ -323,6 +323,12 @@ cmd send $qr-filetransfer $f
 # receive from wifi
 cmd receive $qr-filetransfer -receive .
 
+# plot signals
+cmd plot &plot $f
+
+# plot signals fft
+cmd plotfft &plot -f $f
+
 # MAPPINGS -------------------------------------------------------------------
 
 # use enter to open
@@ -379,8 +385,9 @@ map <c-f> $lf -remote "send $id select \"$(fzfp)\""
 # image viewing
 map <c-v> &sxivv --lf $id $f -t
 
-#full screen preview
+# preview
 map p $stpv "$f" | less -R
+map l $less "$f"
 
 # Nautilus...
 map n &nautilus .
