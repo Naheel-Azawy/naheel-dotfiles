@@ -1,5 +1,7 @@
 #!/bin/python3
 import sys
+import matplotlib.pyplot as plt
+plt.style.use('dark_background')
 
 path = sys.argv[len(sys.argv) - 1]
 f = open(path, "r")
@@ -14,15 +16,16 @@ if len(txt) == 1 and "," in txt[0]:
 
 data = [ float(s) for s in txt ]
 
-def p(d):
-    import matplotlib.pyplot as plt
-    plt.style.use('dark_background')
-    plt.plot(d, color='g', marker='')
-    plt.show()
-
 if sys.argv[1] == "-f":
-    import scipy
-    freq = scipy.fft(data)
-    p(abs(freq[int(len(freq)/2):]))
+    from scipy import fftpack
+    import numpy as np
+
+    Fs = 1000000
+    X = fftpack.fft(data)
+    freqs = fftpack.fftfreq(len(data)) * Fs
+
+    plt.plot(freqs, np.abs(X), color='g', marker='')
 else:
-    p(data)
+    plt.plot(data, color='g', marker='')
+
+plt.show()

@@ -362,6 +362,9 @@ outautostart() {
     # Hide the mouse cursor while typing
     exec_start --no-startup-id xbanish
 
+    # Disable touchpad while typing
+    exec_start --no-startup-id syndaemon -i 0.5 -t -K -R
+
     # start emacs daemon
     exec_start --no-startup-id emacs-daemon
 

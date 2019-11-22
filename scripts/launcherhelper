@@ -2,7 +2,7 @@
 
 run() {
     TYPE=$(echo "$1" | cut -f 1 -d ':' | xargs)
-    RUN=$(echo "$1" | cut -f 1 -d ':' --complement)
+    RUN=$(echo "$1" | cut -f 1 -d ':' --complement | xargs)
 
     # echo "$TYPE"; echo "$RUN"
 
@@ -19,11 +19,13 @@ run() {
         bar)
             bar gui;;
         *)
-            launcherhelperpy inc "$RUN"
-            if launcherhelperpy istui "$RUN"; then
-                exec theterm "$RUN"
-            else
-                exec "$RUN"
+            if command -v "$RUN" >/dev/null; then
+                launcherhelperpy inc "$RUN"
+                if launcherhelperpy istui "$RUN"; then
+                    exec theterm "$RUN"
+                else
+                    exec "$RUN"
+                fi
             fi;;
     esac
 }
