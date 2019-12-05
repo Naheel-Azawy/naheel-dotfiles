@@ -463,7 +463,6 @@ you should place your code here."
 \\usepackage[table]{xcolor}
 \\usepackage{geometry}
 \\geometry{a4paper, margin=1in}
-\\hypersetup{hidelinks=true}
 \\renewcommand{\\baselinestretch}{1.15}
 \\setlength{\\parindent}{0pt}"
                    ("\\section{%s}" . "\\section*{%s}")

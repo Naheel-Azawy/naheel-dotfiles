@@ -1,5 +1,5 @@
-#!/bin/bash
-[[ "$1" != '' ]] && {
-    cp "$1" "$DOTFILES_DIR/configs/wall"
-}
-feh --bg-fill "$DOTFILES_DIR/configs/wall"
+#!/bin/sh
+F="$DOTFILES_DIR/configs/wall"
+[ "$1" = '-g' ] && echo "$F" && exit
+[ "$1" != '' ] && cp "$1" "$F"
+feh --bg-fill "$F"

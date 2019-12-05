@@ -104,14 +104,14 @@ function mkdircd
 end
 
 function diff
-    colordiff $argv | less -R
+    colordiff -u $argv | less -RF
 end
 function wdiff
-    command wdiff $argv | colordiff | less -R
+    command wdiff $argv | colordiff | less -RF
 end
 function diffstr
     test (count $argv) -gt 2; and set a $argv[3..-1]
-    diff $a (echo -e $argv[1] | psub) (echo -e $argv[2] | psub)
+    diff -u $a (echo -e $argv[1] | psub) (echo -e $argv[2] | psub)
 end
 function wdiffstr
     test (count $argv) -gt 2; and set a $argv[3..-1]

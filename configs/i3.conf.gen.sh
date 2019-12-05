@@ -186,6 +186,7 @@ outbindings() {
     bindoc 'Show shortcuts help screen' \
            "$mod+grave" "exec theterm '\"$(realpath $0)\" -d | less'"
 
+    bindsym "$mod+v" "exec sh -c 'sxiv -b \"$HOME/M/pics/M-new/photo_2019-11-26_16-09-36.jpg\"'"
     bindsym "$mod+Shift+v" "exec sh -c 'sxivv ~/M/pics'"
 
     # XF86 KEYS BINDINGS -----------------------------------------------------
