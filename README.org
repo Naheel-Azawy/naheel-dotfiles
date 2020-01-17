@@ -3,6 +3,8 @@
 
   Warning: This thing is not so stable and might explode at any moment.
 
+  [[./screenshots/1.png]]
+
 ** Install
    Arch Linux is expected to be installed and user is setup.
    #+begin_src shell 

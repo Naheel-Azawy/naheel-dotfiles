@@ -357,6 +357,8 @@ map <a-x>      push :
 map <c-x>h     invert
 map <c-g>      :unselect; clear
 map <f-5>      reload
+map <c-x>e     $execute $f
+map <c-x><c-e> &execute $f
 
 # filesystem operations
 map <c-y>y           paste
@@ -380,6 +382,7 @@ map t tinyratios
 
 # fuzzy search
 map f     $lf -remote "send $id select \"$(ls | fzfp)\""
+map <c-s> $lf -remote "send $id select \"$(ls | fzfp)\""
 map <c-f> $lf -remote "send $id select \"$(fzfp)\""
 
 # image viewing

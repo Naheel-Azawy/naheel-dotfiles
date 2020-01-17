@@ -6,4 +6,5 @@ xset r rate 230 50
 
 # Start the window manager
 exec i3
+#exec bspwm
 #exec gnome-session

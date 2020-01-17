@@ -53,7 +53,7 @@ case "$choice" in
         for f in "${files[@]}"; do
             txt="${f%%.*}.txt"
             if [ -f "$txt" ]; then
-                theterm bash -c "(cat '$txt' && echo && exiftool '$f') | less"
+                theterm bash -c "(cat '$txt' && echo && exiftool '$f') | less" &
             else
                 theterm "exiftool '$f' | less" &
             fi
