@@ -1,2 +1,2 @@
 #!/bin/sh
-exec chromium --force-device-scale-factor=1.3 "$@"
+exec brave --force-device-scale-factor=1.3 "$@"

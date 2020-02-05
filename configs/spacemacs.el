@@ -374,6 +374,8 @@ you should place your code here."
   (global-set-key (kbd "C-x <down>")  'windmove-down)
   (global-set-key (kbd "C-x <right>") 'windmove-right)
   (global-set-key (kbd "C-x <left>")  'windmove-left)
+  (global-set-key (kbd "C-=")         'spacemacs/scale-up-font)
+  (global-set-key (kbd "C--")         'spacemacs/scale-down-font)
 
   ;; ---- MODES ----
   (setq auto-mode-alist

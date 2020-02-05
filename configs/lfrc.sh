@@ -382,7 +382,6 @@ map t tinyratios
 
 # fuzzy search
 map f     $lf -remote "send $id select \"$(ls | fzfp)\""
-map <c-s> $lf -remote "send $id select \"$(ls | fzfp)\""
 map <c-f> $lf -remote "send $id select \"$(fzfp)\""
 
 # image viewing
@@ -419,5 +418,5 @@ map gj cd ~/Projects
 map gg cd ~/MEGA/orgmode
 map go $lf -remote "send $id cd \"$DOTFILES_DIR\""
 map gQ $lf -remote "send $id cd \"$QU\""
-map gq $lf -remote "send $id cd \"$QU/2-Masters/1-fall-2019\""
+map gq $lf -remote "send $id cd \"$QU/2-Masters/2-spring-2020\""
 map gb cd ~/GoodStuff/vbox-shared/
