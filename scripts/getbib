@@ -9,7 +9,7 @@
 # Tested with chromium, firefox, evince, and zathura.
 #
 # Sources: crossref, google scholar
-# Depends on: xprop, xdotool, xclip, pdfinfo, pdftotext, python2.7,
+# Depends on: xprop, xdotool, xclip, pdfinfo, pdftotext,
 #             notify-send, dmenu, pandoc, pandoc-citeproc
 #
 # Written by Naheel Azawy: https://github.com/Naheel-Azawy/naheel-dotfiles
@@ -53,16 +53,6 @@ MENU=0
     DOTFILES_SCRIPTS="$HOME/.dotfiles/scripts"
 mkdir -p "$DOTFILES_SCRIPTS"
 
-# double checking 'scholar.py'
-SCHOLARPY='scholar.py'
-command -v scholar.py >/dev/null || {
-    SCHOLARPY="python2.7 '$DOTFILES_SCRIPTS/scholar.py'"
-    [[ -f "$DOTFILES_SCRIPTS/scholar.py" ]] || {
-        echo "scholar.py not found! Downloading to $DOTFILES_SCRIPTS/scholar.py"
-        curl 'https://raw.githubusercontent.com/Naheel-Azawy/naheel-dotfiles/master/scripts/scholar.py' > "$DOTFILES_SCRIPTS/scholar.py"
-    }
-}
-
 # if menu-interface is not there then just use normal dmenu
 command -v menu-interface >/dev/null || function menu-interface {
         dmenu "$@"
@@ -87,9 +77,10 @@ function finalize {
     # x window details
     WIN=$(xprop -id $(xdotool getactivewindow))
     # x window title
-    TITLE=$(echo "$WIN" | sed -E -n 's/_NET_WM_NAME\(UTF8_STRING\) = "(.*)"/\1/p' | \
-                sed 's/ - Chromium//g' | \
-                sed 's/ - Mozilla Firefox//g')
+    TITLE=$(echo "$WIN" | sed -E -n 's/_NET_WM_NAME\(UTF8_STRING\) = "(.*)"/\1/p' |
+                sed 's/ - Chromium//g' |
+                sed 's/ - Mozilla Firefox//g' |
+                sed 's/ - Brave//g')
     # if the title is the pdf file name, ...
     echo "$TITLE" | grep '\.pdf' &>/dev/null && TITLE=''
     # find the file path
@@ -160,12 +151,12 @@ function finalize {
 
 # bib or pdf
 [[ $MENU == 1 ]] && {
-    echo -e 'Get bibliography\nGet PDF' | \
+    echo -e 'Get PDF\nGet bibliography' | \
         menu-interface -i -p "${TITLE:0:20}" | grep -q PDF && {
         geturl() {
             CLIP=$(clipboard)
             CURRENT=$(xdotool getactivewindow)
-            BROWSER=$(xdotool search --onlyvisible --class "chromium") || {
+            BROWSER=$(xdotool search --onlyvisible --class "brave") || {
                 search
                 exit
             }
@@ -181,9 +172,7 @@ function finalize {
             echo "https://sci-hub.tw/$URL"
         }
         geturllong() {
-            [[ $NOTIF == 1 ]] && notify-send "Finding PDF for $TITLE"
-            S=$(eval "$SCHOLARPY" -c 1 --phrase \""$TITLE"\")
-            PDF=$(echo "$S" | sed -rn 's@PDF link .*http(.+)@http\1@p' | xargs)
+            echo TODO && return 1
             [[ "$PDF" == '' ]] && {
                 PDF=$(echo "$S" | sed -rn 's@URL .*http(.+)@http\1@p' | xargs)
                 PDF="https://sci-hub.tw/$PDF"
@@ -217,8 +206,60 @@ HIST=$(grep "$TITLE" "$BIB.hist" 2>/dev/null)
             sed -e "/^[^\(\t\|@\|}\)]/d")
 
 # search google scholar if not found from crossref
+gscholar() {
+    BAK_WINDOW=$(xdotool getactivewindow)
+    BAK_CLIP=$(xclip -o -selection clipboard)
+
+    l() {
+        #echo "$@"
+        :
+    }
+
+    b() {
+        browser --headless \
+                --disable-gpu \
+                --dump-dom "$@" 2>/dev/null |
+            sed -En 's/.+<body>(.+)<\/body>.+/\1/p'
+    }
+
+    b() {
+        BR=$(xdotool search --onlyvisible --class "brave" | awk '{print $1}')
+        xdotool windowfocus "$BR"
+        xdotool key ctrl+t
+        xdotool key ctrl+l
+        xdotool type "$@"
+        xdotool key Return
+        sleep 2
+        xdotool key ctrl+a
+        xdotool key ctrl+c
+        sleep 1
+        BODY=$(xclip -o -selection clipboard)
+        echo "$BODY" | grep -qi 'not a robot' ||
+            echo "$BODY" | grep -qi 'Your client does not have permission' ||
+            xdotool key ctrl+w
+        echo "$BODY"
+    }
+
+    KEYWORDS=$(echo "$@" | tr ' ' '+')
+    URL="https://scholar.google.com/scholar?oi=gsb95&output=gsb&hl=en&q=$KEYWORDS"
+    l "$URL"
+    PAPER_ID=$(b "$URL" | jq -r '.r[0].l.f.u' | sed 's/#f//')
+    [ ! "$PAPER_ID" ] && echo 'Non paper found' >&2 && return 1
+    l "$PAPER_ID"
+
+    URL="https://scholar.google.com/scholar?output=gsb-cite&hl=en&q=info:${PAPER_ID}:scholar.google.com/"
+    l "$URL"
+    BIB_URL=$(b "$URL" | jq -r '.i[0].u')
+    [ ! "$BIB_URL" ] && echo 'Non bib info found' >&2 && return 1
+    l "$BIB_URL"
+
+    b "$BIB_URL"
+
+    xdotool windowfocus "$BAK_WINDOW"
+    echo "$BAK_CLIP" | xclip -i -selection clipboard
+}
 [[ "$B" == '' ]] && \
-    B=$(eval "$SCHOLARPY" -c 1 --citation bt --phrase \""$TITLE"\")
+    B=$(gscholar \""$TITLE"\")
 
 [[ "$B" == '' ]] && {
     echo 'Not found'
