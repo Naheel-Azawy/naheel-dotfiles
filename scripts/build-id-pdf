@@ -1,0 +1,19 @@
+#!/bin/sh
+NAME="__id-pdf-$$"
+
+echo "\documentclass[11pt]{article}
+\usepackage{graphicx}
+\pagenumbering{gobble}
+\begin{document}
+\begin{center}
+\includegraphics[width=.7\linewidth]{$1}
+\end{center}
+\vspace{1cm}
+\begin{center}
+\includegraphics[width=.7\linewidth]{$2}
+\end{center}
+\end{document}" > "${NAME}.tex"
+
+pdflatex "${NAME}.tex" >/dev/null &&
+    mv "${NAME}.pdf" "$1.pdf"
+rm -f "${NAME}.tex" "${NAME}.aux" "${NAME}.log" "${NAME}.out"

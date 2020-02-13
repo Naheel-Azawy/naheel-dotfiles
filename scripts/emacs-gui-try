@@ -1,0 +1,4 @@
+#!/bin/sh
+exec emacs-gui "$@" 2>/dev/null
+#exec theterm emacs-nw "$@" 2>/dev/null
+#exec bicon.bin --reshape-only emacs-nw "$@" 2>/dev/null

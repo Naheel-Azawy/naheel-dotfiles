@@ -118,7 +118,7 @@ outbindings() {
            "$mod+b" "exec --no-startup-id $BROWSER"
 
     bindoc 'Open calendar' \
-           "$mod+l" "exec theterm emacs-in --eval '(cfw:open-org-calendar)'"
+           "$mod+l" "exec emacs-gui-try --eval '(cfw:open-org-calendar)'"
 
     bindoc 'Open calculator' \
            "$mod+plus" "exec --no-startup-id calc-floating"

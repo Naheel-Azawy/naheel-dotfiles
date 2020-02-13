@@ -34,7 +34,11 @@ batt() {
     fi
 
     if [ "$C" != 'Discharging' ]; then
-        R='#FFD700'
+        if [ "$V" -ge 99 ]; then
+            R='#00FF00'
+        else
+            R='#FFD700'
+        fi
         awesomefontecho '' $R
         printf ' '
     elif [ "$V" -le "5" ]; then
