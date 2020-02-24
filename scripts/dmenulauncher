@@ -3,6 +3,9 @@
 DMENU="menu-interface -i -l 20"
 DMENUL="$DMENU"
 
+# needed to update the database of locate
+sudo updatedb &
+
 RUN=$(launcherhelper | $DMENU)
 [ ! "$RUN" ] && exit 1
 
@@ -42,9 +45,6 @@ findfile() {
             ;;
     esac
 }
-
-# needed to update the database of locate
-sudo updatedb &
 
 dmenufixfocus -l 2>/dev/null &
 

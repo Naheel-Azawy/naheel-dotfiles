@@ -1,43 +1,162 @@
-#!/bin/sh
+#!/bin/python3
+import os
+import sys
+import json
 
-run() {
-    TYPE=$(echo "$1" | cut -f 1 -d ':' | xargs)
-    RUN=$(echo "$1" | cut -f 1 -d ':' --complement | xargs)
+CACHE = os.getenv("HOME") + "/.launcher_recent_cache.json"
+I3 = os.getenv("DOTFILES_DIR") + "/configs/i3.conf.gen.sh"
 
-    # echo "$TYPE"; echo "$RUN"
+TUIAPPS = [
+    "music-player",
+    "cmus",
+    "emacs-in",
+    "lf",
+    "invaders",
+    "nudoku",
+    "tetris",
+    "snake",
+    "vis"
+]
 
-    [ ! "$RUN" ] && RUN="$TYPE"
-    [ ! "$RUN" ] && return 1
+GAMES = [
+    "donkykong",
+    "mariokart",
+    "megaman5",
+    "pacman-game",
+    "pepsiman",
+    "pinball",
+    "pokemon-crystal",
+    "spider",
+    "supermario",
+    "supermario64",
+    "tekken3",
+    "gnome-chess",
+    "invaders",
+    "nudoku",
+    "tetris",
+    "snake"
+]
 
-    case "$TYPE" in
-        power)
-            dmenupower "$RUN";;
-        shortcuts)
-            RUN=$(echo "$RUN" | awk '{print $1}')
-            msg=$(eval "$DOTFILES_DIR/configs/i3.conf.gen.sh" -r "$RUN")
-            i3-msg "$msg";;
-        bar)
-            bar gui;;
-        *)
-            if command -v "$RUN" >/dev/null; then
-                launcherhelperpy inc "$RUN"
-                if launcherhelperpy istui "$RUN"; then
-                    exec theterm "$RUN"
-                else
-                    exec "$RUN"
-                fi
-            fi;;
-    esac
-}
+def istui(b):
+    return b in TUIAPPS
 
-main() {
-    case "$1" in
-        run)    run "$2";;
-        istui)  launcherhelperpy istui  "$2";;
-        isgame) launcherhelperpy isgame "$2";;
-        clear)  launcherhelperpy clear;;
-        '')     launcherhelperpy special;;
-    esac
-}
+def isgame(b):
+    return b in GAMES
 
-main "$@"
+def getjson():
+    try:
+        return json.load(open(CACHE))
+    except:
+        return {}
+
+def inc(recent, b):
+    try:
+        recent[b] += 1
+    except:
+        recent[b] = 1
+    json.dump(recent, open(CACHE, 'w'))
+
+cmd = sys.argv[1] if len(sys.argv) > 1 else None
+arg = sys.argv[2] if len(sys.argv) > 2 else None
+
+if cmd == "istui":
+    exit(0 if istui(arg) else 1)
+
+if cmd == "isgame":
+    exit(0 if isgame(arg) else 1)
+
+if cmd == "clear":
+    os.remove(CACHE)
+    exit()
+
+recent = getjson()
+
+if cmd == "inc":
+    inc(recent, arg)
+    exit()
+
+if cmd == "run":
+    str  = arg.split(":")
+    type = str[0]
+    if len(str) > 1:
+        del str[0]
+        run = ":".join(str)
+    else:
+        run = str[0]
+        type = ""
+    run  = run.strip()
+    type = type.strip()
+
+    if type == "power":
+        os.system("dmenupower " + run)
+    elif type == "shortcuts":
+        run = run.split(":")[0].strip()
+        msg = os.popen(f"{I3} -r {run}").read()
+        os.system(f"i3-msg '{msg}'")
+    elif type == "bar":
+        os.system("bar gui")
+    else:
+        exe = run.split()[0]
+        if os.popen(f"command -v {exe}").close() != 256:
+            inc(recent, exe)
+            if istui(exe):
+                os.system(f"theterm '{run}'")
+            else:
+                os.system(run)
+    exit()
+
+bins = os.popen("dmenu_path").read().split("\n")
+bins.pop() # remove last empty line
+
+# in case any need to be deleted
+todel = []
+
+for b in recent.keys():
+    try:
+        bins.remove(b)
+    except:
+        todel.append(b)
+
+# in case any need to be deleted
+for b in todel:
+    del recent[b]
+
+recent = sorted(recent, key=recent.get, reverse=True)
+allbins = recent + bins
+
+def ident(i):
+    return ("%9s: ") % i
+
+if cmd == "games":
+    for b in allbins:
+        if b in GAMES:
+            print(b)
+elif cmd == "recent":
+    for b in recent:
+        print(b)
+elif cmd == "notused":
+    for b in bins:
+        print(b)
+elif cmd == "all":
+    for b in allbins:
+        print(b)
+else:
+    res = []
+    for b in recent:
+        res.append(ident("games" if b in GAMES else "recent") + b)
+
+    for p in [ "Suspend", "Shutdown", "Reboot", "Logout", "Lock", "Hibernate" ]:
+        res.append(ident("power") + p)
+
+    shortcuts = os.popen(I3 + " -d").read().split("\n")
+    shortcuts.pop() # remove last empty line
+    for s in shortcuts:
+        res.append(ident("shortcuts") + s)
+
+    for b in bins:
+        res.append(ident("games" if b in GAMES else "bins") + b)
+
+    res.insert(5, ident("bar") + os.popen("bar line").read().split('\n')[0])
+
+    for e in res:
+        print(e)

@@ -218,7 +218,7 @@ line() {
 }
 
 gui() {
-    L=$(lines | menu-interface | awk -F':' '{print $1}')
+    L=$(lines | menu-interface -i | awk -F':' '{print $1}')
     [ "$L" ] && {
         C=$(echo "$MAP" | sed -En "s/$L (.+)/\1/p")
         dmenufixfocus -l 2>/dev/null &

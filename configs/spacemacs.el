@@ -378,9 +378,8 @@ you should place your code here."
   (global-set-key (kbd "C--")         'spacemacs/scale-down-font)
 
   ;; ---- FLYSPELL ----
-  (flyspell-popup-auto-correct-mode nil)
   (require 'flyspell-correct-helm)
-  (define-key flyspell-mode-map (kbd "C-;") 'flyspell-correct-wrapper)
+  (define-key flyspell-mode-map (kbd "C-\\") 'flyspell-correct-wrapper)
 
   ;; ---- MODES ----
   (setq auto-mode-alist
@@ -428,6 +427,7 @@ you should place your code here."
                  ;;(toggle-truncate-lines)
                  (toggle-word-wrap)
                  (flyspell-mode)
+                 (flyspell-buffer)
                  (org-table-sticky-header-mode)
                  (delete '("\\.pdf\\'" . default) org-file-apps)
                  (add-to-list 'org-file-apps '("\\.pdf\\'" . "zathura %s"))

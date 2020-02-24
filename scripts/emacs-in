@@ -1,7 +1,7 @@
 #!/bin/sh
-if command -v i3-swallow >/dev/null; then
-    exec i3-swallow emacs-gui "$@" 2>/dev/null
-else
+#if command -v i3-swallow >/dev/null; then
+#    exec i3-swallow emacs-gui "$@" 2>/dev/null
+#else
     exec emacs-nw "$@" 2>/dev/null
     #exec bicon.bin --reshape-only emacs-nw "$@" 2>/dev/null
-fi
+#fi
