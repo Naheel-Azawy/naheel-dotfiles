@@ -1,6 +1,7 @@
 set recolor true
 set selection-clipboard clipboard
-set scroll-step 100
+set scroll-step 50
 set guioptions 'hv'
 map b toggle_statusbar
-map n exec 'theterm "pdfannotations $FILE | less -r"'
+map e exec 'evince "$FILE"'
+#map n exec 'theterm "pdfannotations $FILE | less -r"'

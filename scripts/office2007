@@ -1,0 +1,55 @@
+#!/bin/sh
+JAIL="$HOME/Firejail/office2007"
+SETUP='office2007'
+INSTALLER="/mnt/hdd2/GoodStuff2/Things/ms office/$SETUP"
+P="$HOME/.wine/drive_c/Program Files/Microsoft Office/Office12"
+
+LINE='==================================='
+
+info() {
+    echo $LINE
+    printf '\033[1;34mINFO:\033[0m '
+    echo "$@"
+    echo $LINE
+}
+
+needed() {
+    echo $LINE
+    printf '\033[1;33mNEEDED:\033[0m '
+    echo "$@"
+    echo $LINE
+}
+
+if [ ! -d "$JAIL" ]; then
+    info 'Not installed! Installing...' &&
+        rm -rf "$JAIL" &&
+        mkdir -p "$JAIL" &&
+        info 'Setting up Wine and installing fonts' &&
+        needed 'Once done, set the Windows version to Windows XP' &&
+        firejail-my-net office2007 bash -c "
+export WINEARCH='win32'
+winecfg
+winetricks corefonts" &&
+        info 'Copying Office...' &&
+        cp -r "$INSTALLER" "$JAIL" &&
+        info 'Running setup...' &&
+        firejail-my office2007 wine "$HOME/$SETUP/setup.exe" &&
+        info 'Cleaning...' &&
+        rm -rf "$JAIL/$SETUP" &&
+        info 'DONE!'
+fi
+
+if [ "$2" ]; then
+    rm -rf "$JAIL/tmpdocs/"
+    mkdir "$JAIL/tmpdocs/"
+    cp "$2" "$JAIL/tmpdocs/"
+    ARG="$HOME/tmpdocs/$(basename "$2")"
+fi
+
+case "$1" in
+    w*) APP="WINWORD";;
+    e*) APP="EXCEL";;
+    p*) APP="POWERPNT";;
+esac
+
+firejail-my office2007 wine "$P/$APP.EXE" "$ARG" #2>/dev/null
