@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 
 VIDEO_DIR="$HOME/Videos/YouTube"
 AUDIO_DIR="$HOME/Music/YouTube"
@@ -6,12 +6,13 @@ PROG_FILE="/tmp/__ytdl_prog"
 
 DMENU="menu-interface -sb '#E00000' -sf white -nf white"
 
-function search {
-    Q=$(echo | eval "$DMENU -p 'Search YouTube'" | url-encode) && \
+search() {
+    Q=$(echo | eval "$DMENU -p 'Search YouTube'" | url-encode) &&
+        [ "$Q" ] &&
         browser "https://www.youtube.com/results?search_query=$Q"
 }
 
-[[ "$1" == '-p' ]] && {
+[ "$1" = '-p' ] && {
     tail -f "$PROG_FILE"
     exit
 }
@@ -19,24 +20,25 @@ mkdir -p "$VIDEO_DIR"
 mkdir -p "$AUDIO_DIR"
 CLIP=$(clipboard)
 CURRENT=$(xdotool getactivewindow)
-BROWSER=$(xdotool search --onlyvisible --class "chromium") || {
+BROWSER=$(xdotool search --onlyvisible --class "chromium") ||
+    BROWSER=$(xdotool search --onlyvisible --class "brave") ||{
     search
     exit
 }
 sleep 0.5 # To give the user a chance to release the keyboard
-BROWSER=$(echo $BROWSER | awk '{print $1}')
-xdotool windowfocus $BROWSER
+BROWSER=$(echo "$BROWSER" | awk '{print $1}')
+xdotool windowfocus "$BROWSER"
 xdotool key ctrl+l
 xdotool key ctrl+c
 xdotool key Tab
-xdotool windowfocus $CURRENT
+xdotool windowfocus "$CURRENT"
 URL=$(clipboard)
 echo "$CLIP" | clipboard
 echo "$URL" | grep -q youtube || {
     search
     exit
 }
-TITLE=$(xprop -id $BROWSER | \
+TITLE=$(xprop -id "$BROWSER" | \
             sed -rn 's/_NET_WM_NAME\(UTF8_STRING\) = "(.*)"/\1/p' | \
             sed 's/ - YouTube.*//g' | \
             cut -c -50 | \
@@ -67,5 +69,5 @@ case "$RES" in
     Watch*)
         youtube-viewer "$URL";;
 esac
-[[ $D == 1 ]] && notify-send "YouTube download for $TITLE completed"
+[ $D = 1 ] && notify-send "YouTube download for $TITLE completed"
 

@@ -1,0 +1,2 @@
+#!/bin/sh
+cut -f1 -d',' "$@" | sort -n | tail -1

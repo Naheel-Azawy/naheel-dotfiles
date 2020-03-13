@@ -81,3 +81,4 @@
 | pacman | onboard                               | on-screen keyboard                                                                             |
 | git    | https://github.com/ym1234/colorpicker | a simple color picker                                                                          |
 | pacman | lshw                                  | list hardware devices                                                                          |
+| pacman | encf                                  | encrypted file system                                                                          |
