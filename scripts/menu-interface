@@ -74,7 +74,7 @@ case $MENU_INTERFACE in
         while read -r line; do
             echo "$line" >> "$TMPI"
         done
-        theterm -a '-c floatme -g 60x35' "cat '$TMPI' | $cmd > '$TMPO'"
+        theterm -a '-c __floatme__ -g 60x35' "cat '$TMPI' | $cmd > '$TMPO'"
         cat "$TMPO"
         rm -f "$TMPI" "$TMPO";;
 esac

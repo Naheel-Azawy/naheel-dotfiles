@@ -8,7 +8,7 @@ awesomefontecho() {
 
 clock() {
     [ "$BLOCK_BUTTON" = "1" ] &&
-        theterm -a '-c floatme -g 70x35' 'cal -y && read -p ""'
+        theterm -a '-c __floatme__ -g 70x35' 'cal -y && read -p ""'
     D=$(date '+%a %Y-%m-%d %I:%M:%S %p')
     printf '%s' "$D"
 }
@@ -103,7 +103,7 @@ volu() {
 
 sens() {
     [ "$BLOCK_BUTTON" = "1" ] &&
-        theterm -a '-c floatme -g 65x19' 'watch -tn 1 sensors'
+        theterm -a '-c __floatme__ -g 65x19' 'watch -tn 1 sensors'
     O=$(sensors coretemp-isa-0000 -j | jq '.["coretemp-isa-0000"]["Package id 0"]')
     T=$(echo "$O" | jq '.["temp1_input"]')
     M=$(echo "$O" | jq '.["temp1_max"]')
@@ -128,7 +128,7 @@ sens() {
 
 weat() {
     [ "$BLOCK_BUTTON" = "1" ] &&
-        theterm -a '-c floatme -g 63x38' \
+        theterm -a '-c __floatme__ -g 63x38' \
                 'weather-update & head -n 37 ~/.weatherreport && read -p ""'
     #   Lines from 3rd to 4th                         Remove color codes                Cut
     V=$(sed -n -e "3,4 p" -e "4 q" ~/.weatherreport | sed "s/\x1B\[[0-9;]*[JKmsu]//g" | cut -c 16-)
@@ -140,7 +140,7 @@ weat() {
 
 pray() {
     [ "$BLOCK_BUTTON" = "1" ] &&
-        theterm -a '-c floatme -g 25x8' 'p && read -p ""'
+        theterm -a '-c __floatme__ -g 25x8' 'p && read -p ""'
     [ "$1" != "-a" ] && awesomefontecho '' && printf ' '
     printf '%s' "$(p n)"
 }

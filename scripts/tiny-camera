@@ -1,0 +1,9 @@
+#!/bin/sh
+pkill -f /dev/video ||
+    mpv --no-osc \
+        --no-input-default-bindings \
+        --input-conf=/dev/null \
+        --geometry=-10-10 \
+        --autofit=15% \
+        --title='__floatme__|__stickme__' \
+        /dev/video0

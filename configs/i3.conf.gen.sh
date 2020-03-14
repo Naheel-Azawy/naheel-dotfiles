@@ -19,6 +19,9 @@ outbindings() {
     bindoc 'Toggle tiling / floating' \
            "$mod+t" "floating toggle"
 
+    bindoc 'Toggle sticky window' \
+           "$mod+Shift+t" "sticky toggle"
+
     bindoc 'Change focus between tiling / floating windows' \
            "$mod+slash" "focus mode_toggle"
 
@@ -123,6 +126,9 @@ outbindings() {
     bindoc 'Open calculator' \
            "$mod+plus" "exec --no-startup-id calc-floating"
 
+    bindoc 'Open tiny camera' \
+           "$mod+minus" "exec --no-startup-id tiny-camera"
+
     bindoc 'Lock screen' \
            "$mod+x"       "exec --no-startup-id lockscreen"
     bindoc 'Power options' \
@@ -186,7 +192,6 @@ outbindings() {
     bindoc 'Show shortcuts help screen' \
            "$mod+grave" "exec theterm '\"$(realpath $0)\" -d | less'"
 
-    bindsym "$mod+v" "exec sh -c 'sxiv -b \"$HOME/M/pics/M-new/photo_2019-11-26_16-09-36.jpg\"'"
     bindsym "$mod+Shift+v" "exec sh -c 'sxivv ~/M/pics'"
 
     # XF86 KEYS BINDINGS -----------------------------------------------------
@@ -288,7 +293,12 @@ outconfigs() {
     out for_window [class='"^.*"'] border pixel 2
 
     # Floating windows main class
-    out for_window [class="floatme"] floating enable
+    out for_window [class=".*__floatme__.*"] floating enable
+    out for_window [title=".*__floatme__.*"] floating enable
+
+    # Sticking windows main class
+    out for_window [class=".*__stickme__.*"] sticky enable
+    out for_window [title=".*__stickme__.*"] sticky enable
 
     # Hide borders if only one window is in the current workspace
     out hide_edge_borders smart
