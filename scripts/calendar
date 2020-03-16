@@ -1,0 +1,2 @@
+#!/bin/sh
+exec emacs-gui-try --eval '(cfw:open-org-calendar)'

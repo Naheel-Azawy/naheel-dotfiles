@@ -19,6 +19,18 @@
 # brew install pandoc
 # brew install pandoc-citeproc
 
+# if current window directory has bib file
+CWD_BIB=$(theterm --xpwd)
+CWD_BIB="$CWD_BIB/refs.bib"
+if [ -f "$CWD_BIB" ]; then
+    ref=$(sed -En 's/\@.*\{(.+),.*/\1 #| /p;s/^\s*title\s*=\s*\{(.+)\},/\1}/p' "$CWD_BIB" | \
+              tr -d '\n' | tr '}' '\n' | nl -s ' |#' | column -t -s'#' | \
+              menu-interface -i -l 20 | sed -En 's/.+\|\s*(.+)\s*\|.+/\1/p' | \
+              xargs)
+    xdotool type "$ref"
+    exit
+fi
+
 # if only the final formatted citation is needed
 CITE_ONLY=0
 [[ "$1" == '-c' ]] && {

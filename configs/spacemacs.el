@@ -31,6 +31,7 @@ values."
    ;; List of configuration layers to load.
    dotspacemacs-configuration-layers
    '(
+     sql
      ruby
      php
      yaml
@@ -355,6 +356,17 @@ you should place your code here."
     (shell-command cmd))
   (global-set-key [C-f5] 'execute-program)
 
+  ;; ---- DUPLICATE LINE ----
+  (defun duplicate-line()
+    (interactive)
+    (move-beginning-of-line 1)
+    (kill-line)
+    (yank)
+    (open-line 1)
+    (next-line 1)
+    (yank))
+  (global-set-key (kbd "C-d") 'duplicate-line)
+
   ;; ---- LSP ----
   (use-package lsp-mode :ensure t)
   (use-package company-lsp :ensure t)
@@ -376,6 +388,13 @@ you should place your code here."
   (global-set-key (kbd "C-x <left>")  'windmove-left)
   (global-set-key (kbd "C-=")         'spacemacs/scale-up-font)
   (global-set-key (kbd "C--")         'spacemacs/scale-down-font)
+
+  ;; ---- OTHER BINDINGS ----
+  (cua-mode 1)
+  (global-set-key (kbd "C-a") 'mark-whole-buffer)
+  (global-set-key (kbd "C-f") 'isearch-forward)
+  (global-set-key (kbd "C-z") 'undo-tree-undo)
+  (global-set-key (kbd "C-Z") 'undo-tree-redo)
 
   ;; ---- FLYSPELL ----
   (require 'flyspell-correct-helm)

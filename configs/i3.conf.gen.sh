@@ -120,9 +120,6 @@ outbindings() {
     bindoc 'Open the internet browser' \
            "$mod+b" "exec --no-startup-id $BROWSER"
 
-    bindoc 'Open calendar' \
-           "$mod+l" "exec emacs-gui-try --eval '(cfw:open-org-calendar)'"
-
     bindoc 'Open calculator' \
            "$mod+plus" "exec --no-startup-id calc-floating"
 
@@ -130,9 +127,9 @@ outbindings() {
            "$mod+minus" "exec --no-startup-id tiny-camera"
 
     bindoc 'Lock screen' \
-           "$mod+x"       "exec --no-startup-id lockscreen"
+           "$mod+l"       "exec --no-startup-id lockscreen"
     bindoc 'Power options' \
-           "$mod+Shift+x" "exec --no-startup-id dmenupower"
+           "$mod+Shift+l" "exec --no-startup-id dmenupower"
 
     bindoc 'Mount a drive' \
            "$mod+m"       "exec --no-startup-id dmenumount"

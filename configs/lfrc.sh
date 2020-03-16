@@ -351,10 +351,10 @@ map r rename-editor
 map R $vidir
 
 # basic
-map <c-c>      quit
 map <c-x><c-c> quit
 map <a-x>      push :
 map <c-x>h     invert
+map <c-a>      invert
 map <c-g>      :unselect; clear
 map <f-5>      reload
 map <c-x>e     $execute $f
@@ -368,6 +368,15 @@ map <c-y>c           paste-xclip
 map <c-y>s           paste-shell-executable
 map <c-w>            cut
 map <a-w>            copy
+
+map <c-v>v           paste
+map <c-v>l           paste-symlink
+map <c-v>e           paste-extract
+map <c-v>c           paste-xclip
+map <c-v>s           paste-shell-executable
+map <c-x>x           cut
+map <c-c>            copy
+
 map <delete><delete> trash
 map <delete>D        delete
 
@@ -385,7 +394,7 @@ map f     $lf -remote "send $id select \"$(ls | fzfp)\""
 map <c-f> $lf -remote "send $id select \"$(fzfp)\""
 
 # image viewing
-map <c-v> &sxivv --lf $id $f -t
+map <c-p> &sxivv --lf $id $f -t
 
 # preview
 map p $stpv "$f" | less -R

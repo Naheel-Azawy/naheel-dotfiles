@@ -1,7 +1,7 @@
 #!/bin/sh
 
-#PDF=pdflatex
-PDF=xelatex
+PDF=pdflatex
+#PDF=xelatex
 BIB=biber
 OPT="-interaction=nonstopmode"
 
