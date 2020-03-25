@@ -1,0 +1,7 @@
+#!/bin/sh
+
+I="$HOME/.cache/copy-text-image.png"
+maim --hidecursor -s "$I"
+tesseract "$I" "$I"
+sed 's/\x0c//g' "$I.txt" | clipboard
+rm -f "$I" "$I.txt"

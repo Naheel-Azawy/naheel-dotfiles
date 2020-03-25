@@ -163,37 +163,46 @@ function finalize {
 
 # bib or pdf
 [[ $MENU == 1 ]] && {
-    echo -e 'Get PDF\nGet bibliography' | \
-        menu-interface -i -p "${TITLE:0:20}" | grep -q PDF && {
-        geturl() {
-            CLIP=$(clipboard)
-            CURRENT=$(xdotool getactivewindow)
-            BROWSER=$(xdotool search --onlyvisible --class "brave") || {
-                search
-                exit
-            }
-            sleep 0.5 # To give the user a chance to release the keyboard
-            BROWSER=$(echo $BROWSER | awk '{print $1}')
-            xdotool windowfocus $BROWSER
-            xdotool key ctrl+l
-            xdotool key ctrl+c
-            xdotool key Tab
-            xdotool windowfocus $CURRENT
-            URL=$(clipboard)
-            echo "$CLIP" | clipboard
-            echo "https://sci-hub.tw/$URL"
-        }
-        geturllong() {
-            echo TODO && return 1
-            [[ "$PDF" == '' ]] && {
-                PDF=$(echo "$S" | sed -rn 's@URL .*http(.+)@http\1@p' | xargs)
-                PDF="https://sci-hub.tw/$PDF"
-            }
-        }
-        PDFURL=$(geturl)
-        $BROWSER "$PDFURL"
-        exit 0
-    }
+    OPT=$(echo -e 'Google Scholar\nGet PDF\nGet bibliography' |
+              menu-interface -i -p "${TITLE:0:20}")
+    case "$OPT" in
+        'Google Scholar')
+            URL=$(echo "$TITLE" | strings | tr ' ' '+')
+            URL="https://scholar.google.com/scholar?hl=en&q=$URL"
+            browser "$URL"
+            exit;;
+        'Get PDF')
+            {
+                geturl() {
+                    CLIP=$(clipboard)
+                    CURRENT=$(xdotool getactivewindow)
+                    BROWSER=$(xdotool search --onlyvisible --class "brave") || {
+                        search
+                        exit
+                    }
+                    sleep 0.5 # To give the user a chance to release the keyboard
+                    BROWSER=$(echo $BROWSER | awk '{print $1}')
+                    xdotool windowfocus $BROWSER
+                    xdotool key ctrl+l
+                    xdotool key ctrl+c
+                    xdotool key Tab
+                    xdotool windowfocus $CURRENT
+                    URL=$(clipboard)
+                    echo "$CLIP" | clipboard
+                    echo "https://sci-hub.tw/$URL"
+                }
+                geturllong() {
+                    echo TODO && return 1
+                    [[ "$PDF" == '' ]] && {
+                        PDF=$(echo "$S" | sed -rn 's@URL .*http(.+)@http\1@p' | xargs)
+                        PDF="https://sci-hub.tw/$PDF"
+                    }
+                }
+                PDFURL=$(geturl)
+                $BROWSER "$PDFURL"
+                exit 0
+            };;
+        esac
 }
 
 # look into the history file

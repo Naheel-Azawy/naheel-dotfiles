@@ -1,0 +1,14 @@
+#!/bin/sh
+
+F="$1"
+mkdir __pdf_images
+pdfimages "$F" ./__pdf_images
+cd __pdf_images
+mkdir pdfs
+for i in ./*; do
+    echo ">>>> $i"
+    tesseract "$i" "./pdfs/p$i" -l eng pdf
+    echo
+done
+cd pdfs
+pdfunite ./* "../../$F-with-test.pdf"

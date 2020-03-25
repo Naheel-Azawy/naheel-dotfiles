@@ -82,3 +82,6 @@
 | git    | https://github.com/ym1234/colorpicker | a simple color picker                                                                          |
 | pacman | lshw                                  | list hardware devices                                                                          |
 | pacman | encf                                  | encrypted file system                                                                          |
+| pacman | tesseract                             | OCR engine                                                                                     |
+| pacman | tesseract-data-eng                    | English data for tesseract                                                                     |
+| pacman | tesseract-data-ara                    | Arabic data for tesseract                                                                      |

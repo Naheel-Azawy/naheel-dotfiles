@@ -37,6 +37,11 @@ GAMES = [
     "snake"
 ]
 
+# TODO: commands from x window apps
+COMMANDS = {
+    "lf": "sed -En 's/^cmd ([a-zA-Z\-]+) .*/\1/p' ~/.config/lf/lfrc"
+}
+
 def istui(b):
     return b in TUIAPPS
 
