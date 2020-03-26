@@ -1,17 +1,58 @@
 #!/bin/sh
 
+rn_c() {
+    rn_c_direct "$@"; return
+    command -v rn >/dev/null || {
+        echo 'Runner is not installed!'
+        echo 'Install it from https://github.com/Naheel-Azawy/runner'
+        exit 1
+    }
+    rn c "$@"
+}
+
+rn_c_direct() {
+    command -v gcc >/dev/null || {
+        echo 'GCC is not installed!'
+        exit 1
+    }
+    F=$(mktemp /tmp/XXXXX.c)
+    echo "
+#include <stdio.h>
+int main(int argc, char** argv) {
+  $*;
+  return 0;
+}" > "$F"
+    gcc -lm -o "$F.bin" "$F"
+    "$F.bin"
+    #rm -f "$F" "$F.bin"
+}
+
 run_c() {
-    execute c "
-double ans = (double) $*;
+    rn_c "#include<math.h>
+double ans = (double) (($*) + 0.0);
 if (((int) ans) == ans)
     printf(\"%d\\n\", (int) ans);
 else
-    printf(\"%f\\n\", ans);
-"
+    printf(\"%f\\n\", ans);"
 }
 
 run_cx() {
-    execute c "printf(\"%x\\n\", $*);"
+    rn_c "#include<math.h>
+printf(\"0x%x\\n\", (int) $*)"
+}
+
+run_cb() {
+    # https://stackoverflow.com/a/27627015/3825872
+    rn_c "#include<math.h>
+void printbin(int number) {
+    if (number) {
+        printbin(number >> 1);
+        putc((number & 1) ? '1' : '0', stdout);
+    }
+}
+printf(\"0b\");
+printbin((int) $*);
+putc('\\n', stdout);"
 }
 
 run_bc() {
@@ -20,6 +61,10 @@ run_bc() {
 }
 
 run_py() {
+    command -v ipython >/dev/null || {
+        echo 'IPython is not installed!'
+        exit 1
+    }
     PYH='
 from math import *
 import numpy as np
@@ -43,7 +88,61 @@ print($*)" > "$F"
     rm -f "$F"
 }
 
+run_js() {
+    JSH='
+print=s=>console.log(s)
+e=E=Math.E
+LN2=Math.LN2
+LOG2E=Math.LOG2E
+SQRT1_2=Math.SQRT1_2
+LN10=Math.LN10
+LOG10E=Math.LOG10E
+pi=PI=Math.PI
+SQRT2=Math.SQRT2
+abs=Math.abs
+acosh=Math.acosh
+asinh=Math.asinh
+atan2=Math.atan2
+cbrt=Math.cbrt
+clz32=Math.clz32
+cosh=Math.cosh
+expm1=Math.expm1
+fround=Math.fround
+imul=Math.imul
+log10=Math.log10
+log2=Math.log2
+min=Math.min
+random=Math.random
+sign=Math.sign
+sinh=Math.sinh
+tan=Math.tan
+trunc=Math.trunc
+acos=Math.acos
+asin=Math.asin
+atan=Math.atan
+atanh=Math.atanh
+ceil=Math.ceil
+cos=Math.cos
+exp=Math.exp
+floor=Math.floor
+hypot=Math.hypot
+log=Math.log
+log1p=Math.log1p
+max=Math.max
+pow=Math.pow
+round=Math.round
+sin=Math.sin
+sqrt=Math.sqrt
+tanh=Math.tanh'
+    [ $# = 0 ] && (node -i -e "$JSH"; exit)
+    NODE_DISABLE_COLORS=1 node -e "$JSH;console.log($*)"
+}
+
 run_oct() {
+    command -v octave-cli >/dev/null || {
+        echo 'Octave is not installed!'
+        exit 1
+    }
     OH='
 pkg load communications signal control;
 PS1(">> ");
@@ -53,11 +152,40 @@ PS1(">> ");
     echo "$@" | eval "$OCTAVE" | sed 's/ans =\s*//g'
 }
 
-case "$1" in
-    -c)     shift; run_c   "$@";;
-    -cx|-x) shift; run_cx  "$@";;
-    -bc|-q) shift; run_bc  "$@";;
-    -py)    shift; run_py  "$@";;
-    -oct)   shift; run_oct "$@";;
-    *)             run_oct "$@";;
-esac
+run_test() {
+    tst() {
+        echo ==================
+        echo "> calc $*"
+        time -p "$0" "$@"
+    }
+    echo "RUNNING CALC TESTS"
+    tst -c   1+1
+    tst -cx  1+1
+    tst -cb  1+1
+    tst -bc  1+1
+    tst -py  1+1
+    tst -js  1+1
+    tst -oct 1+1
+
+    tst -c   "sin(M_PI)"
+    tst -bc  "s(3.1415)"
+    tst -py  "sin(pi)"
+    tst -js  "sin(pi)"
+    tst -oct "sin(pi)"
+}
+
+main() {
+    case "$1" in
+        -c)     shift; run_c   "$@";;
+        -cx|-x) shift; run_cx  "$@";;
+        -cb|-b) shift; run_cb  "$@";;
+        -bc|-q) shift; run_bc  "$@";;
+        -py)    shift; run_py  "$@";;
+        -js)    shift; run_js  "$@";;
+        -oct)   shift; run_oct "$@";;
+        --test) shift; run_test    ;;
+        *)             run_oct "$@";;
+    esac
+}
+
+main "$@"
