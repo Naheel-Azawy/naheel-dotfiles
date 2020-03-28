@@ -1,3 +1,0 @@
-#!/bin/sh
-cd /mnt/hdd1/Projects/Quran/
-exec ./q.sh "$@"

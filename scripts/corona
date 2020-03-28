@@ -1,0 +1,6 @@
+#!/bin/sh
+F=~/.cache/corona
+D='+%Y%m%d'
+[ ! -f $F ] || [ $(date $D) != $(date $D -r $F) ] &&
+    curl 'https://corona-stats.online?source=2' > $F
+less -R $F

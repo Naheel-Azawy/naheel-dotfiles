@@ -48,10 +48,14 @@ function fish_prompt --description 'Write out the prompt'
     if test $status != 0
         set face (set_color brred)' :( '(set_color normal)
     end
+    # git branch
+    set -l git_branch (git branch ^/dev/null | sed -n '/\* /s///p')
+    test "$git_branch" = 'master' && set git_branch ''
+    test "$git_branch" != '' && set git_branch " ($git_branch)"
     # only current directory
     set cwd (string replace -r '^'"$HOME"'($|/)' '~$1' $PWD | string split '/')[-1]
     test "$cwd" = '' && set cwd /
-    echo -n -s -e $face $host (set_color $color_cwd) $cwd (set_color normal) "$suffix "
+    echo -n -s -e $face $host (set_color $color_cwd) $cwd $git_branch (set_color normal) "$suffix "
 end
 
 function open --description "Open file in default application"
@@ -69,10 +73,13 @@ end
 function lf
     set fwd (mktemp) # last working directory temp file
     set fid (mktemp) # lf id temp file
-    command lf -command '$printf $id > '"$fid"'; stpvimg --listen $id &' -last-dir-path=$fwd $argv
+    command lf -command \
+    '$printf $id > '"$fid"';
+    command -v stpvimg &>/dev/null &&
+    stpvimg --listen $id &' -last-dir-path=$fwd $argv
     set id (cat $fid)
     # end the image preview listener
-    stpvimg --end $id
+    command -v stpvimg &>/dev/null && stpvimg --end $id
     # archivemount integration
     set archivemount_dir "/tmp/__lf_archivemount_$id"
     if test -f "$archivemount_dir"
@@ -203,5 +210,4 @@ abbr pwdb  'cd $prevpwd'
 abbr zkill 'kill -9 (ps -ef | fzfp --nopv | awk \'{print $2}\')'
 abbr jql   'jq -C . | less -R'
 abbr dsync 'rsync -rtu --delete --info=del,name,stats2'
-abbr run   'execute'
 abbr cl    'calc'

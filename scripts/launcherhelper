@@ -15,7 +15,8 @@ TUIAPPS = [
     "nudoku",
     "tetris",
     "snake",
-    "vis"
+    "vis",
+    "corona"
 ]
 
 GAMES = [
