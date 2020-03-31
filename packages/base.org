@@ -56,7 +56,6 @@
 | pacman   | highlight                                        | can highlight code output                                         |
 | pacman   | fish                                             | the friendly shell!                                               |
 | pacman   | emacs                                            | the best editor on this planet                                    |
-| func     | spacemacs                                        | tons of toys on top of emacs                                      |
 | pacman   | ispell                                           | spell checker                                                     |
 | pacman   | aspell-en                                        | English dictionary for ispell                                     |
 | pacman   | conky                                            | brings the lovely widgets at your desktop                         |

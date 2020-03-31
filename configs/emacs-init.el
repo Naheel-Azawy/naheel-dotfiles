@@ -171,6 +171,7 @@ There are two things you can do about this warning:
 (tool-bar-mode -1)
 (scroll-bar-mode -1)
 (show-paren-mode)
+(global-hl-line-mode 1)
 (xterm-mouse-mode)
 (set-face-attribute 'default nil :height 140)
 
