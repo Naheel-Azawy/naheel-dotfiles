@@ -70,7 +70,7 @@ function open --description "Open file in default application"
     end
 end
 
-function lf
+function lf-with-img
     set fwd (mktemp) # last working directory temp file
     set fid (mktemp) # lf id temp file
     command lf -command \
@@ -80,6 +80,35 @@ function lf
     set id (cat $fid)
     # end the image preview listener
     command -v stpvimg &>/dev/null && stpvimg --end $id
+    # archivemount integration
+    set archivemount_dir "/tmp/__lf_archivemount_$id"
+    if test -f "$archivemount_dir"
+        for line in (cat "$archivemount_dir")
+            sudo umount "$line"
+            rmdir "$line"
+        end
+        rm -f "$archivemount_dir"
+    end
+    # cd on exit
+    if test -f "$fwd"
+        set dir (cat $fwd)
+        rm -f $fwd
+        if test -d "$dir"
+            if test "$dir" != (pwd)
+                echo cd $dir
+                cd $dir
+            end
+        end
+    end
+    rm $fid
+end
+
+function lf
+    set fwd (mktemp) # last working directory temp file
+    set fid (mktemp) # lf id temp file
+    command lf -command \
+    '$printf $id > '"$fid"'' -last-dir-path=$fwd $argv
+    set id (cat $fid)
     # archivemount integration
     set archivemount_dir "/tmp/__lf_archivemount_$id"
     if test -f "$archivemount_dir"
