@@ -33,6 +33,7 @@ There are two things you can do about this warning:
 (global-hl-line-mode 1)
 (xterm-mouse-mode)
 (set-face-attribute 'default nil :height 140)
+(setq-default show-trailing-whitespace t)
 
 ;; ---- THEME ----
 (use-package spacemacs-theme
@@ -40,18 +41,73 @@ There are two things you can do about this warning:
   :init
   (setq spacemacs-theme-custom-colors
         (quote
-         ((bg1        . "#000000")
-          (bg2        . "#101010")
-          (bg3        . "#0a0a0a")
-          (bg4        . "#070707")
-          (comment-bg . "#000000")
-          (cblk-bg    . "#070707")
-          (cblk-ln-bg . "#1f1f1f")
-          (ttip       . "#dddddd")
-          (ttip-bg    . "#111111")
-          (comp       . "#111111")
-          (head1-bg   . "#000000"))))
+         ((act1          . "#222226")
+          (act2          . "#5d4d7a")
+          (base          . "#b2b2b2")
+          (base-dim      . "#686868")
+          (bg1           . "#000000") ;; changed
+          (bg2           . "#101010") ;; changed
+          (bg3           . "#0a0a0a") ;; changed
+          (bg4           . "#070707") ;; changed
+          (border        . "#5d4d7a")
+          (cblk          . "#cbc1d5")
+          (cblk-ln       . "#827591")
+          (cblk-bg       . "#070707") ;; changed
+          (cblk-ln-bg    . "#1f1f1f") ;; changed
+          (cursor        . "#e3dedd")
+          (const         . "#a45bad")
+          (comment       . "#2aa1ae")
+          (comment-light . "#2aa1ae")
+          (comment-bg    . "#000000") ;; changed
+          (comp          . "#111111") ;; changed
+          (err           . "#e0211d")
+          (func          . "#bc6ec5")
+          (head1         . "#4f97d7")
+          (head1-bg      . "#000000") ;; changed
+          (head2         . "#2d9574")
+          (head2-bg      . "#293235")
+          (head3         . "#67b11d")
+          (head3-bg      . "#293235")
+          (head4         . "#b1951d")
+          (head4-bg      . "#32322c")
+          (highlight     . "#444155")
+          (highlight-dim . "#3b314d")
+          (keyword       . "#4f97d7")
+          (lnum          . "#44505c")
+          (mat           . "#86dc2f")
+          (meta          . "#9f8766")
+          (str           . "#2d9574")
+          (suc           . "#86dc2f")
+          (ttip-sl       . "#5e5079")
+          (ttip          . "#dddddd") ;; changed
+          (ttip-bg       . "#111111") ;; changed
+          (type          . "#ce537a")
+          (var           . "#7590db")
+          (war           . "#dc752f")
+          (aqua          . "#2d9574")
+          (aqua-bg       . "#293235")
+          (green         . "#67b11d")
+          (green-bg      . "#293235")
+          (green-bg-s    . "#29422d")
+          (cyan          . "#28def0")
+          (red           . "#f2241f")
+          (red-bg        . "#3c2a2c")
+          (red-bg-s      . "#512e31")
+          (blue          . "#4f97d7")
+          (blue-bg       . "#293239")
+          (blue-bg-s     . "#2d4252")
+          (magenta       . "#a31db1")
+          (yellow        . "#b1951d")
+          (yellow-bg     . "#32322c"))))
   (load-theme 'spacemacs-dark t))
+
+;; ---- SCROLL ----
+(setq scroll-step            1
+      scroll-conservatively  10000)
+
+;; ---- GIT ----
+(use-package git-gutter
+  :config (global-git-gutter-mode 1))
 
 ;; ---- RUN ----
 (defun run-program ()
@@ -376,7 +432,7 @@ There are two things you can do about this warning:
     ("bffa9739ce0752a37d9b1eee78fc00ba159748f50dc328af4be661484848e476" default)))
  '(package-selected-packages
    (quote
-    (org-ref anzu flycheck flymake-shellcheck typescript-mode rust-mode kotlin-mode julia-mode go-mode dart-mode csharp-mode flyspell-correct-helm rainbow-mode web-mode company-mode org-bullets ox-groff calfw-org calfw undo-tree spacemacs-theme xclip use-package multiple-cursors lsp-ui lsp-java company-lsp))))
+    (git-gutter smooth-scroll sublimity org-ref anzu flycheck flymake-shellcheck typescript-mode rust-mode kotlin-mode julia-mode go-mode dart-mode csharp-mode flyspell-correct-helm rainbow-mode web-mode company-mode org-bullets ox-groff calfw-org calfw undo-tree spacemacs-theme xclip use-package multiple-cursors lsp-ui lsp-java company-lsp))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
