@@ -25,6 +25,34 @@ There are two things you can do about this warning:
 (require 'use-package)
 (setq use-package-always-ensure t)
 
+;; ---- VISUALS ----
+(menu-bar-mode -1)
+(tool-bar-mode -1)
+(scroll-bar-mode -1)
+(show-paren-mode)
+(global-hl-line-mode 1)
+(xterm-mouse-mode)
+(set-face-attribute 'default nil :height 140)
+
+;; ---- THEME ----
+(use-package spacemacs-theme
+  :defer t
+  :init
+  (setq spacemacs-theme-custom-colors
+        (quote
+         ((bg1        . "#000000")
+          (bg2        . "#101010")
+          (bg3        . "#0a0a0a")
+          (bg4        . "#070707")
+          (comment-bg . "#000000")
+          (cblk-bg    . "#070707")
+          (cblk-ln-bg . "#1f1f1f")
+          (ttip       . "#dddddd")
+          (ttip-bg    . "#111111")
+          (comp       . "#111111")
+          (head1-bg   . "#000000"))))
+  (load-theme 'spacemacs-dark t))
+
 ;; ---- RUN ----
 (defun run-program ()
   (interactive)
@@ -44,10 +72,10 @@ There are two things you can do about this warning:
   :config
   (add-to-list 'auto-mode-alist '("\\.html?\\'" . web-mode))
   (setq web-mode-engines-alist
-	'(("django" . "\\.html\\'")))
+        '(("django" . "\\.html\\'")))
   (setq web-mode-ac-sources-alist
-	'(("css" . (ac-source-css-property))
-	  ("html" . (ac-source-words-in-buffer ac-source-abbrev))))
+        '(("css" . (ac-source-css-property))
+          ("html" . (ac-source-words-in-buffer ac-source-abbrev))))
   (setq web-mode-enable-auto-closing t)
   (setq web-mode-enable-auto-quoting t)
   (setq web-mode-enable-current-element-highlight t)
@@ -166,30 +194,19 @@ There are two things you can do about this warning:
 (use-package xclip
   :config (xclip-mode 1))
 
-;; ---- VISUALS ----
-(menu-bar-mode -1)
-(tool-bar-mode -1)
-(scroll-bar-mode -1)
-(show-paren-mode)
-(global-hl-line-mode 1)
-(xterm-mouse-mode)
-(set-face-attribute 'default nil :height 140)
+;; ---- SPACES ----
+(defun infer-indentation-style ()
+  ;; if our source file uses tabs, we use tabs, if spaces spaces, and if
+  ;; neither, we use the current indent-tabs-mode
+  ;; https://www.emacswiki.org/emacs/NoTabs
+  (let ((space-count (how-many "^  " (point-min) (point-max)))
+        (tab-count (how-many "^\t" (point-min) (point-max))))
+    (if (> space-count tab-count) (setq indent-tabs-mode nil))
+    (if (> tab-count space-count) (setq indent-tabs-mode t))))
+(setq-default indent-tabs-mode nil)
 
-;; ---- THEME ----
-(use-package spacemacs-theme
-  :defer t
-  :init
-  (setq spacemacs-theme-custom-colors
-	(quote
-	 ((bg1 . "#000000")
-	  (bg2 . "#101010")
-	  (bg3 . "#0a0a0a")
-	  (bg4 . "#070707")
-	  (comment-bg . "#000000")
-	  (cblk-bg . "#070707")
-	  (cblk-ln-bg . "#1f1f1f")
-	  (head1-bg . "#000000"))))
-  (load-theme 'spacemacs-dark t))
+;; ---- BACKUP ----
+(setq backup-directory-alist `(("." . "~/.cache/emacs-saves")))
 
 ;; ---- COMPANY ----
 (use-package company
@@ -234,13 +251,13 @@ There are two things you can do about this warning:
      '(cfw:face-toolbar-button-off ((t :foreground "#555555" :weight bold)))
      '(cfw:face-toolbar-button-on ((t :foreground "#ffffff" :weight bold))))
     (setq cfw:fchar-junction ?╋
-	  cfw:fchar-vertical-line ?┃
-	  cfw:fchar-horizontal-line ?━
-	  cfw:fchar-left-junction ?┣
-	  cfw:fchar-right-junction ?┫
-	  cfw:fchar-top-junction ?┯
-	  cfw:fchar-top-left-corner ?┏
-	  cfw:fchar-top-right-corner ?┓)))
+          cfw:fchar-vertical-line ?┃
+          cfw:fchar-horizontal-line ?━
+          cfw:fchar-left-junction ?┣
+          cfw:fchar-right-junction ?┫
+          cfw:fchar-top-junction ?┯
+          cfw:fchar-top-left-corner ?┏
+          cfw:fchar-top-right-corner ?┓)))
 
 ;; ---- ORG ----
 (use-package org
@@ -278,10 +295,10 @@ There are two things you can do about this warning:
 
   ;; -- TODO --
   (setq org-todo-keywords
-	'((sequence "TODO" "PROG" "|" "DONE" "CNCL")))
+        '((sequence "TODO" "PROG" "|" "DONE" "CNCL")))
   (setq org-todo-keyword-faces
-	'(("PROG" . "yellow")
-	  ("CNCL" . "blue")))
+        '(("PROG" . "yellow")
+          ("CNCL" . "blue")))
 
   ;; -- HOOKS --
   (add-hook 'org-mode-hook #'toggle-word-wrap)
@@ -296,19 +313,21 @@ There are two things you can do about this warning:
 
 (use-package ox-reveal)
 
+(use-package org-ref)
+
 (with-eval-after-load 'ox-latex
   (add-to-list 'org-latex-classes
-	       '("IEEEtran"
-		 "\\documentclass{IEEEtran}"
-		 ("\\section{%s}" . "\\section*{%s}")
-		 ("\\subsection{%s}" . "\\subsection*{%s}")
-		 ("\\subsubsection{%s}" . "\\subsubsection*{%s}")
-		 ("\\paragraph{%s}" . "\\paragraph*{%s}")
-		 ("\\subparagraph{%s}" . "\\subparagraph*{%s}")))
+               '("IEEEtran"
+                 "\\documentclass{IEEEtran}"
+                 ("\\section{%s}" . "\\section*{%s}")
+                 ("\\subsection{%s}" . "\\subsection*{%s}")
+                 ("\\subsubsection{%s}" . "\\subsubsection*{%s}")
+                 ("\\paragraph{%s}" . "\\paragraph*{%s}")
+                 ("\\subparagraph{%s}" . "\\subparagraph*{%s}")))
 
   (add-to-list 'org-latex-classes
-	       '("usual"
-		 "\\documentclass{article}
+               '("usual"
+                 "\\documentclass{article}
 \\usepackage[backend=biber,sorting=none,style=ieee]{biblatex}
 \\usepackage{float}
 \\usepackage[table]{xcolor}
@@ -316,15 +335,15 @@ There are two things you can do about this warning:
 \\geometry{a4paper, margin=1in}
 \\renewcommand{\\baselinestretch}{1.15}
 \\setlength{\\parindent}{0pt}"
-		 ("\\section{%s}" . "\\section*{%s}")
-		 ("\\subsection{%s}" . "\\subsection*{%s}")
-		 ("\\subsubsection{%s}" . "\\subsubsection*{%s}")
-		 ("\\paragraph{%s}" . "\\paragraph*{%s}")
-		 ("\\subparagraph{%s}" . "\\subparagraph*{%s}")))
+                 ("\\section{%s}" . "\\section*{%s}")
+                 ("\\subsection{%s}" . "\\subsection*{%s}")
+                 ("\\subsubsection{%s}" . "\\subsubsection*{%s}")
+                 ("\\paragraph{%s}" . "\\paragraph*{%s}")
+                 ("\\subparagraph{%s}" . "\\subparagraph*{%s}")))
 
   (add-to-list 'org-latex-classes
-	       '("ieee"
-		 "\\documentclass{IEEEtran}
+               '("ieee"
+                 "\\documentclass{IEEEtran}
 \\usepackage[backend=biber,sorting=none,style=ieee]{biblatex}
 \\usepackage{float}
 \\usepackage[table]{xcolor}
@@ -332,18 +351,18 @@ There are two things you can do about this warning:
 \\geometry{a4paper, margin=1in}
 \\renewcommand{\\baselinestretch}{1.15}
 \\setlength{\\parindent}{0pt}"
-		 ("\\section{%s}" . "\\section*{%s}")
-		 ("\\subsection{%s}" . "\\subsection*{%s}")
-		 ("\\subsubsection{%s}" . "\\subsubsection*{%s}")
-		 ("\\paragraph{%s}" . "\\paragraph*{%s}")
-		 ("\\subparagraph{%s}" . "\\subparagraph*{%s}")))
+                 ("\\section{%s}" . "\\section*{%s}")
+                 ("\\subsection{%s}" . "\\subsection*{%s}")
+                 ("\\subsubsection{%s}" . "\\subsubsection*{%s}")
+                 ("\\paragraph{%s}" . "\\paragraph*{%s}")
+                 ("\\subparagraph{%s}" . "\\subparagraph*{%s}")))
 
   (add-to-list 'org-latex-classes
-	       '("beamer"
-		 "\\documentclass\[presentation\]\{beamer\}"
-		 ("\\section\{%s\}" . "\\section*\{%s\}")
-		 ("\\subsection\{%s\}" . "\\subsection*\{%s\}")
-		 ("\\subsubsection\{%s\}" . "\\subsubsection*\{%s\}"))))
+               '("beamer"
+                 "\\documentclass\[presentation\]\{beamer\}"
+                 ("\\section\{%s\}" . "\\section*\{%s\}")
+                 ("\\subsection\{%s\}" . "\\subsection*\{%s\}")
+                 ("\\subsubsection\{%s\}" . "\\subsubsection*\{%s\}"))))
 
 ;; ---- END ----
 
@@ -357,7 +376,7 @@ There are two things you can do about this warning:
     ("bffa9739ce0752a37d9b1eee78fc00ba159748f50dc328af4be661484848e476" default)))
  '(package-selected-packages
    (quote
-    (anzu flycheck flymake-shellcheck typescript-mode rust-mode kotlin-mode julia-mode go-mode dart-mode csharp-mode flyspell-correct-helm rainbow-mode web-mode company-mode org-bullets ox-groff calfw-org calfw undo-tree spacemacs-theme xclip use-package multiple-cursors lsp-ui lsp-java company-lsp))))
+    (org-ref anzu flycheck flymake-shellcheck typescript-mode rust-mode kotlin-mode julia-mode go-mode dart-mode csharp-mode flyspell-correct-helm rainbow-mode web-mode company-mode org-bullets ox-groff calfw-org calfw undo-tree spacemacs-theme xclip use-package multiple-cursors lsp-ui lsp-java company-lsp))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.

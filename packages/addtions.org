@@ -85,3 +85,4 @@
 | pacman | tesseract                             | OCR engine                                                                                     |
 | pacman | tesseract-data-eng                    | English data for tesseract                                                                     |
 | pacman | tesseract-data-ara                    | Arabic data for tesseract                                                                      |
+| aur    | xrandr-invert-colors                  | inver screen colors                                                                            |
