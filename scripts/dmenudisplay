@@ -1,18 +1,36 @@
 #!/bin/sh
+
 D="$HOME/.dotfiles/display-layouts"
 if [ "$1" = '-d' ]; then
-    sel='default'
+    sel='Default'
 else
-    sel=$( (echo default \
-               && ls -1 "$D/" | grep -v default | awk -F'.' '{print $1}' \
-               && echo 'More options') \
-              | menu-interface -l 20 -p 'Select the display layout')
+    sel=$( (echo Default &&
+                ls -1 "$D/" | grep -v default | awk -F'.' '{print $1}' &&
+                printf 'Invert colors\nColor temperature\nMore options\n') |
+               menu-interface -i -l 20 -p 'Display options')
 fi
 
-if [ "$sel" = 'More options' ]; then
-    arandr
-elif [ "$sel" ]; then
-    sh "$D/${sel}.sh"
-fi
+case "$sel" in
+    '');;
+    'Default')
+        xsct 6500
+        sh "$D/default.sh";;
+    'More options')
+        arandr;;
+    'Invert colors')
+        xrandr-invert-colors;;
+    'Color temperature')
+        TEMP=$(printf '%s\n%s\n%s\n%s\n%s\n' \
+                      '6500  Default' \
+                      '3700  Warm' \
+                      '9000  Cool' \
+                      '2000  Extra Warm' \
+                      '20000 Extra Cool' |
+                   menu-interface -i -l 20 -p 'Color temperature' |
+                   awk '{print $1}')
+        [ "$TEMP" ] && xsct "$TEMP";;
+    *)
+        sh "$D/${sel}.sh";;
+esac
 
 setwallpaper

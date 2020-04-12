@@ -33,7 +33,8 @@ There are two things you can do about this warning:
 (global-hl-line-mode 1)
 (xterm-mouse-mode)
 (set-face-attribute 'default nil :height 140)
-(setq-default show-trailing-whitespace t)
+(setq-default tab-width 4)
+;;(setq-default show-trailing-whitespace nil)
 
 ;; ---- THEME ----
 (use-package spacemacs-theme
@@ -102,8 +103,13 @@ There are two things you can do about this warning:
   (load-theme 'spacemacs-dark t))
 
 ;; ---- SCROLL ----
-(setq scroll-step            1
-      scroll-conservatively  10000)
+(setq scroll-step           1
+      scroll-conservatively 10000
+      scroll-margin 5)
+
+;; ---- MODELINE ----
+(use-package doom-modeline
+  :init (doom-modeline-mode 1))
 
 ;; ---- GIT ----
 (use-package git-gutter
@@ -163,7 +169,7 @@ There are two things you can do about this warning:
   (setq-local font-lock-defaults '((vlang-font-lock-keywords))))
 (add-to-list 'auto-mode-alist '("\\.v\\'" . vlang-mode))
 
-;; ---- OTHER STUFF ----
+;; ---- OTHER LANGS ----
 (use-package vala-mode)
 (use-package csharp-mode)
 (use-package dart-mode)
@@ -179,15 +185,11 @@ There are two things you can do about this warning:
 (use-package haxe-mode)
 (use-package arduino-mode)
 (use-package solidity-mode)
+(use-package js2-mode :mode "\\.js\\'")
+(use-package fish-mode)
+(use-package cmake-mode)
+(use-package ein)
 
-(use-package flycheck :init (global-flycheck-mode))
-(use-package rainbow-mode)
-(use-package iedit)
-(use-package dumb-jump)
-(use-package writeroom-mode)
-(use-package anzu :config (global-anzu-mode +1))
-
-;; ---- OTHER MODES ----
 (setq auto-mode-alist
       (cons
        '("\\.ttl$" . ttl-mode)
@@ -200,6 +202,14 @@ There are two things you can do about this warning:
       (cons
        '("\\.m$" . octave-mode)
        auto-mode-alist))
+
+;; ---- TOYS ----
+(use-package flycheck :init (global-flycheck-mode))
+(use-package rainbow-mode)
+(use-package iedit)
+(use-package dumb-jump)
+(use-package writeroom-mode)
+(use-package anzu :config (global-anzu-mode +1))
 
 ;; ---- MULTIPLE CURSERS ----
 (use-package multiple-cursors
@@ -217,7 +227,6 @@ There are two things you can do about this warning:
   :bind ("M-/" . undo-tree-redo))
 
 ;; ---- KEYS ----
-(global-set-key (kbd "C-c SPC") 'evil-toggle-fold)
 (global-set-key (kbd "C-x <up>")    'windmove-up)
 (global-set-key (kbd "C-x <down>")  'windmove-down)
 (global-set-key (kbd "C-x <right>") 'windmove-right)
@@ -227,6 +236,11 @@ There are two things you can do about this warning:
 (global-set-key (kbd "C-f") 'isearch-forward)
 (global-set-key (kbd "C-z") 'undo-tree-undo)
 (global-set-key (kbd "C-Z") 'undo-tree-redo)
+
+;; ---- ORIGAMI ----
+(use-package origami
+  :init (global-origami-mode)
+  :bind ("C-c SPC" . origami-recursively-toggle-node))
 
 ;; ---- DOS EOL ----
 (defun remove-dos-eol ()
@@ -432,7 +446,7 @@ There are two things you can do about this warning:
     ("bffa9739ce0752a37d9b1eee78fc00ba159748f50dc328af4be661484848e476" default)))
  '(package-selected-packages
    (quote
-    (git-gutter smooth-scroll sublimity org-ref anzu flycheck flymake-shellcheck typescript-mode rust-mode kotlin-mode julia-mode go-mode dart-mode csharp-mode flyspell-correct-helm rainbow-mode web-mode company-mode org-bullets ox-groff calfw-org calfw undo-tree spacemacs-theme xclip use-package multiple-cursors lsp-ui lsp-java company-lsp))))
+    (js2-mode ein cmake-mode origami fish-mode doom-modeline git-gutter smooth-scroll sublimity org-ref anzu flycheck flymake-shellcheck typescript-mode rust-mode kotlin-mode julia-mode go-mode dart-mode csharp-mode flyspell-correct-helm rainbow-mode web-mode company-mode org-bullets ox-groff calfw-org calfw undo-tree spacemacs-theme xclip use-package multiple-cursors lsp-ui lsp-java company-lsp))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
@@ -456,3 +470,4 @@ There are two things you can do about this warning:
  '(cfw:face-toolbar ((t :foreground "#000000" :background "#000000")))
  '(cfw:face-toolbar-button-off ((t :foreground "#555555" :weight bold)))
  '(cfw:face-toolbar-button-on ((t :foreground "#ffffff" :weight bold))))
+(put 'downcase-region 'disabled nil)

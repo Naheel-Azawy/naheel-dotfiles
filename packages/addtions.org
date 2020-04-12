@@ -19,6 +19,7 @@
 | pacman | traceroute                            | trace the route to the host                                                                    |
 | pacman | arch-install-scripts                  | contains some helpful scripts to install or maintain arch                                      |
 | pacman | gimp                                  | the gnu image manipulation program                                                             |
+| aur    | gimp-plugin-resynthesizer             | gimp resynthesizer                                                                             |
 | aur    | drawio-desktop-bin                    | diagram builder                                                                                |
 | pacman | imagemagick                           | the magical image editor                                                                       |
 | aur    | paper-icon-theme                      | a nicer GTK icon theme                                                                         |

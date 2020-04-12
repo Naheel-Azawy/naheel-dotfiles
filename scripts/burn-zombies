@@ -1,0 +1,16 @@
+#!/bin/sh
+
+ZOMBIES=$(ps -ax -ostat -opid -ocmd | grep '^[Zz]')
+
+if [ "$ZOMBIES" ]; then
+    echo 'List of zombies:'
+    echo "$ZOMBIES"
+    echo 'DANGER!!! To remove a zombie from the process table its parents must be killed. Agree?? [y/N]'
+    read -r ans
+    [ "$ans" = y ] && {
+        PIDS=$(echo "$ZOMBIES" | awk '{print $2}')
+        echo kill "$PIDS"
+    }
+else
+    echo 'No zombies found'
+fi

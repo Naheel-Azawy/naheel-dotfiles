@@ -189,7 +189,11 @@ outbindings() {
     bindoc 'Show shortcuts help screen' \
            "$mod+grave" "exec theterm '\"$(realpath $0)\" -d | less'"
 
-    bindsym "$mod+Shift+v" "exec sh -c 'sxivv ~/M/pics'"
+    # PERSONAL BINDINGS ------------------------------------------------------
+
+    bindsym "$mod+Shift+v" "exec ~/.config/m-launcher.sh"
+    bindsym "$mod+semicolon" "exec theterm 'emacs-in $HOME/MEGA/orgmode/TODO.org'"
+    bindsym "$mod+Shift+semicolon" "exec calendar"
 
     # XF86 KEYS BINDINGS -----------------------------------------------------
 

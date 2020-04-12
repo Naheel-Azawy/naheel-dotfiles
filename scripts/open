@@ -30,6 +30,9 @@ openfile() {
                 browser "$f" 2>&1 | lfsend &;;
             *.drawio)
                 draw.io "$f" 2>&1 | lfsend &;;
+            *.link)
+                url=$(cat "$f")
+                browser "$url" 2>&1 | lfsend &;;
             *)
                 # mime type
                 case $(file --mime-type "$(realpath """$f""")" -b) in
