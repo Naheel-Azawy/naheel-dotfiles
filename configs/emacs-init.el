@@ -185,10 +185,13 @@ There are two things you can do about this warning:
 (use-package haxe-mode)
 (use-package arduino-mode)
 (use-package solidity-mode)
-(use-package js2-mode :mode "\\.js\\'")
 (use-package fish-mode)
 (use-package cmake-mode)
 (use-package ein)
+(use-package js2-mode
+  :mode "\\.js\\'"
+  :config (custom-set-faces
+           '(js2-external-variable ((t (:foreground "brightblack"))))))
 
 (setq auto-mode-alist
       (cons
@@ -332,7 +335,8 @@ There are two things you can do about this warning:
 ;; ---- ORG ----
 (use-package org
   :init
-  (setq org-agenda-files (list "~/MEGA/orgmode/TODO.org"))
+  (setq org-agenda-files (list "~/MEGA/orgmode/TODO.org")
+        org-log-done 'time)
 
   :config
   ;; -- BABEL LANGS --
@@ -469,5 +473,6 @@ There are two things you can do about this warning:
  '(cfw:face-today-title ((t :background "#5f5f87" :weight bold)))
  '(cfw:face-toolbar ((t :foreground "#000000" :background "#000000")))
  '(cfw:face-toolbar-button-off ((t :foreground "#555555" :weight bold)))
- '(cfw:face-toolbar-button-on ((t :foreground "#ffffff" :weight bold))))
+ '(cfw:face-toolbar-button-on ((t :foreground "#ffffff" :weight bold)))
+ '(js2-external-variable ((t (:foreground "brightblack")))))
 (put 'downcase-region 'disabled nil)
