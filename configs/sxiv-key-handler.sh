@@ -72,6 +72,8 @@ case "$choice" in
         lf -remote "$S";;
     "Set as wallpaper" | "w")
         setwallpaper "${files[-1]}";;
+    "Duplicate" | "2")
+        sxivv "${files[@]}" &;;
     "Rotate 270" | "C-comma")
         for f in "${files[@]}"; do convert "$f" -rotate 270 "$f"; done;;
     "Rotate 90" | "C-period")

@@ -56,6 +56,19 @@ cmd open ${{
               esac
           }}
 
+# display git repository status in your prompt (from docs)
+cmd on-cd &{{
+               source /usr/share/git/completion/git-prompt.sh
+               GIT_PS1_SHOWDIRTYSTATE=auto
+               GIT_PS1_SHOWSTASHSTATE=auto
+               GIT_PS1_SHOWUNTRACKEDFILES=auto
+               GIT_PS1_SHOWUPSTREAM=auto
+               git=$(__git_ps1 " (%s)") || true
+               fmt="\033[32;1m%u@%h\033[0m:\033[34;1m%w/\033[0m\033[1m%f$git\033[0m"
+               lf -remote "send $id set promptfmt \"$fmt\""
+           }}
+on-cd
+
 # create a new directory
 cmd mkdir ${{
                s='' && [ ! -w . ] && s='sudo'
@@ -69,22 +82,40 @@ cmd touch ${{
                $s touch "$@"
            }}
 
-# move current file or selected files to trash folder
-# using trash-cli (https://github.com/andreafrancia/trash-cli)
-cmd trash %trash-put $fx
-
-# delete current file or selected files (prompting)
+# delete/trash current file or selected files (prompting)
 cmd delete ${{
                 set -f
                 printf "$fx\n"
-                printf "delete? [y/n] "
+                printf "Move files to trash? or [d]elete permanently? [Y/n/d] "
                 read ans
-                if [ "$ans" = "y" ]; then
-                    s='' && [ ! -w . ] && s='sudo'
-                    $s rm -rf $fx
-                fi
-                lf -remote "send $id reload"
+                case "$ans" in
+                    d|D)
+                        printf 'Are you sure you want to delete those files permanently? [y/N]'
+                        case "$ans" in
+                            y|Y)
+                                s='' && [ ! -w . ] && s='sudo'
+                                $s rm -rf $fx
+                                lf -remote "send $id reload";;
+                        esac;;
+                    n|N) ;;
+                    *)
+                        # move current file or selected files to trash folder
+                        # using trash-cli (https://github.com/andreafrancia/trash-cli)
+                        {
+                            trash-put $fx
+                            lf -remote "send $id reload"
+                            lf -remote "send $id echo trashed"
+                        } &
+                        lf -remote "send $id echo moving to trash...";;
+                esac
             }}
+
+# copy the load to X clipboard
+cmd copy-xclip &{{
+                    printf $f |
+                        xclip -i -selection clipboard
+                    lf -remote "send $id echo copied file path"
+                }}
 
 # pasting done right
 cmd paste ${{
@@ -118,15 +149,6 @@ cmd paste-symlink ${{
                        fi
                    }}
 
-# copy the load to X clipboard
-cmd paste-xclip &{{
-                     lf -remote load |
-                         sed '1d'    | # remove mode
-                         grep .      | # remove empty lines
-                         head -c -1  | # remove last newline
-                         xclip -i -selection clipboard
-                 }}
-
 # extract the copied files in the current directory
 cmd paste-extract ${{
                        load=$(lf -remote 'load')
@@ -158,7 +180,7 @@ cmd paste-shell-executable ${{
                                     s='' && [ ! -w . ] && s='sudo'
                                     for f in $list; do
                                         txt="#!/bin/sh
-exec '$(realpath """$f""")'"
+                                        exec '$(realpath """$f""")'"
                                         out="$(basename """$f""").sh"
                                         $s echo "$txt" > "$out"
                                         $s chmod +x "$out"
@@ -258,6 +280,21 @@ cmd bulk-rename ${{
 	                   rm $index $index_edit
                  }}
 
+# rename pdf files based of pdfinfo title
+cmd pdf-auto-rename &{{
+                         for f in $fx; do
+                             TITLE=$(pdfinfo "$f" | sed -En 's/Title:\s+(.+)s/\1/p')
+                             if [ "$TITLE" ]; then
+                                 D=$(dirname "$f")
+                                 N=$(basename "$f")
+                                 mv "$f" "$D/${TITLE}_$N"
+                                 lf -remote "send $id echo Found title ${TITLE}"
+                             else
+                                 lf -remote "send $id echo No title found"
+                             fi
+                         done
+                     }}
+
 # unmount archivemount archives if any
 cmd umountarchive ${{
                        s='' && [ ! -w . ] && s='sudo'
@@ -336,6 +373,10 @@ cmd plotfft &plot -f $f
 # use enter to open
 map <enter> open
 
+# back
+map <bs2> updir
+map D     updir
+
 # emacs
 map x push :$emacs-in<space>
 
@@ -347,7 +388,8 @@ map o open-with
 map O open-with-default
 
 # rename file
-map r rename-editor
+map r     rename-editor
+map <f-2> rename-editor
 
 # rename dir
 map R $vidir
@@ -359,28 +401,18 @@ map <c-x>h     invert
 map <c-a>      invert
 map <c-g>      :unselect; clear
 map <f-5>      reload
-map <c-x>e     $execute $f
-map <c-x><c-e> &execute $f
+map <c-x>e     $rn $f
+map <c-x><c-e> &rn $f
 
 # filesystem operations
-map <c-y>y           paste
-map <c-y>l           paste-symlink
-map <c-y>e           paste-extract
-map <c-y>c           paste-xclip
-map <c-y>s           paste-shell-executable
-map <c-w>            cut
-map <a-w>            copy
-
-map <c-v>v           paste
-map <c-v>l           paste-symlink
-map <c-v>e           paste-extract
-map <c-v>c           paste-xclip
-map <c-v>s           paste-shell-executable
-map <c-x>x           cut
-map <c-c>            copy
-
-map <delete><delete> trash
-map <delete>D        delete
+map <delete> delete
+map <c-c>    copy
+map <c-x>    cut
+map <c-v>    paste
+map <a-v>l   paste-symlink
+map <a-v>e   paste-extract
+map <a-v>s   paste-shell-executable
+map <a-c>    copy-xclip
 
 # up and down
 map <esc><lt> top

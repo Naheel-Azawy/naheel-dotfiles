@@ -3,7 +3,7 @@
 #PDF=pdflatex
 PDF=xelatex
 BIB=biber
-OPT="-interaction=nonstopmode"
+OPT="-interaction=nonstopmode -synctex=1"
 
 DOCX=0
 [ "$1" = '-d' ] && {
@@ -17,13 +17,13 @@ F="${F%.*}"
 if [ $DOCX = 1 ]; then
     pandoc --bibliography="$BIB" --filter pandoc-citeproc --csl "$HOME/Documents/LaTeX/ieee.csl" "$F.tex" -o "$F.docx"
 else
-    if OUT=$($PDF "$OPT" "$F.tex"); then
+    if OUT=$($PDF $OPT "$F.tex"); then
         if BIBOUT=$($BIB "$F") &&
                 ! echo "$BIBOUT" | grep -q 'does not contain any citations!'
         then
-            $PDF "$OPT" "$F.tex" >/dev/null 2>/dev/null
+            $PDF $OPT "$F.tex" >/dev/null 2>/dev/null
         fi
-        OUT=$($PDF "$OPT" "$F.tex")
+        OUT=$($PDF $OPT "$F.tex")
     fi
     ERRS=$(echo "$OUT" |
                grep -A 1 -E '^\! .+')

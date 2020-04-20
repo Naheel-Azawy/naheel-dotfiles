@@ -224,10 +224,42 @@ There are two things you can do about this warning:
   ("M-p"      . mc/mark-previous-like-this)
   ("C-c \\"   . mc/mark-all-like-this))
 
-;; ---- UNDO TREE ----
-(use-package undo-tree
-  :config (global-undo-tree-mode)
-  :bind ("M-/" . undo-tree-redo))
+;; ---- UNDO/REDO ----
+;; https://emacs.stackexchange.com/a/54142/19220
+(defun simple-redo ()
+  (interactive)
+  (let
+      (
+       (last-command
+        (cond
+         ;; Break undo chain, avoid having to press Ctrl-G.
+         ((string= last-command 'simple-undo) 'ignore)
+         ;; Emacs undo uses this to detect successive undo calls.
+         ((string= last-command 'simple-redo) 'undo)
+         (t last-command))))
+    (condition-case err
+        (progn
+          (undo) t)
+      (error
+       (message "%s" (error-message-string err)))))
+  (setq this-command 'simple-redo))
+
+(defun simple-undo ()
+  (interactive)
+  (let
+      (
+       (last-command
+        (cond
+         ;; Emacs undo uses this to detect successive undo calls.
+         ((string= last-command 'simple-undo) 'undo)
+         ((string= last-command 'simple-redo) 'undo)
+         (t last-command))))
+    (condition-case err
+        (progn
+          (undo-only) t)
+      (error
+       (message "%s" (error-message-string err)))))
+  (setq this-command 'simple-undo))
 
 ;; ---- KEYS ----
 (global-set-key (kbd "C-x <up>")    'windmove-up)
@@ -237,8 +269,12 @@ There are two things you can do about this warning:
 (cua-mode 1)
 (global-set-key (kbd "C-a") 'mark-whole-buffer)
 (global-set-key (kbd "C-f") 'isearch-forward)
-(global-set-key (kbd "C-z") 'undo-tree-undo)
-(global-set-key (kbd "C-Z") 'undo-tree-redo)
+(define-key isearch-mode-map "\C-f" 'isearch-repeat-forward)
+(global-set-key (kbd "C-s") 'save-buffer)
+(global-set-key (kbd "C-z") 'simple-undo)
+(global-set-key (kbd "C-Z") 'simple-redo)
+(global-set-key (kbd "C-/") 'simple-undo)
+(global-set-key (kbd "M-/") 'simple-redo)
 
 ;; ---- ORIGAMI ----
 (use-package origami
@@ -336,7 +372,8 @@ There are two things you can do about this warning:
 (use-package org
   :init
   (setq org-agenda-files (list "~/MEGA/orgmode/TODO.org")
-        org-log-done 'time)
+        org-log-done 'time
+        org-image-actual-width 500)
 
   :config
   ;; -- BABEL LANGS --
@@ -403,11 +440,8 @@ There are two things you can do about this warning:
                '("usual"
                  "\\documentclass{article}
 \\usepackage[backend=biber,sorting=none,style=ieee]{biblatex}
-\\usepackage{float}
-\\usepackage[table]{xcolor}
 \\usepackage{geometry}
 \\geometry{a4paper, margin=1in}
-\\renewcommand{\\baselinestretch}{1.15}
 \\setlength{\\parindent}{0pt}"
                  ("\\section{%s}" . "\\section*{%s}")
                  ("\\subsection{%s}" . "\\subsection*{%s}")
@@ -419,12 +453,8 @@ There are two things you can do about this warning:
                '("ieee"
                  "\\documentclass{IEEEtran}
 \\usepackage[backend=biber,sorting=none,style=ieee]{biblatex}
-\\usepackage{float}
-\\usepackage[table]{xcolor}
 \\usepackage{geometry}
-\\geometry{a4paper, margin=1in}
-\\renewcommand{\\baselinestretch}{1.15}
-\\setlength{\\parindent}{0pt}"
+\\geometry{a4paper, margin=1in}"
                  ("\\section{%s}" . "\\section*{%s}")
                  ("\\subsection{%s}" . "\\subsection*{%s}")
                  ("\\subsubsection{%s}" . "\\subsubsection*{%s}")

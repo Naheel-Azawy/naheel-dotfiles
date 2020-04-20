@@ -14,4 +14,10 @@ FUN='function human(x) {
 
 [ "$1" = -s ] && echo "$FUN" && exit
 
-echo "$1" | awk "$FUN"'{print human($1)}'
+if [ -p /dev/stdin ]; then
+    awk "$FUN"'{print human($1)}'
+elif [ $# != 0 ]; then
+    echo "$1" | awk "$FUN"'{print human($1)}'
+else
+    exit 1
+fi

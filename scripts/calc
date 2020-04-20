@@ -1,5 +1,27 @@
 #!/bin/sh
 
+from_stdin() {
+    case $# in
+        1) case "$1" in
+               add) awk 'BEGIN {ans=0} {ans+=$1} END {print ans}';;
+               xor) awk 'BEGIN {ans=0} {ans=xor(ans, $1)} END {print ans}';;
+               *) return 1;
+           esac;;
+        2) case "$1" in
+               add) awk '{print $1+arg}' arg="$2";;
+               sub) awk '{print $1-arg}' arg="$2";;
+               mul) awk '{print $1*arg}' arg="$2";;
+               div) awk '{print $1/arg}' arg="$2";;
+               pow) awk '{print $1^arg}' arg="$2";;
+               and) awk '{print and($1, arg)}' arg="$2";;
+               or)  awk '{print  or($1, arg)}' arg="$2";;
+               xor) awk '{print xor($1, arg)}' arg="$2";;
+               *) return 1;
+           esac;;
+        *) return 1;;
+    esac
+}
+
 rn_c() {
     rn_c_direct "$@"; return
     command -v rn >/dev/null || {
@@ -184,7 +206,12 @@ main() {
         -js)    shift; run_js  "$@";;
         -oct)   shift; run_oct "$@";;
         --test) shift; run_test    ;;
-        *)             run_oct "$@";;
+        *)
+            if [ -p /dev/stdin ] && [ $# -ge 1 ]; then
+                from_stdin "$@"
+            else
+                run_oct "$@"
+            fi;;
     esac
 }
 
