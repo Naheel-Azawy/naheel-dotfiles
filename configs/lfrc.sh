@@ -90,13 +90,9 @@ cmd delete ${{
                 read ans
                 case "$ans" in
                     d|D)
-                        printf 'Are you sure you want to delete those files permanently? [y/N]'
-                        case "$ans" in
-                            y|Y)
-                                s='' && [ ! -w . ] && s='sudo'
-                                $s rm -rf $fx
-                                lf -remote "send $id reload";;
-                        esac;;
+                        s='' && [ ! -w . ] && s='sudo'
+                        $s rm -rf $fx
+                        lf -remote "send $id reload";;
                     n|N) ;;
                     *)
                         # move current file or selected files to trash folder

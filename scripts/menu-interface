@@ -2,6 +2,9 @@
 
 [ -z "$MENU_INTERFACE" ] && MENU_INTERFACE='dmenu'
 
+LANG=$(lang-get)
+lang-set us >/dev/null
+
 case $MENU_INTERFACE in
     dmenu)
         dmenu "$@"
@@ -78,3 +81,5 @@ case $MENU_INTERFACE in
         cat "$TMPO"
         rm -f "$TMPI" "$TMPO";;
 esac
+
+lang-set "$LANG" >/dev/null

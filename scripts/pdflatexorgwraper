@@ -5,6 +5,11 @@ PDF=xelatex
 BIB=biber
 OPT="-interaction=nonstopmode -synctex=1"
 
+[ "$1" = '-p' ] && {
+    PDF=pdflatex
+    shift
+}
+
 DOCX=0
 [ "$1" = '-d' ] && {
     DOCX=1
