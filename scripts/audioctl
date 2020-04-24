@@ -23,6 +23,22 @@ vol() {
     rm -f "$LOCK"
 }
 
+vol() {
+    case "$1" in
+        t) amixer -q set Master toggle;;
+        m) amixer -q set Master mute;;
+        *)
+            V="$1"
+            if [ "$V" -ge 0 ]; then
+                amixer -q set Master "$V%+"
+            else
+                V=$((-V))
+                amixer -q set Master "$V%-"
+            fi;;
+    esac
+    pkill "-RTMIN+$I3BLOCKS_SIG_VOLU" i3blocks
+}
+
 V="$2"
 case "$1" in
 	"up")       vol "$V"  ;;

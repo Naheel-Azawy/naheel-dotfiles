@@ -166,7 +166,7 @@ run_oct() {
         exit 1
     }
     OH='
-pkg load communications signal control;
+pkg load communications signal control symbolic;
 PS1(">> ");
 '
     OCTAVE="octave-cli -q --persist --eval '$OH'"

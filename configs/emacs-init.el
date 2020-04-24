@@ -224,57 +224,22 @@ There are two things you can do about this warning:
   ("M-p"      . mc/mark-previous-like-this)
   ("C-c \\"   . mc/mark-all-like-this))
 
-;; ---- UNDO/REDO ----
-;; https://emacs.stackexchange.com/a/54142/19220
-(defun simple-redo ()
-  (interactive)
-  (let
-      (
-       (last-command
-        (cond
-         ;; Break undo chain, avoid having to press Ctrl-G.
-         ((string= last-command 'simple-undo) 'ignore)
-         ;; Emacs undo uses this to detect successive undo calls.
-         ((string= last-command 'simple-redo) 'undo)
-         (t last-command))))
-    (condition-case err
-        (progn
-          (undo) t)
-      (error
-       (message "%s" (error-message-string err)))))
-  (setq this-command 'simple-redo))
-
-(defun simple-undo ()
-  (interactive)
-  (let
-      (
-       (last-command
-        (cond
-         ;; Emacs undo uses this to detect successive undo calls.
-         ((string= last-command 'simple-undo) 'undo)
-         ((string= last-command 'simple-redo) 'undo)
-         (t last-command))))
-    (condition-case err
-        (progn
-          (undo-only) t)
-      (error
-       (message "%s" (error-message-string err)))))
-  (setq this-command 'simple-undo))
-
 ;; ---- KEYS ----
 (global-set-key (kbd "C-x <up>")    'windmove-up)
 (global-set-key (kbd "C-x <down>")  'windmove-down)
 (global-set-key (kbd "C-x <right>") 'windmove-right)
 (global-set-key (kbd "C-x <left>")  'windmove-left)
+;; because no one knows how to use emacs...
 (cua-mode 1)
 (global-set-key (kbd "C-a") 'mark-whole-buffer)
 (global-set-key (kbd "C-f") 'isearch-forward)
 (define-key isearch-mode-map "\C-f" 'isearch-repeat-forward)
+(define-key isearch-mode-map "\C-v" 'isearch-yank-pop)
 (global-set-key (kbd "C-s") 'save-buffer)
-(global-set-key (kbd "C-z") 'simple-undo)
-(global-set-key (kbd "C-Z") 'simple-redo)
-(global-set-key (kbd "C-/") 'simple-undo)
-(global-set-key (kbd "M-/") 'simple-redo)
+(use-package undo-tree
+  :config (global-undo-tree-mode))
+(global-set-key (kbd "C-z") 'undo-tree-undo)
+(global-set-key (kbd "M-z") 'undo-tree-redo)
 
 ;; ---- ORIGAMI ----
 (use-package origami
@@ -480,7 +445,7 @@ There are two things you can do about this warning:
     ("bffa9739ce0752a37d9b1eee78fc00ba159748f50dc328af4be661484848e476" default)))
  '(package-selected-packages
    (quote
-    (js2-mode ein cmake-mode origami fish-mode doom-modeline git-gutter smooth-scroll sublimity org-ref anzu flycheck flymake-shellcheck typescript-mode rust-mode kotlin-mode julia-mode go-mode dart-mode csharp-mode flyspell-correct-helm rainbow-mode web-mode company-mode org-bullets ox-groff calfw-org calfw undo-tree spacemacs-theme xclip use-package multiple-cursors lsp-ui lsp-java company-lsp))))
+    (undo-fu js2-mode ein cmake-mode origami fish-mode doom-modeline git-gutter smooth-scroll sublimity org-ref anzu flycheck flymake-shellcheck typescript-mode rust-mode kotlin-mode julia-mode go-mode dart-mode csharp-mode flyspell-correct-helm rainbow-mode web-mode company-mode org-bullets ox-groff calfw-org calfw undo-tree spacemacs-theme xclip use-package multiple-cursors lsp-ui lsp-java company-lsp))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.

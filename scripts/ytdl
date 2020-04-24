@@ -1,2 +1,0 @@
-#!/bin/bash
-youtube-dl --add-metadata -ic $@
