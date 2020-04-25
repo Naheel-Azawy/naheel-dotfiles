@@ -1,0 +1,31 @@
+#!/bin/sh
+
+die() {
+    echo 'Killing all...'
+    docker kill "$(docker ps -q)"
+    echo 'Removing all...'
+    docker rm   "$(docker ps -qa)"
+}
+
+CMD="$1"
+shift
+case "$CMD" in
+    rethinkdb)
+        docker run -d -P --name rethink1 rethinkdb "$@";;
+    droppy)
+        docker run --name droppy -p 127.0.0.1:8989:8989 silverwind/droppy "$@";;
+    cryptominisat)
+        docker run --rm -i msoos/cryptominisat "$@";;
+    die)
+        die;;
+    burn)
+        printf 'Gas all containers? Sure? (y/N) '
+        read -r ans
+        [ "$ans" = y ] && {
+            die
+            docker rmi "$(docker images -q)"
+        };;
+    *)
+        echo 'What??'
+        exit 1;;
+esac

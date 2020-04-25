@@ -106,12 +106,33 @@ cmd delete ${{
                 esac
             }}
 
-# copy the load to X clipboard
-cmd copy-xclip &{{
-                    printf $f |
-                        xclip -i -selection clipboard
-                    lf -remote "send $id echo copied file path"
-                }}
+# copy with x-special clipboard
+cmd copy-special &{{
+                      CP='x-special/nautilus-clipboard
+copy
+'
+                      for f in $fx; do
+                          CP="${CP}file://$f
+"
+                      done
+                      printf "$CP" |
+                          xclip -i -selection clipboard
+                      lf -remote "send $id copy"
+                  }}
+
+# cut with x-special clipboard
+cmd cut-special &{{
+                     CP='x-special/nautilus-clipboard
+cut
+'
+                     for f in $fx; do
+                         CP="${CP}file://$f
+"
+                     done
+                     printf "$CP" |
+                         xclip -i -selection clipboard
+                     lf -remote "send $id cut"
+                 }}
 
 # pasting done right
 cmd paste ${{
@@ -402,13 +423,12 @@ map <c-x><c-e> &rn $f
 
 # filesystem operations
 map <delete> delete
-map <c-c>    copy
-map <c-x>    cut
+map <c-c>    copy-special
+map <c-x>    cut-special
 map <c-v>    paste
 map <a-v>l   paste-symlink
 map <a-v>e   paste-extract
 map <a-v>s   paste-shell-executable
-map <a-c>    copy-xclip
 
 # up and down
 map <esc><lt> top
