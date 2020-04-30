@@ -1,0 +1,84 @@
+#!/bin/sh
+
+D=','
+[ "$1" = '-d' ] && D="$2" && shift 2
+
+F=
+[ -f "$1" ] && F="$1" && shift
+
+COL="$1"
+ROW="$2"
+
+die() {
+    echo 'usage: csv [-d DELIMITER] [FILE] [COL] [ROW]' >&2
+    exit 1
+}
+
+show() {
+    if [ "$F" ]; then
+        column -s, -t < "$F"
+    elif [ -p /dev/stdin ]; then
+        column -s, -t
+    else
+        die
+    fi
+}
+
+[ $# = 0 ] || [ "$COL" = ':' ] &&
+    { [ "$ROW" = ':' ] || [ "$ROW" = '' ]; } &&
+    show && exit
+
+isint() { [ "$1" -eq "$1" ] 2>/dev/null; }
+
+split_range() {
+    if [ ! "$1" ]; then
+        FROM="1"
+        TO="-1"
+    elif isint "$1"; then
+        FROM="$1"
+        TO="$1"
+    elif echo "$1" | grep -q ':'; then
+        FROM=$(echo "$1" | awk -F: '{print $1}')
+        TO=$(echo "$1"   | awk -F: '{print $2}')
+
+        [ ! "$FROM" ] && FROM=1
+        [ ! "$TO"   ] && TO=-1
+
+        ! isint "$FROM" ||
+            ! isint "$TO" && die
+    else
+        die
+    fi
+}
+
+split_range "$COL"
+COL_FR="$FROM"
+COL_TO="$TO"
+[ $COL_TO = -1 ] && COL_TO=NF
+
+split_range "$ROW"
+ROW_FR="$FROM"
+ROW_TO="$TO"
+
+#echo "COL_FR=$COL_FR COL_TO=$COL_TO ROW_FR=$ROW_FR ROW_TO=$ROW_TO"; exit
+
+run_awk() {
+    if [ "$F" ]; then
+        awk -F"$D" "$@" "$F"
+    elif [ -p /dev/stdin ]; then
+        awk -F"$D" "$@"
+    else
+        die
+    fi
+}
+
+AWK_ROWS_END=
+[ $ROW_TO != -1 ] && AWK_ROWS_END="&& FNR<=$ROW_TO"
+
+run_awk "
+FNR>=$ROW_FR $AWK_ROWS_END {
+ for(i=$COL_FR;i<=$COL_TO;i++) {
+  printf \"%s\t\", \$i
+ }
+ printf \"\n\"
+}"

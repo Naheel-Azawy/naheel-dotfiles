@@ -5,6 +5,7 @@ from_stdin() {
         1) case "$1" in
                add) awk 'BEGIN {ans=0} {ans+=$1} END {print ans}';;
                xor) awk 'BEGIN {ans=0} {ans=xor(ans, $1)} END {print ans}';;
+               avg) awk 'BEGIN {s=0;c=0} {s+=$1;c++} END {print s/c}';;
                *) return 1;
            esac;;
         2) case "$1" in
@@ -23,34 +24,25 @@ from_stdin() {
 }
 
 rn_c() {
-    rn_c_direct "$@"; return
-    command -v rn >/dev/null || {
-        echo 'Runner is not installed!'
-        echo 'Install it from https://github.com/Naheel-Azawy/runner'
-        exit 1
-    }
-    rn c "$@"
-}
-
-rn_c_direct() {
     command -v gcc >/dev/null || {
-        echo 'GCC is not installed!'
-        exit 1
+        echo 'GCC is not installed!' >&2
+        return 1
     }
-    F=$(mktemp /tmp/XXXXX.c)
-    echo "
+    F=$(mktemp /tmp/XXXXX.c) &&
+        echo "
 #include <stdio.h>
+#include<math.h>
 int main(int argc, char** argv) {
   $*;
   return 0;
-}" > "$F"
-    gcc -lm -o "$F.bin" "$F"
-    "$F.bin"
-    #rm -f "$F" "$F.bin"
+}" > "$F" &&
+        gcc -lm -o "$F.bin" "$F" &&
+        "$F.bin" &&
+        rm -f "$F" "$F.bin"
 }
 
 run_c() {
-    rn_c "#include<math.h>
+    rn_c "
 double ans = (double) (($*) + 0.0);
 if (((int) ans) == ans)
     printf(\"%d\\n\", (int) ans);
@@ -59,13 +51,13 @@ else
 }
 
 run_cx() {
-    rn_c "#include<math.h>
+    rn_c "
 printf(\"0x%x\\n\", (int) $*)"
 }
 
 run_cb() {
     # https://stackoverflow.com/a/27627015/3825872
-    rn_c "#include<math.h>
+    rn_c "
 void printbin(int number) {
     if (number) {
         printbin(number >> 1);
@@ -84,8 +76,8 @@ run_bc() {
 
 run_py() {
     command -v ipython >/dev/null || {
-        echo 'IPython is not installed!'
-        exit 1
+        echo 'IPython is not installed!' >&2
+        return 1
     }
     PYH='
 from math import *
@@ -111,6 +103,10 @@ print($*)" > "$F"
 }
 
 run_js() {
+    command -v node >/dev/null || {
+        echo 'Node.js is not installed!' >&2
+        return 1
+    }
     JSH='
 print=s=>console.log(s)
 e=E=Math.E
@@ -162,8 +158,8 @@ tanh=Math.tanh'
 
 run_oct() {
     command -v octave-cli >/dev/null || {
-        echo 'Octave is not installed!'
-        exit 1
+        echo 'Octave is not installed!' >&2
+        return 1
     }
     OH='
 pkg load communications signal control symbolic;
@@ -209,8 +205,13 @@ main() {
         *)
             if [ -p /dev/stdin ] && [ $# -ge 1 ]; then
                 from_stdin "$@"
+            elif [ $# = 0 ]; then
+                run_oct ||
+                    run_py ||
+                    run_js ||
+                    run_bc
             else
-                run_oct "$@"
+                run_bc "$@"
             fi;;
     esac
 }

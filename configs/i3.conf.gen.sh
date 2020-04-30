@@ -192,7 +192,7 @@ outbindings() {
     # PERSONAL BINDINGS ------------------------------------------------------
 
     bindsym "$mod+Shift+v" "exec ~/.config/m-launcher.sh"
-    bindsym "$mod+semicolon" "exec theterm 'emacs-in $HOME/MEGA/orgmode/TODO.org'"
+    bindsym "$mod+semicolon" "exec theterm 'emacs-in $HOME/Dropbox/orgmode/TODO.org'"
     bindsym "$mod+Shift+semicolon" "exec calendar"
 
     # XF86 KEYS BINDINGS -----------------------------------------------------

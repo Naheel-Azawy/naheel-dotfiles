@@ -19,9 +19,11 @@
 # brew install pandoc
 # brew install pandoc-citeproc
 
+# IMPORTANT NOTE: This script is so messed up...
+
 # if current window directory has bib file
 CWD_BIB=$(theterm --xpwd)
-CWD_BIB="$CWD_BIB/refs.bib"
+CWD_BIB=$(find "$CWD_BIB" -iname '*.bib' | head -n1)
 if [ -f "$CWD_BIB" ]; then
     ref=$(sed -En 's/\@.*\{(.+),.*/\1 #| /p;s/^\s*title\s*=\s*\{(.+)\},/\1}/p' "$CWD_BIB" | \
               tr -d '\n' | tr '}' '\n' | nl -s ' |#' | column -t -s'#' | \

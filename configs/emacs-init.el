@@ -336,7 +336,7 @@ There are two things you can do about this warning:
 ;; ---- ORG ----
 (use-package org
   :init
-  (setq org-agenda-files (list "~/MEGA/orgmode/TODO.org")
+  (setq org-agenda-files (list "~/Dropbox/orgmode/TODO.org")
         org-log-done 'time
         org-image-actual-width 500)
 
