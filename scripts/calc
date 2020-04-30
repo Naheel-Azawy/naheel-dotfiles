@@ -163,6 +163,7 @@ run_oct() {
     }
     OH='
 pkg load communications signal control symbolic;
+format long;
 PS1(">> ");
 '
     OCTAVE="octave-cli -q --persist --eval '$OH'"
@@ -211,7 +212,14 @@ main() {
                     run_js ||
                     run_bc
             else
-                run_bc "$@"
+                case "$1" in
+                    add|xor|avg)
+                        CMD="$1" && shift
+                        echo "$@" | tr ' ' '\n' |
+                            from_stdin "$CMD";;
+                    *)
+                        run_bc "$@";;
+                esac
             fi;;
     esac
 }

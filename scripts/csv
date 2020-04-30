@@ -16,9 +16,9 @@ die() {
 
 show() {
     if [ "$F" ]; then
-        column -s, -t < "$F"
+        column -s"$D" -t < "$F"
     elif [ -p /dev/stdin ]; then
-        column -s, -t
+        column -s"$D" -t
     else
         die
     fi
