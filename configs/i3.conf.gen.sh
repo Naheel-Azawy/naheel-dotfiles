@@ -186,6 +186,11 @@ outbindings() {
     bindoc '¯\_(ö)_/¯' \
            "$mod+Shift+backslash" "exec theterm lolcowforune -p"
 
+    bindoc 'Jump to quick command' \
+           "$mod+j" "exec quickcmd"
+    bindoc 'Edit to quick command' \
+           "$mod+Control+j" "exec quickcmd -e"
+
     bindoc 'Show shortcuts help screen' \
            "$mod+grave" "exec theterm '\"$(realpath $0)\" -d | less'"
 

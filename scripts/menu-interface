@@ -10,7 +10,7 @@ case $MENU_INTERFACE in
         dmenu "$@"
         dmenufixfocus 2>/dev/null;;
     rofi)
-        cmd='rofi -width 50 -dmenu -font "$FONT_MONO 18"'
+        cmd="rofi -width 50 -dmenu -font '$FONT_MONO 18'"
         args=("$@")
         inc=0
         lines=10

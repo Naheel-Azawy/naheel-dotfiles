@@ -31,6 +31,7 @@
 | pacman | virtual-box                           | the chosen virtual machine                                                                     |
 | pacman | virtualbox-host-modules-arch          | virtual-box kernel modules                                                                     |
 | pacman | colordiff                             | a more colorful diff                                                                           |
+| pacman | diff-so-fancy                         | an even more colorful diff                                                                     |
 | pacman | wdiff                                 | diff but for words                                                                             |
 | pacman | nautilus                              | GNOME's file manager                                                                           |
 | pacman | evince                                | GNOME's reader                                                                                 |

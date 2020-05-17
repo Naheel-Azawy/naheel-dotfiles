@@ -75,11 +75,11 @@ function lf-with-img
     set fid (mktemp) # lf id temp file
     command lf -command \
     '$printf $id > '"$fid"';
-    command -v stpvimg &>/dev/null &&
+    command -v stpvimg >/dev/null &&
     stpvimg --listen $id &' -last-dir-path=$fwd $argv
     set id (cat $fid)
     # end the image preview listener
-    command -v stpvimg &>/dev/null && stpvimg --end $id
+    command -v stpvimg >/dev/null && stpvimg --end $id
     # archivemount integration
     set archivemount_dir "/tmp/__lf_archivemount_$id"
     if test -f "$archivemount_dir"
@@ -140,10 +140,20 @@ function mkdircd
 end
 
 function diff
-    colordiff -u $argv | less -RF
+    if command -v diff-so-fancy >/dev/null
+        command diff -u $argv | diff-so-fancy | less -RF
+    else if command -v colordiff >/dev/null
+        command diff -u $argv | colordiff | less -RF
+    else
+        command diff -u $argv | less -RF
+    end
 end
 function wdiff
-    command wdiff $argv | colordiff | less -RF
+    if command -v colordiff >/dev/null
+        command wdiff $argv | colordiff | less -RF
+    else
+        command wdiff $argv | less -RF
+    end
 end
 function diffstr
     test (count $argv) -gt 2; and set a $argv[3..-1]

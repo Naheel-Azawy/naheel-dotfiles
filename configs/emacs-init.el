@@ -102,6 +102,13 @@ There are two things you can do about this warning:
           (yellow-bg     . "#32322c"))))
   (load-theme 'spacemacs-dark t))
 
+;; ---- REMOVE BG COLOR ----
+(defun on-frame-open (&optional frame)
+  "If the FRAME created in terminal don't load background color."
+  (unless (display-graphic-p frame)
+    (set-face-background 'default "unspecified-bg" frame)))
+(add-hook 'after-make-frame-functions 'on-frame-open)
+
 ;; ---- SCROLL ----
 (setq scroll-step           1
       scroll-conservatively 10000
@@ -219,10 +226,7 @@ There are two things you can do about this warning:
   :init
   (require 'multiple-cursors)
   :bind
-  ("C-c C-\\" . mc/edit-lines)
-  ("M-n"      . mc/mark-next-like-this)
-  ("M-p"      . mc/mark-previous-like-this)
-  ("C-c \\"   . mc/mark-all-like-this))
+  ("C-]" . mc/mark-next-like-this))
 
 ;; ---- KEYS ----
 (global-set-key (kbd "C-x <up>")    'windmove-up)
@@ -367,7 +371,7 @@ There are two things you can do about this warning:
   (add-to-list 'org-file-apps '("\\.html\\'" . "browser %s"))
 
   ;; -- MY "DIRTY" LaTeX EXPORT --
-  (setq org-latex-pdf-process '("pdflatexorgwraper %f"))
+  (setq org-latex-pdf-process '("pdflatexorgwraper -p %f"))
 
   ;; -- TODO --
   (setq org-todo-keywords

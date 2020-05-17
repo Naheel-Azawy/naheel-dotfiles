@@ -1,0 +1,13 @@
+#!/bin/sh
+
+echo 'COMPILING...'
+arduino-cli compile --fqbn arduino:avr:nano && {
+    echo 'BUILD SUCCESS!'
+    device=$(ls /dev/ttyUSB* /dev/ttyACM* 2>/dev/null | head -n1)
+    [ ! "$device" ] && {
+        echo 'No device found'
+        exit 1
+    }
+    echo "UPLOADING to $device"
+    sudo arduino-cli upload --fqbn arduino:avr:nano -p "$device"
+}
