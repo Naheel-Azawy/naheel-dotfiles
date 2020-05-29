@@ -7,6 +7,7 @@
 #   $1: path to image file
 #   $2: image width
 #   $3: image height
+#   $4: image/video
 
 s="  " # field separator
 
@@ -17,21 +18,13 @@ filename=$(basename -- "$path")
 filesize=$(du -Hh -- "$path" | cut -f 1)
 geometry="${2}x${3}"
 type=
+[ "$4" = video ] && type="${s}(video, press ctrl-space to play)"
 
-vid=$(echo "$path" | sed -En 's@(.+)\.thumb\.jpg@\1@p')
-vid2=$(echo "$path" | sed -En 's@(.+)\.jpg@\1.mp4@p')
-if [ -f "$vid" ]; then
-    filename="$vid"
-    filename=$(basename "$filename")
-    type=' (video)'
-elif [ -f "$vid2" ]; then
-    type=' (video)'
-fi
-
-txt=$(echo "$path" | sed -En 's@(.+)\.jpg@\1.txt@p')
+# used to show the caption in files downloaded with "instaloader"
+txt=$(echo "$path" | sed -En 's@(.+)\....@\1.txt@p')
 if [ -f "$txt" ]; then
     caption=$(head -n1 "$txt" | tr '\n' ' ' | fribidi --nopad)
-    caption=" \"$caption\""
+    caption="${s}\"$caption\""
 fi
 
 echo "${filesize}${s}${geometry}${s}${filename}${type}${caption}"

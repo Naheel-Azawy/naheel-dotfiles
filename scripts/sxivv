@@ -8,44 +8,11 @@ LF=
     shift 3
 }
 
-F=
-[ "$1" ] && [ -e "$1" ] && {
-    F=$(realpath "$1")
-    shift
-}
-
-dir=.
-img=
-opt='-t'
-[ "$F" ] && {
-    [ -f "$F" ] && {
-        dir=$(dirname "$F")
-        img="$F"
-        opt=''
-    } || dir="$F"
-}
-
-cd "$dir" || { echo "Failed cd to $dir" && exit 1; }
-
-file --mime-type ./* | grep video/ | awk -F':' '{print $1}' |
-    while read -r f; do
-        [ -f "$f" ] && {
-            t="$f.thumb.jpg"
-            t2=$(echo "$f" | sed -En 's@(.+)\.mp4@\1.jpg@p')
-            if [ ! -f "$t" ] && [ ! -f "$t2" ] || [ "$t" -ot "$f" ]; then
-                rm -f "$t"
-                ffmpegthumbnailer -i "$f" -o "$t" -s 0 >/dev/null 2>/dev/null
-            fi
-        }
-    done
-
 if [ "$LF" ] && [ "$LFID" ] && [ "$LFF" ]; then
-    sxiv -bo "$@" -F "$LFF" . | while read -r f; do
+    sxiv -bo "$@" "$LFF" | while read -r f; do
         lf -remote "send $LFID select '$f'"
         lf -remote "send $LFID toggle"
     done
-elif [ "$img" != '' ] && [ -f "$img" ]; then
-    sxiv -b -F "$img" $opt .
 else
-    sxiv -b $opt "$@" .
+    sxiv -b "$@"
 fi
