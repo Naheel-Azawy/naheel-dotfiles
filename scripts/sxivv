@@ -9,10 +9,10 @@ LF=
 }
 
 if [ "$LF" ] && [ "$LFID" ] && [ "$LFF" ]; then
-    sxiv -bo "$@" "$LFF" | while read -r f; do
+    sxiv -o "$@" "$LFF" | while read -r f; do
         lf -remote "send $LFID select '$f'"
         lf -remote "send $LFID toggle"
     done
 else
-    sxiv -b "$@"
+    exec sxiv "$@"
 fi
