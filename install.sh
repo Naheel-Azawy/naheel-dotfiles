@@ -15,8 +15,12 @@ mkuser() {
 [ "$(whoami)" = root ] && {
     echo "Looks like you're running as root!"
     echo '1. Create a new user? 2. Or login to existing one? [1/2] '
-    read -r user
-    [ "$user" != 2 ] && mkuser
+    read -r ans
+    case "$ans" in
+        1) mkuser;;
+        2) echo 'Enter username:' && read -r user;;
+        *) exit 1;;
+    esac
     DEST="/home/$user/.dotfiles"
     rm -rf "$DEST" &&
         cp -r "$D" "$DEST" &&
