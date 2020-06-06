@@ -75,8 +75,8 @@ pkg_install() {
                 git clone --depth 1 "$link" "$dir" &&
                     cd "$dir" &&
                     sudo make &&
-                    cp config.def.h config.h && {
-                        [ -f "$conf" ] && patch config.h "$conf"
+                    sudo cp config.def.h config.h && {
+                        [ -f "$conf" ] && sudo patch config.h "$conf"
                         sudo make install
                     } &&
                     cd /tmp &&
