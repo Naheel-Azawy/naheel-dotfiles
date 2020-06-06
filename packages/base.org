@@ -3,7 +3,7 @@
 | pacman     | base-devel                                       | group package with sudo and compilation software                 |
 | pacman     | git                                              | version control system                                           |
 | aur_manual | yay                                              | Arch User Repository helper                                      |
-| pacman     | i3                                               | the window manager                                               |
+| pacman     | i3-wm                                            | the window manager                                               |
 | pacman     | xorg-server                                      | graphical server                                                 |
 | pacman     | xorg-xdpyinfo                                    | retrieves screen information for some scripts                    |
 | pacman     | xorg-xinit                                       | starts the graphical server                                      |

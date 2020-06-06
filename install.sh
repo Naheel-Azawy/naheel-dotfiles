@@ -9,7 +9,7 @@ info() { printf "\e[1;34;40m%s -------- \033[0m\n" "$@"; }
 info "Updating packages"
 # Enables multilib. Needed for wine
 sed -i 's/#\[multilib\]/[multilib]\nInclude = \/etc\/pacman.d\/mirrorlist/g' /etc/pacman.conf
-pacman -Syu # Upgrade the system
+pacman --noconfirm -Syu # Upgrade the system
 
 info "Install packages"
 ./install-packages.sh
