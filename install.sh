@@ -2,6 +2,8 @@
 
 D="$PWD"
 
+info() { printf "\e[1;34;40m%s -------- \033[0m\n" "$@"; }
+
 mkuser() {
     echo 'Enter username:'
     read -r user
@@ -13,8 +15,10 @@ mkuser() {
 }
 
 [ "$(whoami)" = root ] && {
-    echo "Looks like you're running as root!"
-    echo '1. Create a new user? 2. Or login to existing one? [1/2] '
+    info "Looks like you're running as root!"
+    echo '1) Create a new user'
+    echo '2) Or login to existing one'
+    printf 'Choice: [1/2] '
     read -r ans
     case "$ans" in
         1) mkuser;;
@@ -28,8 +32,6 @@ mkuser() {
         sudo -u "$user" sh -c "cd $DEST && ./install.sh"
     exit
 }
-
-info() { printf "\e[1;34;40m%s -------- \033[0m\n" "$@"; }
 
 info "Updating packages"
 # Enables multilib. Needed for wine
@@ -58,3 +60,8 @@ export PATH=\"\$PATH:\$DOTFILES_SCRIPTS\"
 chmod +x "$HOME/.dotfiles-exports"
 
 echo 'DONE!!!'
+
+[ "$(whoami)" = root ] && {
+    echo 'Now log in to your user account'
+    echo "\$ su $user"
+}
