@@ -13,4 +13,4 @@
 | pacman | cool-retro-term                            | CRT terminal                                                   |
 | aur    | cli-visualizer                             | a CLI visualizer                                               |
 | pip    | termdown                                   | the ultimate countdown and stopwatch                           |
-| npm    | mapsci                                     | terminal map                                                   |
+| npm    | mapscii                                    | terminal map                                                   |
