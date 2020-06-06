@@ -90,7 +90,7 @@ pkg_install() {
                         rm -rf "$HOME/.tmux"
                         mkdir -p "$HOME/.tmux/plugins/tpm"
                         git clone https://github.com/tmux-plugins/tpm "$HOME/.tmux/plugins/tpm"
-                        tmux source "$HOME/.tmux.conf"
+                        tmux source "$HOME/.tmux.conf" ||:
                     fi;;
 
                 blackarch)
