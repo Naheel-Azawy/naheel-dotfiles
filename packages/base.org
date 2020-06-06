@@ -3,6 +3,10 @@
 | pacman     | base-devel                                 | group package with sudo and compilation software             |
 | pacman     | git                                        | version control system                                       |
 | aur_manual | yay                                        | Arch User Repository helper                                  |
+| pacman     | nodejs                                     | node.js is needed to run some programs ahead                 |
+| pacman     | npm                                        | node.js pacage manager                                       |
+| pacman     | python-pip                                 | python's package manager                                     |
+| pacman     | python2-pip                                | python2 pip                                                  |
 | aur        | lf                                         | another terminal file manager cloning ranger but faster      |
 | pacman     | cronie                                     | manages scheduled tasks                                      |
 | pacman     | dosfstools                                 | allows your computer to access dos-like filesystems          |

@@ -3,15 +3,14 @@
 | pacman | neofetch                                   | displays system's information                                  |
 | pacman | sl                                         | cures the bad habit of miss-typing                             |
 | pacman | cowsay                                     | a wise cow                                                     |
-| pacman | fortune                                    | some wise quotes                                               |
+| pacman | fortune-mod                                | some wise quotes                                               |
 | pacman | lolcat                                     | colored cat                                                    |
 | git    | https://github.com/pipeseroni/pipes.sh.git | pipes screensaver                                              |
 | pacman | cmatrix                                    | now you are neo                                                |
-| pacman | toilet                                     | display large colourful characters                             |
+| aur    | toilet                                     | display large colourful characters                             |
 | pacman | figlet                                     | display large characters made up of ordinary screen characters |
 | aur    | figlet-fonts                               | more fonts for figlet                                          |
 | pacman | cool-retro-term                            | CRT terminal                                                   |
 | aur    | cli-visualizer                             | a CLI visualizer                                               |
-| aur    | browsh                                     | a terminal web browser                                         |
 | pip    | termdown                                   | the ultimate countdown and stopwatch                           |
 | npm    | mapsci                                     | terminal map                                                   |

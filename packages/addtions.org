@@ -1,9 +1,5 @@
 | Tag    | Name                                  | Purpose                                                                                        |
 |--------+---------------------------------------+------------------------------------------------------------------------------------------------|
-| pacman | nodejs                                | node.js is needed to run some programs ahead                                                   |
-| pacman | npm                                   | node.js pacage manager                                                                         |
-| pacman | python-pip                            | python's package manager                                                                       |
-| pacman | python2-pip                           | python2 pip                                                                                    |
 | pip    | youtube-dl                            | can download any YouTube video (or playlist or channel) when given the link                    |
 | pip2   | BeautifulSoup                         | beautiful soup for python2.7                                                                   |
 | pacman | youtube-viewer                        | is a terminal interface for watching YouTube videos without a browser                          |
