@@ -127,8 +127,9 @@ main() {
     date >> "$HOME/dotfiles-install-err"
     if [ $# != 0 ]; then
         files="$*"
+        [ "$files" = all ] &&
+            files="base base-gui addtions themostsignificant devel electronics games"
     else
-        #files="base base-gui addtions themostsignificant devel electronics games"
         files="base base-gui"
     fi
     echo "Installing packages from $files"
