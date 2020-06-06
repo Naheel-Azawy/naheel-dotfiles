@@ -60,9 +60,10 @@ pkg_install() {
                     cd "$dir" && {
                         if [ -f autogen.sh ];  then ./autogen.sh; fi
                         if [ -f ./configure ]; then ./configure;  fi
-                    } && make &&
+                    } && sudo make &&
                     sudo make install &&
-                    cd /tmp || return 1
+                    cd /tmp &&
+                    sudo rm -rf "$dir" || return 1
             fi;;
 
         suckless)
@@ -73,12 +74,13 @@ pkg_install() {
                 dir=$(mktemp -d)
                 git clone --depth 1 "$link" "$dir" &&
                     cd "$dir" &&
-                    make &&
+                    sudo make &&
                     cp config.def.h config.h && {
                         [ -f "$conf" ] && patch config.h "$conf"
                         sudo make install
                     } &&
-                    cd /tmp || return 1
+                    cd /tmp &&
+                    sudo rm -rf "$dir" || return 1
             fi;;
 
         func)
