@@ -1,8 +1,6 @@
 #!/bin/sh
 
 D="$PWD"
-U="$USER"
-H="$HOME"
 
 C='\033[1m\033[34m' # info color
 E='\033[1m\033[31m' # error color
@@ -27,7 +25,7 @@ pkg_install() {
             if doit; then
                 echo "$installed" | grep -q "^$1$" &&
                     echo "$1 is already installed" && return
-                sudo -u "$U" yay -S --noconfirm "$1"
+                yay -S --noconfirm "$1"
             fi;;
 
         aur_manual)
@@ -37,9 +35,9 @@ pkg_install() {
                     cd /tmp || return 1
                     rm -rf /tmp/"$helper"*
                     curl -sO https://aur.archlinux.org/cgit/aur.git/snapshot/"$helper".tar.gz &&
-                        sudo -u "$U" tar -xvf "$helper".tar.gz &&
+                        tar -xvf "$helper".tar.gz &&
                         cd "$helper" &&
-                        sudo -u "$U" makepkg --noconfirm -si
+                        makepkg --noconfirm -si
                     cd /tmp || return 1)
             fi;;
 
@@ -53,42 +51,44 @@ pkg_install() {
             if doit; then sudo npm install -g "$1"; fi;;
 
         go)
-            if doit; then sudo -u "$U" go get -u "$1"; fi;;
+            if doit; then go get -u "$1"; fi;;
 
         git)
             if doit; then
                 dir=$(mktemp -d)
-                git clone --depth 1 "$1" "$dir"
-                cd "$dir" || return 1
-                [ -f autogen.sh ]  && ./autogen.sh
-                [ -f ./configure ] && ./configure
-                make
-                sudo make install
-                cd /tmp || return 1
+                git clone --depth 1 "$1" "$dir" &&
+                    cd "$dir" && {
+                        if [ -f autogen.sh ];  then ./autogen.sh; fi
+                        if [ -f ./configure ]; then ./configure;  fi
+                    } && make &&
+                    sudo make install &&
+                    cd /tmp || return 1
             fi;;
 
         suckless)
             if doit; then
                 link="$1"
                 name=${link##*/}
-                conf="$D/configs/$name-config.h"
+                conf="$D/configs/$name-config.h.diff"
                 dir=$(mktemp -d)
-                git clone --depth 1 "$link" "$dir"
-                cd "$dir" || return 1
-                make
-                [ -f "$conf" ] && cp "$conf" ./config.h
-                sudo make install
-                cd /tmp || return 1
+                git clone --depth 1 "$link" "$dir" &&
+                    cd "$dir" &&
+                    make &&
+                    cp config.def.h config.h && {
+                        [ -f "$conf" ] && patch config.h "$conf"
+                        sudo make install
+                    } &&
+                    cd /tmp || return 1
             fi;;
 
         func)
             case "$1" in
                 tpm)
                     if doit; then
-                        rm -rf "$H/.tmux"
-                        mkdir -p "$H/.tmux/plugins/tpm"
-                        sudo -u "$U" git clone https://github.com/tmux-plugins/tpm "$H/.tmux/plugins/tpm"
-                        sudo -u "$U" tmux source "$H/.tmux.conf"
+                        rm -rf "$HOME/.tmux"
+                        mkdir -p "$HOME/.tmux/plugins/tpm"
+                        git clone https://github.com/tmux-plugins/tpm "$HOME/.tmux/plugins/tpm"
+                        tmux source "$HOME/.tmux.conf"
                     fi;;
 
                 blackarch)
