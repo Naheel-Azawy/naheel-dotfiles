@@ -55,7 +55,10 @@ pkg_install() {
 
         git)
             if doit; then
-                [ -f /usr/bin/"$1" ] || return 0
+                [ -f /usr/bin/"$1" ] || {
+                    echo "$1 is already installed"
+                    return 0
+                }
                 dir=$(mktemp -d)
                 git clone --depth 1 "$1" "$dir" &&
                     cd "$dir" && {
@@ -69,7 +72,10 @@ pkg_install() {
 
         suckless)
             if doit; then
-                [ -f /usr/bin/"$1" ] || return 0
+                [ -f /usr/bin/"$1" ] || {
+                    echo "$1 is already installed"
+                    return 0
+                }
                 link="$1"
                 name=${link##*/}
                 conf="$D/configs/$name-config.h.diff"

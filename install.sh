@@ -48,7 +48,7 @@ mkuser() {
         cp -r "$D" "$DEST" &&
         chown -R "$user" "$DEST" && {
             sed -i 's/# %wheel ALL=(ALL) NOPASSWD: ALL/%wheel ALL=(ALL) NOPASSWD: ALL/' /etc/sudoers
-            sudo -u "$user" sh -c "cd $DEST && ./install.sh $QUICK"
+            sudo -u "$user" sh -c "cd $DEST && ./install.sh $QUICK $PACS"
         }
 
     echo 'Now log in to your user account'
