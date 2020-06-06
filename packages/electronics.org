@@ -1,12 +1,12 @@
-| TAG    | NAME IN REPO (or git url)                                     | PURPOSE (should be a verb phrase to sound right while installing) |
-|--------+---------------------------------------------------------------+-------------------------------------------------------------------|
-| aur    | logisim                                                       | logic circuits design                                             |
-| aur    | fritzing                                                      | simple and easy circuit design                                    |
-| pacman | arduino                                                       | well, arduino..                                                   |
-| pacman | arduino-cli                                                   | cli for arduino                                                   |
-| git    | https://github.com/Naheel-Azawy/fish-complete-arduino-cli.git | fish completion for arduino-cli                                   |
-| aur    | qucs                                                          | circuit simulator                                                 |
-| pacman | uucp                                                          | to use 'cu' for serial connection                                 |
-| pacman | kicad                                                         | schematics and PCB                                                |
-| pacman | kicad-library                                                 | Kicad component and footprint libraries                           |
-| pacman | kicad-library-3d                                              | Kicad 3D render model libraries                                   |
+| Tag    | Name                                                          | Purpose                                 |
+|--------+---------------------------------------------------------------+-----------------------------------------|
+| aur    | logisim                                                       | logic circuits design                   |
+| aur    | fritzing                                                      | simple and easy circuit design          |
+| pacman | arduino                                                       | well, arduino..                         |
+| pacman | arduino-cli                                                   | cli for arduino                         |
+| git    | https://github.com/Naheel-Azawy/fish-complete-arduino-cli.git | fish completion for arduino-cli         |
+| aur    | qucs                                                          | circuit simulator                       |
+| pacman | uucp                                                          | to use 'cu' for serial connection       |
+| pacman | kicad                                                         | schematics and PCB                      |
+| pacman | kicad-library                                                 | Kicad component and footprint libraries |
+| pacman | kicad-library-3d                                              | Kicad 3D render model libraries         |

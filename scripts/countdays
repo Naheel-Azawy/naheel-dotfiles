@@ -1,0 +1,6 @@
+#!/bin/node
+let fr = process.argv[2];
+let to = process.argv[3];
+if (to) {to = new Date(to)} else {to = new Date()}
+if (fr) {fr = new Date(fr)} else {fr = new Date("2020-03-12")}
+console.log((to - fr) / 86400000 | 0);

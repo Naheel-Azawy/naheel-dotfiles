@@ -1,13 +1,8 @@
 #!/bin/sh
 
-D=$(pwd)
-U="$1"
-[ "$U" = "" ] && U="$USER"
-if [ "$U" = "root" ]; then
-    H="/root"
-else
-    H="/home/$U"
-fi
+D="$PWD"
+U="$USER"
+H="$HOME"
 
 info() { printf "\e[1;34;40m%s -------- \033[0m\n" "$@"; }
 
@@ -17,7 +12,7 @@ sed -i 's/#\[multilib\]/[multilib]\nInclude = \/etc\/pacman.d\/mirrorlist/g' /et
 pacman -Syu # Upgrade the system
 
 info "Install packages"
-./install-packages.sh "$U" "$D"
+./install-packages.sh
 
 info "Setting up systemd services"
 systemctl enable org.cups.cupsd

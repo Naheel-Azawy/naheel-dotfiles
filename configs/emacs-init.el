@@ -18,6 +18,13 @@ There are two things you can do about this warning:
     (add-to-list 'package-archives (cons "gnu" (concat proto "://elpa.gnu.org/packages/")))))
 (package-initialize)
 
+;; QUELPA
+(unless (package-installed-p 'quelpa)
+  (with-temp-buffer
+    (url-insert-file-contents "https://github.com/quelpa/quelpa/raw/master/quelpa.el")
+    (eval-buffer)
+    (quelpa-self-upgrade)))
+
 ;; ---- USE PACKAGE ----
 (unless (package-installed-p 'use-package)
   (package-refresh-contents)
@@ -151,30 +158,10 @@ There are two things you can do about this warning:
   (setq web-mode-enable-current-column-highlight t))
 
 ;; ---- VLANG ----
-(setq vlang-font-lock-keywords
-      (let* (
-             ;; define several category of keywords
-             (x-keywords '("break" "const" "continue" "defer" "else" "enum" "fn" "for" "go" "goto" "if" "import" "in" "interface" "match" "module" "mut" "none" "or" "pub" "return" "struct" "type"))
-             (x-types '("bool" "string" "i8" "i16" "int" "i64" "i128" "byte" "u16" "u32" "u64" "u128" "rune" "f32" "f64" "byteptr" "voidptr" "map"))
-             (x-constants '("true" "false"))
-
-             ;; generate regex string for each category of keywords
-             (x-keywords-regexp (regexp-opt x-keywords 'words))
-             (x-types-regexp (regexp-opt x-types 'words))
-             (x-constants-regexp (regexp-opt x-constants 'words)))
-
-        `(
-          (,x-keywords-regexp . font-lock-keyword-face)
-          (,x-types-regexp . font-lock-type-face)
-          (,x-constants-regexp . font-lock-constant-face)
-          ;; note: order above matters, because once colored, that part won't change.
-          ;; in general, put longer words first
-          )))
-;;;###autoload
-(define-derived-mode vlang-mode javascript-mode "V"
-  "Major mode for editing V files"
-  (setq-local font-lock-defaults '((vlang-font-lock-keywords))))
-(add-to-list 'auto-mode-alist '("\\.v\\'" . vlang-mode))
+(quelpa
+ '(vlang-mode :fetcher url
+              :url "https://raw.githubusercontent.com/naheel-azawy/vlang-mode.el/master/vlang-mode.el"))
+(require 'vlang-mode)
 
 ;; ---- OTHER LANGS ----
 (use-package vala-mode)
@@ -451,7 +438,7 @@ There are two things you can do about this warning:
     ("bffa9739ce0752a37d9b1eee78fc00ba159748f50dc328af4be661484848e476" default)))
  '(package-selected-packages
    (quote
-    (xonsh-mode elvish-mode undo-fu js2-mode ein cmake-mode origami fish-mode doom-modeline git-gutter smooth-scroll sublimity org-ref anzu flycheck flymake-shellcheck typescript-mode rust-mode kotlin-mode julia-mode go-mode dart-mode csharp-mode flyspell-correct-helm rainbow-mode web-mode company-mode org-bullets ox-groff calfw-org calfw undo-tree spacemacs-theme xclip use-package multiple-cursors lsp-ui lsp-java company-lsp))))
+    (vlang-mode quelpa xonsh-mode elvish-mode undo-fu js2-mode ein cmake-mode origami fish-mode doom-modeline git-gutter smooth-scroll sublimity org-ref anzu flycheck flymake-shellcheck typescript-mode rust-mode kotlin-mode julia-mode go-mode dart-mode csharp-mode flyspell-correct-helm rainbow-mode web-mode company-mode org-bullets ox-groff calfw-org calfw undo-tree spacemacs-theme xclip use-package multiple-cursors lsp-ui lsp-java company-lsp))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
@@ -477,3 +464,4 @@ There are two things you can do about this warning:
  '(cfw:face-toolbar-button-on ((t :foreground "#ffffff" :weight bold)))
  '(js2-external-variable ((t (:foreground "brightblack")))))
 (put 'downcase-region 'disabled nil)
+(put 'upcase-region 'disabled nil)

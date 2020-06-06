@@ -108,11 +108,9 @@ cmd delete ${{
 
 # copy with x-special clipboard
 cmd copy-special &{{
-                      CP='x-special/nautilus-clipboard
-copy
-'
+                      CP=''
                       for f in $fx; do
-                          CP="${CP}file://$f
+                          CP="${CP}$f
 "
                       done
                       printf "$CP" |
