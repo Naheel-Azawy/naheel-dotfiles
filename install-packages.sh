@@ -118,8 +118,14 @@ pkg_install() {
 
 main() {
     cd "$D/packages" || exit 1
-    #files="base base-gui addtions themostsignificant devel electronics games"
-    files="base base-gui"
+    date >> "$HOME/dotfiles-install-err"
+    if [ $# != 0 ]; then
+        files="$*"
+    else
+        #files="base base-gui addtions themostsignificant devel electronics games"
+        files="base base-gui"
+    fi
+    echo "Installing packages from $files"
     pacs=$(for f in $files; do tail -n +3 "$f.org" | sed 's/|/ /g;s/  */ /g'; done)
     total=$(echo "$pacs" | wc -l)
     i=1
@@ -128,11 +134,11 @@ main() {
         printf "${C}PURPOSE:${R} %s\n" "$des"
         pkg_install "$tag" "$pac" || {
             err "Failed installing '$pac'"
-            exit 1
+            echo "$pac" >> "$HOME/dotfiles-install-err"
         }
         i=$((i+1))
         echo "-----------------------------"
     done
 }
 
-main
+main "$@"
