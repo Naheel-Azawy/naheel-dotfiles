@@ -254,3 +254,5 @@ abbr awkp  'awk \'{print $1}\''
 
 abbr ytdl  'youtube-dl --add-metadata -ic'
 abbr ytdla 'youtube-dl --add-metadata -xic --audio-format mp3'
+
+set -x TERM "screen-256color"

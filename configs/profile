@@ -2,6 +2,7 @@
 
 # Profile file. Runs on login.
 
+export TERM="screen-256color"
 export EDITOR="emacs-in"
 export VISUAL="$EDITOR"
 export TERMINAL="st"
@@ -52,7 +53,8 @@ export I3BLOCKS_SIG_LAST=$I3BLOCKS_SIG_LANG
 [ -f ~/.bashrc ]           && . ~/.bashrc
 
 # To be able to change the brightness. Password is not required as edited in the sudoers
-sudo chmod a+rw /sys/class/backlight/intel_backlight/brightness
+sudo chmod a+rw /sys/class/backlight/intel_backlight/brightness \
+     2>/dev/null ||:
 
 # Start graphical server if i3 not already running.
 if [ "$(tty)" = "/dev/tty1" ]; then
