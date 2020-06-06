@@ -116,8 +116,8 @@ pkg_install() {
 
 main() {
     cd "$D/packages" || exit 1
-    #files="base addtions themostsignificant devel electronics games"
-    files="base"
+    #files="base base-gui addtions themostsignificant devel electronics games"
+    files="base base-gui"
     pacs=$(for f in $files; do tail -n +3 "$f.org" | sed 's/|/ /g;s/  */ /g'; done)
     total=$(echo "$pacs" | wc -l)
     i=1
