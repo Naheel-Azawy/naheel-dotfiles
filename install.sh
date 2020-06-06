@@ -25,7 +25,7 @@ mkuser() {
     rm -rf "$DEST" &&
         cp -r "$D" "$DEST" &&
         chown -R "$user" "$DEST" &&
-        sudo -u "$user" "$DEST/install.sh"
+        sudo -u "$user" sh -c "cd $DEST && ./install.sh"
     exit
 }
 
@@ -57,3 +57,4 @@ export PATH=\"\$PATH:\$DOTFILES_SCRIPTS\"
 " > "$HOME/.dotfiles-exports"
 chmod +x "$HOME/.dotfiles-exports"
 
+echo 'DONE!!!'

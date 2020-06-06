@@ -1,12 +1,7 @@
 #!/bin/sh
-D="$1"
-U="$2"
-H="$3"
 
-[ "$D" = "" ] && D="$DOTFILES_DIR"
-[ "$D" = "" ] && D=$(pwd)
-[ "$U" = "" ] && U="$USER"
-[ "$H" = "" ] && H="$HOME"
+D="$PWD"
+H="$HOME"
 
 lnnn() {
     TODIR=$(dirname "$2")

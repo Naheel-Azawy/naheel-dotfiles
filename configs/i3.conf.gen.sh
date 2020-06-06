@@ -282,7 +282,7 @@ outbindings() {
     ##bindsym XF86Reply                      exec
     ##bindsym XF86MailForward                exec
     ##bindsym XF86Save                       exec
-    bindsym XF86Documents                    exec theterm lf "$H/Documents"
+    bindsym XF86Documents                    exec theterm lf "$HOME/Documents"
     ##bindsym XF86Battery                    exec
     ##bindsym XF86Bluetooth                  exec
     bindsym XF86WLAN                         exec --no-startup-id sudo -A systemctl restart NetworkManager
@@ -428,9 +428,6 @@ main() {
     RUN=''  && [ "$1" = '-r' ]          && RUN="$2" && shift 2
     KEYS='' && [ "$1" = '--used-keys' ] && KEYS=1   && shift
 
-    H="$1"
-    [ ! "$H" ] && H="$HOME"
-
     mod=Mod4
 
     if [ "$RUN" ]; then
@@ -462,7 +459,7 @@ main() {
         dmenufixfocus -l 2>/dev/null &
         i3-msg "$msg"
     else
-        OUTFILE="$H/.config/i3/config"
+        OUTFILE="$HOME/.config/i3/config"
         rm -f "$OUTFILE"
 
         out() { echo "$@" >> "$OUTFILE"; }

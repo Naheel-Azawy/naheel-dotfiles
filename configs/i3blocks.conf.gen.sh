@@ -2,10 +2,7 @@
 
 ## This file is used to generate i3blocks.conf
 
-H="$1"
-[ ! "$H" ] && H="$HOME"
-
-OUTFILE="$H/.config/i3blocks/config"
+OUTFILE="$HOME/.config/i3blocks/config"
 rm -f "$OUTFILE"
 
 out() { echo "$@" >> "$OUTFILE"; }
