@@ -3,11 +3,10 @@
 # Generated with:
 # $ gsettings-save org.onboard > "$DOTFILES_DIR/configs/onboard-gsettings.sh"
 
-gsettings get org.onboard.window.landscape x >/dev/null 2>/dev/null ||
-    gsettings list-schemas >/dev/null 2>/dev/null || {
-        echo Failed setting on-screen keyboard settings
-        exit 1
-    }
+gsettings get org.onboard.window.landscape x >/dev/null 2>/dev/null || {
+    echo Failed setting on-screen keyboard settings
+    exit 1
+}
 
 THEME="$DOTFILES_DIR/configs/onboard-theme.xml"
 gsettings set org.onboard.window.landscape width "660"
