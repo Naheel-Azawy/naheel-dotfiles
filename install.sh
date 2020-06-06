@@ -61,7 +61,7 @@ sudo sed -i 's/# %wheel ALL=(ALL) NOPASSWD: ALL/%wheel ALL=(ALL) NOPASSWD: ALL/'
 
 # add some commands to no password sudo if needed
 nopass='%wheel ALL=(ALL) NOPASSWD: /usr/bin/updatedb,/usr/bin/shutdown,/usr/bin/reboot,/usr/bin/systemctl suspend,/usr/bin/wifi-menu,/usr/bin/mount,/usr/bin/umount,/usr/bin/pacman -Syu,/usr/bin/pacman -Syyu,/usr/bin/systemctl restart NetworkManager,/usr/bin/rc-service NetworkManager restart,/usr/bin/pacman -Syyu --noconfirm,/usr/bin/loadkeys,/usr/bin/yay,/usr/bin/chmod a+rw /sys/class/backlight/intel_backlight/brightness'
-sudo grep -q "$nopass" /etc/sudoers || echo "nopass" | sudo tee -a /etc/sudoers
+sudo grep -q "$nopass" /etc/sudoers || echo "$nopass" | sudo tee -a /etc/sudoers
 
 info "Updating packages"
 # Enables multilib. Needed for wine
@@ -88,9 +88,6 @@ export DOTFILES_SCRIPTS=\"\$DOTFILES_DIR/scripts\"
 export PATH=\"\$PATH:\$DOTFILES_SCRIPTS\"
 " > "$HOME/.dotfiles-exports"
 chmod +x "$HOME/.dotfiles-exports"
-
-info "Updating Emacs"
-emacs --daemon
 
 # disallow no password sudo
 [ "$QUICK" ] ||
