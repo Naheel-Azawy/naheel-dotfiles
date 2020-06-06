@@ -17,7 +17,11 @@ mkuser() {
     echo '1. Create a new user? 2. Or login to existing one? [1/2] '
     read -r user
     [ "$user" != 2 ] && mkuser
-    sudo -u "$user" "$0"
+    DEST="/home/$user/.dotfiles"
+    rm -rf "$DEST" &&
+        cp -r "$D" "$DEST" &&
+        chown -R "$user" "$DEST" &&
+        sudo -u "$user" "$DEST/install.sh"
     exit
 }
 
