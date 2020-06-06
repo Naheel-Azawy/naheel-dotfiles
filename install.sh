@@ -29,7 +29,12 @@ mkuser() {
     rm -rf "$DEST" &&
         cp -r "$D" "$DEST" &&
         chown -R "$user" "$DEST" &&
+        sed -i 's/# %wheel ALL=(ALL) NOPASSWD: ALL/%wheel ALL=(ALL) NOPASSWD: ALL/' /etc/sudoers &&
         sudo -u "$user" sh -c "cd $DEST && ./install.sh"
+    sed -i 's/%wheel ALL=(ALL) NOPASSWD: ALL/# %wheel ALL=(ALL) NOPASSWD: ALL/' /etc/sudoers
+
+    echo 'Now log in to your user account'
+    echo "\$ su $user"
     exit
 }
 
@@ -60,8 +65,3 @@ export PATH=\"\$PATH:\$DOTFILES_SCRIPTS\"
 chmod +x "$HOME/.dotfiles-exports"
 
 echo 'DONE!!!'
-
-[ "$(whoami)" = root ] && {
-    echo 'Now log in to your user account'
-    echo "\$ su $user"
-}
