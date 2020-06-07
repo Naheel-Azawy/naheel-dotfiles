@@ -95,6 +95,10 @@ pkg_install() {
             case "$1" in
                 tpm)
                     if doit; then
+                        [ -d "$HOME/.tmux/plugins/tpm" ] && {
+                            echo 'TPM is already installed'
+                            return 0
+                        }
                         rm -rf "$HOME/.tmux"
                         mkdir -p "$HOME/.tmux/plugins/tpm"
                         git clone https://github.com/tmux-plugins/tpm "$HOME/.tmux/plugins/tpm"
@@ -103,6 +107,10 @@ pkg_install() {
 
                 blackarch)
                     if doit; then
+                        grep -q '^\[blackarch\]' /etc/pacman.conf && {
+                            echo 'Blackarch is already installed'
+                            return 0
+                        }
                         cd /tmp || return 1
                         curl -O https://blackarch.org/strap.sh || return 1
                         test "$(sha1sum strap.sh | cut -d ' ' -f1)" = \
@@ -111,6 +119,7 @@ pkg_install() {
                             return 1
                         }
                         chmod +x strap.sh && sudo ./strap.sh || return 1
+                        rm -rf /tmp/strap.sh
                     fi;;
 
                 *)

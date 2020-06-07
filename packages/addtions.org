@@ -55,7 +55,7 @@
 | pacman | opendesktop-fonts                     | Japanese font                                                                                  |
 | aur    | adwaita-qt5                           | Adwaita GNOME theme for Qt5                                                                    |
 | aur    | adwaita-qt4                           | Adwaita GNOME theme for Qt4                                                                    |
-| pacman | transset-df                           | used to change the window opacity                                                              |
+| aur    | transset-df                           | used to change the window opacity                                                              |
 | pacman | translate-shell                       | a command-line translator                                                                      |
 | pip    | numpy                                 | some actual math in python                                                                     |
 | pip    | matplotlib                            | math plotting in python                                                                        |
@@ -67,11 +67,10 @@
 | pacman | tree                                  | list tree of directories                                                                       |
 | pacman | gnuplot                               | Gnu plotting program                                                                           |
 | pacman | lsof                                  | list open files                                                                                |
-| pacman | wireshark-gtk                         | Interactively dump and analyze network traffic                                                 |
+| pacman | wireshark-qt                          | interactively dump and analyze network traffic                                                 |
 | pacman | tcpdump                               | dump network traffic                                                                           |
 | pacman | iotop                                 | top for disk io                                                                                |
 | pacman | sysstat                               | a collection of performance monitoring tools (iostat,isag,mpstat,pidstat,sadf,sar)             |
-| pacman | ditta                                 | draw with ASCII                                                                                |
 | npm    | cloudconvert                          | usefull to convert ugly documents written in non-free softwares                                |
 | pacman | mlocate                               | find files quickly                                                                             |
 | npm    | wikit                                 | cli wikipedia                                                                                  |
