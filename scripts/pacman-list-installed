@@ -1,2 +1,2 @@
-#!/bin/bash
+#!/bin/sh
 (pacman -Qet && pacman -Qm) | sort -u

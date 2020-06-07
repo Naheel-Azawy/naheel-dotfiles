@@ -1,2 +1,2 @@
-#!/bin/bash
-winejail xp-games $GAMES_XP spider.exe
+#!/bin/sh
+exec winejail xp-games "$GAMES_XP" spider.exe

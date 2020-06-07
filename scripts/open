@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 
 lfsend() {
     if [ "$LFID" != '' ]; then
@@ -117,7 +117,7 @@ FORCEFZF=0
     [ -t 1 ] && FZF=--fzf
     # except if forced
     [ "$1" = '-nw' ] && FZF='' && shift
-    FORCEOPENER=$(pick $FZF "$@")
+    FORCEOPENER=$(pick "$FZF" "$@")
     [ ! "$FORCEOPENER" ] && exit 1
 }
 

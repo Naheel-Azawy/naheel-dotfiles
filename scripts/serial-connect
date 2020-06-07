@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 # Remember, exit cu with ~.
 case "$1" in
     de0-nano)     sudo cu -l /dev/ttyUSB0 -s 115200;;

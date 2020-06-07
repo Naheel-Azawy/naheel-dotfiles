@@ -1,4 +1,4 @@
-#!/usr/bin/env execute
+#!/usr/bin/env rn
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>

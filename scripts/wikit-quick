@@ -1,9 +1,9 @@
-#!/bin/bash
-Q="$@"
-wikit "$Q" | \
-    fold -s -w $(tput cols) | more && \
-    echo 'Read full page? (y/n)' && \
-    read ans && \
-    test "$ans" == y && \
-    wikit -b "$Q" && \
+#!/bin/sh
+Q="$*"
+wikit "$Q" |
+    fold -s -w "$(tput cols)" | more &&
+    echo 'Read full page? (y/n)' &&
+    read -r ans &&
+    test "$ans" == y &&
+    wikit -b "$Q" &&
     sleep 0.5

@@ -1,6 +1,6 @@
 #!/bin/sh
 export WINEPREFIX="$HOME/.wineprefixes/$1/"
-mkdir -p $WINEPREFIX
+mkdir -p "$WINEPREFIX"
 export WINEARCH="win32"
 shift
-wine "$@"
+exec wine "$@"

@@ -1,2 +1,2 @@
-#!/bin/bash
+#!/bin/sh
 pacman -Sgg | grep blackarch | cut -d' ' -f2 | sort -u

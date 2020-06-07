@@ -1,2 +1,2 @@
-#!/bin/bash
-winejail xp-games $GAMES_XP Pinball/PINBALL.EXE
+#!/bin/sh
+exec winejail xp-games "$GAMES_XP" Pinball/PINBALL.EXE

@@ -18,7 +18,7 @@ if [ "$1" ]; then
     if [ "$C" ]; then
         [ "$C" ] && echo "$CODES" | out "$C"
     else
-        C=$(echo "$CODES" | find "$1")
+        C=$(echo "$CODES" | find "\"$1\"")
         [ "$C" ] && echo "$NAMES" | out "$C"
     fi
 fi

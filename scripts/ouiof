@@ -1,4 +1,4 @@
 #!/bin/sh
 O=/usr/share/hwdata/oui.txt
 [ ! -f $O ] && sudo download-ouis
-echo "$(grep -i $(echo $1 | sed 's/\://g' | cut -c1-6) )" | tr "\t" "\n" | tail -n1
+grep -i "$(echo "$1" | sed 's/\://g' | cut -c1-6)" "$O" | tr "\t" "\n" | tail -n1

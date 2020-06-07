@@ -1,4 +1,4 @@
-#!/usr/bin/env execute
+#!/usr/bin/env rn
    // From: https://gist.github.com/mike168m/6dd4eb42b2ec906e064d
 #include <iostream>
 #include <stdio.h>

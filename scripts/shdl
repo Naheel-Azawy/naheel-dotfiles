@@ -1,2 +1,0 @@
-#!/bin/bash
-curl -O $(curl -s http://sci-hub.tw/"$@" | grep location.href | grep -o http.*pdf)

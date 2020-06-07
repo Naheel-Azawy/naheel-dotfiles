@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 for W in /etc/NetworkManager/system-connections/*; do
     echo "$W"
     echo '-------------------------'

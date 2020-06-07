@@ -1,2 +1,0 @@
-#!/bin/bash
-R=$(d2r $1); echo "s($R)/c($R)" | bc -l

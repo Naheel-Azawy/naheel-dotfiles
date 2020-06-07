@@ -1,2 +1,2 @@
-#!/bin/bash
-matlab-gui -nodesktop $@
+#!/bin/sh
+exec matlab-gui -nodesktop "$@"

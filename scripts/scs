@@ -1,2 +1,2 @@
-#!/bin/bash
-java -jar $HOME/Projects/SCS/scs.jar "$@"
+#!/bin/sh
+exec java -jar "$HOME/Projects/SCS/scs.jar" "$@"

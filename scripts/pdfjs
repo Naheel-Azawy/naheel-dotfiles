@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 
 BASE="$HOME/GoodStuff/pdf.js/build/generic/web"
 TMP="$BASE/__tmp.pdf"

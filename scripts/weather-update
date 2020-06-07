@@ -1,8 +1,8 @@
-#!/bin/bash
+#!/bin/sh
 ### This is only if your location isn't automatically detected, otherwise you can leave it blank.
 location="Doha"
-[[ "$location" != "" ]] && location="~${location// /+}"
+[ "$location" != "" ] && location="~${location// /+}"
 res=$(curl -s wttr.in/$location?n)
-[[ "$res" = '' ]] && exit
+[ "$res" = '' ] && exit
 echo "$res" > ~/.weatherreport
-pkill -RTMIN+$I3BLOCKS_SIG_WEAT i3blocks
+pkill -RTMIN+"$I3BLOCKS_SIG_WEAT" i3blocks

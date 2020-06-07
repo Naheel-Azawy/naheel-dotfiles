@@ -1,2 +1,3 @@
-#!/bin/bash
-test $(imgbrightness "$1") -gt 60
+#!/bin/sh
+B=$(imgbrightness "$1")
+test "$B" -gt 60

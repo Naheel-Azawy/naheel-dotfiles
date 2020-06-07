@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 N="wine-$1"
 D="$2"
 F="$3"
@@ -7,7 +7,7 @@ mkdir -p "$JH"
 tmp="${D%/}"
 JD="${tmp##*/}"
 JF="$JD/$F"
-[[ "$D" != "no-cp" ]] && [[ ! -e "$JH/$JD" ]] && cp -r "$D" "$JH/$JD"
+[ "$D" != "no-cp" ] && [ ! -e "$JH/$JD" ] && cp -r "$D" "$JH/$JD"
 RN="$HOME/$JF"
-[[ "$D" = "no-cp" ]] && RN="$F"
+[ "$D" = "no-cp" ] && RN="$F"
 WINEARCH=win32 firejail-my "$N" wine "$RN"

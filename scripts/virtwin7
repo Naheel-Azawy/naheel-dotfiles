@@ -1,2 +1,2 @@
-#!/bin/bash
-vboxmanage startvm 'Windows 7' "$@"
+#!/bin/sh
+exec vboxmanage startvm 'Windows 7' "$@"

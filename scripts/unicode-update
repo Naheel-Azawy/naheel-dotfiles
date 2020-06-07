@@ -1,10 +1,10 @@
-#!/bin/bash
+#!/bin/sh
 U="$DOTFILES_DIR/stuff/unicode"
 echo "Downloading..."
 curl 'https://www.unicode.org/Public/UCD/latest/ucd/UnicodeData.txt' > "$U"
 echo "Processing..."
-cat "$U" | awk -F';' '{print "\\\\u"$1" "$2}' | while read u d; do printf "$u : \\$u : $d\n"; done > "${U}2"
+awk -F';' '{print "\\\\u"$1" "$2}' "$U" | while read -r u d; do printf "$u : \\$u : $d\n"; done > "${U}2"
 sed -i 's/[^[:print:]]//g' "${U}2"
-cat "${U}2" | grep '.' > "$U"
+grep '.' "${U}2" > "$U"
 rm -f "${U}2"
 echo "Done!"

@@ -1,2 +1,2 @@
-#!/bin/bash
-mgba-qt "$GAMES_GB/Pokemon - Crystal Version (USA, Europe).gbc" "$@"
+#!/bin/sh
+exec mgba-qt "$GAMES_GB/Pokemon - Crystal Version (USA, Europe).gbc" "$@"

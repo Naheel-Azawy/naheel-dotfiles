@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 IN="$1"
 D="$IN-frames"
 O="$IN.gif"

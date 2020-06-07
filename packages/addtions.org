@@ -1,13 +1,11 @@
 | Tag    | Name                                  | Purpose                                                                                        |
 |--------+---------------------------------------+------------------------------------------------------------------------------------------------|
 | pip    | youtube-dl                            | can download any YouTube video (or playlist or channel) when given the link                    |
-| pip2   | BeautifulSoup                         | beautiful soup for python2.7                                                                   |
 | pacman | youtube-viewer                        | is a terminal interface for watching YouTube videos without a browser                          |
 | pacman | zathura                               | is a pdf viewer with vim-like bindings                                                         |
 | pacman | zathura-djvu                          | gives zathura the ability to read .djvu files                                                  |
 | pacman | zathura-pdf-mupdf                     | allows mupdf pdf compatibility in zathura                                                      |
 | pacman | firefox                               | chromium is good but firefox is not bad                                                        |
-| pacman | newsboat                              | is a terminal RSS client                                                                       |
 | pacman | libreoffice                           | because off course someone will send a file that is not a plain text...                        |
 | pacman | jdk8-openjdk                          | Java 8 development kit                                                                         |
 | pacman | firejail                              | keeps untrusted software in jail                                                               |
@@ -18,12 +16,9 @@
 | aur    | gimp-plugin-resynthesizer             | gimp resynthesizer                                                                             |
 | aur    | drawio-desktop-bin                    | diagram builder                                                                                |
 | pacman | imagemagick                           | the magical image editor                                                                       |
-| aur    | paper-icon-theme                      | a nicer GTK icon theme                                                                         |
-| pacman | cmus                                  | the little simple music player                                                                 |
-| pacman | mpd                                   | music player daemon (another music player)                                                     |
+| pacman | mpd                                   | music player daemon                                                                            |
 | pacman | mpc                                   | mpd client                                                                                     |
 | pacman | ncmpcpp                               | mpd UI                                                                                         |
-| aur    | fmui                                  | mpd UI with fzf                                                                                |
 | pacman | virtualbox                            | the chosen virtual machine                                                                     |
 | pacman | virtualbox-host-modules-arch          | virtual-box kernel modules                                                                     |
 | pacman | colordiff                             | a more colorful diff                                                                           |

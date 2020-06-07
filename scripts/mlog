@@ -1,6 +1,0 @@
-#!/bin/bash
-if [ ! -z $2 ]; then
-	  echo "l($2)/l($1)" | bc -l
-else
-	  echo "l($1)/l(10)" | bc -l
-fi

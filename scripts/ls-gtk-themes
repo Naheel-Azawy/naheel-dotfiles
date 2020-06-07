@@ -1,5 +1,4 @@
-#!/bin/bash
-R=''
-R="$R $(ls /usr/share/themes/ 2>/dev/null)"
-R="$R $(ls $HOME/.themes 2>/dev/null)"
-echo $R
+#!/bin/sh
+R="$(ls /usr/share/themes/ 2>/dev/null)"
+R="$R $(ls "$HOME/.themes" 2>/dev/null)"
+echo "$R"

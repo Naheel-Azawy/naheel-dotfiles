@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 C=0 # clipboard
 W=0 # window
 A=0 # area
