@@ -8,6 +8,10 @@ R='\033[0m'         # reset color
 
 installed=$( (pacman -Qet && pacman -Qm) | awk '{print $1}')
 
+# in case no sudo and in root, just eval
+! command -v sudo >/dev/null && [ "$(whoami)" = root ] &&
+    sudo() { eval "$@"; }
+
 err() {
     printf "${E}ERROR:${R} %s\n" "$@" >&2
 }
@@ -25,7 +29,7 @@ pkg_install() {
             if doit; then
                 echo "$installed" | grep -q "^$1$" &&
                     echo "$1 is already installed" && return
-                yay -S --noconfirm "$1"
+                yay -S --noconfirm --needed "$1"
             fi;;
 
         aur_manual)
@@ -150,7 +154,6 @@ main() {
         printf "${C}PURPOSE:${R} %s\n" "$des"
         pkg_install "$tag" "$pac" || {
             err "Failed installing '$pac'"
-            echo "$pac" >> "$HOME/dotfiles-install-err"
         }
         i=$((i+1))
         echo "-----------------------------"

@@ -48,7 +48,7 @@
 | pacman | lib32-openal                          | sound related stuff                                                                            |
 | pacman | ttf-hanazono                          | Chinese font                                                                                   |
 | pacman | opendesktop-fonts                     | Japanese font                                                                                  |
-| aur    | adwaita-qt5                           | Adwaita GNOME theme for Qt5                                                                    |
+| aur    | adwaita-qt                            | Adwaita GNOME theme for Qt5                                                                    |
 | aur    | adwaita-qt4                           | Adwaita GNOME theme for Qt4                                                                    |
 | aur    | transset-df                           | used to change the window opacity                                                              |
 | pacman | translate-shell                       | a command-line translator                                                                      |

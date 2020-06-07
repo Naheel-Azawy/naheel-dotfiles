@@ -25,6 +25,8 @@ case "$CMD" in
             die
             docker rmi "$(docker images -q)"
         };;
+    size)
+        docker system df -v;;
     *)
         echo 'What??'
         exit 1;;

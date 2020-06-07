@@ -12,6 +12,10 @@ QUICK=
 
 PACS="$*"
 
+# in case no sudo and in root, just eval
+! command -v sudo >/dev/null && [ "$(whoami)" = root ] &&
+    sudo() { eval "$@"; }
+
 info() { printf "\e[1;34;40m%s -------- \033[0m\n" "$@"; }
 
 mkuser() {
