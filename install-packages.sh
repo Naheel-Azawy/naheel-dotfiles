@@ -10,7 +10,10 @@ installed=$( (pacman -Qet && pacman -Qm) | awk '{print $1}')
 
 # in case no sudo and in root, just eval
 ! command -v sudo >/dev/null && [ "$(whoami)" = root ] &&
-    sudo() { eval "$@"; }
+    sudo() {
+        [ "$1" = '-u' ] && shift
+        eval "$@"
+    }
 
 err() {
     printf "${E}ERROR:${R} %s\n" "$@" >&2
