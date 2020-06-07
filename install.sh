@@ -32,6 +32,9 @@ mkuser() {
 }
 
 [ "$(whoami)" = root ] && {
+    # double check sudo
+    pacman --noconfirm -Sy &&
+        pacman --noconfirm --needed -S sudo
     if [ ! "$QUICK" ]; then
         info "Looks like you're running as root!"
         echo '1) Create a new user'
