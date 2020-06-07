@@ -56,17 +56,18 @@ mkuser() {
     exit
 }
 
+info "Setting up sudo"
 # allow no password sudo
 sudo sed -i 's/# %wheel ALL=(ALL) NOPASSWD: ALL/%wheel ALL=(ALL) NOPASSWD: ALL/' /etc/sudoers
-
 # add some commands to no password sudo if needed
 nopass='%wheel ALL=(ALL) NOPASSWD: /usr/bin/updatedb,/usr/bin/shutdown,/usr/bin/reboot,/usr/bin/systemctl suspend,/usr/bin/wifi-menu,/usr/bin/mount,/usr/bin/umount,/usr/bin/pacman -Syu,/usr/bin/pacman -Syyu,/usr/bin/systemctl restart NetworkManager,/usr/bin/rc-service NetworkManager restart,/usr/bin/pacman -Syyu --noconfirm,/usr/bin/loadkeys,/usr/bin/yay,/usr/bin/chmod a+rw /sys/class/backlight/intel_backlight/brightness'
-sudo grep -q "$nopass" /etc/sudoers || echo "$nopass" | sudo tee -a /etc/sudoers
+sudo grep -q "$nopass" /etc/sudoers ||
+    echo "$nopass" | sudo tee -a /etc/sudoers
 
-info "Updating packages"
-# Enables multilib. Needed for wine
-sudo sed -i 's/#\[multilib\]/[multilib]\nInclude = \/etc\/pacman.d\/mirrorlist/g' /etc/pacman.conf
-sudo pacman --noconfirm -Syu # Upgrade the system
+info "Upgrading the system"
+sudo grep -q '^\[multilib\]' /etc/pacman.conf ||
+    printf '[multilib]\nInclude = /etc/pacman.d/mirrorlist\n' | sudo tee -a /etc/pacman.conf
+sudo pacman --noconfirm -Syu
 
 info "Install packages"
 ./install-packages.sh "$PACS"

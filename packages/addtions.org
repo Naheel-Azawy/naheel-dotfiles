@@ -24,7 +24,7 @@
 | pacman | mpc                                   | mpd client                                                                                     |
 | pacman | ncmpcpp                               | mpd UI                                                                                         |
 | aur    | fmui                                  | mpd UI with fzf                                                                                |
-| pacman | virtual-box                           | the chosen virtual machine                                                                     |
+| pacman | virtualbox                            | the chosen virtual machine                                                                     |
 | pacman | virtualbox-host-modules-arch          | virtual-box kernel modules                                                                     |
 | pacman | colordiff                             | a more colorful diff                                                                           |
 | pacman | diff-so-fancy                         | an even more colorful diff                                                                     |
