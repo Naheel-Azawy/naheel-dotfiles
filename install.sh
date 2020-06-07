@@ -15,7 +15,7 @@ PACS="$*"
 # in case no sudo and in root, just eval
 ! command -v sudo >/dev/null && [ "$(whoami)" = root ] &&
     sudo() {
-        [ "$1" = '-u' ] && shift
+        [ "$1" = '-u' ] && shift 2
         eval "$@"
     }
 
