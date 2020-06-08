@@ -19,7 +19,7 @@ try_add_path() {
 try_add_path "$HOME/go/bin"
 
 # ANDROID ###################################
-try_export ANDROID_HOME /mnt/hdd3/GoodStuff2/software/android/Sdk
+try_export ANDROID_HOME /mnt/hdd3/GoodStuff/software/android/Sdk
 try_export ANDROID_SDK_ROOT "$ANDROID_HOME"
 try_add_path "$ANDROID_HOME/platform-tools"
 
@@ -30,12 +30,12 @@ try_export GAMES_GB "$GAMES/gameboy"
 try_export GAMES_PS "$GAMES/psx"
 
 # MATLAB ####################################
-try_export MATLAB /mnt/hdd3/GoodStuff2/software/non-free-software/MATLAB/R2017a
+try_export MATLAB /mnt/hdd3/GoodStuff/software/non-free-software/MATLAB/R2017a
 
 # OTHERS ####################################
-try_export QU       /mnt/hdd1/Documents/QU
-try_export QU_SCHED /mnt/hdd1/Projects/qu-stuff/QUSchedule
-try_export EVENTS   /mnt/hdd1/Documents/events
-try_export RESEARCH /mnt/hdd1/Documents/research
-try_export CERTS    /mnt/hdd1/Documents/Certifications
+try_export QU       /mnt/hdd3/Private/Documents/QU
+try_export QU_SCHED /mnt/hdd3/Private/Projects/qu-stuff/QUSchedule
+try_export EVENTS   /mnt/hdd3/Private/Documents/events
+try_export RESEARCH /mnt/hdd3/Private/Documents/research
+try_export CERTS    /mnt/hdd3/Private/Documents/Certifications
 

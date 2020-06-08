@@ -6,3 +6,4 @@
 | pacman | mgba-qt     | a gameboy emulator     |
 | pacman | mednafen    | another emulator       |
 | pacman | mupen64plus | N64 emulator           |
+| pacman | ppsspp      | PSP emulator           |
