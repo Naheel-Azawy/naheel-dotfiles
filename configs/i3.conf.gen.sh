@@ -196,7 +196,7 @@ outbindings() {
 
     # PERSONAL BINDINGS ------------------------------------------------------
 
-    bindsym "$mod+Shift+v" "exec ~/.config/m-launcher.sh"
+    bindsym "$mod+Shift+v" "exec /mnt/hdd1/Private/m-launcher.sh"
     bindsym "$mod+semicolon" "exec theterm 'emacs-in $HOME/Dropbox/orgmode/TODO.org'"
     bindsym "$mod+Shift+semicolon" "exec calendar"
 
