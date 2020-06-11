@@ -80,9 +80,13 @@ dots_update() {
 # installs everything
 dots_install() {
     info "Installing Naheel's dotfiles..."
-    echo "This might destroy you're system. Are you sure you want to install it? [yes/No]"
-    read -r ans
-    [ "$ans" != yes ] && return 1
+    if [ "$1" = '--sure' ]; then
+        shift
+    else
+        echo "This might destroy you're system. Are you sure you want to install it? [yes/No]"
+        read -r ans
+        [ "$ans" != yes ] && return 1
+    fi
     
     # makes a 'main' user and keep it passwordless
     # used probably for docker
@@ -138,7 +142,7 @@ dots_install() {
             cp -r "$D" "$DEST" &&
             chown -R "$user" "$DEST" && {
                 sed -i 's/# %wheel ALL=(ALL) NOPASSWD: ALL/%wheel ALL=(ALL) NOPASSWD: ALL/' /etc/sudoers
-                sudo -u "$user" sh -c "cd $DEST && ./install.sh $QUICK $PACS"
+                sudo -u "$user" sh -c "cd $DEST && ./install.sh --yes $QUICK $PACS"
             }
 
         echo 'Now log in to your user account'
@@ -336,6 +340,7 @@ pkg_load_tables() {
 # install a package from the packages tables
 pkg_install() {
     if [ "$1" = dots ]; then
+        shift
         dots_install "$@"
         return
     fi
