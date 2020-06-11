@@ -1,0 +1,382 @@
+#!/bin/sh
+
+# TODO: make it a package manager like script
+
+D="$PWD"
+H="$HOME"
+
+C='\033[1m\033[34m' # info color
+E='\033[1m\033[31m' # error color
+R='\033[0m'         # reset color
+
+CATEGORIES="base base-gui addtions themostsignificant devel electronics games"
+
+INSTALLED=
+
+get_installed() {
+    [ "$INSTALLED" ] ||
+        INSTALLED=$( (pacman -Qet && pacman -Qm) | awk '{print $1}')
+    echo "$INSTALLED"
+}
+
+info() {
+    printf "${C}INFO:${R} %s\n" "$@"
+}
+
+err() {
+    printf "${E}ERROR:${R} %s\n" "$@" >&2
+}
+
+# symlink configs
+dots_link() {
+    lnnn() {
+        TODIR=$(dirname "$2")
+        mkdir -p "$TODIR"
+        rm -rf "$2" 2>/dev/null
+        ln -s "$1" "$2"
+    }
+
+    lnnn "$D/configs/dunstrc"             "$H/.config/dunst/dunstrc"
+    lnnn "$D/configs/fish-config.fish"    "$H/.config/fish/config.fish"
+    lnnn "$D/configs/fonts.conf"          "$H/.config/fontconfig/fonts.conf"
+    lnnn "$D/configs/youtube-viewer.conf" "$H/.config/youtube-viewer/youtube-viewer.conf"
+    lnnn "$D/configs/mpd.conf"            "$H/.config/mpd/mpd.conf"
+    lnnn "$D/configs/ncmpcpp.conf"        "$H/.config/ncmpcpp/config"
+    lnnn "$D/configs/zathurarc"           "$H/.config/zathura/zathurarc"
+    lnnn "$D/configs/lfrc.sh"             "$H/.config/lf/lfrc"
+    lnnn "$D/configs/sxiv-key-handler.sh" "$H/.config/sxiv/exec/key-handler"
+    lnnn "$D/configs/sxiv-image-info.sh"  "$H/.config/sxiv/exec/image-info"
+    lnnn "$D/configs/compton.conf"        "$H/.config/compton.conf"
+    lnnn "$D/configs/user-dirs.dirs"      "$H/.config/user-dirs.dirs"
+    lnnn "$D/configs/mednafen.cfg"        "$H/.mednafen/mednafen.cfg"
+    lnnn "$D/configs/bashrc.sh"           "$H/.bashrc"
+    lnnn "$D/configs/profile"             "$H/.profile"
+    lnnn "$D/configs/profile"             "$H/.bashrc_profile"
+    lnnn "$D/configs/profile"             "$H/.xprofile"
+    lnnn "$D/configs/xinitrc.sh"          "$H/.xinitrc"
+    lnnn "$D/configs/Xresources"          "$H/.Xresources"
+    lnnn "$D/configs/Xmodmap"             "$H/.Xmodmap"
+    lnnn "$D/configs/tmux.conf"           "$H/.tmux.conf"
+    lnnn "$D/configs/emacs-init.el"       "$H/.emacs"
+    lnnn "$D/configs/nm-dmenu.ini"        "$H/.config/networkmanager-dmenu/config.ini"
+    lnnn "$D/configs/gtk-icons.theme"     "$H/.icons/default/index.theme"
+    lnnn "$D/configs/gtk3-settings.ini"   "$H/.config/gtk-3.0/settings.ini"
+    lnnn "$D/configs/gtk2rc"              "$H/.gtkrc-2.0"
+}
+
+# update dots configs
+dots_update() {
+    mkdir -p "$HOME/.config/i3"
+    "$D/configs/i3.conf.gen.sh"
+
+    mkdir -p "$HOME/.config/i3blocks"
+    "$D/configs/i3blocks.conf.gen.sh"
+
+    "$D/configs/onboard-gsettings.sh"
+
+    dots_link
+}
+
+# installs everything
+dots_install() {
+    info "Installing Naheel's dotfiles..."
+    echo "This might destroy you're system. Are you sure you want to install it? [yes/No]"
+    read -r ans
+    [ "$ans" != yes ] && return 1
+    
+    # makes a 'main' user and keep it passwordless
+    # used probably for docker
+    QUICK=
+    [ "$1" = '--quick' ] && {
+        QUICK="$1"
+        shift
+    }
+
+    PACS="$*"
+
+    # in case no sudo and in root, just eval
+    ! command -v sudo >/dev/null && [ "$(whoami)" = root ] &&
+        sudo() {
+            [ "$1" = '-u' ] && shift 2
+            eval "$@"
+        }
+
+    mkuser() {
+        echo 'Enter username:'
+        read -r user
+        useradd -m -g wheel "$user"
+        echo 'Enter password:'
+        passwd "$user"
+        sed -i 's/# %wheel ALL=(ALL) ALL/%wheel ALL=(ALL) ALL/' \
+            /etc/sudoers 2>/dev/null
+    }
+
+    [ "$(whoami)" = root ] && {
+        # double check sudo
+        pacman --noconfirm -Sy &&
+            pacman --noconfirm --needed -S sudo
+        if [ ! "$QUICK" ]; then
+            info "Looks like you're running as root!"
+            echo '1) Create a new user'
+            echo '2) Or login to existing one'
+            printf 'Choice: [1/2] '
+            read -r ans
+            case "$ans" in
+                1) mkuser;;
+                2) echo 'Enter username:' && read -r user;;
+                *) return 1;;
+            esac
+        else
+            user=main
+            [ -d /home/main ] ||
+                useradd -m -g wheel "$user" &&
+                    passwd -d "$user"
+        fi
+
+        DEST="/home/$user/.dotfiles"
+        rm -rf "$DEST" &&
+            cp -r "$D" "$DEST" &&
+            chown -R "$user" "$DEST" && {
+                sed -i 's/# %wheel ALL=(ALL) NOPASSWD: ALL/%wheel ALL=(ALL) NOPASSWD: ALL/' /etc/sudoers
+                sudo -u "$user" sh -c "cd $DEST && ./install.sh $QUICK $PACS"
+            }
+
+        echo 'Now log in to your user account'
+        echo "\$ su $user"
+        return
+    }
+
+    info "Setting up sudo"
+    # allow no password sudo
+    sudo sed -i 's/# %wheel ALL=(ALL) NOPASSWD: ALL/%wheel ALL=(ALL) NOPASSWD: ALL/' /etc/sudoers
+    # add some commands to no password sudo if needed
+    nopass='%wheel ALL=(ALL) NOPASSWD: /usr/bin/updatedb,/usr/bin/shutdown,/usr/bin/reboot,/usr/bin/systemctl suspend,/usr/bin/wifi-menu,/usr/bin/mount,/usr/bin/umount,/usr/bin/pacman -Syu,/usr/bin/pacman -Syyu,/usr/bin/systemctl restart NetworkManager,/usr/bin/rc-service NetworkManager restart,/usr/bin/pacman -Syyu --noconfirm,/usr/bin/loadkeys,/usr/bin/yay,/usr/bin/chmod a+rw /sys/class/backlight/intel_backlight/brightness'
+    sudo grep -q "$nopass" /etc/sudoers ||
+        echo "$nopass" | sudo tee -a /etc/sudoers
+
+    info "Upgrading the system"
+    sudo grep -q '^\[multilib\]' /etc/pacman.conf ||
+        printf '[multilib]\nInclude = /etc/pacman.d/mirrorlist\n' | sudo tee -a /etc/pacman.conf
+    sudo pacman --noconfirm -Syu
+
+    info "Install packages"
+    pkg_install "$PACS"
+
+    info "Setting up systemd services"
+    sudo systemctl enable org.cups.cupsd
+
+    info "Setting up sensors"
+    sudo sensors-detect --auto
+    sudo modprobe eeprom
+
+    info "Setting configs"
+    dots_update
+
+    info "Setting the path"
+    echo "#!/bin/sh
+export DOTFILES_DIR=$D
+export DOTFILES_SCRIPTS=\"\$DOTFILES_DIR/scripts\"
+export PATH=\"\$PATH:\$DOTFILES_SCRIPTS\"
+" > "$HOME/.dotfiles-exports"
+    chmod +x "$HOME/.dotfiles-exports"
+
+    # disallow no password sudo
+    [ "$QUICK" ] ||
+        sudo sed -i 's/%wheel ALL=(ALL) NOPASSWD: ALL/# %wheel ALL=(ALL) NOPASSWD: ALL/' /etc/sudoers
+
+    echo 'DONE!!!'
+}
+
+# install a package ($2) given its tag ($1)
+pkg_install_from() {
+    if [ "$1" = '--test' ]; then
+        doit() { false; }
+        shift
+    else
+        doit() { true; }
+    fi
+    tag="$1"
+    shift
+    case "$tag" in
+        pacman)
+            if doit; then sudo pacman --noconfirm --needed -S "$1"; fi;;
+
+        aur)
+            if doit; then
+                get_installed | grep -q "^$1$" &&
+                    echo "$1 is already installed" && return
+                yay -S --noconfirm --needed "$1"
+            fi;;
+
+        aur_manual)
+            if doit; then
+                helper="$1"
+                [ -f /usr/bin/"$helper" ] || (
+                    cd /tmp || return 1
+                    rm -rf /tmp/"$helper"*
+                    curl -sO https://aur.archlinux.org/cgit/aur.git/snapshot/"$helper".tar.gz &&
+                        tar -xvf "$helper".tar.gz &&
+                        cd "$helper" &&
+                        makepkg --noconfirm -si
+                    cd /tmp || return 1)
+            fi;;
+
+        pip)
+            if doit; then sudo pip3 install "$1"; fi;;
+
+        pip2)
+            if doit; then sudo pip2.7 install "$1"; fi;;
+
+        npm)
+            if doit; then sudo npm install -g "$1"; fi;;
+
+        go)
+            if doit; then go get -u "$1"; fi;;
+
+        git)
+            if doit; then
+                [ -f /usr/bin/"$1" ] || {
+                    echo "$1 is already installed"
+                    return 0
+                }
+                dir=$(mktemp -d)
+                git clone --depth 1 "$1" "$dir" &&
+                    cd "$dir" && {
+                        if [ -f autogen.sh ];  then ./autogen.sh; fi
+                        if [ -f ./configure ]; then ./configure;  fi
+                    } && sudo make &&
+                    sudo make install &&
+                    cd /tmp &&
+                    sudo rm -rf "$dir" || return 1
+            fi;;
+
+        suckless)
+            if doit; then
+                [ -f /usr/bin/"$1" ] || {
+                    echo "$1 is already installed"
+                    return 0
+                }
+                link="$1"
+                name=${link##*/}
+                conf="$D/configs/$name-config.h.diff"
+                dir=$(mktemp -d)
+                git clone --depth 1 "$link" "$dir" &&
+                    cd "$dir" &&
+                    sudo make &&
+                    sudo cp config.def.h config.h && {
+                        [ -f "$conf" ] && sudo patch config.h "$conf"
+                        sudo make install
+                    } &&
+                    cd /tmp &&
+                    sudo rm -rf "$dir" || return 1
+            fi;;
+
+        func)
+            case "$1" in
+                tpm)
+                    if doit; then
+                        [ -d "$HOME/.tmux/plugins/tpm" ] && {
+                            echo 'TPM is already installed'
+                            return 0
+                        }
+                        rm -rf "$HOME/.tmux"
+                        mkdir -p "$HOME/.tmux/plugins/tpm"
+                        git clone https://github.com/tmux-plugins/tpm "$HOME/.tmux/plugins/tpm"
+                        tmux source "$HOME/.tmux.conf" ||:
+                    fi;;
+
+                blackarch)
+                    if doit; then
+                        grep -q '^\[blackarch\]' /etc/pacman.conf && {
+                            echo 'Blackarch is already installed'
+                            return 0
+                        }
+                        cd /tmp || return 1
+                        curl -O https://blackarch.org/strap.sh || return 1
+                        test "$(sha1sum strap.sh | cut -d ' ' -f1)" = \
+                             9c15f5d3d6f3f8ad63a6927ba78ed54f1a52176b || {
+                            err 'Failed verifying blackarch strap script hash'
+                            return 1
+                        }
+                        chmod +x strap.sh && sudo ./strap.sh || return 1
+                        rm -rf /tmp/strap.sh
+                    fi;;
+
+                *)
+                    err "No special function '$1'" && return 1;;
+            esac;;
+
+        *)
+            err "Unknow package tag '$tag'" && return 1;;
+    esac
+}
+
+# gets the list of packages from tables
+pkg_load_tables() {
+    cd "$D/packages" || {
+        err 'No packages tables found'
+        exit 1
+    }
+    if [ $# != 0 ]; then
+        files="$*"
+        [ "$files" = all ] &&
+            files="$CATEGORIES"
+    else
+        files="base base-gui"
+    fi
+    for f in $files; do
+        [ -f "$f.org" ] || {
+            err "Unknown package group '$f'"
+            return 1
+        }
+        tail -n +3 "$f.org" | sed 's/|/ /g;s/  */ /g'
+    done
+}
+
+# install a package from the packages tables
+pkg_install() {
+    if [ "$1" = dots ]; then
+        dots_install "$@"
+        return
+    fi
+    
+    pacs=$(pkg_load_tables all)
+    pacs=$(for pac in "$@"; do
+               echo "$pacs" | grep -E ".+ $pac .+"
+           done)
+
+    if [ "$pacs" ]; then
+        pacs_min=$(echo "$pacs" | grep "$(echo "$*" | tr ' ' '\n')" |
+                       cut -d ' ' -f 3 | tr '\n' ' ')
+        info "Installing packages $pacs_min"        
+    else
+        pacs=$(pkg_load_tables "$@") || {
+            err 'Choose either packages groups of packages'
+            exit 1
+        }
+        info "Installing packages groups from $*"
+    fi
+
+    total=$(echo "$pacs" | wc -l)
+    i=1
+    echo "$pacs" | while read -r tag pac des; do
+        printf "($i/$total) ${C}INSTALLING${R} $pac ${C}FROM${R} %s, %s\n" "$tag" "$des"
+        pkg_install_from --test "$tag" "$pac" || {
+            err "Failed installing '$pac'"
+        }
+        i=$((i+1))
+        echo "-----------------------------"
+    done
+}
+
+main() {
+    CMD="$1"
+    shift
+    case "$CMD" in
+        i|install) pkg_install "$@";;
+        u|update)  dots_update;;
+        l|link)    dots_link;;
+    esac
+}
+
+main "$@"

@@ -1,6 +1,6 @@
 | Tag    | Name        | Purpose                |
 |--------+-------------+------------------------|
-| pacman | gnome-mines | and minesweeper        |
+| pacman | gnome-mines | minesweeper            |
 | pacman | gnome-chess | in case you like chess |
 | pacman | gnuchess    | the GNU chess engine   |
 | pacman | mgba-qt     | a gameboy emulator     |
