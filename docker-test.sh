@@ -1,4 +1,7 @@
 #!/bin/sh
+
+# experimental docker setup
+
 name=arch-naheel
 
 echo '>>> BUILDING IMAGE'

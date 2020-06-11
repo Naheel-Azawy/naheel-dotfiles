@@ -2,7 +2,12 @@
 
 # TODO: make it a package manager like script
 
-D="$PWD"
+if [ "$DOTFILES_DIR" ]; then
+    D="$DOTFILES_DIR"
+else
+    D="$PWD"
+fi
+
 H="$HOME"
 
 C='\033[1m\033[34m' # info color
@@ -358,7 +363,7 @@ pkg_install() {
     i=1
     echo "$pacs" | while read -r tag pac des; do
         printf "($i/$total) ${C}INSTALLING${R} $pac ${C}FROM${R} %s, %s\n" "$tag" "$des"
-        pkg_install_from --test "$tag" "$pac" || {
+        pkg_install_from "$tag" "$pac" || {
             err "Failed installing '$pac'"
         }
         i=$((i+1))
@@ -366,13 +371,25 @@ pkg_install() {
     done
 }
 
+help() {
+    BIN=$(basename "$0")
+    echo "usage: $BIN COMMAND [OPTIONS]"
+    echo 'Commands:'
+    echo ' install   Install a (listed package), (package group), or "dots"'
+    echo ' update    Update configs (link too)'
+    echo ' link      Link configs'
+    exit 1
+}
+
 main() {
     CMD="$1"
-    shift
+    [ $# != 0 ] && shift
     case "$CMD" in
-        i|install) pkg_install "$@";;
-        u|update)  dots_update;;
-        l|link)    dots_link;;
+        i|install) pkg_install "$@"           ;;
+        u|update)  dots_update                ;;
+        l|link)    dots_link                  ;;
+        '')        cd "$DOTFILES_DIR" && open ;;
+        *)         help                       ;;
     esac
 }
 
