@@ -80,13 +80,6 @@ dots_update() {
 # installs everything
 dots_install() {
     info "Installing Naheel's dotfiles..."
-    if [ "$1" = '--sure' ]; then
-        shift
-    else
-        echo "This might destroy you're system. Are you sure you want to install it? [yes/No]"
-        read -r ans
-        [ "$ans" != yes ] && return 1
-    fi
     
     # makes a 'main' user and keep it passwordless
     # used probably for docker
@@ -95,15 +88,14 @@ dots_install() {
         QUICK="$1"
         shift
     }
+    
+    if [ ! "$QUICK" ]; then
+        echo "This might destroy you're system. Are you sure you want to install it? [yes/No]"
+        read -r ans
+        [ "$ans" != yes ] && return 1
+    fi
 
     PACS="$*"
-
-    # in case no sudo and in root, just eval
-    ! command -v sudo >/dev/null && [ "$(whoami)" = root ] &&
-        sudo() {
-            [ "$1" = '-u' ] && shift 2
-            eval "$@"
-        }
 
     mkuser() {
         echo 'Enter username:'
@@ -142,7 +134,7 @@ dots_install() {
             cp -r "$D" "$DEST" &&
             chown -R "$user" "$DEST" && {
                 sed -i 's/# %wheel ALL=(ALL) NOPASSWD: ALL/%wheel ALL=(ALL) NOPASSWD: ALL/' /etc/sudoers
-                sudo -u "$user" sh -c "cd $DEST && ./install.sh --sure $QUICK $PACS"
+                sudo -u "$user" sh -c "cd $DEST && ./install.sh $QUICK $PACS"
             }
 
         echo 'Now log in to your user account'
