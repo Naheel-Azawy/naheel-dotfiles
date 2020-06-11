@@ -45,3 +45,4 @@
 | git        | https://github.com/Naheel-Azawy/runner.git | executes everything                                          |
 | git        | https://github.com/Naheel-Azawy/cp-p       | cp with progress                                             |
 | git        | https://github.com/Naheel-Azawy/stpv       | files previewer in the terminal (used for LF and fzf mainly) |
+| pacman     | chafa                                      | image to text                                                |
