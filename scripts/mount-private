@@ -1,0 +1,14 @@
+#!/bin/sh
+
+ENC=/mnt/hdd1/Private-enc/
+DEC=/mnt/hdd1/Private/
+
+if [ "$1" = '-u' ]; then
+    [ "$(ls -A "$HOME/M")" ] && fusermount -u "$HOME/M"
+    [ "$(ls -A $DEC)" ]      && fusermount -u "$DEC"
+    :
+elif [ -d $ENC ] && [ ! "$(ls -A $DEC)" ]; then
+    theterm \
+        -a '-c __floatme__ -g 40x5' \
+        "echo;echo;encfs '$ENC' '$DEC'"
+fi

@@ -393,6 +393,9 @@ outautostart() {
 
     # set language to 'us' by default, runs xmodmap as well
     exec_always --no-startup-id lang-set us
+
+    # mount encfs private directory
+    exec_always --no-startup-id mount-private
 }
 
 bindoc() {

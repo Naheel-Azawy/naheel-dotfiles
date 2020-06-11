@@ -1,12 +1,20 @@
 #!/bin/sh
 
+# TODO: make it a package manager like script
+
 D="$PWD"
 
 C='\033[1m\033[34m' # info color
 E='\033[1m\033[31m' # error color
 R='\033[0m'         # reset color
 
-installed=$( (pacman -Qet && pacman -Qm) | awk '{print $1}')
+INSTALLED=
+
+get_installed() {
+    [ "$INSTALLED" ] ||
+        INSTALLED=$( (pacman -Qet && pacman -Qm) | awk '{print $1}')
+    echo "$INSTALLED"
+}
 
 err() {
     printf "${E}ERROR:${R} %s\n" "$@" >&2
@@ -23,7 +31,7 @@ pkg_install() {
 
         aur)
             if doit; then
-                echo "$installed" | grep -q "^$1$" &&
+                get_installed | grep -q "^$1$" &&
                     echo "$1 is already installed" && return
                 yay -S --noconfirm --needed "$1"
             fi;;
@@ -133,7 +141,6 @@ pkg_install() {
 
 main() {
     cd "$D/packages" || exit 1
-    date >> "$HOME/dotfiles-install-err"
     if [ $# != 0 ]; then
         files="$*"
         [ "$files" = all ] &&

@@ -49,7 +49,6 @@ export I3BLOCKS_SIG_FIRS=$I3BLOCKS_SIG_TIME
 export I3BLOCKS_SIG_LAST=$I3BLOCKS_SIG_LANG
 
 [ -f ~/.dotfiles-exports ] && . ~/.dotfiles-exports
-[ -f ~/.more-paths ]       && . ~/.more-paths
 [ -f ~/.bashrc ]           && . ~/.bashrc
 
 # To be able to change the brightness. Password is not required as edited in the sudoers
