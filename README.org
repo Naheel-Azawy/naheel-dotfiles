@@ -20,8 +20,18 @@
 ** Install
    Arch Linux is expected to be installed
    #+begin_src shell 
-     sudo ./install.sh
+     curl https://raw.githubusercontent.com/Naheel-Azawy/naheel-dotfiles/master/install.sh > /tmp/nd.sh && sh /tmp/nd.sh
    #+end_src
+
+   Or
+   #+begin_src shell 
+     cd
+     git clone https://github.com/Naheel-Azawy/naheel-dotfiles.git .dotfiles
+     cd .dotfiles
+     ./install.sh
+   #+end_src
+
+   Note: pass ~--docker~ option to create a playground docker image.
 
 ** Update
    #+begin_src shell 
