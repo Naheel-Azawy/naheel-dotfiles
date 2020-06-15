@@ -181,6 +181,9 @@ export PATH=\"\$PATH:\$DOTFILES_SCRIPTS\"
 " > "$HOME/.dotfiles-exports"
     chmod +x "$HOME/.dotfiles-exports"
 
+    info "Starting Emacs daemon"
+    emacs --daemon
+
     # disallow no password sudo
     [ "$QUICK" ] ||
         sudo sed -i 's/%wheel ALL=(ALL) NOPASSWD: ALL/# %wheel ALL=(ALL) NOPASSWD: ALL/' /etc/sudoers
