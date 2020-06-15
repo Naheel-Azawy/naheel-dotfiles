@@ -1,3 +1,3 @@
 #!/bin/sh
 # TODO: cleanup
-exec ~/Projects/ThePrayer/c/a.out "$@"
+exec ~/Projects/theprayer/c/a.out "$@"
