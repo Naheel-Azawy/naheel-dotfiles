@@ -37,3 +37,6 @@
    #+begin_src shell 
      ndots update
    #+end_src
+
+** License
+   GPL3

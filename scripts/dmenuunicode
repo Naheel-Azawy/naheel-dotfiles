@@ -1,5 +1,6 @@
 #!/bin/sh
+
 U="$DOTFILES_DIR/stuff/unicode"
 [ ! -f "$U" ] && unicode-update
-V=$(cat "$U" | menu-interface -i -l 20 | awk -F' : ' '{print $1}')
-[ "$V" != '' ] && printf '%s' "$V" | clipboard
+V=$(menu-interface -i -l 20 < "$U" | awk -F' : ' '{print $1}')
+[ "$V" != '' ] && printf "$V" | clipboard
