@@ -1,0 +1,2 @@
+#!/bin/sh
+exec vboxmanage startvm 'Windows 10' "$@"

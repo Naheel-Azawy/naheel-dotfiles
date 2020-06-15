@@ -5,13 +5,25 @@
 
   [[./screenshots/1.png]]
 
+** Toys
+   - i3
+   - emacs
+   - fish
+   - st
+   - lf
+   - tmux everywhere ([[https://github.com/Naheel-Azawy/theterm][theterm]])
+   - [[https://github.com/Naheel-Azawy/sxiv][sxiv]] (custom fork)
+   - mpd and ncmpcpp
+   - chromium
+   - bunch of other stuff
+
 ** Install
-   Arch Linux is expected to be installed and user is setup.
+   Arch Linux is expected to be installed
    #+begin_src shell 
      sudo ./install.sh
    #+end_src
 
 ** Update
    #+begin_src shell 
-     ./update-configs.sh
+     ndots update
    #+end_src

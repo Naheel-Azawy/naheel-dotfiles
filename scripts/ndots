@@ -385,11 +385,18 @@ main() {
     CMD="$1"
     [ $# != 0 ] && shift
     case "$CMD" in
-        i|install) pkg_install "$@"           ;;
-        u|update)  dots_update                ;;
-        l|link)    dots_link                  ;;
-        '')        cd "$DOTFILES_DIR" && open ;;
-        *)         help                       ;;
+        i|install)
+            pkg_install "$@";;
+        u|update)
+            cd "$DOTFILES_DIR" &&
+                git pull &&
+                dots_update;;
+        l|link)
+            dots_link;;
+        '')
+            cd "$DOTFILES_DIR" && open ;;
+        *)
+            help;;
     esac
 }
 

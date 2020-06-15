@@ -421,6 +421,15 @@ There are two things you can do about this warning:
                  ("\\subparagraph{%s}" . "\\subparagraph*{%s}")))
 
   (add-to-list 'org-latex-classes
+               '("qutad"
+                 "\\documentclass{qutad}"
+                 ("\\section{%s}" . "\\section*{%s}")
+                 ("\\subsection{%s}" . "\\subsection*{%s}")
+                 ("\\subsubsection{%s}" . "\\subsubsection*{%s}")
+                 ("\\paragraph{%s}" . "\\paragraph*{%s}")
+                 ("\\subparagraph{%s}" . "\\subparagraph*{%s}")))
+
+  (add-to-list 'org-latex-classes
                '("beamer"
                  "\\documentclass\[presentation\]\{beamer\}"
                  ("\\section\{%s\}" . "\\section*\{%s\}")
