@@ -301,6 +301,7 @@ pkg_install_from() {
                         }
                         chmod +x strap.sh && sudo ./strap.sh || return 1
                         rm -rf /tmp/strap.sh
+                        sudo sed -i 's/# Server/Server/g' /etc/pacman.d/blackarch-mirrorlist
                     fi;;
 
                 *)
