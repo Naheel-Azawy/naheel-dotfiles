@@ -1,7 +1,5 @@
 #!/bin/sh
 
-# TODO: check for files and get them from git if not there
-
 if [ "$DOTFILES_DIR" ]; then
     D="$DOTFILES_DIR"
 else
@@ -181,6 +179,12 @@ export DOTFILES_SCRIPTS=\"\$DOTFILES_DIR/scripts\"
 export PATH=\"\$PATH:\$DOTFILES_SCRIPTS\"
 " > "$HOME/.dotfiles-exports"
     chmod +x "$HOME/.dotfiles-exports"
+    sudo mkdir /mnt/hdd1/ \
+         /mnt/usb1/ \
+         /mnt/usb2/ \
+         /mnt/usb3/ \
+         /mnt/usb4/ \
+         /mnt/usb5/
 
     info "Starting Emacs daemon"
     emacs --daemon
@@ -376,6 +380,17 @@ pkg_install() {
     done
 }
 
+git_update() {
+    git status ||
+        is-connected-to-internet && {
+            cd &&
+                rm -rf "$D" &&
+                git clone https://github.com/Naheel-Azawy/naheel-dotfiles.git "$D" &&
+                cd "$D" || return 1
+        }
+    git pull origin master
+}
+
 help() {
     BIN=$(basename "$0")
     echo "usage: $BIN COMMAND [OPTIONS]"
@@ -394,8 +409,8 @@ main() {
             pkg_install "$@";;
         u|update)
             cd "$DOTFILES_DIR" &&
-                git pull origin master &&
-                dots_update;;
+                git_update
+            dots_update;;
         l|link)
             dots_link;;
         '')

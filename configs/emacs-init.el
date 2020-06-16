@@ -18,13 +18,6 @@ There are two things you can do about this warning:
     (add-to-list 'package-archives (cons "gnu" (concat proto "://elpa.gnu.org/packages/")))))
 (package-initialize)
 
-;; QUELPA
-(unless (package-installed-p 'quelpa)
-  (with-temp-buffer
-    (url-insert-file-contents "https://github.com/quelpa/quelpa/raw/master/quelpa.el")
-    (eval-buffer)
-    (quelpa-self-upgrade)))
-
 ;; ---- USE PACKAGE ----
 (unless (package-installed-p 'use-package)
   (package-refresh-contents)
@@ -156,12 +149,6 @@ There are two things you can do about this warning:
   (setq web-mode-enable-auto-quoting t)
   (setq web-mode-enable-current-element-highlight t)
   (setq web-mode-enable-current-column-highlight t))
-
-;; ---- VLANG ----
-(quelpa
- '(vlang-mode :fetcher url
-              :url "https://raw.githubusercontent.com/naheel-azawy/vlang-mode.el/master/vlang-mode.el"))
-(require 'vlang-mode)
 
 ;; ---- OTHER LANGS ----
 (use-package basic-mode)
@@ -436,6 +423,19 @@ There are two things you can do about this warning:
                  ("\\subsection\{%s\}" . "\\subsection*\{%s\}")
                  ("\\subsubsection\{%s\}" . "\\subsubsection*\{%s\}"))))
 
+;; ---- QUELPA ----
+(unless (package-installed-p 'quelpa)
+  (with-temp-buffer
+    (url-insert-file-contents "https://github.com/quelpa/quelpa/raw/master/quelpa.el")
+    (eval-buffer)
+    (quelpa-self-upgrade)))
+
+;; ---- VLANG ----
+(quelpa
+ '(vlang-mode :fetcher url
+              :url "https://raw.githubusercontent.com/naheel-azawy/vlang-mode.el/master/vlang-mode.el"))
+(require 'vlang-mode)
+
 ;; ---- END ----
 
 (custom-set-variables
@@ -475,3 +475,4 @@ There are two things you can do about this warning:
  '(js2-external-variable ((t (:foreground "brightblack")))))
 (put 'downcase-region 'disabled nil)
 (put 'upcase-region 'disabled nil)
+
