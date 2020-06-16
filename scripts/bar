@@ -134,15 +134,18 @@ weat() {
     V=$(sed -n -e "3,4 p" -e "4 q" ~/.weatherreport | sed "s/\x1B\[[0-9;]*[JKmsu]//g" | cut -c 16-)
     #S=$(echo "$V" | head -1 | awk '{print tolower($0)}')
     W=$(echo "$V" | tail -1 | awk -F'[- ]' '{print $1}')
+    [ "$W" ] || return
     [ "$1" != "-a" ] && awesomefontecho '' && printf ' '
     printf '%s°C' "$W"
 }
 
 pray() {
+    RES=$(theprayer n)
+    [ "$RES" ] || return
     [ "$BLOCK_BUTTON" = "1" ] &&
-        theterm -a '-c __floatme__ -g 25x8' 'p && read -p ""'
+        theterm -a '-c __floatme__ -g 25x8' 'theprayer && read -p ""'
     [ "$1" != "-a" ] && awesomefontecho '' && printf ' '
-    printf '%s' "$(p n)"
+    printf '%s' "$RES"
 }
 
 lang() {

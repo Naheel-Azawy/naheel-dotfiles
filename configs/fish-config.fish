@@ -252,6 +252,7 @@ abbr jql   'jq -C . | less -R'
 abbr dsync 'rsync -rtu --delete --info=del,name,stats2'
 abbr cl    'calc'
 abbr awkp  'awk \'{print $1}\''
+abbr p     'theprayer'
 
 abbr ytdl  'youtube-dl --add-metadata -ic'
 abbr ytdla 'youtube-dl --add-metadata -xic --audio-format mp3'

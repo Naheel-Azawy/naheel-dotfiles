@@ -64,3 +64,4 @@
 | pacman   | mpc                                              | mpd client                                                       |
 | pacman   | ncmpcpp                                          | mpd UI                                                           |
 | pacman   | onboard                                          | on-screen keyboard                                               |
+| git      | https://github.com/Naheel-Azawy/theprayer        | CLI prayer time                                                  |

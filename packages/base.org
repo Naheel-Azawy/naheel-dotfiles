@@ -46,3 +46,4 @@
 | pacman     | diff-so-fancy                              | an even more colorful diff                                   |
 | pacman     | wdiff                                      | diff but for words                                           |
 | pacman     | encfs                                      | encrypted file system                                        |
+| pip        | trash-cli                                  | CLI XDG trash                                                |
