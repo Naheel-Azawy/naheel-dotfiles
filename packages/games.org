@@ -1,9 +1,9 @@
-| Tag    | Name        | Purpose                |
-|--------+-------------+------------------------|
-| pacman | gnome-mines | minesweeper            |
-| pacman | gnome-chess | in case you like chess |
-| pacman | gnuchess    | the GNU chess engine   |
-| pacman | mgba-qt     | a gameboy emulator     |
-| pacman | mednafen    | another emulator       |
-| pacman | mupen64plus | N64 emulator           |
-| pacman | ppsspp      | PSP emulator           |
+| Tag    | Name        | Git Link | Purpose                |
+|--------+-------------+----------+------------------------|
+| pacman | gnome-mines | N.A.     | minesweeper            |
+| pacman | gnome-chess | N.A.     | in case you like chess |
+| pacman | gnuchess    | N.A.     | the GNU chess engine   |
+| pacman | mgba-qt     | N.A.     | a gameboy emulator     |
+| pacman | mednafen    | N.A.     | another emulator       |
+| pacman | mupen64plus | N.A.     | N64 emulator           |
+| pacman | ppsspp      | N.A.     | PSP emulator           |

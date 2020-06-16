@@ -196,6 +196,11 @@ export PATH=\"\$PATH:\$DOTFILES_SCRIPTS\"
     echo 'DONE!!!'
 }
 
+# checks if a command exist
+cmd_exists() {
+    command -v "$1" >/dev/null
+}
+
 # install a package ($2) given its tag ($1)
 pkg_install_from() {
     if [ "$1" = '--test' ]; then
@@ -220,7 +225,7 @@ pkg_install_from() {
         aur_manual)
             if doit; then
                 helper="$1"
-                [ -f /usr/bin/"$helper" ] || (
+                cmd_exists "$helper" || (
                     cd /tmp || return 1
                     rm -rf /tmp/"$helper"*
                     curl -sO https://aur.archlinux.org/cgit/aur.git/snapshot/"$helper".tar.gz &&
@@ -240,16 +245,18 @@ pkg_install_from() {
             if doit; then sudo npm install -g "$1"; fi;;
 
         go)
-            if doit; then go get -u "$1"; fi;;
+            if doit; then
+                cmd_exists "$1" || go get -u "$2"
+            fi;;
 
         git)
             if doit; then
-                [ -f /usr/bin/"$1" ] && {
+                cmd_exists "$1" && {
                     echo "$1 is already installed"
                     return 0
                 }
                 dir=$(mktemp -d)
-                git clone --depth 1 "$1" "$dir" &&
+                git clone --depth 1 "$2" "$dir" &&
                     cd "$dir" && {
                         if [ -f autogen.sh ];  then ./autogen.sh; fi
                         if [ -f ./configure ]; then ./configure;  fi
@@ -261,11 +268,11 @@ pkg_install_from() {
 
         suckless)
             if doit; then
-                [ -f /usr/bin/"$1" ] && {
+                cmd_exists "$1" && {
                     echo "$1 is already installed"
                     return 0
                 }
-                link="$1"
+                link="$2"
                 name=${link##*/}
                 conf="$D/configs/$name-config.h.diff"
                 dir=$(mktemp -d)
@@ -370,25 +377,14 @@ pkg_install() {
 
     total=$(echo "$pacs" | wc -l)
     i=1
-    echo "$pacs" | while read -r tag pac des; do
+    echo "$pacs" | while read -r tag pac link des; do
         printf "($i/$total) ${C}INSTALLING${R} $pac ${C}FROM${R} %s, %s\n" "$tag" "$des"
-        pkg_install_from "$tag" "$pac" || {
+        pkg_install_from "$tag" "$pac" "$link" || {
             err "Failed installing '$pac'"
         }
         i=$((i+1))
         echo "-----------------------------"
     done
-}
-
-git_update() {
-    git status ||
-        is-connected-to-internet && {
-            cd &&
-                rm -rf "$D" &&
-                git clone https://github.com/Naheel-Azawy/naheel-dotfiles.git "$D" &&
-                cd "$D" || return 1
-        }
-    git pull origin master
 }
 
 help() {
@@ -408,8 +404,6 @@ main() {
         i|install)
             pkg_install "$@";;
         u|update)
-            #cd "$DOTFILES_DIR" &&
-            #    git_update
             dots_update;;
         l|link)
             dots_link;;

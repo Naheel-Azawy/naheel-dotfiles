@@ -1,50 +1,50 @@
-| Tag        | Name                                       | Purpose                                                      |
-|------------+--------------------------------------------+--------------------------------------------------------------|
-| pacman     | sl                                         | cures the bad habit of miss-typing                           |
-| pacman     | base-devel                                 | group package with sudo and compilation software             |
-| pacman     | git                                        | version control system                                       |
-| aur_manual | yay                                        | Arch User Repository helper                                  |
-| pacman     | nodejs                                     | node.js is needed to run some programs ahead                 |
-| pacman     | npm                                        | node.js pacage manager                                       |
-| pacman     | python-pip                                 | python's package manager                                     |
-| pacman     | python2-pip                                | python2 pip                                                  |
-| aur        | lf                                         | another terminal file manager cloning ranger but faster      |
-| pacman     | cronie                                     | manages scheduled tasks                                      |
-| pacman     | dosfstools                                 | allows your computer to access dos-like filesystems          |
-| pacman     | exfat-utils                                | allows management of FAT drives                              |
-| pacman     | ntfs-3g                                    | allows accessing NTFS partitions                             |
-| pacman     | ffmpeg                                     | can record and splice video and audio on the command line    |
-| pacman     | networkmanager                             | does exactly what it sounds like                             |
-| pacman     | tmux                                       | the terminal multiplexer                                     |
-| func       | tpm                                        | tmux package manager                                         |
-| pacman     | unrar                                      | extracts rar's                                               |
-| pacman     | unzip                                      | unzips zips                                                  |
-| pacman     | w3m                                        | terminal browser which can also view images                  |
-| pacman     | wget                                       | downloads sites and files on the command line                |
-| pacman     | atool                                      | manages and gives information about archives                 |
-| pacman     | fzf                                        | fuzzy finder tool                                            |
-| pacman     | highlight                                  | can highlight code output                                    |
-| pacman     | fish                                       | the friendly shell!                                          |
-| pacman     | emacs                                      | the best editor on this planet                               |
-| pacman     | ispell                                     | spell checker                                                |
-| pacman     | aspell-en                                  | English dictionary for ispell                                |
-| pacman     | acpi                                       | laptop battery information                                   |
-| pacman     | time                                       | measures the time taken by a process                         |
-| pacman     | jq                                         | json in the shell                                            |
-| pacman     | lm_sensors                                 | mainly to monitor the temperature                            |
-| aur        | bicon-git                                  | bidirectional console                                        |
-| pacman     | lynx                                       | a terminal web browser                                       |
-| pacman     | ffmpegthumbnailer                          | video thumbnails. Needed for ranger                          |
-| aur        | simple-mtpfs                               | MTP mounter using fuse                                       |
-| aur        | vidir                                      | edit files names in your favorite editor                     |
-| pacman     | perl-image-exiftool                        | media details                                                |
-| git        | https://github.com/Naheel-Azawy/runner.git | executes everything                                          |
-| git        | https://github.com/Naheel-Azawy/cp-p       | cp with progress                                             |
-| git        | https://github.com/Naheel-Azawy/stpv       | files previewer in the terminal (used for LF and fzf mainly) |
-| pacman     | chafa                                      | image to text                                                |
-| pacman     | colordiff                                  | a more colorful diff                                         |
-| pacman     | diff-so-fancy                              | an even more colorful diff                                   |
-| pacman     | wdiff                                      | diff but for words                                           |
-| pacman     | encfs                                      | encrypted file system                                        |
-| pip        | trash-cli                                  | CLI XDG trash                                                |
-| pacman     | strace                                     | trace system calls. Needed for cp-p                          |
+| Tag        | Name                | Git Link                               | Purpose                                                      |
+|------------+---------------------+----------------------------------------+--------------------------------------------------------------|
+| pacman     | sl                  | N.A.                                   | cures the bad habit of miss-typing                           |
+| pacman     | base-devel          | N.A.                                   | group package with sudo and compilation software             |
+| pacman     | git                 | N.A.                                   | version control system                                       |
+| aur_manual | yay                 | N.A.                                   | Arch User Repository helper                                  |
+| pacman     | nodejs              | N.A.                                   | node.js is needed to run some programs ahead                 |
+| pacman     | npm                 | N.A.                                   | node.js pacage manager                                       |
+| pacman     | python-pip          | N.A.                                   | python's package manager                                     |
+| pacman     | python2-pip         | N.A.                                   | python2 pip                                                  |
+| aur        | lf                  | N.A.                                   | another terminal file manager cloning ranger but faster      |
+| pacman     | cronie              | N.A.                                   | manages scheduled tasks                                      |
+| pacman     | dosfstools          | N.A.                                   | allows your computer to access dos-like filesystems          |
+| pacman     | exfat-utils         | N.A.                                   | allows management of FAT drives                              |
+| pacman     | ntfs-3g             | N.A.                                   | allows accessing NTFS partitions                             |
+| pacman     | ffmpeg              | N.A.                                   | can record and splice video and audio on the command line    |
+| pacman     | networkmanager      | N.A.                                   | does exactly what it sounds like                             |
+| pacman     | tmux                | N.A.                                   | the terminal multiplexer                                     |
+| func       | tpm                 | N.A.                                   | tmux package manager                                         |
+| pacman     | unrar               | N.A.                                   | extracts rar's                                               |
+| pacman     | unzip               | N.A.                                   | unzips zips                                                  |
+| pacman     | w3m                 | N.A.                                   | terminal browser which can also view images                  |
+| pacman     | wget                | N.A.                                   | downloads sites and files on the command line                |
+| pacman     | atool               | N.A.                                   | manages and gives information about archives                 |
+| pacman     | fzf                 | N.A.                                   | fuzzy finder tool                                            |
+| pacman     | highlight           | N.A.                                   | can highlight code output                                    |
+| pacman     | fish                | N.A.                                   | the friendly shell!                                          |
+| pacman     | emacs               | N.A.                                   | the best editor on this planet                               |
+| pacman     | ispell              | N.A.                                   | spell checker                                                |
+| pacman     | aspell-en           | N.A.                                   | English dictionary for ispell                                |
+| pacman     | acpi                | N.A.                                   | laptop battery information                                   |
+| pacman     | time                | N.A.                                   | measures the time taken by a process                         |
+| pacman     | jq                  | N.A.                                   | json in the shell                                            |
+| pacman     | lm_sensors          | N.A.                                   | mainly to monitor the temperature                            |
+| aur        | bicon-git           | N.A.                                   | bidirectional console                                        |
+| pacman     | lynx                | N.A.                                   | a terminal web browser                                       |
+| pacman     | ffmpegthumbnailer   | N.A.                                   | video thumbnails. Needed for ranger                          |
+| aur        | simple-mtpfs        | N.A.                                   | MTP mounter using fuse                                       |
+| aur        | vidir               | N.A.                                   | edit files names in your favorite editor                     |
+| pacman     | perl-image-exiftool | N.A.                                   | media details                                                |
+| git        | rn                  | https://github.com/Naheel-Azawy/runner | executes everything                                          |
+| git        | cp-p                | https://github.com/Naheel-Azawy/cp-p   | cp with progress                                             |
+| git        | stpv                | https://github.com/Naheel-Azawy/stpv   | files previewer in the terminal (used for LF and fzf mainly) |
+| pacman     | chafa               | N.A.                                   | image to text                                                |
+| pacman     | colordiff           | N.A.                                   | a more colorful diff                                         |
+| pacman     | diff-so-fancy       | N.A.                                   | an even more colorful diff                                   |
+| pacman     | wdiff               | N.A.                                   | diff but for words                                           |
+| pacman     | encfs               | N.A.                                   | encrypted file system                                        |
+| pip        | trash-cli           | N.A.                                   | CLI XDG trash                                                |
+| pacman     | strace              | N.A.                                   | trace system calls. Needed for cp-p                          |

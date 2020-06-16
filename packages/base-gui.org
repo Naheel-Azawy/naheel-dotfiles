@@ -1,67 +1,66 @@
-| Tag      | Name                                             | Purpose                                                          |
-|----------+--------------------------------------------------+------------------------------------------------------------------|
-| pacman   | i3-wm                                            | the window manager                                               |
-| pacman   | xorg-server                                      | graphical server                                                 |
-| pacman   | xorg-xdpyinfo                                    | retrieves screen information for some scripts                    |
-| pacman   | xorg-xinit                                       | starts the graphical server                                      |
-| pacman   | xorg-xinput                                      | controls the input devices in xorg                               |
-| pacman   | xf86-input-synaptics                             | handles the touchpad the right way                               |
-| pacman   | xorg-xprop                                       | property displayer for xorg                                      |
-| pacman   | xclip                                            | clipboard manageer for xorg                                      |
-| pacman   | xterm                                            | a simple terminal                                                |
-| suckless | git://git.suckless.org/st                        | THE simple terminal                                              |
-| git      | https://github.com/Naheel-Azawy/theterm          | a wrapper to give the terminal super powers                      |
-| suckless | https://git.suckless.org/dmenu                   | runs commands and provides a UI for selection                    |
-| aur      | ttf-symbola                                      | unicode symbols and emojis                                       |
-| pacman   | ttf-liberation                                   | another pretty font                                              |
-| pacman   | ttf-dejavu                                       | the preferred monospace font                                     |
-| aur      | ttf-font-awesome                                 | used for the icons in the top bar                                |
-| pacman   | arandr                                           | UI for screen adjustment                                         |
-| pacman   | compton                                          | for transparency and removing screen-tearing                     |
-| pacman   | dunst                                            | suckless notification system                                     |
-| pacman   | feh                                              | a minimal image viewer (used to set wallpaper)                   |
-| pacman   | imlib2                                           | images library. Needed for sxiv                                  |
-| git      | https://github.com/Naheel-Azawy/sxiv             | another minimal image viewer (a bit less minimal)                |
-| pacman   | chromium                                         | well, in most cases it is faster than firefox...                 |
-| pacman   | gnome-keyring                                    | serves as the system keyring                                     |
-| pacman   | gnome-themes-extra                               | gives the dark GTK theme                                         |
-| pacman   | i3blocks                                         | status bar                                                       |
-| pacman   | i3lock                                           | screen lock                                                      |
-| pacman   | mpv                                              | patrician's choice video/gif player                              |
-| pacman   | network-manager-applet                           | appears in the top right corner and manages the wi-fi connection |
-| pacman   | maim                                             | can take quick screenshots at your request                       |
-| pacman   | xdotool                                          | provides window action utilities on the command line.            |
-| pacman   | xssstate                                         | times out the screen if locked                                   |
-| pacman   | conky                                            | brings the lovely widgets at your desktop                        |
-| pacman   | conky-manager                                    | manages conky using GUI                                          |
-| git      | https://github.com/Naheel-Azawy/conky-config     | the used conky setup                                             |
-| pacman   | lxappearance                                     | configures GTK with a simple GUI                                 |
-| pacman   | cups                                             | in case you need to use a printer                                |
-| pacman   | cups-pdf                                         | pdf for cups                                                     |
-| pacman   | system-config-printer                            | a little GUI to control your printers                            |
-| aur      | xbanish                                          | hide the mouse cursor while typing                               |
-| pacman   | clipmenu                                         | a clipboard manger                                               |
-| git      | https://github.com/Naheel-Azawy/adwaita-too-dark | the used GTK theme                                               |
-| pacman   | pulseaudio                                       | the audio system (>inb4 bloat)                                   |
-| pacman   | pamixer                                          | terminal audio control interface                                 |
-| pacman   | pulsemixer                                       | an intuitive ncurses audio controller                            |
-| pacman   | alsa-firmware                                    | sound related stuff                                              |
-| pacman   | alsa-lib                                         | sound related stuff                                              |
-| pacman   | alsa-plugins                                     | sound related stuff                                              |
-| pacman   | alsa-utils                                       | sound related stuff                                              |
-| pacman   | lib32-alsa-lib                                   | sound related stuff                                              |
-| pacman   | lib32-alsa-plugins                               | sound related stuff                                              |
-| pacman   | pulseaudio-alsa                                  | sound related stuff                                              |
-| pacman   | lib32-libpulse                                   | sound related stuff                                              |
-| pacman   | libcanberra-pulse                                | sound related stuff                                              |
-| pacman   | libpulse                                         | sound related stuff                                              |
-| pacman   | pulseaudio                                       | sound related stuff                                              |
-| pacman   | lib32-openal                                     | sound related stuff                                              |
-| pacman   | zathura                                          | is a pdf viewer with vim-like bindings                           |
-| pacman   | zathura-djvu                                     | gives zathura the ability to read .djvu files                    |
-| pacman   | zathura-pdf-mupdf                                | allows mupdf pdf compatibility in zathura                        |
-| pacman   | mpd                                              | music player daemon                                              |
-| pacman   | mpc                                              | mpd client                                                       |
-| pacman   | ncmpcpp                                          | mpd UI                                                           |
-| pacman   | onboard                                          | on-screen keyboard                                               |
-| git      | https://github.com/Naheel-Azawy/theprayer        | CLI prayer time                                                  |
+| Tag      | Name                   | Git Link                                         | Purpose                                                          |
+|----------+------------------------+--------------------------------------------------+------------------------------------------------------------------|
+| pacman   | i3-wm                  | N.A.                                             | the window manager                                               |
+| pacman   | xorg-server            | N.A.                                             | graphical server                                                 |
+| pacman   | xorg-xdpyinfo          | N.A.                                             | retrieves screen information for some scripts                    |
+| pacman   | xorg-xinit             | N.A.                                             | starts the graphical server                                      |
+| pacman   | xorg-xinput            | N.A.                                             | controls the input devices in xorg                               |
+| pacman   | xf86-input-synaptics   | N.A.                                             | handles the touchpad the right way                               |
+| pacman   | xorg-xprop             | N.A.                                             | property displayer for xorg                                      |
+| pacman   | xclip                  | N.A.                                             | clipboard manageer for xorg                                      |
+| pacman   | xterm                  | N.A.                                             | a simple terminal                                                |
+| suckless | st                     | git://git.suckless.org/st                        | THE simple terminal                                              |
+| git      | theterm                | https://github.com/Naheel-Azawy/theterm          | a wrapper to give the terminal super powers                      |
+| suckless | dmenu                  | https://git.suckless.org/dmenu                   | runs commands and provides a UI for selection                    |
+| aur      | ttf-symbola            | N.A.                                             | unicode symbols and emojis                                       |
+| pacman   | ttf-liberation         | N.A.                                             | another pretty font                                              |
+| pacman   | ttf-dejavu             | N.A.                                             | the preferred monospace font                                     |
+| aur      | ttf-font-awesome       | N.A.                                             | used for the icons in the top bar                                |
+| pacman   | arandr                 | N.A.                                             | UI for screen adjustment                                         |
+| pacman   | compton                | N.A.                                             | for transparency and removing screen-tearing                     |
+| pacman   | dunst                  | N.A.                                             | suckless notification system                                     |
+| pacman   | feh                    | N.A.                                             | a minimal image viewer (used to set wallpaper)                   |
+| pacman   | imlib2                 | N.A.                                             | images library. Needed for sxiv                                  |
+| git      | sxiv                   | https://github.com/Naheel-Azawy/sxiv             | another minimal image viewer (a bit less minimal)                |
+| pacman   | chromium               | N.A.                                             | well, in most cases it is faster than firefox...                 |
+| pacman   | gnome-keyring          | N.A.                                             | serves as the system keyring                                     |
+| pacman   | gnome-themes-extra     | N.A.                                             | gives the dark GTK theme                                         |
+| pacman   | i3blocks               | N.A.                                             | status bar                                                       |
+| pacman   | i3lock                 | N.A.                                             | screen lock                                                      |
+| pacman   | mpv                    | N.A.                                             | patrician's choice video/gif player                              |
+| pacman   | network-manager-applet | N.A.                                             | appears in the top right corner and manages the wi-fi connection |
+| pacman   | maim                   | N.A.                                             | can take quick screenshots at your request                       |
+| pacman   | xdotool                | N.A.                                             | provides window action utilities on the command line.            |
+| pacman   | xssstate               | N.A.                                             | times out the screen if locked                                   |
+| pacman   | conky                  | N.A.                                             | brings the lovely widgets at your desktop                        |
+| git      | conky-config           | https://github.com/Naheel-Azawy/conky-config     | the used conky setup                                             |
+| pacman   | lxappearance           | N.A.                                             | configures GTK with a simple GUI                                 |
+| pacman   | cups                   | N.A.                                             | in case you need to use a printer                                |
+| pacman   | cups-pdf               | N.A.                                             | pdf for cups                                                     |
+| pacman   | system-config-printer  | N.A.                                             | a little GUI to control your printers                            |
+| aur      | xbanish                | N.A.                                             | hide the mouse cursor while typing                               |
+| pacman   | clipmenu               | N.A.                                             | a clipboard manger                                               |
+| git      | adwaita-too-dark       | https://github.com/Naheel-Azawy/adwaita-too-dark | the used GTK theme                                               |
+| pacman   | pulseaudio             | N.A.                                             | the audio system (>inb4 bloat)                                   |
+| pacman   | pamixer                | N.A.                                             | terminal audio control interface                                 |
+| pacman   | pulsemixer             | N.A.                                             | an intuitive ncurses audio controller                            |
+| pacman   | alsa-firmware          | N.A.                                             | sound related stuff                                              |
+| pacman   | alsa-lib               | N.A.                                             | sound related stuff                                              |
+| pacman   | alsa-plugins           | N.A.                                             | sound related stuff                                              |
+| pacman   | alsa-utils             | N.A.                                             | sound related stuff                                              |
+| pacman   | lib32-alsa-lib         | N.A.                                             | sound related stuff                                              |
+| pacman   | lib32-alsa-plugins     | N.A.                                             | sound related stuff                                              |
+| pacman   | pulseaudio-alsa        | N.A.                                             | sound related stuff                                              |
+| pacman   | lib32-libpulse         | N.A.                                             | sound related stuff                                              |
+| pacman   | libcanberra-pulse      | N.A.                                             | sound related stuff                                              |
+| pacman   | libpulse               | N.A.                                             | sound related stuff                                              |
+| pacman   | pulseaudio             | N.A.                                             | sound related stuff                                              |
+| pacman   | lib32-openal           | N.A.                                             | sound related stuff                                              |
+| pacman   | zathura                | N.A.                                             | is a pdf viewer with vim-like bindings                           |
+| pacman   | zathura-djvu           | N.A.                                             | gives zathura the ability to read .djvu files                    |
+| pacman   | zathura-pdf-mupdf      | N.A.                                             | allows mupdf pdf compatibility in zathura                        |
+| pacman   | mpd                    | N.A.                                             | music player daemon                                              |
+| pacman   | mpc                    | N.A.                                             | mpd client                                                       |
+| pacman   | ncmpcpp                | N.A.                                             | mpd UI                                                           |
+| pacman   | onboard                | N.A.                                             | on-screen keyboard                                               |
+| git      | theprayer              | https://github.com/Naheel-Azawy/theprayer        | CLI prayer time                                                  |
