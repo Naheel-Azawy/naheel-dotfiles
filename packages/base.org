@@ -1,5 +1,6 @@
 | Tag        | Name                                       | Purpose                                                      |
 |------------+--------------------------------------------+--------------------------------------------------------------|
+| pacman     | sl                                         | cures the bad habit of miss-typing                           |
 | pacman     | base-devel                                 | group package with sudo and compilation software             |
 | pacman     | git                                        | version control system                                       |
 | aur_manual | yay                                        | Arch User Repository helper                                  |
@@ -14,17 +15,12 @@
 | pacman     | ntfs-3g                                    | allows accessing NTFS partitions                             |
 | pacman     | ffmpeg                                     | can record and splice video and audio on the command line    |
 | pacman     | networkmanager                             | does exactly what it sounds like                             |
-| pacman     | pulseaudio                                 | the audio system (>inb4 bloat)                               |
-| pacman     | pulseaudio-alsa                            | audio interface with ALSA                                    |
-| pacman     | pamixer                                    | terminal audio control interface                             |
-| pacman     | pulsemixer                                 | an intuitive ncurses audio controller                        |
 | pacman     | tmux                                       | the terminal multiplexer                                     |
 | func       | tpm                                        | tmux package manager                                         |
 | pacman     | unrar                                      | extracts rar's                                               |
 | pacman     | unzip                                      | unzips zips                                                  |
 | pacman     | w3m                                        | terminal browser which can also view images                  |
 | pacman     | wget                                       | downloads sites and files on the command line                |
-| pacman     | poppler                                    | manipulates pdfs                                             |
 | pacman     | atool                                      | manages and gives information about archives                 |
 | pacman     | fzf                                        | fuzzy finder tool                                            |
 | pacman     | highlight                                  | can highlight code output                                    |
@@ -46,3 +42,7 @@
 | git        | https://github.com/Naheel-Azawy/cp-p       | cp with progress                                             |
 | git        | https://github.com/Naheel-Azawy/stpv       | files previewer in the terminal (used for LF and fzf mainly) |
 | pacman     | chafa                                      | image to text                                                |
+| pacman     | colordiff                                  | a more colorful diff                                         |
+| pacman     | diff-so-fancy                              | an even more colorful diff                                   |
+| pacman     | wdiff                                      | diff but for words                                           |
+| pacman     | encfs                                      | encrypted file system                                        |

@@ -1,7 +1,6 @@
 | Tag    | Name                                       | Purpose                                                        |
 |--------+--------------------------------------------+----------------------------------------------------------------|
 | pacman | neofetch                                   | displays system's information                                  |
-| pacman | sl                                         | cures the bad habit of miss-typing                             |
 | pacman | cowsay                                     | a wise cow                                                     |
 | pacman | fortune-mod                                | some wise quotes                                               |
 | pacman | lolcat                                     | colored cat                                                    |

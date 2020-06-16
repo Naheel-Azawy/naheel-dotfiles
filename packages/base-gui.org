@@ -42,3 +42,25 @@
 | aur      | xbanish                                          | hide the mouse cursor while typing                               |
 | pacman   | clipmenu                                         | a clipboard manger                                               |
 | git      | https://github.com/Naheel-Azawy/adwaita-too-dark | the used GTK theme                                               |
+| pacman   | pulseaudio                                       | the audio system (>inb4 bloat)                                   |
+| pacman   | pamixer                                          | terminal audio control interface                                 |
+| pacman   | pulsemixer                                       | an intuitive ncurses audio controller                            |
+| pacman   | alsa-firmware                                    | sound related stuff                                              |
+| pacman   | alsa-lib                                         | sound related stuff                                              |
+| pacman   | alsa-plugins                                     | sound related stuff                                              |
+| pacman   | alsa-utils                                       | sound related stuff                                              |
+| pacman   | lib32-alsa-lib                                   | sound related stuff                                              |
+| pacman   | lib32-alsa-plugins                               | sound related stuff                                              |
+| pacman   | pulseaudio-alsa                                  | sound related stuff                                              |
+| pacman   | lib32-libpulse                                   | sound related stuff                                              |
+| pacman   | libcanberra-pulse                                | sound related stuff                                              |
+| pacman   | libpulse                                         | sound related stuff                                              |
+| pacman   | pulseaudio                                       | sound related stuff                                              |
+| pacman   | lib32-openal                                     | sound related stuff                                              |
+| pacman   | zathura                                          | is a pdf viewer with vim-like bindings                           |
+| pacman   | zathura-djvu                                     | gives zathura the ability to read .djvu files                    |
+| pacman   | zathura-pdf-mupdf                                | allows mupdf pdf compatibility in zathura                        |
+| pacman   | mpd                                              | music player daemon                                              |
+| pacman   | mpc                                              | mpd client                                                       |
+| pacman   | ncmpcpp                                          | mpd UI                                                           |
+| pacman   | onboard                                          | on-screen keyboard                                               |

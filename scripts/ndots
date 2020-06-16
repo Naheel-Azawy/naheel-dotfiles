@@ -54,7 +54,7 @@ dots_link() {
     lnnn "$D/configs/mednafen.cfg"        "$H/.mednafen/mednafen.cfg"
     lnnn "$D/configs/bashrc.sh"           "$H/.bashrc"
     lnnn "$D/configs/profile"             "$H/.profile"
-    lnnn "$D/configs/profile"             "$H/.bashrc_profile"
+    lnnn "$D/configs/profile"             "$H/.bash_profile"
     lnnn "$D/configs/profile"             "$H/.xprofile"
     lnnn "$D/configs/xinitrc.sh"          "$H/.xinitrc"
     lnnn "$D/configs/Xresources"          "$H/.Xresources"
@@ -408,8 +408,8 @@ main() {
         i|install)
             pkg_install "$@";;
         u|update)
-            cd "$DOTFILES_DIR" &&
-                git_update
+            #cd "$DOTFILES_DIR" &&
+            #    git_update
             dots_update;;
         l|link)
             dots_link;;

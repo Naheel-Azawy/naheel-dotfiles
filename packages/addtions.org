@@ -1,11 +1,8 @@
 | Tag    | Name                                  | Purpose                                                                                        |
 |--------+---------------------------------------+------------------------------------------------------------------------------------------------|
+| func   | blackarch                             | hacking tools                                                                                  |
 | pip    | youtube-dl                            | can download any YouTube video (or playlist or channel) when given the link                    |
 | pacman | youtube-viewer                        | is a terminal interface for watching YouTube videos without a browser                          |
-| pacman | zathura                               | is a pdf viewer with vim-like bindings                                                         |
-| pacman | zathura-djvu                          | gives zathura the ability to read .djvu files                                                  |
-| pacman | zathura-pdf-mupdf                     | allows mupdf pdf compatibility in zathura                                                      |
-| pacman | firefox                               | chromium is good but firefox is not bad                                                        |
 | pacman | libreoffice                           | because off course someone will send a file that is not a plain text...                        |
 | pacman | jdk8-openjdk                          | Java 8 development kit                                                                         |
 | pacman | firejail                              | keeps untrusted software in jail                                                               |
@@ -16,14 +13,8 @@
 | aur    | gimp-plugin-resynthesizer             | gimp resynthesizer                                                                             |
 | aur    | drawio-desktop-bin                    | diagram builder                                                                                |
 | pacman | imagemagick                           | the magical image editor                                                                       |
-| pacman | mpd                                   | music player daemon                                                                            |
-| pacman | mpc                                   | mpd client                                                                                     |
-| pacman | ncmpcpp                               | mpd UI                                                                                         |
 | pacman | virtualbox                            | the chosen virtual machine                                                                     |
 | pacman | virtualbox-host-modules-arch          | virtual-box kernel modules                                                                     |
-| pacman | colordiff                             | a more colorful diff                                                                           |
-| pacman | diff-so-fancy                         | an even more colorful diff                                                                     |
-| pacman | wdiff                                 | diff but for words                                                                             |
 | pacman | nautilus                              | GNOME's file manager                                                                           |
 | pacman | evince                                | GNOME's reader                                                                                 |
 | pacman | wine                                  | runs Windows programs. Always be careful while using non free software. Best fit with firejail |
@@ -34,18 +25,6 @@
 | pacman | mpg123                                | needed for wine                                                                                |
 | pacman | lib32-mpg123                          | needed for wine                                                                                |
 | pacman | lib32-gnutls                          | needed for wine                                                                                |
-| pacman | alsa-firmware                         | sound related stuff                                                                            |
-| pacman | alsa-lib                              | sound related stuff                                                                            |
-| pacman | alsa-plugins                          | sound related stuff                                                                            |
-| pacman | alsa-utils                            | sound related stuff                                                                            |
-| pacman | lib32-alsa-lib                        | sound related stuff                                                                            |
-| pacman | lib32-alsa-plugins                    | sound related stuff                                                                            |
-| pacman | pulseaudio-alsa                       | sound related stuff                                                                            |
-| pacman | lib32-libpulse                        | sound related stuff                                                                            |
-| pacman | libcanberra-pulse                     | sound related stuff                                                                            |
-| pacman | libpulse                              | sound related stuff                                                                            |
-| pacman | pulseaudio                            | sound related stuff                                                                            |
-| pacman | lib32-openal                          | sound related stuff                                                                            |
 | pacman | ttf-hanazono                          | Chinese font                                                                                   |
 | pacman | opendesktop-fonts                     | Japanese font                                                                                  |
 | aur    | adwaita-qt                            | Adwaita GNOME theme for Qt5                                                                    |
@@ -70,12 +49,10 @@
 | pacman | mlocate                               | find files quickly                                                                             |
 | npm    | wikit                                 | cli wikipedia                                                                                  |
 | pacman | perl-file-mimeinfo                    | file opener with mime type                                                                     |
-| pacman | onboard                               | on-screen keyboard                                                                             |
 | git    | https://github.com/ym1234/colorpicker | a simple color picker                                                                          |
 | pacman | lshw                                  | list hardware devices                                                                          |
-| pacman | encfs                                 | encrypted file system                                                                          |
 | pacman | tesseract                             | OCR engine                                                                                     |
 | pacman | tesseract-data-eng                    | English data for tesseract                                                                     |
 | pacman | tesseract-data-ara                    | Arabic data for tesseract                                                                      |
 | aur    | xrandr-invert-colors                  | inver screen colors                                                                            |
-| func   | blackarch                             | hacking tools                                                                                  |
+| pacman | poppler                               | manipulates pdfs                                                                               |
