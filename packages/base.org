@@ -47,3 +47,4 @@
 | pacman     | wdiff                                      | diff but for words                                           |
 | pacman     | encfs                                      | encrypted file system                                        |
 | pip        | trash-cli                                  | CLI XDG trash                                                |
+| pacman     | strace                                     | trace system calls. Needed for cp-p                          |
