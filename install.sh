@@ -9,5 +9,5 @@ elif [ -f ./scripts/ndots ]; then
     exec ./scripts/ndots install dots "$@"
 else
     echo 'Downloading dotfiles...'
-    eval "$CMD"
+    eval "$CMD" "$@"
 fi

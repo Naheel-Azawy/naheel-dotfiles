@@ -18,9 +18,9 @@
    - bunch of other stuff
 
 ** Install
-   Arch Linux is expected to be installed
+   Arch Linux is expected to be already installed with a working internet connection.
    #+begin_src shell 
-     curl https://raw.githubusercontent.com/Naheel-Azawy/naheel-dotfiles/master/install.sh > /tmp/nd.sh && sh /tmp/nd.sh
+     curl https://raw.githubusercontent.com/Naheel-Azawy/naheel-dotfiles/master/install.sh > /tmp/nd.sh && sh /tmp/nd.sh base base-gui
    #+end_src
 
    Or
@@ -28,10 +28,12 @@
      cd
      git clone https://github.com/Naheel-Azawy/naheel-dotfiles.git .dotfiles
      cd .dotfiles
-     ./install.sh
+     ./install.sh base base-gui
    #+end_src
 
-   Note: pass ~--docker~ option to create a playground docker image.
+   *Other notes:*
+   - Pass ~--docker~ option to create a playground docker image.
+   - Pick any package groups you're comfortable with other than ~base~ and ~base-gui~. Tables are under ~packages~ directory.
 
 ** Update
    #+begin_src shell 

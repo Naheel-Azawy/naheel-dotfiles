@@ -161,6 +161,7 @@ dots_install() {
     sudo pacman --noconfirm -Syu
 
     info "Install packages"
+    [ "$PACS" ] || PACS='base'
     pkg_install "$PACS"
 
     info "Setting up systemd services"
