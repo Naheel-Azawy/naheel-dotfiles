@@ -360,7 +360,7 @@ pkg_install() {
     
     pacs=$(pkg_load_tables all)
     pacs=$(for pac in "$@"; do
-               echo "$pacs" | grep -E ".+ $pac .+"
+               echo "$pacs" | grep -E ".+ $pac .+" | head -n 1
            done)
 
     if [ "$pacs" ]; then
