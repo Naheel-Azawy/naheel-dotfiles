@@ -4,20 +4,41 @@ die() {
     echo 'Killing all...'
     docker kill "$(docker ps -q)"
     echo 'Removing all...'
-    docker rm   "$(docker ps -qa)"
+    docker rm "$(docker ps -qa)"
 }
 
 CMD="$1"
 shift
 case "$CMD" in
+    ocrmypdf)
+        [ -f "$1" ] && {
+            SRC=$(realpath "$1")
+            DST=$(realpath "$2")
+            shift 2
+            SRCN=$(basename "$SRC")
+            DSTN=$(basename "$DST")
+            TMP=$(mktemp -d)
+            cp "$SRC" "$TMP"
+        }
+        docker run --rm -v "$TMP":/tmp jbarlow83/ocrmypdf /tmp/"$SRCN" /tmp/"$DSTN" "$@" &&
+            mv "$TMP/$DSTN" "$DST"
+        rm -rf "$TMP";;
+
+    searx)
+        docker run -d --name searx -p 3333:8888 wonderfall/searx "$@";;
+
     rethinkdb)
         docker run -d -P --name rethink1 rethinkdb "$@";;
+
     droppy)
         docker run --name droppy -p 127.0.0.1:8989:8989 silverwind/droppy "$@";;
+
     cryptominisat)
         docker run --rm -i msoos/cryptominisat "$@";;
+
     die)
         die;;
+
     burn)
         printf 'Gas all containers? Sure? (y/N) '
         read -r ans
@@ -25,8 +46,10 @@ case "$CMD" in
             die
             docker rmi "$(docker images -q)"
         };;
+
     size)
         docker system df -v;;
+
     *)
         echo 'What??'
         exit 1;;

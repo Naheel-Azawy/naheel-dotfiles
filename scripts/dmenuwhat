@@ -1,21 +1,21 @@
-#!/bin/bash
+#!/bin/sh
 
 DMENU='menu-interface -i'
 
-function is-url {
-    [[ $(echo "$1" | sed -rn 's@.*(https?://.+\..+).*@\1@p') != '' ]]
+is_url() {
+    [ "$(echo "$1" | sed -rn 's@.*(https?://.+\..+).*@\1@p')" != '' ]
 }
 
-function how-can-I-help-you-sir {
-    C=$((is-url "$Q" && \
-             echo "View page";   \
-             echo "Wikipedia" && \
-             echo "Dictionary" && \
-             echo "Duck it!"  && \
-             echo "Manual"    && \
-             echo "ArchWiki"  && \
-             echo "Wait... What? I'm looking for something else...") \
-            | $DMENU -l 20 -p "What is ${Q:0:30}?")
+how_can_I_help_you_sir() {
+    C=$( (is_url "$Q" &&
+              echo "View page";
+          echo "Wikipedia"      &&
+              echo "Dictionary" &&
+              echo "Duck it!"   &&
+              echo "Manual"     &&
+              echo "ArchWiki"   &&
+              echo "Wait... What? I'm looking for something else...") |
+             $DMENU -l 20 -p "What is $Q?")
 
     case "$C" in
         View*)
@@ -25,7 +25,7 @@ function how-can-I-help-you-sir {
             theterm "wikit-quick \"$Q\""
             ;;
         Dict*)
-            L=$(echo -e 'en\nar' | $DMENU -p 'To?')
+            L=$(printf 'en\nar' | $DMENU -p 'To?')
             theterm "trans :$L \"$Q\" | less -R"
             ;;
         Duck*)
@@ -41,10 +41,21 @@ function how-can-I-help-you-sir {
             ;;
         Wait*)
             Q=$(echo | $DMENU -p "Which is?")
-            how-can-I-help-you-sir
+            how_can_I_help_you_sir
             ;;
     esac
 }
 
-Q=$(clipboard | tr '\n' ' ' | xargs)
-how-can-I-help-you-sir
+get_selected() {
+    clipboard
+    #BAK=$(clipboard)
+    #sleep .1
+    #xdotool key ctrl+c
+    #sleep 5
+    #clipboard
+    #printf "%s" "$BAK" | clipboard
+}
+
+Q=$(get_selected | tr '\n' ' ' | head -c 50 | xargs)
+[ ! "$Q" ] && exit 1
+how_can_I_help_you_sir

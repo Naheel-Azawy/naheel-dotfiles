@@ -167,6 +167,7 @@ There are two things you can do about this warning:
 (use-package haxe-mode)
 (use-package arduino-mode)
 (use-package solidity-mode)
+(use-package dockerfile-mode)
 (use-package fish-mode)
 (use-package elvish-mode)
 (use-package xonsh-mode)
@@ -448,7 +449,7 @@ There are two things you can do about this warning:
     ("bffa9739ce0752a37d9b1eee78fc00ba159748f50dc328af4be661484848e476" default)))
  '(package-selected-packages
    (quote
-    (basic-mode vlang-mode quelpa xonsh-mode elvish-mode undo-fu js2-mode ein cmake-mode origami fish-mode doom-modeline git-gutter smooth-scroll sublimity org-ref anzu flycheck flymake-shellcheck typescript-mode rust-mode kotlin-mode julia-mode go-mode dart-mode csharp-mode flyspell-correct-helm rainbow-mode web-mode company-mode org-bullets ox-groff calfw-org calfw undo-tree spacemacs-theme xclip use-package multiple-cursors lsp-ui lsp-java company-lsp))))
+    (ranger dockerfile-mode basic-mode vlang-mode quelpa xonsh-mode elvish-mode undo-fu js2-mode ein cmake-mode origami fish-mode doom-modeline git-gutter smooth-scroll sublimity org-ref anzu flycheck flymake-shellcheck typescript-mode rust-mode kotlin-mode julia-mode go-mode dart-mode csharp-mode flyspell-correct-helm rainbow-mode web-mode company-mode org-bullets ox-groff calfw-org calfw undo-tree spacemacs-theme xclip use-package multiple-cursors lsp-ui lsp-java company-lsp))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
