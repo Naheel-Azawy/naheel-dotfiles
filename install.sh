@@ -3,11 +3,33 @@
 CMD='cd && rm -rf naheel-dotfiles-master && curl -sL https://github.com/Naheel-Azawy/naheel-dotfiles/archive/master.tar.gz | tar xz && mv naheel-dotfiles-master .dotfiles && cd .dotfiles && ./install.sh'
 
 if [ "$1" = '--docker' ]; then
-    echo 'Creating a docker image...'
-    exec docker run --name arch-naheel -it archlinux sh -c "$CMD --quick base && sudo -u main sh -c 'cd && . ~/.profile && tmux'"
+
+    IMG='arch-naheel'
+
+    echo 'Creating Dockerfile...'
+    echo "FROM archlinux:latest
+LABEL maintainer='Naheel-Azawy'
+RUN $CMD --quick base
+CMD sudo -u main sh -c 'cd && . ~/.profile && tmux'" > ./Dockerfile
+
+    if docker images | cut -d ' ' -f 1 | grep "$IMG" -q; then
+        echo "Image '$IMG' already exist"
+        echo "remove with 'docker rmi $IMG'"
+    else
+        echo "Building image ($IMG)..."
+        docker build -t "$IMG" .
+    fi
+
+    echo 'Running docker image...'
+    docker run -it --rm "$IMG"
+
 elif [ -f ./scripts/ndots ]; then
+
     exec ./scripts/ndots install dots "$@"
+
 else
+
     echo 'Downloading dotfiles...'
     eval "$CMD" "$@"
+
 fi
