@@ -1,6 +1,0 @@
-#!/bin/sh
-DMENU="menu-interface -i"
-
-RUN=$(launcherhelper games | $DMENU)
-[ ! "$RUN" ] && exit 1
-launcherhelper run "$RUN"

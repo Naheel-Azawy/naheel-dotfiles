@@ -83,7 +83,7 @@ dots_update() {
 # installs everything
 dots_install() {
     info "Installing Naheel's dotfiles..."
-    
+
     # makes a 'main' user and keep it passwordless
     # used probably for docker
     QUICK=
@@ -91,7 +91,7 @@ dots_install() {
         QUICK="$1"
         shift
     }
-    
+
     if [ ! "$QUICK" ]; then
         echo "This might destroy you're system. Are you sure you want to install it? [yes/No]"
         read -r ans
@@ -185,6 +185,11 @@ export PATH=\"\$PATH:\$DOTFILES_SCRIPTS\"
          /mnt/usb3/ \
          /mnt/usb4/ \
          /mnt/usb5/
+
+    info "Installing fish complete"
+    sudo mkdir -p '/usr/share/fish/completions/'
+    sudo cp -f "$D/scripts/ndots-complete.fish" \
+         '/usr/share/fish/completions/ndots.fish'
 
     info "Starting Emacs daemon"
     emacs --daemon
@@ -357,7 +362,7 @@ pkg_install() {
         dots_install "$@"
         return
     fi
-    
+
     pacs=$(pkg_load_tables all)
     pacs=$(for pac in "$@"; do
                echo "$pacs" | grep -E ".+ $pac .+" | head -n 1
@@ -366,7 +371,7 @@ pkg_install() {
     if [ "$pacs" ]; then
         pacs_min=$(echo "$pacs" | grep "$(echo "$*" | tr ' ' '\n')" |
                        cut -d ' ' -f 3 | tr '\n' ' ')
-        info "Installing packages $pacs_min"        
+        info "Installing packages $pacs_min"
     else
         pacs=$(pkg_load_tables "$@") || {
             err 'Choose either packages groups of packages'
@@ -387,6 +392,38 @@ pkg_install() {
     done
 }
 
+list_all() {
+    DES=
+    GR=all
+    if [ "$1" = -d ]; then
+        DES=1
+        shift
+    fi
+    if [ "$1" ]; then
+        GR="$1"
+    else
+        if [ $DES ]; then
+            printf 'dots\tsetup a new machine\n'
+        else
+            echo "dots"
+        fi
+        for c in $CATEGORIES; do
+            if [ $DES ]; then
+                printf '%s\tpackage group\n' "$c"
+            else
+                echo "$c"
+            fi
+        done
+    fi
+    pkg_load_tables "$GR" | while read -r _ pac _ des; do
+        if [ $DES ]; then
+            printf '%s\t%s\n' "$pac" "$des"
+        else
+            echo "$pac"
+        fi
+    done
+}
+
 help() {
     BIN=$(basename "$0")
     echo "usage: $BIN COMMAND [OPTIONS]"
@@ -394,6 +431,12 @@ help() {
     echo ' install   Install a (listed package), (package group), or "dots"'
     echo ' update    Update configs (link too)'
     echo ' link      Link configs'
+    echo ' list [-d] List package groups and packages'
+    echo ' newscript Create a new script'
+    echo ' gits      git status'
+    echo ' gitd      git diff'
+    echo ' gitp      git pull'
+    echo ' help      Show this help'
     exit 1
 }
 
@@ -401,12 +444,26 @@ main() {
     CMD="$1"
     [ $# != 0 ] && shift
     case "$CMD" in
-        i|install)
+        install)
             pkg_install "$@";;
-        u|update)
+        update)
             dots_update;;
-        l|link)
+        link)
             dots_link;;
+        list)
+            list_all "$@";;
+        newscript)
+            cd "$DOTFILES_DIR/scripts" &&
+                new-shell-script "$@";;
+        gits)
+            cd "$DOTFILES_DIR" &&
+                git status;;
+        gitd)
+            cd "$DOTFILES_DIR" &&
+                git diff;;
+        gitp)
+            cd "$DOTFILES_DIR" &&
+                git pull origin master;;
         '')
             cd "$DOTFILES_DIR" && open ;;
         *)

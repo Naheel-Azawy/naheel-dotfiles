@@ -33,6 +33,8 @@ openfile() {
             *.link)
                 url=$(cat "$f")
                 browser "$url" 2>&1 | lfsend &;;
+            *.el.gz)
+                $EDITOR "$f";;
             *)
                 # mime type
                 case $(file --mime-type "$(realpath """$f""")" -b) in

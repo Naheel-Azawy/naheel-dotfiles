@@ -214,6 +214,7 @@ There are two things you can do about this warning:
 ;; because no one knows how to use emacs...
 (cua-mode 1)
 (global-set-key (kbd "C-a") 'mark-whole-buffer)
+(define-key org-mode-map "\C-a" 'mark-whole-buffer)
 (global-set-key (kbd "C-f") 'isearch-forward)
 (define-key isearch-mode-map "\C-f" 'isearch-repeat-forward)
 (define-key isearch-mode-map "\C-v" 'isearch-yank-pop)
@@ -222,6 +223,7 @@ There are two things you can do about this warning:
   :config (global-undo-tree-mode))
 (global-set-key (kbd "C-z") 'undo-tree-undo)
 (global-set-key (kbd "M-z") 'undo-tree-redo)
+(setq org-support-shift-select t)
 
 ;; ---- ORIGAMI ----
 (use-package origami
@@ -411,11 +413,11 @@ There are two things you can do about this warning:
   (add-to-list 'org-latex-classes
                '("qutad"
                  "\\documentclass{qutad}"
+                 ("\\chapter{%s}" . "\\chapter*{%s}")
                  ("\\section{%s}" . "\\section*{%s}")
                  ("\\subsection{%s}" . "\\subsection*{%s}")
                  ("\\subsubsection{%s}" . "\\subsubsection*{%s}")
-                 ("\\paragraph{%s}" . "\\paragraph*{%s}")
-                 ("\\subparagraph{%s}" . "\\subparagraph*{%s}")))
+                 ("\\paragraph{%s}" . "\\paragraph*{%s}")))
 
   (add-to-list 'org-latex-classes
                '("beamer"

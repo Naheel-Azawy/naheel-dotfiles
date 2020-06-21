@@ -1,5 +1,16 @@
 #!/bin/sh
 
+command -v fish >/dev/null &&
+    echo "
+complete -c docker-toys -a ocrmypdf -a      'OCR a pdf file'
+complete -c docker-toys -a searx -a         'Meta search engine'
+complete -c docker-toys -a droppy -a        'File manager server'
+complete -c docker-toys -a cryptominisat -a 'SAT solver'
+complete -c docker-toys -a die -a           'Kill all'
+complete -c docker-toys -a burn -a          'Kill all and burn all containers'
+complete -c docker-toys -a size -a          'Containers sizes'
+" | fish
+
 die() {
     echo 'Killing all...'
     docker kill "$(docker ps -q)"
@@ -26,9 +37,6 @@ case "$CMD" in
 
     searx)
         docker run -d --name searx -p 3333:8888 wonderfall/searx "$@";;
-
-    rethinkdb)
-        docker run -d -P --name rethink1 rethinkdb "$@";;
 
     droppy)
         docker run --name droppy -p 127.0.0.1:8989:8989 silverwind/droppy "$@";;
