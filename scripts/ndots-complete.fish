@@ -1,9 +1,5 @@
 #!/bin/fish
 
-function __fish_ndots_list
-    ndots list -d
-end
-
 set -l s '__fish_seen_subcommand_from'
 set -l n 'not __fish_seen_subcommand_from'
 
@@ -18,4 +14,5 @@ complete -c ndots -n "$n $c" -f -a gitd      -d 'git diff'
 complete -c ndots -n "$n $c" -f -a gitp      -d 'git pull'
 complete -c ndots -n "$n $c" -f -a help      -d 'Show help'
 
-complete -c ndots -n "$s install" -a '(__fish_ndots_list)'
+complete -c ndots -n "$s install" -a '(ndots list -d)' -r -f
+complete -c ndots -n "$s list"    -a '(ndots list -d groups)' -r -f

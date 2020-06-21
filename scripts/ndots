@@ -415,13 +415,28 @@ list_all() {
             fi
         done
     fi
-    pkg_load_tables "$GR" | while read -r _ pac _ des; do
+    if [ "$GR" = groups ]; then
         if [ $DES ]; then
-            printf '%s\t%s\n' "$pac" "$des"
+            printf 'all\tall package groups\n'
         else
-            echo "$pac"
+            echo all
         fi
-    done
+        for c in $CATEGORIES; do
+            if [ $DES ]; then
+                printf '%s\tpackage group\n' "$c"
+            else
+                echo "$c"
+            fi
+        done
+    else
+        pkg_load_tables "$GR" | while read -r _ pac _ des; do
+            if [ $DES ]; then
+                printf '%s\t%s\n' "$pac" "$des"
+            else
+                echo "$pac"
+            fi
+        done
+    fi
 }
 
 help() {
