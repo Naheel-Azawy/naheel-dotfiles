@@ -214,7 +214,8 @@ There are two things you can do about this warning:
 ;; because no one knows how to use emacs...
 (cua-mode 1)
 (global-set-key (kbd "C-a") 'mark-whole-buffer)
-(define-key org-mode-map "\C-a" 'mark-whole-buffer)
+(with-eval-after-load 'org
+  (define-key org-mode-map "\C-a" 'mark-whole-buffer))
 (global-set-key (kbd "C-f") 'isearch-forward)
 (define-key isearch-mode-map "\C-f" 'isearch-repeat-forward)
 (define-key isearch-mode-map "\C-v" 'isearch-yank-pop)
