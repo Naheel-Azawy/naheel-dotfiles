@@ -20,6 +20,8 @@ F="$1"
 F="${F%.*}"
 
 if [ $DOCX = 1 ]; then
+    # TODO: move to personal
+    # or better download if not existing
     pandoc --bibliography="$BIB" --filter pandoc-citeproc --csl "$HOME/Documents/LaTeX/ieee.csl" "$F.tex" -o "$F.docx"
 else
     if OUT=$($PDF $OPT "$F.tex"); then

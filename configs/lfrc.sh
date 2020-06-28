@@ -144,6 +144,7 @@ cmd paste ${{
                    copy) cmd='cp-p';; move) cmd='mv-p';;
                esac
                cmd="$cmd --new-line"
+               [ "$mode" = copy ] && cmd="$cmd -a"
                $s sh -c "$cmd --backup=numbered -F \"$srcF\" . | $send && rm -f \"$srcF\" &"
                lf -remote 'send load'
                lf -remote 'send clear'

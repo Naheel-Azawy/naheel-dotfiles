@@ -1,2 +1,3 @@
 #!/bin/sh
+# TODO: move to personal
 exec matlab-gui -nodesktop "$@"

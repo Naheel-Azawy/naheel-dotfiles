@@ -1,5 +1,7 @@
 #!/bin/sh
 
+# TODO: move to personal
+
 ENC=/mnt/hdd1/Private-enc/
 DEC=/mnt/hdd1/Private/
 

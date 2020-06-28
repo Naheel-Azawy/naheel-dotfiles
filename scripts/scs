@@ -1,2 +1,5 @@
 #!/bin/sh
+
+# TODO: move to personal
+
 exec java -jar "$HOME/Projects/SCS/scs.jar" "$@"

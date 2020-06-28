@@ -42,7 +42,6 @@ dots_link() {
     lnnn "$D/configs/dunstrc"             "$H/.config/dunst/dunstrc"
     lnnn "$D/configs/fish-config.fish"    "$H/.config/fish/config.fish"
     lnnn "$D/configs/fonts.conf"          "$H/.config/fontconfig/fonts.conf"
-    lnnn "$D/configs/youtube-viewer.conf" "$H/.config/youtube-viewer/youtube-viewer.conf"
     lnnn "$D/configs/mpd.conf"            "$H/.config/mpd/mpd.conf"
     lnnn "$D/configs/ncmpcpp.conf"        "$H/.config/ncmpcpp/config"
     lnnn "$D/configs/zathurarc"           "$H/.config/zathura/zathurarc"

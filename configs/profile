@@ -8,7 +8,7 @@ export VISUAL="$EDITOR"
 export TERMINAL="st"
 export BROWSER="browser"
 export READER="zathura"
-export BIB="$HOME/Documents/LaTeX/refs.bib"
+export BIB="$HOME/Documents/LaTeX/refs.bib" # TODO: move to personal
 
 export FONT_MONO='DejaVu Sans Mono'
 export FONT_SANS='Liberation Sans'
@@ -20,7 +20,7 @@ export QT_QPA_PLATFORMTHEME="qt5ct"
 export QT_AUTO_SCREEN_SCALE_FACTOR=0
 #export QT_STYLE_OVERRIDE=adwaita-dark
 export _JAVA_OPTIONS='-Dawt.useSystemAAFontSettings=on'
-export CLOUDCONVERT_API_KEY='bUGujVfvGQ6nkPZo5MvFoIz65C3spOZMtiD4Bz613XxnXsUIVDDwZILqOJZghP3D'
+export CLOUDCONVERT_API_KEY='bUGujVfvGQ6nkPZo5MvFoIz65C3spOZMtiD4Bz613XxnXsUIVDDwZILqOJZghP3D' # TODO: move to personal
 export LF_ICONS='di=🗀:tw=🗀:st=🗀:ow=🗀:fi=🗎:'
 
 export PI=3.14159265358979323844

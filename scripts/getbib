@@ -23,7 +23,7 @@
 
 # if current window directory has bib file
 CWD_BIB=$(theterm --xpwd)
-CWD_BIB=$(find "$CWD_BIB" -iname '*.bib' | head -n1)
+CWD_BIB=$(find "$CWD_BIB" -maxdepth 1 -iname '*.bib' | head -n1)
 if [ -f "$CWD_BIB" ]; then
     ref=$(sed -En 's/\@.*\{(.+),.*/\1 #| /p;s/^\s*title\s*=\s*\{(.+)\},/\1}/p' "$CWD_BIB" | \
               tr -d '\n' | tr '}' '\n' | nl -s ' |#' | column -t -s'#' | \

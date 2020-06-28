@@ -1,5 +1,7 @@
 #!/bin/sh
 
+# TODO: move to personal
+
 export JAVA_HOME=/usr/lib/jvm/java-8-openjdk/bin/
 JSWEET="$HOME/GoodStuff/jsweet/transpiler/target/jsweet-transpiler-2.3.6-SNAPSHOT-jar-with-dependencies.jar"
 if [ $# = 1 ] && [ -d "$1" ]; then

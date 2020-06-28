@@ -60,7 +60,7 @@ There are two things you can do about this warning:
           (comment       . "#2aa1ae")
           (comment-light . "#2aa1ae")
           (comment-bg    . "#000000") ;; changed
-          (comp          . "#111111") ;; changed
+          (comp          . "#6c4173") ;; changed
           (err           . "#e0211d")
           (func          . "#bc6ec5")
           (head1         . "#4f97d7")
@@ -321,7 +321,7 @@ There are two things you can do about this warning:
 ;; ---- ORG ----
 (use-package org
   :init
-  (setq org-agenda-files (list "~/Dropbox/orgmode/TODO.org")
+  (setq org-agenda-files (list "~/Dropbox/orgmode/TODO.org") ; TODO: move to personal
         org-log-done 'time
         org-image-actual-width 500)
 
@@ -452,7 +452,7 @@ There are two things you can do about this warning:
     ("bffa9739ce0752a37d9b1eee78fc00ba159748f50dc328af4be661484848e476" default)))
  '(package-selected-packages
    (quote
-    (ranger dockerfile-mode basic-mode vlang-mode quelpa xonsh-mode elvish-mode undo-fu js2-mode ein cmake-mode origami fish-mode doom-modeline git-gutter smooth-scroll sublimity org-ref anzu flycheck flymake-shellcheck typescript-mode rust-mode kotlin-mode julia-mode go-mode dart-mode csharp-mode flyspell-correct-helm rainbow-mode web-mode company-mode org-bullets ox-groff calfw-org calfw undo-tree spacemacs-theme xclip use-package multiple-cursors lsp-ui lsp-java company-lsp))))
+    (vterm term+ navorski ranger dockerfile-mode basic-mode vlang-mode quelpa xonsh-mode elvish-mode undo-fu js2-mode ein cmake-mode origami fish-mode doom-modeline git-gutter smooth-scroll sublimity org-ref anzu flycheck flymake-shellcheck typescript-mode rust-mode kotlin-mode julia-mode go-mode dart-mode csharp-mode flyspell-correct-helm rainbow-mode web-mode company-mode org-bullets ox-groff calfw-org calfw undo-tree spacemacs-theme xclip use-package multiple-cursors lsp-ui lsp-java company-lsp))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.

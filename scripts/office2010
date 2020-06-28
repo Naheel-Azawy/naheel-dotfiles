@@ -1,4 +1,7 @@
 #!/bin/sh
+
+# TODO: move to personal
+
 JAIL="$HOME/Firejail/office2010"
 SETUP='Microsoft Office Enterprise 2010 Corporate Final (full activated)'
 INSTALLER="/mnt/hdd2/GoodStuff2/Things/ms office/$SETUP"

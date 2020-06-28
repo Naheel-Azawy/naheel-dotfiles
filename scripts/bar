@@ -129,9 +129,9 @@ sens() {
 weat() {
     [ "$BLOCK_BUTTON" = "1" ] &&
         theterm -a '-c __floatme__ -g 63x38' \
-                'weather-update & head -n 37 ~/.weatherreport && read -p ""'
+                'weather-update & head -n 37 ~/.cache/weatherreport && read -p ""'
     #   Lines from 3rd to 4th                         Remove color codes                Cut
-    V=$(sed -n -e "3,4 p" -e "4 q" ~/.weatherreport | sed "s/\x1B\[[0-9;]*[JKmsu]//g" | cut -c 16-)
+    V=$(sed -n -e "3,4 p" -e "4 q" ~/.cache/weatherreport | sed "s/\x1B\[[0-9;]*[JKmsu]//g" | cut -c 16-)
     #S=$(echo "$V" | head -1 | awk '{print tolower($0)}')
     W=$(echo "$V" | tail -1 | awk -F'[- ]' '{print $1}')
     [ "$W" ] || return
