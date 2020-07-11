@@ -195,7 +195,10 @@ There are two things you can do about this warning:
 (use-package flycheck :init (global-flycheck-mode))
 (use-package rainbow-mode)
 (use-package iedit)
-(use-package dumb-jump)
+(use-package dumb-jump
+  :bind
+  ("C-j" . dumb-jump-go)
+  ("M-j" . dumb-jump-back))
 (use-package writeroom-mode)
 (use-package anzu :config (global-anzu-mode +1))
 
@@ -452,7 +455,7 @@ There are two things you can do about this warning:
     ("bffa9739ce0752a37d9b1eee78fc00ba159748f50dc328af4be661484848e476" default)))
  '(package-selected-packages
    (quote
-    (vterm term+ navorski ranger dockerfile-mode basic-mode vlang-mode quelpa xonsh-mode elvish-mode undo-fu js2-mode ein cmake-mode origami fish-mode doom-modeline git-gutter smooth-scroll sublimity org-ref anzu flycheck flymake-shellcheck typescript-mode rust-mode kotlin-mode julia-mode go-mode dart-mode csharp-mode flyspell-correct-helm rainbow-mode web-mode company-mode org-bullets ox-groff calfw-org calfw undo-tree spacemacs-theme xclip use-package multiple-cursors lsp-ui lsp-java company-lsp))))
+    (dockerfile-mode basic-mode vlang-mode quelpa xonsh-mode elvish-mode undo-fu js2-mode ein cmake-mode origami fish-mode doom-modeline git-gutter smooth-scroll sublimity org-ref anzu flycheck flymake-shellcheck typescript-mode rust-mode kotlin-mode julia-mode go-mode dart-mode csharp-mode flyspell-correct-helm rainbow-mode web-mode company-mode org-bullets ox-groff calfw-org calfw undo-tree spacemacs-theme xclip use-package multiple-cursors lsp-ui lsp-java company-lsp))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.

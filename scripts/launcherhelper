@@ -3,7 +3,7 @@ import os
 import sys
 import json
 
-CACHE = os.getenv("HOME") + "/.launcher_recent_cache.json"
+CACHE = os.getenv("HOME") + "/.cache/launcher_recent.json"
 I3 = os.getenv("DOTFILES_DIR") + "/configs/i3.conf.gen.sh"
 
 TUIAPPS = [

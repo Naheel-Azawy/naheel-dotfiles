@@ -1,0 +1,23 @@
+#!/bin/sh
+
+F="$1"
+FR="$2"
+TO="$3"
+
+end() {
+    rm -f \
+       /tmp/__"$$"output_1.mp4 \
+       /tmp/__"$$"output_2.mp4 \
+       /tmp/__"$$"file_list.txt
+    exit "$@"
+}
+
+ffmpeg -i "$F" -ss 00:00:00.0 -codec copy -t "$FR" /tmp/__"$$"output_1.mp4 || end 1
+ffmpeg -i "$F" -ss 00:00:"$TO".0 -codec copy       /tmp/__"$$"output_2.mp4 || end 1
+
+echo "file /tmp/__$$output_1.mp4
+file /tmp/__$$output_2.mp4" > /tmp/__"$$"file_list.txt
+
+ffmpeg -f concat -safe 0 -i /tmp/__"$$"file_list.txt -c copy "$F.$FR.$TO.mp4" || end 1
+
+end 0

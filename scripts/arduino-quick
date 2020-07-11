@@ -9,5 +9,6 @@ arduino-cli compile --fqbn arduino:avr:nano && {
         exit 1
     }
     echo "UPLOADING to $device"
-    sudo arduino-cli upload --fqbn arduino:avr:nano -p "$device"
+    arduino-cli upload --fqbn arduino:avr:nano -p "$device" ||
+        sudo arduino-cli upload --fqbn arduino:avr:nano -p "$device"
 }
