@@ -356,6 +356,27 @@ pkg_load_tables() {
 
 # install a package from the packages tables
 pkg_install() {
+    if [ $# = 0 ]; then
+        err 'Select a package to install'
+        exit 1
+    fi
+    
+    case "$1" in
+        -f|--from)
+            case "$2" in
+                pacman|aur|aur_manual|pip|pip2|npm|go|git)
+                    tag="$2"
+                    pac="$3"
+                    link="$4"
+                    [ ! "$link" ] && link="$pac"
+                    pkg_install_from "$tag" "$pac" "$link";;
+                *)
+                    err "Unknown installer '$2'"
+                    exit 1
+            esac
+            return;;
+    esac
+    
     if [ "$1" = dots ]; then
         shift
         dots_install "$@"

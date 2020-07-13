@@ -194,7 +194,9 @@ There are two things you can do about this warning:
 ;; ---- TOYS ----
 (use-package flycheck :init (global-flycheck-mode))
 (use-package rainbow-mode)
-(use-package iedit)
+(use-package iedit
+  :bind
+  ("C-x e" . iedit-mode))
 (use-package dumb-jump
   :bind
   ("C-j" . dumb-jump-go)
@@ -455,7 +457,7 @@ There are two things you can do about this warning:
     ("bffa9739ce0752a37d9b1eee78fc00ba159748f50dc328af4be661484848e476" default)))
  '(package-selected-packages
    (quote
-    (dockerfile-mode basic-mode vlang-mode quelpa xonsh-mode elvish-mode undo-fu js2-mode ein cmake-mode origami fish-mode doom-modeline git-gutter smooth-scroll sublimity org-ref anzu flycheck flymake-shellcheck typescript-mode rust-mode kotlin-mode julia-mode go-mode dart-mode csharp-mode flyspell-correct-helm rainbow-mode web-mode company-mode org-bullets ox-groff calfw-org calfw undo-tree spacemacs-theme xclip use-package multiple-cursors lsp-ui lsp-java company-lsp))))
+    (lsp-treemacs dockerfile-mode basic-mode vlang-mode quelpa xonsh-mode elvish-mode undo-fu js2-mode ein cmake-mode origami fish-mode doom-modeline git-gutter smooth-scroll sublimity org-ref anzu flycheck flymake-shellcheck typescript-mode rust-mode kotlin-mode julia-mode go-mode dart-mode csharp-mode flyspell-correct-helm rainbow-mode web-mode company-mode org-bullets ox-groff calfw-org calfw undo-tree spacemacs-theme xclip use-package multiple-cursors lsp-ui lsp-java company-lsp))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
