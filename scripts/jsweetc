@@ -1,11 +1,27 @@
 #!/bin/sh
 
-# TODO: move to personal
+export JAVA_HOME=/usr/lib/jvm/java-8-openjdk
+JSWEET_DIR="$HOME/.local/share/napps/jsweet"
 
-export JAVA_HOME=/usr/lib/jvm/java-8-openjdk/bin/
-JSWEET="$HOME/GoodStuff/jsweet/transpiler/target/jsweet-transpiler-2.3.6-SNAPSHOT-jar-with-dependencies.jar"
-if [ $# = 1 ] && [ -d "$1" ]; then
-    java -jar "$JSWEET" -i "$@"
-else
-    java -jar "$JSWEET" "$@"
-fi
+get() {
+    mkdir -p "$JSWEET_DIR" &&
+        git clone https://github.com/cincheo/jsweet.git "$JSWEET_DIR" &&
+        cd "$JSWEET_DIR/transpiler" &&
+        mvn package -Dmaven.test.skip=true
+}
+
+start() {
+    JSWEET=$(ls "$JSWEET_DIR/transpiler/target/jsweet-transpiler-"*-SNAPSHOT-jar-with-dependencies.jar | head -n1)
+    if [ $# = 1 ] && [ -d "$1" ]; then
+        java -jar "$JSWEET" -i "$@"
+    else
+        java -jar "$JSWEET" "$@"
+    fi
+}
+
+main() {
+    [ -d "$JSWEET_DIR" ] || get
+    start "$@"
+}
+
+main "$@"

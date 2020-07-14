@@ -64,7 +64,10 @@ cmd on-cd &{{
                GIT_PS1_SHOWUNTRACKEDFILES=auto
                GIT_PS1_SHOWUPSTREAM=auto
                git=$(__git_ps1 " (%s)") || true
-               fmt="\033[32;1m%u@%h\033[0m:\033[34;1m%w/\033[0m\033[1m%f$git\033[0m"
+               dev=$(findmnt -T . -no "source,avail,size,label" |
+                         awk '$4!="" {$4=$4" "}; {printf "%s%s (%s/%s)", $4, $1, $2, $3}')
+               #fmt="\033[32;1m%u@%h\033[0m:\033[34;1m%w/\033[0m\033[1m%f$dev$git\033[0m"
+               fmt=" \033[1m\033[34m%w\033[1m: \033[37m$dev\033[1m\033[32m$git\033[0m\033[0m"
                lf -remote "send $id set promptfmt \"$fmt\""
            }}
 on-cd
@@ -372,6 +375,15 @@ cmd chmod-x &{{
                  lf -remote "send $id reload"
              }}
 
+# cd to a partition
+cmd go_usb ${{
+                d=$(lsblk -rpo "name,type,fsavail,fssize,mountpoint,label" |
+                        awk '$6!=""{$6=$6" "};($2=="part"||$2=="lvm")&&$5!=""{printf "%s#%s#%s#(%s/%s)\n", $5, $1, $6, $3, $4}' |
+                        tac | column -t -s'#' |
+                        fzfp --nopv | cut -d ' ' -f1)
+                [ "$d" ] && lf -remote "send $id cd '$d'"
+            }}
+
 # send with wifi
 cmd send $qr-filetransfer $f
 
@@ -478,3 +490,4 @@ map go $lf -remote "send $id cd \"$DOTFILES_DIR\""
 map gQ $lf -remote "send $id cd \"$QU\""
 map gq $lf -remote "send $id cd \"$QU/2-Masters/2-spring-2020\""
 map gb cd ~/GoodStuff/vbox-shared/
+map gu go_usb
