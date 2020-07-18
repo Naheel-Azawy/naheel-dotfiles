@@ -459,12 +459,26 @@ list_all() {
     fi
 }
 
+update_repo() {
+    cd "$D" || return 1
+    # if is git repo
+    if git rev-parse --git-dir > /dev/null 2>&1; then
+        git pull origin master
+    else
+        dir=$(mktemp -d)
+        git clone https://github.com/Naheel-Azawy/naheel-dotfiles.git "$dir" &&
+            rm -rf "$D" &&
+            mv "$dir" "$D"
+    fi
+}
+
 help() {
     BIN=$(basename "$0")
     echo "usage: $BIN COMMAND [OPTIONS]"
     echo 'Commands:'
     echo ' install   Install a (listed package), (package group), or "dots"'
-    echo ' update    Update configs (link too)'
+    echo ' update    Update repo, update configs, and link'
+    echo ' config    Update configs and link'
     echo ' link      Link configs'
     echo ' list [-d] List package groups and packages'
     echo ' newscript Create a new script'
@@ -482,6 +496,9 @@ main() {
         install)
             pkg_install "$@";;
         update)
+            update_repo &&
+                "$D/scripts/ndots" config;;
+        config)
             dots_update;;
         link)
             dots_link;;
