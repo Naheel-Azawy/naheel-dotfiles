@@ -468,7 +468,8 @@ update_repo() {
         dir=$(mktemp -d)
         git clone https://github.com/Naheel-Azawy/naheel-dotfiles.git "$dir" &&
             rm -rf "$D" &&
-            mv "$dir" "$D"
+            mv "$dir" "$D" &&
+            info 'Dots repo updated successfully'
     fi
 }
 
@@ -499,9 +500,11 @@ main() {
             update_repo &&
                 "$D/scripts/ndots" config;;
         config)
-            dots_update;;
+            dots_update &&
+                info "Dots configurations updated successfully";;
         link)
-            dots_link;;
+            dots_link &&
+                info "Dots configurations linked successfully";;
         list)
             list_all "$@";;
         newscript)
