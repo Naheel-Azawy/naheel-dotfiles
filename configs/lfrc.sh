@@ -69,6 +69,10 @@ cmd on-cd &{{
                #fmt="\033[32;1m%u@%h\033[0m:\033[34;1m%w/\033[0m\033[1m%f$dev$git\033[0m"
                fmt=" \033[1m\033[34m%w\033[1m: \033[37m$dev\033[1m\033[32m$git\033[0m\033[0m"
                lf -remote "send $id set promptfmt \"$fmt\""
+               am="/tmp/__lf_archivemount_$id"
+               if [ "$f" ] && [ -f "$am" ] && grep -q "$f\$" "$am"; then
+                   lf -remote "send $id umountarchive"
+               fi
            }}
 on-cd
 
@@ -317,12 +321,12 @@ cmd pdf-auto-rename &{{
 # unmount archivemount archives if any
 cmd umountarchive ${{
                        s='' && [ ! -w . ] && s='sudo'
-                       cat "/tmp/__lf_archivemount_$id" | \
+                       cat "/tmp/__lf_archivemount_$id" |
                            while read -r line; do
-                               sudo umount "$line"
-                               $s rmdir "$line"
-                           done
-                       $s rm -f "/tmp/__lf_archivemount_$id"
+                               sudo umount "$line" &&
+                                   $s rmdir "$line"
+                           done &&
+                           $s rm -f "/tmp/__lf_archivemount_$id"
                    }}
 
 # dynamically set number of columns
