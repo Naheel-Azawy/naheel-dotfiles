@@ -162,7 +162,7 @@ else:
     for b in bins:
         res.append(ident("games" if b in GAMES else "bins") + b)
 
-    res.insert(5, ident("bar") + os.popen("bar line").read().split('\n')[0])
+    #res.insert(5, ident("bar") + os.popen("bar line").read().split('\n')[0])
 
     for e in res:
         print(e)

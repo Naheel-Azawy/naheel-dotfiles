@@ -32,10 +32,14 @@ if [ -d /etc/X11/xinit/xinitrc.d ] ; then
  unset f
 fi
 
-# Set the keyboard repeat delay and rate
+# set the keyboard repeat delay and rate
 xset r rate 230 50
 
-# Start the window manager
+# start the system keyring
+eval "$(/usr/bin/gnome-keyring-daemon --start --components=pkcs11,secrets,ssh)"
+export SSH_AUTH_SOCK
+
+# start the window manager
 exec i3
 #exec sway
 #exec bspwm

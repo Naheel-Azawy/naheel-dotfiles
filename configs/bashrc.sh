@@ -16,7 +16,7 @@ alias la='ls -lha'
 alias f='lf'
 alias x='emacs-in'
 alias t='theterm --tmux'
-XDG_DATA_DIRS="$XDG_DATA_DIRS:/home/naheel/.apps"
+alias java='java $SHHH_JAVA_OPTIONS'
 
 try_export() {   [ -d "$2" ] && export "$1=$2";:;       }
 try_add_path() { [ -d "$1" ] && export PATH="$PATH:$1";:; }

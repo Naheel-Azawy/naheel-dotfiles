@@ -427,14 +427,11 @@ map <f-2> rename-editor
 map R $vidir
 
 # basic
-map <c-x><c-c> quit
-map <a-x>      push :
-map <c-x>h     invert
-map <c-a>      invert
-map <c-g>      :unselect; clear
-map <f-5>      reload
-map <c-x>e     $rn $f
-map <c-x><c-e> &rn $f
+map <c-q> quit
+map <a-x> push :
+map <c-a> invert
+map <c-g> :unselect; clear
+map <f-5> reload
 
 # filesystem operations
 map <delete> delete

@@ -1,0 +1,8 @@
+#!/bin/sh
+
+# TODO: move to personal
+
+cd /mnt/hdd1/Private/Backups/Albums &&
+    fd -t f -x echo '{/}' '{}' |
+        sort -r | cut -d ' ' -f2 |
+        sxiv -t -

@@ -168,6 +168,18 @@ dots_install() {
     sudo sensors-detect --auto
     sudo modprobe eeprom
 
+    info "Setting up keyring"
+    # https://wiki.archlinux.org/index.php/GNOME/Keyring#Without_a_display_manager
+    f=/etc/pam.d/login
+    grep -Eq 'auth\s+optional\s+pam_gnome_keyring.so' $f ||
+        sudo sed -i "s/account/auth       optional     pam_gnome_keyring.so\naccount/" $f
+    grep -Eq 'session\s+optional\s+pam_gnome_keyring.so auto_start' $f ||
+        echo 'session    optional     pam_gnome_keyring.so auto_start' | sudo tee -a $f >/dev/null
+
+    f=/etc/pam.d/passwd
+    grep -Eq 'password\s+optional\s+pam_gnome_keyring.so' $f ||
+        echo 'password	optional	pam_gnome_keyring.so' | sudo tee -a $f >/dev/null
+
     info "Setting configs"
     dots_update
 
@@ -213,114 +225,172 @@ pkg_install_from() {
     else
         doit() { true; }
     fi
+    if [ "$1" = '--uninstall' ]; then
+        install=
+        shift
+    else
+        install=1
+    fi
     tag="$1"
     shift
     case "$tag" in
         pacman)
-            if doit; then sudo pacman --noconfirm --needed -S "$1"; fi;;
+            if doit; then
+                if [ "$install" ]; then
+                    sudo pacman --noconfirm --needed -S "$1"
+                else
+                    sudo pacman -R "$1"
+                fi
+            fi;;
 
         aur)
             if doit; then
-                get_installed | grep -q "^$1$" &&
-                    echo "$1 is already installed" && return
-                yay -S --noconfirm --needed "$1"
+                if [ "$install" ]; then
+                    get_installed | grep -q "^$1$" &&
+                        echo "$1 is already installed" && return
+                    yay -S --noconfirm --needed "$1"
+                else
+                    yay -R "$1"
+                fi
             fi;;
 
         aur_manual)
             if doit; then
-                helper="$1"
-                cmd_exists "$helper" || (
-                    cd /tmp || return 1
-                    rm -rf /tmp/"$helper"*
-                    curl -sO https://aur.archlinux.org/cgit/aur.git/snapshot/"$helper".tar.gz &&
-                        tar -xvf "$helper".tar.gz &&
-                        cd "$helper" &&
-                        makepkg --noconfirm -si
-                    cd /tmp || return 1)
+                if [ "$install" ]; then
+                    helper="$1"
+                    cmd_exists "$helper" || (
+                        cd /tmp || return 1
+                        rm -rf /tmp/"$helper"*
+                        curl -sO https://aur.archlinux.org/cgit/aur.git/snapshot/"$helper".tar.gz &&
+                            tar -xvf "$helper".tar.gz &&
+                            cd "$helper" &&
+                            makepkg --noconfirm -si
+                        cd /tmp || return 1)
+                else
+                    sudo rm "$(which "$helper")"
+                fi
             fi;;
 
         pip)
-            if doit; then sudo pip3 install "$1"; fi;;
+            if doit; then
+                if [ "$install" ]; then
+                    sudo pip3 install "$1"
+                else
+                    sudo pip3 uninstall "$1"
+                fi
+            fi;;
 
         pip2)
-            if doit; then sudo pip2.7 install "$1"; fi;;
+            if doit; then
+                if [ "$install" ]; then
+                    sudo pip2.7 install "$1"
+                else
+                    sudo pip2.7 uninstall "$1"
+                fi
+            fi;;
 
         npm)
-            if doit; then sudo npm install -g "$1"; fi;;
+            if doit; then
+                if [ "$install" ]; then
+                    sudo npm install -g "$1"
+                else
+                    sudo npm uninstall -g "$1"
+                fi
+            fi;;
 
         go)
             if doit; then
-                cmd_exists "$1" || go get -u "$2"
+                if [ "$install" ]; then
+                    cmd_exists "$1" || go get -u "$2"
+                else
+                    err 'Not implementd' # TODO
+                fi
             fi;;
 
         git)
             if doit; then
-                cmd_exists "$1" && {
-                    echo "$1 is already installed"
-                    return 0
-                }
-                dir=$(mktemp -d)
-                git clone --depth 1 "$2" "$dir" &&
-                    cd "$dir" && {
-                        if [ -f autogen.sh ];  then ./autogen.sh; fi
-                        if [ -f ./configure ]; then ./configure;  fi
-                    } && sudo make &&
-                    sudo make install &&
-                    cd /tmp &&
-                    sudo rm -rf "$dir" || return 1
+                if [ "$install" ]; then
+                    cmd_exists "$1" && {
+                        echo "$1 is already installed"
+                        return 0
+                    }
+                    dir=$(mktemp -d)
+                    git clone --depth 1 "$2" "$dir" &&
+                        cd "$dir" && {
+                            if [ -f autogen.sh ];  then ./autogen.sh; fi
+                            if [ -f ./configure ]; then ./configure;  fi
+                        } && sudo make &&
+                        sudo make install &&
+                        cd /tmp &&
+                        sudo rm -rf "$dir" || return 1
+                else
+                    sudo rm "$(which "$1")"
+                fi
             fi;;
 
         suckless)
             if doit; then
-                cmd_exists "$1" && {
-                    echo "$1 is already installed"
-                    return 0
-                }
-                link="$2"
-                name=${link##*/}
-                conf="$D/configs/$name-config.h.diff"
-                dir=$(mktemp -d)
-                git clone --depth 1 "$link" "$dir" &&
-                    cd "$dir" &&
-                    sudo make &&
-                    sudo cp config.def.h config.h && {
-                        [ -f "$conf" ] && sudo patch config.h "$conf"
-                        sudo make install
-                    } &&
-                    cd /tmp &&
-                    sudo rm -rf "$dir" || return 1
+                if [ "$install" ]; then
+                    cmd_exists "$1" && {
+                        echo "$1 is already installed"
+                        return 0
+                    }
+                    link="$2"
+                    name=${link##*/}
+                    conf="$D/configs/$name-config.h.diff"
+                    dir=$(mktemp -d)
+                    git clone --depth 1 "$link" "$dir" &&
+                        cd "$dir" &&
+                        sudo make &&
+                        sudo cp config.def.h config.h && {
+                            [ -f "$conf" ] && sudo patch config.h "$conf"
+                            sudo make install
+                        } &&
+                        cd /tmp &&
+                        sudo rm -rf "$dir" || return 1
+                else
+                    sudo rm "$(which "$1")"
+                fi
             fi;;
 
         func)
             case "$1" in
                 tpm)
                     if doit; then
-                        [ -d "$HOME/.tmux/plugins/tpm" ] && {
-                            echo 'TPM is already installed'
-                            return 0
-                        }
-                        rm -rf "$HOME/.tmux"
-                        mkdir -p "$HOME/.tmux/plugins/tpm"
-                        git clone https://github.com/tmux-plugins/tpm "$HOME/.tmux/plugins/tpm"
-                        tmux source "$HOME/.tmux.conf" ||:
+                        if [ "$install" ]; then
+                            [ -d "$HOME/.tmux/plugins/tpm" ] && {
+                                echo 'TPM is already installed'
+                                return 0
+                            }
+                            rm -rf "$HOME/.tmux"
+                            mkdir -p "$HOME/.tmux/plugins/tpm"
+                            git clone https://github.com/tmux-plugins/tpm "$HOME/.tmux/plugins/tpm"
+                            tmux source "$HOME/.tmux.conf" ||:
+                        else
+                            rm "$HOME/.tmux/plugins/tpm"
+                        fi
                     fi;;
 
                 blackarch)
                     if doit; then
-                        grep -q '^\[blackarch\]' /etc/pacman.conf && {
-                            echo 'Blackarch is already installed'
-                            return 0
-                        }
-                        cd /tmp || return 1
-                        curl -O https://blackarch.org/strap.sh || return 1
-                        test "$(sha1sum strap.sh | cut -d ' ' -f1)" = \
-                             9c15f5d3d6f3f8ad63a6927ba78ed54f1a52176b || {
-                            err 'Failed verifying blackarch strap script hash'
-                            return 1
-                        }
-                        chmod +x strap.sh && sudo ./strap.sh || return 1
-                        rm -rf /tmp/strap.sh
-                        sudo sed -i 's/# Server/Server/g' /etc/pacman.d/blackarch-mirrorlist
+                        if [ "$install" ]; then
+                            grep -q '^\[blackarch\]' /etc/pacman.conf && {
+                                echo 'Blackarch is already installed'
+                                return 0
+                            }
+                            cd /tmp || return 1
+                            curl -O https://blackarch.org/strap.sh || return 1
+                            test "$(sha1sum strap.sh | cut -d ' ' -f1)" = \
+                                 9c15f5d3d6f3f8ad63a6927ba78ed54f1a52176b || {
+                                err 'Failed verifying blackarch strap script hash'
+                                return 1
+                            }
+                            chmod +x strap.sh && sudo ./strap.sh || return 1
+                            rm -rf /tmp/strap.sh
+                            sudo sed -i 's/# Server/Server/g' /etc/pacman.d/blackarch-mirrorlist
+                        else
+                            err 'Not implementd' # TODO
+                        fi
                     fi;;
 
                 *)
@@ -356,6 +426,13 @@ pkg_load_tables() {
 
 # install a package from the packages tables
 pkg_install() {
+    if [ "$1" = -u ]; then # TODO
+        uninstall='--uninstall'
+        shift
+    else
+        uninstall=
+    fi
+
     if [ $# = 0 ]; then
         err 'Select a package to install'
         exit 1
