@@ -12,8 +12,6 @@ C='\033[1m\033[34m' # info color
 E='\033[1m\033[31m' # error color
 R='\033[0m'         # reset color
 
-CATEGORIES="base base-gui addtions themostsignificant devel electronics games"
-
 INSTALLED=
 
 get_installed() {
@@ -41,6 +39,12 @@ info() {
 err() {
     printf "${E}ERROR:${R} %s\n" "$@" >&2
 }
+
+if isubuntu; then
+    CATEGORIES="ubuntu"
+else
+    CATEGORIES="base base-gui addtions themostsignificant devel electronics games"
+fi
 
 # symlink configs
 dots_link() {
@@ -439,7 +443,7 @@ pkg_install_from() {
                             version=1.4.1-1
                             curl -sL "https://hpjansson.org/chafa/releases/static/chafa-$version-x86_64-linux-gnu.tar.gz" | tar xz
                             sudo mv "chafa-$version-x86_64/chafa" /bin/chafa
-                            rm -r "chafa-$version-x86_64/chafa"
+                            rm -r "chafa-$version-x86_64"
                         else
                             sudo rm "$(which chafa)"
                         fi
