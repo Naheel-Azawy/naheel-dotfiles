@@ -1,30 +1,33 @@
-| Tag  | Name              | Git Link                               | Purpose                                                      |
-|------+-------------------+----------------------------------------+--------------------------------------------------------------|
-| apt  | sl                | N.A.                                   | cures the bad habit of miss-typing                           |
-| apt  | gcc               | N.A.                                   | the GNU compiler collection                                  |
-| apt  | make              | N.A.                                   | the good old build system                                    |
-| apt  | git               | N.A.                                   | version control system                                       |
-| apt  | curl              | N.A.                                   | gets stuff from the internet                                 |
-| snap | go                | N.A.                                   | go language                                                  |
-| apt  | nodejs            | N.A.                                   | node.js is needed to run some programs ahead                 |
-| apt  | npm               | N.A.                                   | node.js pacage manager                                       |
-| apt  | python3-pip       | N.A.                                   | python's package manager                                     |
-| go   | lf                | github.com/gokcehan/lf                 | terminal file manager                                        |
-| apt  | tmux              | N.A.                                   | the terminal multiplexer                                     |
-| func | tpm               | N.A.                                   | tmux package manager                                         |
-| go   | fzf               | github.com/junegunn/fzf                | fuzzy finder tool                                            |
-| apt  | highlight         | N.A.                                   | can highlight code output                                    |
-| apt  | fish              | N.A.                                   | the friendly shell!                                          |
-| apt  | emacs             | N.A.                                   | the best editor on this planet                               |
-| apt  | acpi              | N.A.                                   | laptop battery information                                   |
-| apt  | jq                | N.A.                                   | json in the shell                                            |
-| apt  | ffmpeg            | N.A.                                   | can record and splice video and audio on the command line    |
-| apt  | ffmpegthumbnailer | N.A.                                   | video thumbnails. Needed for ranger                          |
-| apt  | moreutils         | N.A.                                   | vidir and other toys                                         |
-| git  | rn                | https://github.com/Naheel-Azawy/runner | executes everything                                          |
-| git  | cp-p              | https://github.com/Naheel-Azawy/cp-p   | cp with progress                                             |
-| git  | stpv              | https://github.com/Naheel-Azawy/stpv   | files previewer in the terminal (used for LF and fzf mainly) |
-| apt  | colordiff         | N.A.                                   | a more colorful diff                                         |
-| apt  | wdiff             | N.A.                                   | diff but for words                                           |
-| pip  | trash-cli         | N.A.                                   | CLI XDG trash                                                |
-| apt  | strace            | N.A.                                   | trace system calls. Needed for cp-p                          |
+| Tag  | Name              | Git Link                                 | Purpose                                                      |
+|------+-------------------+------------------------------------------+--------------------------------------------------------------|
+| apt  | sl                | N.A.                                     | cures the bad habit of miss-typing                           |
+| apt  | gcc               | N.A.                                     | the GNU compiler collection                                  |
+| apt  | make              | N.A.                                     | the good old build system                                    |
+| apt  | cmake             | N.A.                                     | a fancier build system                                       |
+| apt  | libncurses5-dev   | N.A.                                     | ncurses                                                      |
+| apt  | libncursesw5-dev  | N.A.                                     | ncurses                                                      |
+| apt  | git               | N.A.                                     | version control system                                       |
+| apt  | curl              | N.A.                                     | gets stuff from the internet                                 |
+| snap | go                | N.A.                                     | go language                                                  |
+| apt  | nodejs            | N.A.                                     | node.js is needed to run some programs ahead                 |
+| apt  | npm               | N.A.                                     | node.js pacage manager                                       |
+| apt  | python3-pip       | N.A.                                     | python's package manager                                     |
+| go   | lf                | github.com/gokcehan/lf                   | terminal file manager                                        |
+| apt  | tmux              | N.A.                                     | the terminal multiplexer                                     |
+| func | tpm               | N.A.                                     | tmux package manager                                         |
+| go   | fzf               | github.com/junegunn/fzf                  | fuzzy finder tool                                            |
+| apt  | highlight         | N.A.                                     | can highlight code output                                    |
+| git  | fish              | https://github.com/fish-shell/fish-shell | the friendly shell!                                          |
+| apt  | emacs             | N.A.                                     | the best editor on this planet                               |
+| apt  | acpi              | N.A.                                     | laptop battery information                                   |
+| apt  | jq                | N.A.                                     | json in the shell                                            |
+| apt  | ffmpeg            | N.A.                                     | can record and splice video and audio on the command line    |
+| apt  | ffmpegthumbnailer | N.A.                                     | video thumbnails. Needed for ranger                          |
+| apt  | moreutils         | N.A.                                     | vidir and other toys                                         |
+| git  | rn                | https://github.com/Naheel-Azawy/runner   | executes everything                                          |
+| git  | cp-p              | https://github.com/Naheel-Azawy/cp-p     | cp with progress                                             |
+| git  | stpv              | https://github.com/Naheel-Azawy/stpv     | files previewer in the terminal (used for LF and fzf mainly) |
+| apt  | colordiff         | N.A.                                     | a more colorful diff                                         |
+| apt  | wdiff             | N.A.                                     | diff but for words                                           |
+| pip  | trash-cli         | N.A.                                     | CLI XDG trash                                                |
+| apt  | strace            | N.A.                                     | trace system calls. Needed for cp-p                          |

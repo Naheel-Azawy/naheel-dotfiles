@@ -51,12 +51,16 @@ export I3BLOCKS_SIG_LAST=$I3BLOCKS_SIG_LANG
 [ -f ~/.dotfiles-exports ] && . ~/.dotfiles-exports
 [ -f ~/.bashrc ]           && . ~/.bashrc
 
-# To be able to change the brightness. Password is not required as edited in the sudoers
-sudo chmod a+rw /sys/class/backlight/intel_backlight/brightness \
-     2>/dev/null ||:
+# Workaround to not run those in Ubuntu
+if ! command -v apt >/dev/null; then
 
-# Start graphical server if i3 not already running.
-if [ "$(tty)" = "/dev/tty1" ]; then
-	pgrep -x i3 || exec startx
+    # To be able to change the brightness. Password is not required as edited in the sudoers
+    sudo chmod a+rw /sys/class/backlight/intel_backlight/brightness \
+         2>/dev/null ||:
+
+    # Start graphical server if i3 not already running.
+    if [ "$(tty)" = "/dev/tty1" ]; then
+	    pgrep -x i3 || exec startx
+    fi
+
 fi
-
