@@ -49,7 +49,6 @@ export I3BLOCKS_SIG_FIRS=$I3BLOCKS_SIG_TIME
 export I3BLOCKS_SIG_LAST=$I3BLOCKS_SIG_LANG
 
 [ -f ~/.dotfiles-exports ] && . ~/.dotfiles-exports
-[ -f ~/.bashrc ]           && . ~/.bashrc
 
 # Workaround to not run those in Ubuntu
 if ! command -v apt >/dev/null; then
