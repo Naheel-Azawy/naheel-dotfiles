@@ -23,6 +23,11 @@
      curl https://raw.githubusercontent.com/Naheel-Azawy/naheel-dotfiles/master/install.sh > /tmp/nd.sh && sh /tmp/nd.sh base base-gui
    #+end_src
 
+   For Ubuntu
+   #+begin_src shell 
+     wget https://raw.githubusercontent.com/Naheel-Azawy/naheel-dotfiles/master/install.sh -O /tmp/nd.sh && sh /tmp/nd.sh ubuntu
+   #+end_src
+
    Or
    #+begin_src shell 
      cd

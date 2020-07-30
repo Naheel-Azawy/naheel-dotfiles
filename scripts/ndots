@@ -166,8 +166,8 @@ dots_install() {
 
     info "Upgrading the system"
     if isubuntu; then
-        sudo apt update
-        sudo apt upgrade
+        sudo apt update --yes
+        sudo apt upgrade --yes
     else
         sudo grep -q '^\[multilib\]' /etc/pacman.conf ||
             printf '[multilib]\nInclude = /etc/pacman.d/mirrorlist\n' | sudo tee -a /etc/pacman.conf
