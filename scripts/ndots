@@ -286,6 +286,11 @@ pkg_install_from() {
         apt)
             if doit; then
                 if [ "$install" ]; then
+                    ppa="$2"
+                    if echo "$ppa" | grep -q '^ppa:'; then
+                        sudo add-apt-repository "$ppa"
+                        sudo apt update
+                    fi
                     sudo apt install --yes "$1"
                 else
                     sudo apt remove --yes "$1"
