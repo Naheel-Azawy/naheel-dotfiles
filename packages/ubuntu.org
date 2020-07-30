@@ -4,6 +4,7 @@
 | apt  | gcc               | N.A.                                   | the GNU compiler collection                                  |
 | apt  | make              | N.A.                                   | the good old build system                                    |
 | apt  | git               | N.A.                                   | version control system                                       |
+| apt  | curl              | N.A.                                   | gets stuff from the internet                                 |
 | snap | go                | N.A.                                   | go language                                                  |
 | apt  | nodejs            | N.A.                                   | node.js is needed to run some programs ahead                 |
 | apt  | npm               | N.A.                                   | node.js pacage manager                                       |
