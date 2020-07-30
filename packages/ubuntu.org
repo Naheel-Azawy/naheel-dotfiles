@@ -27,7 +27,7 @@
 | git  | rn                | https://github.com/Naheel-Azawy/runner   | executes everything                                          |
 | git  | cp-p              | https://github.com/Naheel-Azawy/cp-p     | cp with progress                                             |
 | git  | stpv              | https://github.com/Naheel-Azawy/stpv     | files previewer in the terminal (used for LF and fzf mainly) |
-| apt  | chafa             | ppa:hpjansson/chafa                      | image to text                                                |
+| func | chafa             | N.A.                                     | image to text                                                |
 | apt  | colordiff         | N.A.                                     | a more colorful diff                                         |
 | apt  | wdiff             | N.A.                                     | diff but for words                                           |
 | pip  | trash-cli         | N.A.                                     | CLI XDG trash                                                |

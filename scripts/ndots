@@ -428,6 +428,23 @@ pkg_install_from() {
                         fi
                     fi;;
 
+                chafa)
+                    if doit; then
+                        if [ "$install" ]; then
+                            cmd_exists chafa && {
+                                echo 'chafa is already installed'
+                                return 0
+                            }
+                            cd /tmp || return 1
+                            version=1.4.1-1
+                            curl -sL "https://hpjansson.org/chafa/releases/static/chafa-$version-x86_64-linux-gnu.tar.gz" | tar xz
+                            sudo mv "chafa-$version-x86_64/chafa" /bin/chafa
+                            rm -r "chafa-$version-x86_64/chafa"
+                        else
+                            sudo rm "$(which chafa)"
+                        fi
+                    fi;;
+
                 *)
                     err "No special function '$1'" && return 1;;
             esac;;
