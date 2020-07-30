@@ -3,12 +3,13 @@
 | pacman     | sl                  | N.A.                                   | cures the bad habit of miss-typing                           |
 | pacman     | base-devel          | N.A.                                   | group package with sudo and compilation software             |
 | pacman     | git                 | N.A.                                   | version control system                                       |
+| pacman     | go                  | N.A.                                   | go language                                                  |
 | aur_manual | yay                 | N.A.                                   | Arch User Repository helper                                  |
 | pacman     | nodejs              | N.A.                                   | node.js is needed to run some programs ahead                 |
 | pacman     | npm                 | N.A.                                   | node.js pacage manager                                       |
 | pacman     | python-pip          | N.A.                                   | python's package manager                                     |
 | pacman     | python2-pip         | N.A.                                   | python2 pip                                                  |
-| aur        | lf                  | N.A.                                   | another terminal file manager cloning ranger but faster      |
+| go         | lf                  | github.com/gokcehan/lf                 | terminal file manager                                        |
 | pacman     | cronie              | N.A.                                   | manages scheduled tasks                                      |
 | pacman     | dosfstools          | N.A.                                   | allows your computer to access dos-like filesystems          |
 | pacman     | exfat-utils         | N.A.                                   | allows management of FAT drives                              |

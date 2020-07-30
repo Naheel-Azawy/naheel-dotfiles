@@ -22,6 +22,18 @@ get_installed() {
     echo "$INSTALLED"
 }
 
+cmd_exists() {
+    command -v "$1" >/dev/null
+}
+
+isubuntu() {
+    cmd_exists apt-get
+}
+
+isarch() {
+    cmd_exists pacman
+}
+
 info() {
     printf "${C}INFO:${R} %s\n" "$@"
 }
@@ -111,8 +123,8 @@ dots_install() {
 
     [ "$(whoami)" = root ] && {
         # double check sudo
-        pacman --noconfirm -Sy &&
-            pacman --noconfirm --needed -S sudo
+        isubuntu || pacman --noconfirm -Sy &&
+                pacman --noconfirm --needed -S sudo
         if [ ! "$QUICK" ]; then
             info "Looks like you're running as root!"
             echo '1) Create a new user'
@@ -153,9 +165,14 @@ dots_install() {
         echo "$nopass" | sudo tee -a /etc/sudoers
 
     info "Upgrading the system"
-    sudo grep -q '^\[multilib\]' /etc/pacman.conf ||
-        printf '[multilib]\nInclude = /etc/pacman.d/mirrorlist\n' | sudo tee -a /etc/pacman.conf
-    sudo pacman --noconfirm -Syu
+    if isubuntu; then
+        sudo apt update
+        sudo apt upgrade
+    else
+        sudo grep -q '^\[multilib\]' /etc/pacman.conf ||
+            printf '[multilib]\nInclude = /etc/pacman.d/mirrorlist\n' | sudo tee -a /etc/pacman.conf
+        sudo pacman --noconfirm -Syu
+    fi
 
     info "Install packages"
     [ "$PACS" ] || PACS='base'
@@ -212,11 +229,6 @@ export PATH=\"\$PATH:\$DOTFILES_SCRIPTS\"
     echo 'DONE!!!'
 }
 
-# checks if a command exist
-cmd_exists() {
-    command -v "$1" >/dev/null
-}
-
 # install a package ($2) given its tag ($1)
 pkg_install_from() {
     if [ "$1" = '--test' ]; then
@@ -271,6 +283,24 @@ pkg_install_from() {
                 fi
             fi;;
 
+        apt)
+            if doit; then
+                if [ "$install" ]; then
+                    sudo apt install --yes "$1"
+                else
+                    sudo apt remove --yes "$1"
+                fi
+            fi;;
+
+        snap)
+            if doit; then
+                if [ "$install" ]; then
+                    sudo snap install "$1" --classic --channel stable
+                else
+                    sudo snap remove "$1"
+                fi
+            fi;;
+
         pip)
             if doit; then
                 if [ "$install" ]; then
@@ -301,7 +331,7 @@ pkg_install_from() {
         go)
             if doit; then
                 if [ "$install" ]; then
-                    cmd_exists "$1" || go get -u "$2"
+                    cmd_exists "$1" || go get -v -u "$2"
                 else
                     err 'Not implementd' # TODO
                 fi
@@ -441,7 +471,7 @@ pkg_install() {
     case "$1" in
         -f|--from)
             case "$2" in
-                pacman|aur|aur_manual|pip|pip2|npm|go|git)
+                pacman|aur|aur_manual|pip|pip2|npm|go|git|apt|snap)
                     tag="$2"
                     pac="$3"
                     link="$4"
@@ -568,6 +598,10 @@ help() {
 }
 
 main() {
+    isarch || isubuntu || {
+            err 'Unsupported distrobution. Use Arch or Ubuntu.'
+            exit 1
+        }
     CMD="$1"
     [ $# != 0 ] && shift
     case "$CMD" in
