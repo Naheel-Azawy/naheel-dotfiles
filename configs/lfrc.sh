@@ -152,7 +152,7 @@ cmd paste ${{
                esac
                cmd="$cmd --new-line"
                [ "$mode" = copy ] && cmd="$cmd -a"
-               $s sh -c "$cmd --backup=numbered -F \"$srcF\" . | $send && rm -f \"$srcF\" &"
+               sh -c "$s $cmd --backup=numbered -F \"$srcF\" . | $send && rm -f \"$srcF\" &"
                lf -remote 'send load'
                lf -remote 'send clear'
            }}
