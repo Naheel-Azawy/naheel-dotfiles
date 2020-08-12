@@ -1,0 +1,6 @@
+#!/bin/sh
+
+TOP=gotop
+
+[ "$1" = -1 ] && pgrep $TOP && exit 1
+theterm $TOP

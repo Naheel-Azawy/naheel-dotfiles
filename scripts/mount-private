@@ -5,6 +5,8 @@
 ENC=/mnt/hdd1/Private-enc/
 DEC=/mnt/hdd1/Private/
 
+sudo mount /dev/sdb1 /mnt/hdd1
+
 if [ "$1" = '-u' ]; then
     [ "$(ls -A "$HOME/M")" ] && fusermount -u "$HOME/M"
     [ "$(ls -A $DEC)" ]      && fusermount -u "$DEC"

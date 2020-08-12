@@ -64,3 +64,4 @@
 | pacman   | ncmpcpp                | N.A.                                             | mpd UI                                                           |
 | pacman   | onboard                | N.A.                                             | on-screen keyboard                                               |
 | git      | theprayer              | https://github.com/Naheel-Azawy/theprayer        | CLI prayer time                                                  |
+| aur      | gotop                  | N.A.                                             | a nice system monitor                                            |

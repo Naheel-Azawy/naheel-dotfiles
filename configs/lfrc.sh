@@ -105,7 +105,7 @@ cmd delete ${{
                         # move current file or selected files to trash folder
                         # using trash-cli (https://github.com/andreafrancia/trash-cli)
                         {
-                            trash-put $fx
+                            gio trash $fx || trash-put $fx
                             lf -remote "send $id reload"
                             lf -remote "send $id echo trashed"
                         } &
@@ -140,22 +140,7 @@ cut
                  }}
 
 # pasting done right
-cmd paste ${{
-               send="while read -r line; do lf -remote \"send $id echo \$line\"; done && lf -remote 'send reload'"
-               load=$(lf -remote 'load')
-               mode=$(echo "$load" | sed -n '1p')
-               srcF=$(mktemp)
-               echo "$load" | sed '1d' > "$srcF"
-               s='' && [ ! -w . ] && s='sudo'
-               case "$mode" in
-                   copy) cmd='cp-p';; move) cmd='mv-p';;
-               esac
-               cmd="$cmd --new-line"
-               [ "$mode" = copy ] && cmd="$cmd -a"
-               sh -c "$s $cmd --backup=numbered -F \"$srcF\" . | $send && rm -f \"$srcF\" &"
-               lf -remote 'send load'
-               lf -remote 'send clear'
-           }}
+cmd paste $cp-p --lf-paste $id
 
 # create a symlink
 cmd paste-symlink ${{

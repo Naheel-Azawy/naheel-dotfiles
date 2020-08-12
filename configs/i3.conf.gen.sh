@@ -192,7 +192,10 @@ outbindings() {
            "$mod+Control+j" "exec quickcmd -e"
 
     bindoc 'Show shortcuts help screen' \
-           "$mod+grave" "exec theterm '\"$(realpath $0)\" -d | less'"
+           "$mod+F1" "exec theterm '\"$(realpath $0)\" -d | less'"
+
+    bindoc 'Show the system monitor' \
+           "$mod+grave" "workspace ⮺; exec system-monitor -1"
 
     # PERSONAL BINDINGS ------------------------------------------------------
 
