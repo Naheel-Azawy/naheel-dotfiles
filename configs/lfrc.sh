@@ -467,6 +467,7 @@ map st :set sortby time; set info time; set reverse
 map gh cd ~
 map gd :cd ~/Downloads; set sortby time; set info time; set reverse
 map gc cd ~/Documents
+map ge cd ~/Documents/events
 map gp cd ~/Pictures
 map gm cd ~/Music
 map gv cd ~/Videos
@@ -474,6 +475,6 @@ map gj cd ~/Projects
 map gg cd ~/MEGA/orgmode
 map go $lf -remote "send $id cd \"$DOTFILES_DIR\""
 map gQ $lf -remote "send $id cd \"$QU\""
-map gq $lf -remote "send $id cd \"$QU/2-Masters/2-spring-2020\""
+map gq $lf -remote "send $id cd \"$QU/2-Masters/3-fall-2020\""
 map gb cd ~/GoodStuff/vbox-shared/
 map gu go_usb
