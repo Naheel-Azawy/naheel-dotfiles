@@ -36,6 +36,13 @@ There are two things you can do about this warning:
 (setq-default tab-width 4)
 ;;(setq-default show-trailing-whitespace nil)
 
+;; ---- FONT ----
+(set-face-attribute 'default nil
+                    :family "Iosevka"
+                    :height 160
+                    :weight 'normal
+                    :width 'normal)
+
 ;; ---- THEME ----
 (use-package spacemacs-theme
   :defer t

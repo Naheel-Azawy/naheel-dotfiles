@@ -1,0 +1,8 @@
+#!/bin/sh
+
+V=$(vboxmanage list vms |
+        grep -v '<inaccessible>' |
+        sed -En 's/"(.+)" .+/\1/p' |
+        menu-interface)
+
+[ "$V" ] && exec vboxmanage startvm "$V"

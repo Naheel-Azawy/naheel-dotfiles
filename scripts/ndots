@@ -376,14 +376,12 @@ pkg_install_from() {
                     }
                     link="$2"
                     name=${link##*/}
-                    conf="$D/configs/$name-config.h.diff"
+                    patches="$D/configs/$name-patch.diff"
                     dir=$(mktemp -d)
                     git clone --depth 1 "$link" "$dir" &&
-                        cd "$dir" &&
-                        sudo make &&
-                        sudo cp config.def.h config.h && {
-                            [ -f "$conf" ] && sudo patch config.h "$conf"
-                            sudo make install
+                        cd "$dir" && {
+                            [ -f "$patches" ] && sudo patch -i "$patches"
+                            sudo make && sudo make install
                         } &&
                         cd /tmp &&
                         sudo rm -rf "$dir" || return 1
@@ -493,7 +491,7 @@ pkg_install() {
         err 'Select a package to install'
         exit 1
     fi
-    
+
     case "$1" in
         -f|--from)
             case "$2" in
@@ -509,7 +507,7 @@ pkg_install() {
             esac
             return;;
     esac
-    
+
     if [ "$1" = dots ]; then
         shift
         dots_install "$@"

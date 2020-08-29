@@ -133,7 +133,7 @@ weat() {
     #   Lines from 3rd to 4th                         Remove color codes                Cut
     V=$(sed -n -e "3,4 p" -e "4 q" ~/.cache/weatherreport | sed "s/\x1B\[[0-9;]*[JKmsu]//g" | cut -c 16-)
     #S=$(echo "$V" | head -1 | awk '{print tolower($0)}')
-    W=$(echo "$V" | tail -1 | awk -F'[- ]' '{print $1}')
+    W=$(echo "$V" | tail -1 | xargs | awk -F'[- ]' '{print $1}')
     [ "$W" ] || return
     [ "$1" != "-a" ] && awesomefontecho '' && printf ' '
     printf '%s°C' "$W"
