@@ -107,7 +107,7 @@ function lf
     set fwd (mktemp) # last working directory temp file
     set fid (mktemp) # lf id temp file
     command lf -command \
-    '$printf $id > '"$fid"'' -last-dir-path=$fwd $argv
+        '$printf $id > '"$fid"'' -last-dir-path=$fwd $argv
     set id (cat $fid)
     # archivemount integration
     set archivemount_dir "/tmp/__lf_archivemount_$id"

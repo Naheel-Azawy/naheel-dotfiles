@@ -1,3 +1,14 @@
 #!/bin/sh
+
 mpd 2>/dev/null >/dev/null
-exec ncmpcpp
+
+case "$1" in
+    --find)
+        song="$(mpc search any '' | fzf --reverse)"
+        [ "$song" ] && {
+            mpc insert "$song"
+            mpc next
+        };;
+    *)
+        exec ncmpcpp "$@";;
+esac

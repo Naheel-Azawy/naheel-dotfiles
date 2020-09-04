@@ -56,3 +56,5 @@
 | pacman | tesseract-data-ara           | N.A.                                  | Arabic data for tesseract                                                                      |
 | aur    | xrandr-invert-colors         | N.A.                                  | inver screen colors                                                                            |
 | pacman | poppler                      | N.A.                                  | manipulates pdfs                                                                               |
+| pacman | fd                           | N.A.                                  | faster find                                                                                    |
+| pacman | ripgrep                      | N.A.                                  | faster grep                                                                                    |

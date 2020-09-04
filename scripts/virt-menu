@@ -1,8 +1,15 @@
 #!/bin/sh
 
-V=$(vboxmanage list vms |
+list() {
+    vboxmanage list vms |
         grep -v '<inaccessible>' |
-        sed -En 's/"(.+)" .+/\1/p' |
-        menu-interface)
+        sed -En 's/"(.+)" .+/\1/p'
+    echo Manage
+}
 
-[ "$V" ] && exec vboxmanage startvm "$V"
+V=$(list | menu-interface)
+
+[ "$V" ] && case "$V" in
+    Manage) virtualbox;;
+    *) exec vboxmanage startvm "$V";;
+esac
