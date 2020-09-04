@@ -38,7 +38,7 @@ There are two things you can do about this warning:
 
 ;; ---- FONT ----
 (set-face-attribute 'default nil
-                    :family "Iosevka"
+                    :family "Iosevka Fixed"
                     :height 160
                     :weight 'normal
                     :width 'normal)

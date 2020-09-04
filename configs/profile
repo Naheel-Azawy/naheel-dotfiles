@@ -10,7 +10,7 @@ export BROWSER="browser"
 export READER="zathura"
 export BIB="$HOME/Documents/LaTeX/refs.bib" # TODO: move to personal
 
-export FONT_MONO='Iosevka'
+export FONT_MONO='Iosevka Fixed'
 export FONT_SANS='Liberation Sans'
 export FONT="$FONT_MONO"
 export GTK_THEME="AdwaitaRefresh-darker:dark"

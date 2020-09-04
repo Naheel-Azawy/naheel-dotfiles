@@ -1,5 +1,5 @@
 ! Use a nice truetype font and size by default... 
-xterm*faceName: Iosevka
+xterm*faceName: Iosevka Fixed
 xterm*faceSize: 15
 
 ! Every shell is a login shell by default (for inclusion of all necessary environment variables)
