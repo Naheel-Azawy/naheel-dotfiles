@@ -3,6 +3,8 @@
 DMENU="menu-interface -i -l 20"
 DMENUL="$DMENU"
 
+. ~/.bashrc # to get the env vars
+
 # needed to update the database of locate
 sudo updatedb &
 

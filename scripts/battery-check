@@ -1,4 +1,5 @@
 #!/bin/sh
+
 B="$1"
 C="$2"
 TF='/tmp/.battery-low'
@@ -9,12 +10,12 @@ TF='/tmp/.battery-low'
 if [ ! -e "$TF-$B" ]; then
     rm -f "${TF}"*
     touch "$TF-$B"
-    if [ "$B" -le "2" ]; then
+    if [ "$B" -le "5" ]; then
         echo LOW BATTERY SHUTTING DOWN
         lockscreen && systemctl hibernate
-    elif [ "$B" -le "3" ]; then
-        notify-send -u critical "VERY LOW BATTERY ${B}% WILL SHUTDOWN AT 2%!!!"
-    elif [ "$B" -eq "5" ]; then
+    elif [ "$B" -le "7" ]; then
+        notify-send -u critical "VERY LOW BATTERY ${B}% WILL SHUTDOWN AT 5%!!!"
+    elif [ "$B" -eq "10" ]; then
         notify-send -u critical "Low battery ${B}%"
     fi
 fi

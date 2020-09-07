@@ -32,3 +32,4 @@
 | apt  | wdiff             | N.A.                                     | diff but for words                                           |
 | pip  | trash-cli         | N.A.                                     | CLI XDG trash                                                |
 | apt  | strace            | N.A.                                     | trace system calls. Needed for cp-p                          |
+| apt  | gawk              | N.A.                                     | weird Ubuntu no gawk by default...                           |
