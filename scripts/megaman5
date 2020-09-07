@@ -1,2 +1,0 @@
-#!/bin/sh
-exec mgba-qt "$GAMES_GB/Mega Man 5 (U) [S][!].gb" "$@"

@@ -11,32 +11,12 @@ TUIAPPS = [
     "cmus",
     "emacs-in",
     "lf",
-    "invaders",
-    "nudoku",
-    "tetris",
-    "snake",
     "vis",
     "corona"
 ]
 
-GAMES = [
-    "donkykong",
-    "mariokart",
-    "megaman5",
-    "pacman-game",
-    "pepsiman",
-    "pinball",
-    "pokemon-crystal",
-    "spider",
-    "supermario",
-    "supermario64",
-    "tekken3",
-    "gnome-chess",
-    "invaders",
-    "nudoku",
-    "tetris",
-    "snake"
-]
+GAMES = os.popen("games list").read().split("\n")
+GAMES.pop() # remove last empty line
 
 # TODO: commands from x window apps
 COMMANDS = {
@@ -101,6 +81,8 @@ if cmd == "run":
         os.system(f"i3-msg '{msg}'")
     elif type == "bar":
         os.system("bar gui")
+    elif type == "games":
+        os.system(f"games {run}")
     else:
         exe = run.split()[0]
         if os.popen(f"command -v {exe}").close() != 256:
@@ -113,6 +95,8 @@ if cmd == "run":
 
 bins = os.popen("dmenu_path").read().split("\n")
 bins.pop() # remove last empty line
+bins += GAMES
+bins = list(set(bins))
 
 # in case any need to be deleted
 todel = []
@@ -134,9 +118,8 @@ def ident(i):
     return ("%9s: ") % i
 
 if cmd == "games":
-    for b in allbins:
-        if b in GAMES:
-            print(b)
+    for g in GAMES:
+        print(g)
 elif cmd == "recent":
     for b in recent:
         print(b)

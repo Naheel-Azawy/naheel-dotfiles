@@ -1,2 +1,0 @@
-#!/bin/sh
-exec mgba-qt "$GAMES_GB/Mario Kart Super Circuit (U) [!].gba" "$@"

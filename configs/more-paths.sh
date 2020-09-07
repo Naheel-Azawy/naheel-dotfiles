@@ -12,13 +12,6 @@ try_export ANDROID_HOME /mnt/hdd1/Public/software/android/Sdk
 try_export ANDROID_SDK_ROOT "$ANDROID_HOME"
 try_add_path "$ANDROID_HOME/platform-tools"
 
-# GAMES #####################################
-# TODO: move to personal
-try_export GAMES    /mnt/hdd1/Public/Games
-try_export GAMES_XP "$GAMES/solitaire_xp/"
-try_export GAMES_GB "$GAMES/gameboy"
-try_export GAMES_PS "$GAMES/psx"
-
 # MATLAB ####################################
 # TODO: move to personal
 try_export MATLAB /mnt/hdd1/Public/software/non-free-software/MATLAB/R2017a

@@ -1,2 +1,0 @@
-#!/bin/sh
-exec mednafen "$GAMES_PS/pepsiman/Pepsiman (Japan).cue" "$@"

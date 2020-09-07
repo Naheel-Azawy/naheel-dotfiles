@@ -1,2 +1,0 @@
-#!/bin/sh
-exec mgba-qt "$GAMES_GB/Ms. Pac-Man - Special Color Edition (USA).gbc" "$@"

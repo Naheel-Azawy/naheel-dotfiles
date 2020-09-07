@@ -1,0 +1,57 @@
+#!/bin/node
+
+const exe   = require('child_process').execSync;
+const print = s => console.log(s);
+const argv  = process.argv.slice(2);
+
+const dir     = `/mnt/hdd1/Public/Games`;
+const dir_gb  = `${dir}/gameboy`;
+const dir_n64 = `${dir}/n64`;
+const dir_psx = `${dir}/psx`;
+const dir_win = `${dir}/windows`;
+
+const gbc = (name)    => `mgba-qt "${dir_gb}/${name}"`;
+const n64 = (name)    => `mupen64plus "${dir_n64}/${name}"`;
+const psx = (name)    => `mednafen "${dir_psx}/${name}"`;
+const win = (d, name) => `winejail win-games-${d} "${dir_win}/${d}" "${name}"`;
+const tui = (name)    => `theterm "${name}"`;
+
+const games = {
+    "supermario":      gbc("Super Mario Bros. Deluxe (USA, Europe).gbc"),
+    "supermario64":    n64("Super Mario 64 (U) [!].z64"),
+    "mariokart":       gbc("Mario Kart Super Circuit (U) [!].gba"),
+    "donkykong":       gbc("1521 - Classic Nes - Donkey Kong (U)(Hyperion).gba"),
+    "megaman5":        gbc("Mega Man 5 (U) [S][!].gb"),
+    "megaman-x5":      psx("megaman_x5/Megaman X5.cue"),
+    "pacman":          gbc("Ms. Pac-Man - Special Color Edition (USA).gbc"),
+    "pokemon-crystal": gbc("Pokemon - Crystal Version (USA, Europe).gbc"),
+    "spider":          win("solitaire_xp", "spider.exe"),
+    "pinball":         win("solitaire_xp", "Pinball/PINBALL.EXE"),
+    "tekken3":         psx("Tekken 3/Tekken 3.cue"),
+    "pepsiman":        psx("pepsiman/Pepsiman (Japan).cue"),
+    "gnome-chess":     "gnome-chess",
+    "invaders":        tui("invaders"),
+    "nudoku":          tui("nudoku"),
+    "tetris":          tui("tetris"),
+    "snake":           tui("snake")
+};
+
+switch (argv[0]) {
+case undefined:
+    exe("games list | menu-interface -l 20");
+    break;
+case "list":
+    for (let g in games) {
+        print(g);
+    }
+    break;
+default:
+    let cmd = games[argv[0]];
+    if (cmd) {
+        print(cmd);
+        exe(cmd);
+    } else {
+        print(`Unknown game '${argv[0]}'`);
+        process.exit(1);
+    }
+}
