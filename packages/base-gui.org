@@ -58,9 +58,7 @@
 | pacman   | libpulse               | N.A.                                             | sound related stuff                                              |
 | pacman   | pulseaudio             | N.A.                                             | sound related stuff                                              |
 | pacman   | lib32-openal           | N.A.                                             | sound related stuff                                              |
-| pacman   | zathura                | N.A.                                             | is a pdf viewer with vim-like bindings                           |
-| pacman   | zathura-djvu           | N.A.                                             | gives zathura the ability to read .djvu files                    |
-| pacman   | zathura-pdf-mupdf      | N.A.                                             | allows mupdf pdf compatibility in zathura                        |
+| pacman   | evince                 | N.A.                                             | GNOME's PDF reader                                               |
 | pacman   | mpd                    | N.A.                                             | music player daemon                                              |
 | pacman   | mpc                    | N.A.                                             | mpd client                                                       |
 | pacman   | ncmpcpp                | N.A.                                             | mpd UI                                                           |

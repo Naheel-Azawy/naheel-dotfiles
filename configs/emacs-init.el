@@ -397,7 +397,7 @@ There are two things you can do about this warning:
 
   ;; -- RUNNERS --
   (delete '("\\.pdf\\'" . default) org-file-apps)
-  (add-to-list 'org-file-apps '("\\.pdf\\'" . "zathura %s"))
+  (add-to-list 'org-file-apps '("\\.pdf\\'" . "evince %s"))
   (delete '("\\.html\\'" . default) org-file-apps)
   (add-to-list 'org-file-apps '("\\.html\\'" . "browser %s"))
 

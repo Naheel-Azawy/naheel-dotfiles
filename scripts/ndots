@@ -60,7 +60,6 @@ dots_link() {
     lnnn "$D/configs/fonts.conf"          "$H/.config/fontconfig/fonts.conf"
     lnnn "$D/configs/mpd.conf"            "$H/.config/mpd/mpd.conf"
     lnnn "$D/configs/ncmpcpp.conf"        "$H/.config/ncmpcpp/config"
-    lnnn "$D/configs/zathurarc"           "$H/.config/zathura/zathurarc"
     lnnn "$D/configs/lfrc.sh"             "$H/.config/lf/lfrc"
     lnnn "$D/configs/sxiv-key-handler.sh" "$H/.config/sxiv/exec/key-handler"
     lnnn "$D/configs/sxiv-image-info.sh"  "$H/.config/sxiv/exec/image-info"

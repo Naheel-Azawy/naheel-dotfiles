@@ -16,7 +16,6 @@
 | pacman | virtualbox                   | N.A.                                  | the chosen virtual machine                                                                     |
 | pacman | virtualbox-host-modules-arch | N.A.                                  | virtual-box kernel modules                                                                     |
 | pacman | nautilus                     | N.A.                                  | GNOME's file manager                                                                           |
-| pacman | evince                       | N.A.                                  | GNOME's reader                                                                                 |
 | pacman | wine                         | N.A.                                  | runs Windows programs. Always be careful while using non free software. Best fit with firejail |
 | pacman | wine-mono                    | N.A.                                  | needed by wine                                                                                 |
 | pacman | wine_gecko                   | N.A.                                  | needed by wine                                                                                 |

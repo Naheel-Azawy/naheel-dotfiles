@@ -7,7 +7,7 @@ export EDITOR="emacs-in"
 export VISUAL="$EDITOR"
 export TERMINAL="st"
 export BROWSER="browser"
-export READER="zathura"
+export READER="evince"
 export BIB="$HOME/Documents/LaTeX/refs.bib" # TODO: move to personal
 
 export FONT_MONO='Iosevka Fixed'
