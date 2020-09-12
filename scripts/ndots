@@ -79,6 +79,7 @@ dots_link() {
     lnnn "$D/configs/nm-dmenu.ini"        "$H/.config/networkmanager-dmenu/config.ini"
     lnnn "$D/configs/gtk-icons.theme"     "$H/.icons/default/index.theme"
     lnnn "$D/configs/gtk3-settings.ini"   "$H/.config/gtk-3.0/settings.ini"
+    lnnn "$D/configs/gtk3.css"            "$H/.config/gtk-3.0/gtk.css"
     lnnn "$D/configs/gtk2rc"              "$H/.gtkrc-2.0"
 }
 

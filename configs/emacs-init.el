@@ -117,7 +117,7 @@ There are two things you can do about this warning:
 (add-hook 'after-make-frame-functions 'on-frame-open)
 
 ;; ---- SCROLL ----
-(setq scroll-step           1
+(setq scroll-step 1
       scroll-conservatively 10000
       scroll-margin 5)
 
@@ -131,6 +131,7 @@ There are two things you can do about this warning:
 
 ;; ---- RUN ----
 (defun run-program ()
+  "Execute a source file."
   (interactive)
   (defvar cmd)
   (setq cmd (concat "rn " (buffer-name) ))
@@ -142,6 +143,7 @@ There are two things you can do about this warning:
 (use-package company-lsp)
 (use-package lsp-ui)
 (use-package lsp-java :after lsp)
+(use-package lsp-dart)
 
 ;; ---- WEB ----
 (use-package web-mode
@@ -170,6 +172,7 @@ There are two things you can do about this warning:
 (use-package gnuplot-mode)
 (use-package sparql-mode)
 (use-package ttl-mode)
+(use-package yaml-mode)
 (use-package glsl-mode)
 (use-package haxe-mode)
 (use-package arduino-mode)
@@ -259,14 +262,41 @@ There are two things you can do about this warning:
   (aset buffer-display-table ?\^M []))
 
 ;; ---- DUPLICATE LINE ----
-(defun duplicate-line()
-  (interactive)
-  (move-beginning-of-line 1)
-  (kill-line)
-  (yank)
-  (open-line 1)
-  (next-line 1)
-  (yank))
+;; https://stackoverflow.com/a/998472/3825872
+(defun duplicate-line (arg)
+  "Duplicate current line ARG times, leaving point in lower line."
+  (interactive "*p")
+
+  ;; save the point for undo
+  (setq buffer-undo-list (cons (point) buffer-undo-list))
+
+  ;; local variables for start and end of line
+  (let ((bol (save-excursion (beginning-of-line) (point)))
+        eol)
+    (save-excursion
+
+      ;; don't use forward-line for this, because you would have
+      ;; to check whether you are at the end of the buffer
+      (end-of-line)
+      (setq eol (point))
+
+      ;; store the line and disable the recording of undo information
+      (let ((line (buffer-substring bol eol))
+            (buffer-undo-list t)
+            (count arg))
+        ;; insert the line arg times
+        (while (> count 0)
+          (newline)         ;; because there is no newline in 'line'
+          (insert line)
+          (setq count (1- count)))
+        )
+
+      ;; create the undo information
+      (setq buffer-undo-list (cons (cons eol (point)) buffer-undo-list)))
+    ) ; end-of-let
+
+  ;; put the point in the lowest line and return
+  (next-line arg))
 (global-set-key (kbd "C-d") 'duplicate-line)
 
 ;; ---- XCLIP ----
@@ -472,7 +502,7 @@ There are two things you can do about this warning:
  '(org-modules
    '(ol-bbdb ol-bibtex ol-docview ol-eww ol-gnus ol-info ol-irc ol-mhe ol-rmail org-tempo ol-w3m))
  '(package-selected-packages
-   '(vterm web-beautify lsp-treemacs dockerfile-mode basic-mode vlang-mode quelpa xonsh-mode elvish-mode undo-fu js2-mode ein cmake-mode origami fish-mode doom-modeline git-gutter smooth-scroll sublimity org-ref anzu flycheck flymake-shellcheck typescript-mode rust-mode kotlin-mode julia-mode go-mode dart-mode csharp-mode flyspell-correct-helm rainbow-mode web-mode company-mode org-bullets ox-groff calfw-org calfw undo-tree spacemacs-theme xclip use-package multiple-cursors lsp-ui lsp-java company-lsp)))
+   '(yaml-mode lsp-dart vterm web-beautify lsp-treemacs dockerfile-mode basic-mode vlang-mode quelpa xonsh-mode elvish-mode undo-fu js2-mode ein cmake-mode origami fish-mode doom-modeline git-gutter smooth-scroll sublimity org-ref anzu flycheck flymake-shellcheck typescript-mode rust-mode kotlin-mode julia-mode go-mode dart-mode csharp-mode flyspell-correct-helm rainbow-mode web-mode company-mode org-bullets ox-groff calfw-org calfw undo-tree spacemacs-theme xclip use-package multiple-cursors lsp-ui lsp-java company-lsp)))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
