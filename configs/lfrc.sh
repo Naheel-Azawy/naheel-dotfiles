@@ -23,8 +23,6 @@ set scrolloff 10
 # set the previewer script
 set previewer stpv
 
-set color256 true
-
 # set the cleaner script
 #set cleaner stpvimgclr
 

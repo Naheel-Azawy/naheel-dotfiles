@@ -161,6 +161,7 @@ There are two things you can do about this warning:
 
 ;; ---- OTHER LANGS ----
 (use-package basic-mode)
+(use-package v-mode)
 (use-package vala-mode)
 (use-package csharp-mode)
 (use-package dart-mode)
@@ -203,6 +204,10 @@ There are two things you can do about this warning:
 (setq auto-mode-alist
       (cons
        '("\\.pyx$" . python-mode)
+       auto-mode-alist))
+(setq auto-mode-alist
+      (cons
+       '("\\.v$" . v-mode)
        auto-mode-alist))
 
 ;; ---- TOYS ----
@@ -477,19 +482,6 @@ There are two things you can do about this warning:
                  ("\\subsection\{%s\}" . "\\subsection*\{%s\}")
                  ("\\subsubsection\{%s\}" . "\\subsubsection*\{%s\}"))))
 
-;; ---- QUELPA ----
-(unless (package-installed-p 'quelpa)
-  (with-temp-buffer
-    (url-insert-file-contents "https://github.com/quelpa/quelpa/raw/master/quelpa.el")
-    (eval-buffer)
-    (quelpa-self-upgrade)))
-
-;; ---- VLANG ----
-(quelpa
- '(vlang-mode :fetcher url
-              :url "https://raw.githubusercontent.com/naheel-azawy/vlang-mode.el/master/vlang-mode.el"))
-(require 'vlang-mode)
-
 ;; ---- END ----
 
 (custom-set-variables
@@ -502,7 +494,7 @@ There are two things you can do about this warning:
  '(org-modules
    '(ol-bbdb ol-bibtex ol-docview ol-eww ol-gnus ol-info ol-irc ol-mhe ol-rmail org-tempo ol-w3m))
  '(package-selected-packages
-   '(yaml-mode lsp-dart vterm web-beautify lsp-treemacs dockerfile-mode basic-mode vlang-mode quelpa xonsh-mode elvish-mode undo-fu js2-mode ein cmake-mode origami fish-mode doom-modeline git-gutter smooth-scroll sublimity org-ref anzu flycheck flymake-shellcheck typescript-mode rust-mode kotlin-mode julia-mode go-mode dart-mode csharp-mode flyspell-correct-helm rainbow-mode web-mode company-mode org-bullets ox-groff calfw-org calfw undo-tree spacemacs-theme xclip use-package multiple-cursors lsp-ui lsp-java company-lsp)))
+   '(v-mode yaml-mode lsp-dart vterm web-beautify lsp-treemacs dockerfile-mode basic-mode vlang-mode quelpa xonsh-mode elvish-mode undo-fu js2-mode ein cmake-mode origami fish-mode doom-modeline git-gutter smooth-scroll sublimity org-ref anzu flycheck flymake-shellcheck typescript-mode rust-mode kotlin-mode julia-mode go-mode dart-mode csharp-mode flyspell-correct-helm rainbow-mode web-mode company-mode org-bullets ox-groff calfw-org calfw undo-tree spacemacs-theme xclip use-package multiple-cursors lsp-ui lsp-java company-lsp)))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
