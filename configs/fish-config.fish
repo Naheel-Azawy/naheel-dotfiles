@@ -194,7 +194,6 @@ abbr cd..  'cd ..'
 abbr mkd   'mkdir -p'
 abbr mkdc  'mkdircd'
 abbr h     'history'
-abbr gh    'history | grep'
 abbr g     'grep'
 abbr gr    'grep -r'
 

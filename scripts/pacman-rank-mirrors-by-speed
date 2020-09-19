@@ -1,0 +1,14 @@
+#!/bin/sh
+
+# https://www.archlinux.org/mirrorlist/
+# https://wiki.archlinux.org/index.php/Mirrors#List_by_speed
+
+# backup
+b=/etc/pacman.d/mirrorlist."$(date '+%Y%m%d%H%M')".backup
+cp /etc/pacman.d/mirrorlist "$b"
+
+# uncomment all
+sed -i 's/^#Server/Server/' "$b"
+
+# rank
+rankmirrors -n 6 "$b" | tee /etc/pacman.d/mirrorlist
