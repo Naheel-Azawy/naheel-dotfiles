@@ -18,11 +18,50 @@ die() {
     docker rm "$(docker ps -qa)"
 }
 
+alias pop='_pop $#; eval "$POP_EXPR"'
+_pop() {
+    # https://stackoverflow.com/a/63864756/3825872
+    __pop_n=$(($1 - ${2:-1}))
+    if [ $__pop_n -ge 500 ]; then
+        POP_EXPR="set -- $(seq -s " " 1 $__pop_n | sed 's/[0-9]\+/"${\0}"/g')"
+    else
+        __pop_index=0
+        __pop_arguments=""
+        while [ $__pop_index -lt $__pop_n ]; do
+            __pop_index=$((__pop_index+1))
+            __pop_arguments="$__pop_arguments \"\${$__pop_index}\""
+        done
+        POP_EXPR="set -- $__pop_arguments"
+    fi
+}
+
 CMD="$1"
 shift
 case "$CMD" in
+    enhance)
+        # https://github.com/alexjc/neural-enhance#2a-using-docker-image-recommended
+        FILEPATH=$(eval echo "\$$#")
+        if [ $# -gt 0 ] && [ -f "$FILEPATH" ]; then
+            FILEPATH=$(realpath "$FILEPATH")
+            pop # remove last argument
+            NAME=$(basename "$FILEPATH")
+            DIR=$(dirname "$FILEPATH")
+            TMP=$(mktemp -d)
+            cp "$FILEPATH" "$TMP"
+            docker run --rm  -v "$TMP":/ne/input -it alexjc/neural-enhance "$@" "/ne/input/$NAME" &&
+                cp "$TMP"/*ne* "$DIR" &&
+                rm -rf "$TMP"
+        else
+            docker run --rm -it alexjc/neural-enhance "$@"
+        fi;;
+
+    doodle)
+        #docker run -v $(pwd)/samples:/nd/samples -v $(pwd)/frames:/nd/frames -it alexjc/neural-doodle
+        docker run -it alexjc/neural-doodle "$@"
+        ;;
+
     ocrmypdf)
-        [ -f "$1" ] && {
+        if [ -f "$1" ]; then
             SRC=$(realpath "$1")
             DST=$(realpath "$2")
             shift 2
@@ -30,10 +69,12 @@ case "$CMD" in
             DSTN=$(basename "$DST")
             TMP=$(mktemp -d)
             cp "$SRC" "$TMP"
-        }
-        docker run --rm -v "$TMP":/tmp jbarlow83/ocrmypdf /tmp/"$SRCN" /tmp/"$DSTN" "$@" &&
-            mv "$TMP/$DSTN" "$DST"
-        rm -rf "$TMP";;
+            docker run --rm -v "$TMP":/tmp jbarlow83/ocrmypdf /tmp/"$SRCN" /tmp/"$DSTN" "$@" &&
+                mv "$TMP/$DSTN" "$DST"
+            rm -rf "$TMP"
+        else
+            docker run --rm jbarlow83/ocrmypdf "$@"
+        fi;;
 
     searx)
         docker run -d --name searx -p 3333:8888 wonderfall/searx "$@";;

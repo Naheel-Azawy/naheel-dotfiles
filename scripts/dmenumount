@@ -1,58 +1,71 @@
-#!/bin/bash
-# Gives a dmenu prompt to mount unmounted drives.
-# If they're in /etc/fstab, they'll be mounted automatically.
-# Otherwise, you'll be prompted to give a mountpoint from already existsing directories.
-# If you input a novel directory, it will prompt you to create that directory.
-# https://github.com/Naheel-Azawy/naheel-dotfiles
-# Based on https://github.com/LukeSmithxyz/voidrice
+#!/bin/node
 
-LEN=15
+const sh = require("/usr/lib/node_modules/shelljs/shell.js");
+const argv = process.argv.slice(2);
+const notify = msg => sh.exec(`notify-send '${msg}'`);
 
-function getmount {
-	  [ -z "$chosen" ] && exit 1
-    mps=$(diff --changed-group-format='%>' --unchanged-group-format='' \
-               <(lsblk -rpo "mountpoint" | grep . | sort) \
-               <(find /mnt -maxdepth 1 -type d | sort) | \
-              tail -n +2)
-	  #mp=$(echo "$mps" | menu-interface -l $LEN -i -p "Type in mount point.")
-    mp=$(echo "$mps" | head -n 1)
-	  [ "$mp" = "" ] && exit 1
-	  if [ ! -d "$mp" ]; then
-		    mkdiryn=$(printf "No\\nYes" | menu-interface -i -p "$mp does not exist. Create it?")
-		    [ "$mkdiryn" = "Yes" ] && (mkdir -p "$mp" || sudo -A mkdir -p "$mp")
-	  fi
+sh.config.silent = true;
+
+function ls_parts() {
+    let blocks = JSON.parse(sh.exec("lsblk --json -po 'name,type,size,label,mountpoint'").toString())
+        .blockdevices;
+
+    let parts = [];
+    for (let block of blocks) {
+        for (let part of block.children) {
+            if (part.type == "part" || part.type == "lvm") {
+                parts.push(part);
+            }
+        }
+    }
+    
+    return parts;
 }
 
-function mountusb {
-	  chosen=$(echo "$1" | awk '{print $2}')
-	  sudo -A mount "$chosen" 2>/dev/null && notify-send "$chosen mounted." && exit 0
-	  getmount
-	  sudo -A mount "$chosen" "$mp" && notify-send "$chosen mounted to $mp."
+function ls_mtp() {
+    // TODO: implement MTP
+    return [];
 }
 
-function mountmtp {
-	  chosen=$(echo "$1" | awk -F':' '{print $2}' | xargs)
-	  getmount
-	  simple-mtpfs --device "$chosen" "$mp"
-	  notify-send "MTP device mounted to $mp."
+function ls_all() {
+    return [...ls_mtp(), ...ls_parts()];
 }
 
-AUTO_DRIVES="/tmp/automountdrives"
-
-function getusb {
-    if false && [ -f "$AUTO_DRIVES" ]; then
-        tac "$AUTO_DRIVES"
-    else
-        lsblk -rpo "name,type,size,mountpoint" | awk '($2=="part"||$2=="lvm")&&$4==""{printf "DRIVE: %s (%s)\n",$1,$3}'
-    fi
+function stringify(drives) {
+    let res = [];
+    let line;
+    for (let d of drives) {
+        if (["/", "/boot", "/home", "[SWAP]"]
+            .includes(d.mountpoint)) continue;
+        line = d.mountpoint ? "Unmount " : "Mount ";
+        line += d.name;
+        if (d.label)      line += ` ${d.label}`;
+        if (d.mountpoint) line += ` from ${d.mountpoint}`;
+        if (d.size)       line += ` (${d.size})`;
+        res.push(line);
+    }
+    res.sort();
+    return new sh.ShellString(res.join("\n"));
 }
 
-if [ $# != 0 ]; then
-    chosen="$@"
-else
-    mtpdrives=$(simple-mtpfs -l 2>/dev/null | awk '{print "MTP:   "$0}')
-    usbdrives=$(test ! -z "$mtpdrives" && echo "$mtpdrives"; getusb)
-    chosen=$(echo "$usbdrives" | menu-interface -l $LEN -i -p "Mount which drive?")
-fi
+function main() {
+    let drives = ls_all();
+    let sel = stringify(drives).exec("menu-interface -l 20").trim();
+    if (sel) {
+        sel = sel.split(" ");
+        let command = sel[0].trim().toLowerCase();
+        sel = sel[1].trim();
+        let ret = sh.exec(`udisksctl ${command} -b ${sel}`);
+        sh.echo(ret);
+        notify(ret);
+        if (ret.stdout.includes(" at ")) { // mounted successfully
+            let mp = ret.split(" at ")[1].trim();
+            sh.exec(`dmenuopendir '${mp}'`); // open dir
+        }
+        sh.exit(ret.code);
+    } else {
+        sh.exit(0);
+    }
+}
 
-echo "$chosen" | grep -q "MTP:" && mountmtp "$chosen" || mountusb "$chosen" && dmenuopendir "$mp"
+main();

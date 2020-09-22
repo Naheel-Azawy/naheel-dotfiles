@@ -133,8 +133,6 @@ outbindings() {
 
     bindoc 'Mount a drive' \
            "$mod+m"       "exec --no-startup-id dmenumount"
-    bindoc 'Unmount a drive' \
-           "$mod+Shift+m" "exec --no-startup-id dmenuumount"
 
     bindoc 'Display options' \
            "$mod+p"       "exec --no-startup-id dmenudisplay"
