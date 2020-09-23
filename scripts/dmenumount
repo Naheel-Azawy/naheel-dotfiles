@@ -9,7 +9,6 @@ sh.config.silent = true;
 function ls_parts() {
     let blocks = JSON.parse(sh.exec("lsblk --json -po 'name,type,size,label,mountpoint'").toString())
         .blockdevices;
-
     let parts = [];
     for (let block of blocks) {
         for (let part of block.children) {
@@ -17,14 +16,44 @@ function ls_parts() {
                 parts.push(part);
             }
         }
-    }
-    
+    }    
     return parts;
 }
 
+const mtp_dir = sh.env["HOME"] + "/MTP Drives";
+
 function ls_mtp() {
-    // TODO: implement MTP
-    return [];
+    let res = sh.exec("simple-mtpfs -l").trim().split("\n");
+    let mp;
+    for (let i in res) {
+        mp = `${mtp_dir}/${res[i]}`;
+        mp = sh.test("-d", mp) ? mp : null;
+        res[i] = {
+            name: res[i],
+            type: 'mtp',
+            size: null,
+            label: null,
+            mountpoint: mp
+        };
+    }
+    return res;
+}
+
+function mount_mtp(name) {
+    let num = name.split(":")[0];
+    sh.mkdir("-p", `${mtp_dir}/${name}`);
+    return sh.exec(`simple-mtpfs --device ${num} '${mtp_dir}/${name}'`);
+}
+
+function unmount_mtp(name) {
+    let ret = sh.exec(`fusermount -u '${mtp_dir}/${name}'`);
+    if (ret.code == 0) {
+        sh.rm("-r", `${mtp_dir}/${name}`);
+        if (sh.ls(mtp_dir).toString().trim().length == 0) {
+            sh.rm("-r", mtp_dir);
+        }
+    }
+    return ret;
 }
 
 function ls_all() {
@@ -39,9 +68,12 @@ function stringify(drives) {
             .includes(d.mountpoint)) continue;
         line = d.mountpoint ? "Unmount " : "Mount ";
         line += d.name;
-        if (d.label)      line += ` ${d.label}`;
-        if (d.mountpoint) line += ` from ${d.mountpoint}`;
-        if (d.size)       line += ` (${d.size})`;
+        if (d.label)
+            line += ` ${d.label}`;
+        if (d.type != "mtp" && d.mountpoint)
+            line += ` from ${d.mountpoint}`;
+        if (d.size)
+            line += ` (${d.size})`;
         res.push(line);
     }
     res.sort();
@@ -50,16 +82,42 @@ function stringify(drives) {
 
 function main() {
     let drives = ls_all();
-    let sel = stringify(drives).exec("menu-interface -l 20").trim();
+    let sel = stringify(drives).exec("menu-interface -l 20")
+        .toString().trim();
     if (sel) {
+        let mtp = sel.endsWith("(MTP)");
         sel = sel.split(" ");
         let command = sel[0].trim().toLowerCase();
-        sel = sel[1].trim();
-        let ret = sh.exec(`udisksctl ${command} -b ${sel}`);
-        sh.echo(ret);
-        notify(ret);
-        if (ret.stdout.includes(" at ")) { // mounted successfully
-            let mp = ret.split(" at ")[1].trim();
+        let ret, ret_msg, mp;
+        if (mtp) {
+            sel = sel.slice(1).join(" ");
+            if (command == "mount") {
+                ret = mount_mtp(sel);
+                mp = `${mtp_dir}/${sel}`;
+                if (ret.code == 0) {
+                    ret_msg = `Mounted ${sel}`;
+                } else {
+                    ret_msg = `Failed mounting ${sel}`;
+                }
+            } else {
+                ret = unmount_mtp(sel);
+                if (ret.code == 0) {
+                    ret_msg = `Unmounted ${sel}`;
+                } else {
+                    ret_msg = `Failed unmounting ${sel}`;
+                }
+            }
+        } else {
+            sel = sel[1].trim();
+            ret = sh.exec(`udisksctl ${command} -b ${sel}`);
+            ret_msg = ret.toString().trim();
+            if (ret.stdout.includes(" at ")) { // mounted successfully
+                mp = ret.split(" at ")[1].trim();
+            }
+        }
+        sh.echo(ret_msg);
+        notify(ret_msg);
+        if (mp) {
             sh.exec(`dmenuopendir '${mp}'`); // open dir
         }
         sh.exit(ret.code);
