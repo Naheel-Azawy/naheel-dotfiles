@@ -23,7 +23,11 @@ function ls_parts() {
 const mtp_dir = sh.env["HOME"] + "/MTP Drives";
 
 function ls_mtp() {
-    let res = sh.exec("simple-mtpfs -l").trim().split("\n");
+    let res = sh.exec("simple-mtpfs -l");
+    if (res.code != 0) {
+        return [];
+    }
+    res = res.trim().split("\n")
     let mp;
     for (let i in res) {
         mp = `${mtp_dir}/${res[i]}`;
