@@ -1,0 +1,2 @@
+#!/bin/sh
+exec /home/naheel/.local/share/android/android-studio/bin/studio.sh "$@"

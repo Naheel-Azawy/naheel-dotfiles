@@ -12,7 +12,8 @@ TUIAPPS = [
     "emacs-in",
     "lf",
     "vis",
-    "corona"
+    "corona",
+    "alsamixer"
 ]
 
 GAMES = os.popen("games list").read().split("\n")

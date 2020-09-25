@@ -11,6 +11,7 @@ function ls_parts() {
         .blockdevices;
     let parts = [];
     for (let block of blocks) {
+        if (!block.children) continue;
         for (let part of block.children) {
             if (part.type == "part" || part.type == "lvm") {
                 parts.push(part);
@@ -27,7 +28,7 @@ function ls_mtp() {
     if (res.code != 0) {
         return [];
     }
-    res = res.trim().split("\n")
+    res = res.trim().split("\n");
     let mp;
     for (let i in res) {
         mp = `${mtp_dir}/${res[i]}`;
@@ -91,7 +92,9 @@ function main() {
     if (sel) {
         let mtp = sel.endsWith("(MTP)");
         sel = sel.split(" ");
-        let command = sel[0].trim().toLowerCase();
+        let command = sel[0].trim();
+        notify(`${command}ing...`);
+        command = command.toLowerCase();
         let ret, ret_msg, mp;
         if (mtp) {
             sel = sel.slice(1).join(" ");
@@ -114,7 +117,7 @@ function main() {
         } else {
             sel = sel[1].trim();
             ret = sh.exec(`udisksctl ${command} -b ${sel}`);
-            ret_msg = ret.toString().trim();
+            ret_msg = ret.stdout || ret.stderr;
             if (ret.stdout.includes(" at ")) { // mounted successfully
                 mp = ret.split(" at ")[1].trim();
             }
