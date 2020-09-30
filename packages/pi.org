@@ -1,0 +1,20 @@
+| Tag  | Name        | Git Link | Purpose                             |
+|------+-------------+----------+-------------------------------------|
+| apt  | sl          | N.A.     | cures the bad habit of miss-typing  |
+| apt  | gcc         | N.A.     | the GNU compiler collection         |
+| apt  | make        | N.A.     | the good old build system           |
+| apt  | cmake       | N.A.     | a fancier build system              |
+| apt  | git         | N.A.     | version control system              |
+| apt  | curl        | N.A.     | gets stuff from the internet        |
+| apt  | python3-pip | N.A.     | python's package manager            |
+| apt  | tmux        | N.A.     | the terminal multiplexer            |
+| func | tpm         | N.A.     | tmux package manager                |
+| apt  | highlight   | N.A.     | can highlight code output           |
+| apt  | fish        | N.A.     | the friendly shell!                 |
+| apt  | emacs       | N.A.     | the best editor on this planet      |
+| apt  | jq          | N.A.     | json in the shell                   |
+| apt  | moreutils   | N.A.     | vidir and other toys                |
+| apt  | strace      | N.A.     | trace system calls. Needed for cp-p |
+| apt  | gawk        | N.A.     | weird Ubuntu no gawk by default...  |
+| pip  | RPi.GPIO    | N.A.     | GPIO interface for python           |
+| pip  | gpiozero    | N.A.     | simpler GPIO interface for python   |
