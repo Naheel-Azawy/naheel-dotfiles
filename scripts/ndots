@@ -24,6 +24,10 @@ cmd_exists() {
     command -v "$1" >/dev/null
 }
 
+ispi() {
+    grep -q 'Raspberry Pi' /sys/firmware/devicetree/base/model 2>/dev/null
+}
+
 isubuntu() {
     cmd_exists apt-get
 }
@@ -40,6 +44,8 @@ err() {
     printf "${E}ERROR:${R} %s\n" "$@" >&2
 }
 
+if ispi; then
+    CATEGORIES="pi"
 if isubuntu; then
     CATEGORIES="ubuntu"
 else
