@@ -46,7 +46,7 @@ err() {
 
 if ispi; then
     CATEGORIES="pi"
-if isubuntu; then
+elif isubuntu; then
     CATEGORIES="ubuntu"
 else
     CATEGORIES="base base-gui addtions themostsignificant devel electronics games"
