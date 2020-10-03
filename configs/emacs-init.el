@@ -1,29 +1,79 @@
-;; ---- MELPA ----
-(require 'package)
-(let* ((no-ssl (and (memq system-type '(windows-nt ms-dos))
-                    (not (gnutls-available-p))))
-       (proto (if no-ssl "http" "https")))
-  (when no-ssl
-    (warn "\
-Your version of Emacs does not support SSL connections,
-which is unsafe because it allows man-in-the-middle attacks.
-There are two things you can do about this warning:
-1. Install an Emacs version that does support SSL and be safe.
-2. Remove this warning from your init file so you won't see it again."))
-  ;; Comment/uncomment these two lines to enable/disable MELPA and MELPA Stable as desired
-  (add-to-list 'package-archives (cons "melpa" (concat proto "://melpa.org/packages/")) t)
-  ;;(add-to-list 'package-archives (cons "melpa-stable" (concat proto "://stable.melpa.org/packages/")) t)
-  (when (< emacs-major-version 24)
-    ;; For important compatibility libraries like cl-lib
-    (add-to-list 'package-archives (cons "gnu" (concat proto "://elpa.gnu.org/packages/")))))
-(package-initialize)
+;;; emacs-init.el --- Personal config file  -*- lexical-binding: t; -*-
 
-;; ---- USE PACKAGE ----
-(unless (package-installed-p 'use-package)
-  (package-refresh-contents)
-  (package-install 'use-package))
-(require 'use-package)
-(setq use-package-always-ensure t)
+;;; Commentary:
+
+;; Copyright 2020 Naheel Azawy.  All rights reserved.
+
+;; This program is free software; you can redistribute it and/or modify
+;; it under the terms of the GNU General Public License as published by
+;; the Free Software Foundation, either version 3 of the License, or
+;; (at your option) any later version.
+
+;; This program is distributed in the hope that it will be useful,
+;; but WITHOUT ANY WARRANTY; without even the implied warranty of
+;; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+;; GNU General Public License for more details.
+
+;; You should have received a copy of the GNU General Public License
+;; along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+;; Author: Naheel Azawy
+;; Version: 1.0.0
+;; Keywords: init
+;; URL: https://github.com/Naheel-Azawy/naheel-dotfiles
+;;
+;; This file is not part of GNU Emacs.
+;;; Code:
+
+;; ---- STRAIGHT ----
+(require 'package)
+(defvar package-enable-at-startup nil)
+(defvar straight-use-package-by-default t)
+(defvar straight-repository-branch "develop")
+(defvar straight-vc-git-default-clone-depth 1)
+(defvar bootstrap-version)
+(let ((bootstrap-file
+       (expand-file-name "straight/repos/straight.el/bootstrap.el" user-emacs-directory))
+      (bootstrap-version 5))
+  (unless (file-exists-p bootstrap-file)
+    (with-current-buffer
+        (url-retrieve-synchronously
+         "https://raw.githubusercontent.com/raxod502/straight.el/develop/install.el"
+         'silent 'inhibit-cookies)
+      (goto-char (point-max))
+      (eval-print-last-sexp)))
+  (load bootstrap-file nil 'nomessage))
+(straight-use-package 'use-package)
+(eval-when-compile (require 'use-package))
+
+;; ---- MELPA ----
+;; to be able to access MELPA packages from package-list-packages
+;; https://github.crookster.org/switching-to-straight.el-from-emacs-26-builtin-package.el
+(add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/") t)
+
+;; ---- KEYS ----
+(global-set-key (kbd "C-x <up>")    'windmove-up)
+(global-set-key (kbd "C-x <down>")  'windmove-down)
+(global-set-key (kbd "C-x <right>") 'windmove-right)
+(global-set-key (kbd "C-x <left>")  'windmove-left)
+;; because no one knows how to use emacs...
+(cua-mode 1)
+(global-set-key (kbd "C-a") 'mark-whole-buffer)
+(with-eval-after-load 'org
+  (define-key org-mode-map "\C-a" 'mark-whole-buffer))
+(global-set-key (kbd "C-f") 'isearch-forward)
+(define-key isearch-mode-map "\C-f" 'isearch-repeat-forward)
+(define-key isearch-mode-map "\C-v" 'isearch-yank-pop)
+(global-set-key (kbd "C-s") 'save-buffer)
+(use-package undo-tree
+  :config (global-undo-tree-mode))
+(global-set-key (kbd "C-z") 'undo-tree-undo)
+(global-set-key (kbd "M-z") 'undo-tree-redo)
+(setq org-support-shift-select t)
+(global-set-key (kbd "C-q") 'save-buffers-kill-terminal)
+;; zoom
+(global-set-key (kbd "C-S-<prior>") 'text-scale-increase)
+(global-set-key (kbd "C-S-<next>")  'text-scale-decrease)
 
 ;; ---- VISUALS ----
 (menu-bar-mode -1)
@@ -32,9 +82,13 @@ There are two things you can do about this warning:
 (show-paren-mode)
 (global-hl-line-mode 1)
 (xterm-mouse-mode)
-(set-face-attribute 'default nil :height 140)
 (setq-default tab-width 4)
 ;;(setq-default show-trailing-whitespace nil)
+
+;; ---- SCROLL ----
+(setq scroll-step 1
+      scroll-conservatively 10000
+      scroll-margin 5)
 
 ;; ---- FONT ----
 (set-face-attribute 'default nil
@@ -44,6 +98,13 @@ There are two things you can do about this warning:
                   'arabic
                   (font-spec :family "Kawkab Mono" :size 14)
                   nil 'prepend)
+
+;; ---- REMOVE BG COLOR ----
+(defun on-frame-open (&optional frame)
+  "If the FRAME created in terminal don't load background color."
+  (unless (display-graphic-p frame)
+    (set-face-background 'default "unspecified-bg" frame)))
+(add-hook 'after-make-frame-functions 'on-frame-open)
 
 ;; ---- THEME ----
 (use-package spacemacs-theme
@@ -111,18 +172,6 @@ There are two things you can do about this warning:
           (yellow-bg     . "#32322c"))))
   (load-theme 'spacemacs-dark t))
 
-;; ---- REMOVE BG COLOR ----
-(defun on-frame-open (&optional frame)
-  "If the FRAME created in terminal don't load background color."
-  (unless (display-graphic-p frame)
-    (set-face-background 'default "unspecified-bg" frame)))
-(add-hook 'after-make-frame-functions 'on-frame-open)
-
-;; ---- SCROLL ----
-(setq scroll-step 1
-      scroll-conservatively 10000
-      scroll-margin 5)
-
 ;; ---- MODELINE ----
 (use-package doom-modeline
   :init (doom-modeline-mode 1))
@@ -130,15 +179,6 @@ There are two things you can do about this warning:
 ;; ---- GIT ----
 (use-package git-gutter
   :config (global-git-gutter-mode 1))
-
-;; ---- RUN ----
-(defun run-program ()
-  "Execute a source file."
-  (interactive)
-  (defvar cmd)
-  (setq cmd (concat "rn " (buffer-name) ))
-  (shell-command cmd))
-(global-set-key [C-f5] 'run-program)
 
 ;; ---- LSP ----
 (use-package lsp-mode)
@@ -163,7 +203,7 @@ There are two things you can do about this warning:
 
 ;; ---- OTHER LANGS ----
 (use-package basic-mode)
-(use-package v-mode)
+(use-package cc-mode)
 (use-package vala-mode)
 (use-package csharp-mode)
 (use-package dart-mode)
@@ -190,27 +230,23 @@ There are two things you can do about this warning:
   :mode "\\.js\\'"
   :config (custom-set-faces
            '(js2-external-variable ((t (:foreground "brightblack"))))))
+(straight-use-package
+ '(vlang-mode :type git :host github :repo "Naheel-Azawy/vlang-mode"))
 
-(setq auto-mode-alist
-      (cons
-       '("\\.ttl$" . ttl-mode)
-       auto-mode-alist))
-(setq auto-mode-alist
-      (cons
-       '("\\.rpg$" . sparql-mode)
-       auto-mode-alist))
-(setq auto-mode-alist
-      (cons
-       '("\\.m$" . octave-mode)
-       auto-mode-alist))
-(setq auto-mode-alist
-      (cons
-       '("\\.pyx$" . python-mode)
-       auto-mode-alist))
-(setq auto-mode-alist
-      (cons
-       '("\\.v$" . v-mode)
-       auto-mode-alist))
+(add-to-list 'auto-mode-alist '("\\.ttl\\'" . ttl-mode))
+(add-to-list 'auto-mode-alist '("\\.rpg\\'" . sparql-mode))
+(add-to-list 'auto-mode-alist '("\\.m\\'"   . octave-mode))
+(add-to-list 'auto-mode-alist '("\\.pyx\\'" . python-mode))
+(add-to-list 'auto-mode-alist '("\\.v\\'"   . vlang-mode))
+
+;; ---- RUN ----
+(defun run-program ()
+  "Execute a source file."
+  (interactive)
+  (defvar cmd)
+  (setq cmd (concat "rn " (buffer-name) ))
+  (shell-command cmd))
+(global-set-key [C-f5] 'run-program)
 
 ;; ---- TOYS ----
 (use-package flycheck :init (global-flycheck-mode))
@@ -232,30 +268,6 @@ There are two things you can do about this warning:
   :bind
   ("C-]" . mc/mark-next-like-this))
 
-;; ---- KEYS ----
-(global-set-key (kbd "C-x <up>")    'windmove-up)
-(global-set-key (kbd "C-x <down>")  'windmove-down)
-(global-set-key (kbd "C-x <right>") 'windmove-right)
-(global-set-key (kbd "C-x <left>")  'windmove-left)
-;; because no one knows how to use emacs...
-(cua-mode 1)
-(global-set-key (kbd "C-a") 'mark-whole-buffer)
-(with-eval-after-load 'org
-  (define-key org-mode-map "\C-a" 'mark-whole-buffer))
-(global-set-key (kbd "C-f") 'isearch-forward)
-(define-key isearch-mode-map "\C-f" 'isearch-repeat-forward)
-(define-key isearch-mode-map "\C-v" 'isearch-yank-pop)
-(global-set-key (kbd "C-s") 'save-buffer)
-(use-package undo-tree
-  :config (global-undo-tree-mode))
-(global-set-key (kbd "C-z") 'undo-tree-undo)
-(global-set-key (kbd "M-z") 'undo-tree-redo)
-(setq org-support-shift-select t)
-(global-set-key (kbd "C-q") 'save-buffers-kill-terminal)
-;; zoom
-(global-set-key (kbd "C-S-<prior>") 'text-scale-increase)
-(global-set-key (kbd "C-S-<next>")  'text-scale-decrease)
-
 ;; ---- ORIGAMI ----
 (use-package origami
   :init (global-origami-mode)
@@ -269,9 +281,9 @@ There are two things you can do about this warning:
   (aset buffer-display-table ?\^M []))
 
 ;; ---- DUPLICATE LINE ----
-;; https://stackoverflow.com/a/998472/3825872
 (defun duplicate-line (arg)
-  "Duplicate current line ARG times, leaving point in lower line."
+  "Duplicate current line ARG times, leaving point in lower line.
+from: https://stackoverflow.com/a/998472/3825872"
   (interactive "*p")
 
   ;; save the point for undo
@@ -304,22 +316,13 @@ There are two things you can do about this warning:
 
   ;; put the point in the lowest line and return
   (next-line arg))
-(global-set-key (kbd "C-d") 'duplicate-line)
+(global-set-key (kbd "C-c d") 'duplicate-line)
 
 ;; ---- XCLIP ----
 (use-package xclip
-  :config (xclip-mode 1))
-
-;; ---- SPACES ----
-(defun infer-indentation-style ()
-  ;; if our source file uses tabs, we use tabs, if spaces spaces, and if
-  ;; neither, we use the current indent-tabs-mode
-  ;; https://www.emacswiki.org/emacs/NoTabs
-  (let ((space-count (how-many "^  " (point-min) (point-max)))
-        (tab-count (how-many "^\t" (point-min) (point-max))))
-    (if (> space-count tab-count) (setq indent-tabs-mode nil))
-    (if (> tab-count space-count) (setq indent-tabs-mode t))))
-(setq-default indent-tabs-mode nil)
+  :config
+  (when (eq 0 (shell-command "type xclip"))
+    (xclip-mode 1)))
 
 ;; ---- BACKUP ----
 (setq backup-directory-alist `(("." . "~/.cache/emacs-saves")))
@@ -343,37 +346,37 @@ There are two things you can do about this warning:
 
 ;; ---- CALFW ----
 (use-package calfw :config
-  (use-package calfw-org
-    :init
-    (require 'calfw-org)
-    :config
-    (custom-set-faces
-     '(cfw:face-title ((t (:foreground "#f0dfaf" :weight bold :height 2.0 :inherit variable-pitch))))
-     '(cfw:face-header ((t (:foreground "#ffffff" :weight bold))))
-     '(cfw:face-sunday ((t :foreground "#ffffff" :weight bold)))
-     '(cfw:face-saturday ((t :foreground "#ffffff" :weight bold)))
-     '(cfw:face-holiday ((t :background "grey10" :foreground "#ffffff" :weight bold)))
-     '(cfw:face-grid ((t :foreground "DarkGrey")))
-     '(cfw:face-default-content ((t :foreground "#ffffff")))
-     '(cfw:face-periods ((t :foreground "cyan")))
-     '(cfw:face-day-title ((t :background "grey10")))
-     '(cfw:face-default-day ((t :weight bold :inherit cfw:face-day-title)))
-     '(cfw:face-annotation ((t :foreground "#ffffff" :inherit cfw:face-day-title)))
-     '(cfw:face-disable ((t :foreground "DarkGray" :inherit cfw:face-day-title)))
-     '(cfw:face-today-title ((t :background "#5f5f87" :weight bold)))
-     '(cfw:face-today ((t :background: "grey10" :weight bold)))
-     '(cfw:face-select ((t :background "#2f2f2f")))
-     '(cfw:face-toolbar ((t :foreground "#000000" :background "#000000")))
-     '(cfw:face-toolbar-button-off ((t :foreground "#555555" :weight bold)))
-     '(cfw:face-toolbar-button-on ((t :foreground "#ffffff" :weight bold))))
-    (setq cfw:fchar-junction ?╋
-          cfw:fchar-vertical-line ?┃
-          cfw:fchar-horizontal-line ?━
-          cfw:fchar-left-junction ?┣
-          cfw:fchar-right-junction ?┫
-          cfw:fchar-top-junction ?┯
-          cfw:fchar-top-left-corner ?┏
-          cfw:fchar-top-right-corner ?┓)))
+             (use-package calfw-org
+               :init
+               (require 'calfw-org)
+               :config
+               (custom-set-faces
+                '(cfw:face-title ((t (:foreground "#f0dfaf" :weight bold :height 2.0 :inherit variable-pitch))))
+                '(cfw:face-header ((t (:foreground "#ffffff" :weight bold))))
+                '(cfw:face-sunday ((t :foreground "#ffffff" :weight bold)))
+                '(cfw:face-saturday ((t :foreground "#ffffff" :weight bold)))
+                '(cfw:face-holiday ((t :background "grey10" :foreground "#ffffff" :weight bold)))
+                '(cfw:face-grid ((t :foreground "DarkGrey")))
+                '(cfw:face-default-content ((t :foreground "#ffffff")))
+                '(cfw:face-periods ((t :foreground "cyan")))
+                '(cfw:face-day-title ((t :background "grey10")))
+                '(cfw:face-default-day ((t :weight bold :inherit cfw:face-day-title)))
+                '(cfw:face-annotation ((t :foreground "#ffffff" :inherit cfw:face-day-title)))
+                '(cfw:face-disable ((t :foreground "DarkGray" :inherit cfw:face-day-title)))
+                '(cfw:face-today-title ((t :background "#5f5f87" :weight bold)))
+                '(cfw:face-today ((t :background: "grey10" :weight bold)))
+                '(cfw:face-select ((t :background "#2f2f2f")))
+                '(cfw:face-toolbar ((t :foreground "#000000" :background "#000000")))
+                '(cfw:face-toolbar-button-off ((t :foreground "#555555" :weight bold)))
+                '(cfw:face-toolbar-button-on ((t :foreground "#ffffff" :weight bold))))
+               (setq cfw:fchar-junction ?╋
+                     cfw:fchar-vertical-line ?┃
+                     cfw:fchar-horizontal-line ?━
+                     cfw:fchar-left-junction ?┣
+                     cfw:fchar-right-junction ?┫
+                     cfw:fchar-top-junction ?┯
+                     cfw:fchar-top-left-corner ?┏
+                     cfw:fchar-top-right-corner ?┓)))
 
 ;; ---- ORG ----
 (use-package org
@@ -426,8 +429,8 @@ There are two things you can do about this warning:
 (use-package org-bullets)
 
 (use-package ox-pandoc :config
-  (setq org-reveal-root "https://cdn.jsdelivr.net/npm/reveal.js")
-  (setq org-reveal-mathjax t))
+             (setq org-reveal-root "https://cdn.jsdelivr.net/npm/reveal.js")
+             (setq org-reveal-mathjax t))
 
 (use-package ox-reveal)
 
@@ -484,43 +487,4 @@ There are two things you can do about this warning:
                  ("\\subsection\{%s\}" . "\\subsection*\{%s\}")
                  ("\\subsubsection\{%s\}" . "\\subsubsection*\{%s\}"))))
 
-;; ---- END ----
-
-(custom-set-variables
- ;; custom-set-variables was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- '(custom-safe-themes
-   '("bffa9739ce0752a37d9b1eee78fc00ba159748f50dc328af4be661484848e476" default))
- '(org-modules
-   '(ol-bbdb ol-bibtex ol-docview ol-eww ol-gnus ol-info ol-irc ol-mhe ol-rmail org-tempo ol-w3m))
- '(package-selected-packages
-   '(protobuf-mode v-mode yaml-mode lsp-dart vterm web-beautify lsp-treemacs dockerfile-mode basic-mode vlang-mode quelpa xonsh-mode elvish-mode undo-fu js2-mode ein cmake-mode origami fish-mode doom-modeline git-gutter smooth-scroll sublimity org-ref anzu flycheck flymake-shellcheck typescript-mode rust-mode kotlin-mode julia-mode go-mode dart-mode csharp-mode flyspell-correct-helm rainbow-mode web-mode company-mode org-bullets ox-groff calfw-org calfw undo-tree spacemacs-theme xclip use-package multiple-cursors lsp-ui lsp-java company-lsp)))
-(custom-set-faces
- ;; custom-set-faces was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- '(cfw:face-annotation ((t :foreground "#ffffff" :inherit cfw:face-day-title)))
- '(cfw:face-day-title ((t :background "grey10")))
- '(cfw:face-default-content ((t :foreground "#ffffff")))
- '(cfw:face-default-day ((t :weight bold :inherit cfw:face-day-title)))
- '(cfw:face-disable ((t :foreground "DarkGray" :inherit cfw:face-day-title)))
- '(cfw:face-grid ((t :foreground "DarkGrey")))
- '(cfw:face-header ((t (:foreground "#ffffff" :weight bold))))
- '(cfw:face-holiday ((t :background "grey10" :foreground "#ffffff" :weight bold)))
- '(cfw:face-periods ((t :foreground "cyan")))
- '(cfw:face-saturday ((t :foreground "#ffffff" :weight bold)))
- '(cfw:face-select ((t :background "#2f2f2f")))
- '(cfw:face-sunday ((t :foreground "#ffffff" :weight bold)))
- '(cfw:face-title ((t (:foreground "#f0dfaf" :weight bold :height 2.0 :inherit variable-pitch))))
- '(cfw:face-today ((t :background: "grey10" :weight bold)))
- '(cfw:face-today-title ((t :background "#5f5f87" :weight bold)))
- '(cfw:face-toolbar ((t :foreground "#000000" :background "#000000")))
- '(cfw:face-toolbar-button-off ((t :foreground "#555555" :weight bold)))
- '(cfw:face-toolbar-button-on ((t :foreground "#ffffff" :weight bold)))
- '(js2-external-variable ((t (:foreground "brightblack")))))
-(put 'downcase-region 'disabled nil)
-(put 'upcase-region 'disabled nil)
-
+;;; emacs-init.el ends here
