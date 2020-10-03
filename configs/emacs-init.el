@@ -424,6 +424,9 @@ from: https://stackoverflow.com/a/998472/3825872"
   ;; -- HOOKS --
   (add-hook 'org-mode-hook #'toggle-word-wrap)
   (add-hook 'org-mode-hook #'org-bullets-mode)
+
+  ;; -- TEMPO --
+  (require 'org-tempo)
   )
 
 (use-package org-bullets)
