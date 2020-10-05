@@ -11,4 +11,4 @@ cp /etc/pacman.d/mirrorlist "$b"
 sed -i 's/^#Server/Server/' "$b"
 
 # rank
-rankmirrors -n 6 "$b" | tee /etc/pacman.d/mirrorlist
+rankmirrors -n 20 "$b" | tee /etc/pacman.d/mirrorlist

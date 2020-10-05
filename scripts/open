@@ -90,12 +90,6 @@ FORCEOPENER=''
     shift 2
 }
 
-FORCEFZF=0
-[ "$1" = '--fzf' ] || [ "$1" = '-f' ] && {
-    FORCEFZF=1
-    shift
-}
-
 [ "$#" = 0 ] && {
     search
     exit
@@ -106,20 +100,10 @@ FORCEFZF=0
     exit
 }
 
-# if file specified, all fzf stuff will be passed
-[ "$FORCEFZF" = 1 ] && [ -d "$1" ] && {
-    search "$1"
-    exit
-}
-
 [ "$1" = '--ask' ] || [ "$1" = '--ask-default' ] && {
     [ "$1" = '--ask-default' ] && DEF=1
     shift
-    # go for fzf if is in terminal
-    [ -t 1 ] && FZF=--fzf
-    # except if forced
-    [ "$1" = '-nw' ] && FZF='' && shift
-    FORCEOPENER=$(pick "$FZF" "$@")
+    FORCEOPENER=$(pick "$@")
     [ ! "$FORCEOPENER" ] && exit 1
 }
 

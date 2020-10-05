@@ -52,7 +52,7 @@ case "$choice" in
             fi
         done;;
     "Open with" | "o")
-        open --ask -nw "${files[@]}" &;;
+        open --ask "${files[@]}" &;;
     "Copy file name" | "f")
         printf '%s\n' "${files[@]}" | xclip -in -selection clipboard;;
     "Copy image")
