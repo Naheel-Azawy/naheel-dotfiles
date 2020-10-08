@@ -5,4 +5,4 @@
 res=$(curl -s wttr.in/$location?n)
 [ "$res" = '' ] && exit
 echo "$res" > ~/.cache/weatherreport
-pkill -RTMIN+"$I3BLOCKS_SIG_WEAT" i3blocks
+bar update weather

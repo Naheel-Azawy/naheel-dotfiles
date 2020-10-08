@@ -8,6 +8,9 @@ import re
 import time
 import datetime
 import threading
+import socket
+
+port = 9876
 
 color_bg = "#000000"
 color_bl = "#285577"
@@ -71,15 +74,17 @@ class WM:
         return out
 
 class Bar:
-    def __init__(self, use_ascii=False):
+    def __init__(self, use_ascii=False, items=None):
+        self.server = None
         self.a = use_ascii
         self.wm = WM(self.run_wm_items)
 
-        self.items_str = "workspaces | clock | systray donno lang pray weather temperature wifi battery power"
+        if items is None:
+            self.items_str = "workspaces | clock | systray donno lang pray weather temperature wifi battery power"
+        else:
+            self.items_str = items
 
         places = re.split(r"\s*\|\s*", self.items_str)
-        if len(places) != 3:
-            raise Exception("Must have exactly 3 pipes")
 
         self.items_map = {"l": [], "c": [], "r": []}
         for i in range(len(places)):
@@ -144,11 +149,11 @@ class Bar:
 
         if self.a:
             charging = "~" if charging else ""
-            return charging + percent + "%"
+            return f"{charging}{percent}%"
         else:
             out = ""
             r = "-"
-            
+
             if charging:
                 r = '#00FF00' if percent >= 99 else '#FFD700'
                 out += f"%{{F{r}}} "
@@ -187,7 +192,7 @@ class Bar:
 
     def lang(self, arg=None):
         if arg == "period":
-            return 3 # TODO
+            return 0
 
         out = os.popen(f"lang-toggle -v").read().strip()
         if self.a:
@@ -199,7 +204,7 @@ class Bar:
         if arg == "period":
             return 30
 
-        out = os.popen("theprayer n").read().strip()
+        out = os.popen("theprayer n 2>/dev/null").read().strip()
         if not out:
             return None
 
@@ -279,18 +284,33 @@ class Bar:
 
         return "%{A:theterm 'lolcowforune -p'&:}¯\_(ツ)_/¯%{A}"
 
+    def host(self, arg=None):
+        if arg == "period":
+            return 0
+
+        return os.uname()[1]
+
     def render(self):
         out = ""
 
-        for place in self.items_map:
-            out += f"%{{{place}}}"
+        if self.a:
             items_out = []
-            for item in self.items_map[place]:
-                items_out.append(self.last[item.__name__])
-            out += "  ".join(items_out)
+            for item in self.items:
+                content = self.last[item.__name__]
+                if not content: continue
+                items_out.append(content)
+            out += " | ".join(items_out)
+        else:
+            for place in self.items_map:
+                out += f"%{{{place}}}"
+                items_out = []
+                for item in self.items_map[place]:
+                    content = self.last[item.__name__]
+                    if not content: continue
+                    items_out.append(content)
+                out += "  ".join(items_out)
+            out += " "
 
-        out += " "
-        
         print(out)
         sys.stdout.flush()
 
@@ -311,20 +331,37 @@ class Bar:
         self.run_and_sleep(self.workspaces)
         self.run_and_sleep(self.program)
 
-    def run(self):
-        self.running = True
-
-        # init calls
+    def init(self):
         for item in self.items:
             self.last[item.__name__] = item()
-        self.render()
 
-        # async calls
+    def run(self):
+        self.running = True
+        self.init()
+        self.render()
         threading.Thread(target=self.wm.run).start()
         for item in self.items:
             if item("period") > 0:
                 # periodic items run on their own thread
                 threading.Thread(target=lambda: self.run_and_sleep(item)).start()
+
+        # start server
+        self.server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        self.server.bind(('', port))
+        self.server.listen(1)
+        while self.running:
+            conn, addr = self.server.accept()
+            #print(f"Connection address: {addr}")
+            # recieving data
+            data = b""
+            while True:
+                tmp = conn.recv(1024)
+                data += tmp
+                if not tmp: break
+            item = getattr(self, data.decode())
+            self.last[item.__name__] = item()
+            self.render()
+        self.server.close()
 
 def lemonbar():
     bin = os.path.abspath(__file__)
@@ -349,18 +386,41 @@ def lemonbar():
         tmp += f"-f '{f}' "
     fonts = tmp
 
-    os.system(f"""python3 '{bin}' feed |
+    os.system(f"""python3 '{bin}' -p |
     lemonbar -p {fonts} -B '{background}' -F '{foreground}' -a 30 | sh""")
 
 if __name__ == "__main__":
-    if len(sys.argv) > 1 and sys.argv[1]:
-        arg = sys.argv[1]
-    else:
-        arg = None
+    args = sys.argv
 
-    if arg == "feed":
-        Bar(use_ascii=False).run()
-    else:
+    if len(args) >= 2 and args[1] == "lemon":
         lemonbar()
+    elif len(args) >= 3 and args[1] == "update":
+        item = args[2].encode()
+        s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        s.connect(("127.0.0.1", port))
+        s.send(item)
+        s.close()
+    else:
+        a = False
+        p = False
+        items = None
+
+        if len(args) >= 2 and args[1] == "-a":
+            a = True
+            del args[1]
+
+        if len(args) >= 2 and args[1] == "-p":
+            p = True
+            del args[1]
+
+        if len(args) >= 2 and args[1]:
+            items = args[1]
+
+        b = Bar(use_ascii=a, items=items)
+        if p:
+            b.run()
+        else:
+            b.init()
+            b.render()
 
 #WM(lambda wm: print(wm.json())).run()

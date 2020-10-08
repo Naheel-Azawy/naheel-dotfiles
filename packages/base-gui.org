@@ -27,7 +27,8 @@
 | pacman   | chromium               | N.A.                                             | well, in most cases it is faster than firefox...                 |
 | pacman   | gnome-keyring          | N.A.                                             | serves as the system keyring                                     |
 | pacman   | gnome-themes-extra     | N.A.                                             | gives the dark GTK theme                                         |
-| pacman   | i3blocks               | N.A.                                             | status bar                                                       |
+| aur      | lemonbar-xft-git       | N.A.                                             | status bar                                                       |
+| pacman   | trayer                 | N.A.                                             | a standalone system tray                                         |
 | pacman   | i3lock                 | N.A.                                             | screen lock                                                      |
 | pacman   | mpv                    | N.A.                                             | patrician's choice video/gif player                              |
 | pacman   | network-manager-applet | N.A.                                             | appears in the top right corner and manages the wi-fi connection |

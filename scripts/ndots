@@ -92,12 +92,7 @@ dots_link() {
 dots_update() {
     mkdir -p "$HOME/.config/i3"
     "$D/configs/i3.conf.gen.sh"
-
-    mkdir -p "$HOME/.config/i3blocks"
-    "$D/configs/i3blocks.conf.gen.sh"
-
     "$D/configs/onboard-gsettings.sh"
-
     dots_link
 }
 

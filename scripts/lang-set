@@ -6,5 +6,5 @@ L="$1"
 }
 setxkbmap -layout "$L"
 [ -f ~/.Xmodmap ] && xmodmap ~/.Xmodmap
-pkill "-RTMIN+$I3BLOCKS_SIG_LANG" i3blocks
+bar update lang
 echo "$L"
