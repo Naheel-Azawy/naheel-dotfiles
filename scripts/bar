@@ -1,239 +1,366 @@
-#!/bin/sh
+#!/bin/python3
 
-awesomefontecho() {
-    printf '<span font="Font Awesome 5 Free" rise="-1024"'
-    [ "$2" ] && printf ' color="%s"' "$2"
-    printf '>%s</span>' "$1"
-}
+import i3ipc
+import os
+import sys
+import json
+import re
+import time
+import datetime
+import threading
 
-clock() {
-    [ "$BLOCK_BUTTON" = "1" ] &&
-        theterm -a '-c __floatme__ -g 70x35' 'cal -y && read -p ""'
-    D=$(date '+%a %Y-%m-%d %I:%M:%S %p')
-    printf '%s' "$D"
-}
+color_bg = "#000000"
+color_bl = "#285577"
+color_rd = "#900000"
+color_gr = "#333333"
 
-batt() {
-    V=$(cat /sys/class/power_supply/BAT1/capacity 2>/dev/null)
-    C=$(cat /sys/class/power_supply/BAT1/status   2>/dev/null)
+class WM:
+    def __init__(self, callback):
+        self.i3 = i3ipc.Connection()
+        self.title = self.i3.get_tree().find_focused().name
+        self.workspaces = self.i3.get_workspaces()
+        self.callback = callback
 
-    if [ ! "$V" ] || [ ! "$C" ]; then
-        B=$(acpi -b)
-        V=$(echo "$B" | awk -F'[,:%]' '{print $3}')
-        C=$(echo "$B" | awk -F'[, ]'  '{print $3}')
-    fi
+    def on_title_change(self, caller, e):
+        self.title = e.container.name
+        self.callback(self)
 
-    R=''
+    def on_workspace_change(self, caller, e):
+        self.workspaces = self.i3.get_workspaces()
+        self.callback(self)
 
-    if [ "$1" = "-a" ]; then
-        if [ "$C" != 'Discharging' ]; then
-            printf '~'
-        fi
-        printf "%d%%" "$V"
-        return
-    fi
+    def run(self):
+        self.i3.on('workspace::focus', self.on_workspace_change)
+        self.i3.on('window::title',    self.on_title_change)
+        self.i3.on('window::focus',    self.on_title_change)
+        self.i3.on('window::urgent',   self.on_workspace_change)
+        #self.i3.on('ipc-shutdown',     lambda e: print("bye"))
 
-    if [ "$C" != 'Discharging' ]; then
-        if [ "$V" -ge 99 ]; then
-            R='#00FF00'
-        else
-            R='#FFD700'
-        fi
-        awesomefontecho '' $R
-        printf ' '
-    elif [ "$V" -le "5" ]; then
-        R='#FF0000'
-        awesomefontecho '' $R
-        printf ' '
-    elif [ "$V" -le "20" ]; then
-        R='#FF0000'
-    fi
+        self.i3.main()
 
-    if [ "$V" -lt "50" ]; then
-        awesomefontecho '' $R
-    elif [ "$V" -lt "60" ]; then
-        awesomefontecho '' $R
-    elif [ "$V" -lt "90" ]; then
-        awesomefontecho '' $R
-    else
-        awesomefontecho '' $R
-    fi
+    def json(self):
+        workspaces = {}
+        for w in self.workspaces:
+            workspaces[w.name] = {
+                "visible": w.visible,
+                "focused": w.focused,
+                "urgent":  w.urgent
+            }
+        return json.dumps({
+            "title": self.title,
+            "workspaces": workspaces
+        })
 
-    printf " %d%%" "$V"
+    def lemon(self):
+        out = ""
+        for w in self.workspaces:
+            if w.focused:
+                out += f"%{{F#ffffff B{color_bl}}}"
+            elif w.visible:
+                out += f"%{{F#ffffff B{color_gr}}}"
+            elif w.urgent:
+                out += f"%{{F#ffffff B{color_rd}}}"
+            else:
+                out += f"%{{F#888888 B-}}"
+            onclick = f"i3-msg workspace '{w.name}' >/dev/null"
+            out += f"%{{A:{onclick}:}} "
+            out += w.name
+            #.encode(encoding="ascii",errors="backslashreplace").decode()
+            out += " %{A}"
+        out += "%{F- B-}" # reset the colors
+        return out
 
-    battery-check "$V" "$C" &
-}
+class Bar:
+    def __init__(self, use_ascii=False):
+        self.a = use_ascii
+        self.wm = WM(self.run_wm_items)
 
-wifi() {
-    [ "$BLOCK_BUTTON" = "1" ] && networkmanager_dmenu
-    V=$(awk 'NR==3 {print $3}' /proc/net/wireless)
-    [ "$V" != '' ] && {
-        [ "$1" != "-a" ] && \
-            awesomefontecho '' && printf ' '
-        printf '%.0f%%' "$V"
-    }
-}
+        self.items_str = "workspaces | clock | systray donno lang pray weather temperature wifi battery power"
 
-brig() {
-    [ "$BLOCK_BUTTON" = "1" ] && dmenudisplay
-    [ "$1" != "-a" ] && awesomefontecho '' && printf ' '
-    printf '%s%%' "$(brightness -print)"
-}
+        places = re.split(r"\s*\|\s*", self.items_str)
+        if len(places) != 3:
+            raise Exception("Must have exactly 3 pipes")
 
-volu() {
-    case "$BLOCK_BUTTON" in
-	      1) theterm pulsemixer ;;
-	      3) pamixer -t         ;;
-	      4) pamixer -i 5       ;;
-	      5) pamixer -d 5       ;;
-    esac
-    V=$(pamixer --get-volume)
-    if [ "$1" != "-a" ]; then
-        if [ "$(pamixer --get-mute)" = "true" ] || [ "$V" = 0 ]; then
-            awesomefontecho ''
-            printf '<span font="3"> </span>'
-            awesomefontecho ''
-        else
-            awesomefontecho ''
-        fi
-        printf ' '
-    fi
-    printf "%d%%" "$V"
-}
+        self.items_map = {"l": [], "c": [], "r": []}
+        for i in range(len(places)):
+            place = [getattr(self, m)
+                     for m in re.split(r"\s+", places[i]) if m]
+            if i == 0:
+                self.items_map["l"] += place
+            elif i == 1:
+                self.items_map["c"] += place
+            else:
+                self.items_map["r"] += place
 
-sens() {
-    [ "$BLOCK_BUTTON" = "1" ] &&
-        theterm -a '-c __floatme__ -g 65x19' 'watch -tn 1 sensors'
-    O=$(sensors coretemp-isa-0000 -j | jq '.["coretemp-isa-0000"]["Package id 0"]')
-    T=$(echo "$O" | jq '.["temp1_input"]')
-    M=$(echo "$O" | jq '.["temp1_max"]')
-    if [ "$1" != "-a" ]; then
-        P=$(echo "$T/$M*100" | bc -l)
-        P=$(printf '%.0f' "$P")
-        if [ "$P" -ge "90" ]; then
-            awesomefontecho '' '#FF0000'
-            printf ' '
-            awesomefontecho '' '#FF0000'
-        elif [ "$P" -gt "50" ]; then
-            awesomefontecho ''
-        elif [ "$P" -gt "40" ]; then
-            awesomefontecho ''
-        else
-            awesomefontecho ''
-        fi
-        printf ' '
-    fi
-    printf '%s°C' "$T"
-}
+        self.items = self.items_map["l"] + \
+            self.items_map["c"] + \
+            self.items_map["r"]
 
-weat() {
-    [ "$BLOCK_BUTTON" = "1" ] &&
-        theterm -a '-c __floatme__ -g 63x38' \
-                'weather-update & head -n 37 ~/.cache/weatherreport && read -p ""'
-    #   Lines from 3rd to 4th                         Remove color codes                Cut
-    V=$(sed -n -e "3,4 p" -e "4 q" ~/.cache/weatherreport | sed "s/\x1B\[[0-9;]*[JKmsu]//g" | cut -c 16-)
-    #S=$(echo "$V" | head -1 | awk '{print tolower($0)}')
-    W=$(echo "$V" | tail -1 | xargs | awk -F'[- ]' '{print $1}')
-    [ "$W" ] || return
-    [ "$1" != "-a" ] && awesomefontecho '' && printf ' '
-    printf '%s°C' "$W"
-}
+        self.last = {}
+        self.running = False
 
-pray() {
-    RES=$(theprayer n)
-    [ "$RES" ] || return
-    [ "$BLOCK_BUTTON" = "1" ] &&
-        theterm -a '-c __floatme__ -g 25x8' 'theprayer && read -p ""'
-    [ "$1" != "-a" ] && awesomefontecho '' && printf ' '
-    printf '%s' "$RES"
-}
+    def workspaces(self, arg=None):
+        if arg == "period":
+            return 0
 
-lang() {
-    arg='-v'
-    [ "$BLOCK_BUTTON" = "1" ] && arg=''
-    printf '%s' "$(lang-toggle $arg)"
-}
+        return self.wm.lemon()
 
-host() {
-    printf '%s' "$(hostname)"
-}
+    def program(self, arg=None):
+        if arg == "period":
+            return 0
 
-cmus() {
-    Q=$(cmus-remote -Q 2>/dev/null)
-    [ ! "$Q" ] && return
-    T=$(echo "$Q" | sed -rn 's/tag title (.+)/\1/p')
-    A=$(echo "$Q" | sed -rn 's/tag artist (.+)/\1/p')
-    S=$(echo "$Q" | sed -rn 's/status (.+)/\1/p')
-    [ "$1" != "-a" ] && {
-        [ "$S" = 'playing' ] && awesomefontecho ''
-        [ "$S" = 'paused' ]  && awesomefontecho ''
-        printf ' '
-    }
-    printf '%s - %s' "$T" "$A"
-}
+        # TODO: title is not cleared when there is no focused window
+        title = self.wm.title
+        if len(title) > 40:
+            title = title[:40] + "..."
 
-donno() {
-    [ "$BLOCK_BUTTON" = "1" ] && theterm 'lolcowforune -p' &
-    echo '¯\_(ツ)_/¯'
-}
+        if self.a:
+            return title
+        else:
+            out = ""
+            if title:
+                out += "%{A:i3-msg kill >/dev/null:}%{A} "
+            out += title
+            return out
 
-close() {
-    [ "$BLOCK_BUTTON" = "1" ] && i3-msg kill >/dev/null
-    awesomefontecho ''
-}
+    def clock(self, arg=None):
+        if arg == "period":
+            return 1
 
-if [ "$1" = '-a' ]; then
-    a='-a'
-    sep=" | "
-    shift
-else
-    sep="  "
-fi
+        t = datetime.datetime.now().strftime("%a %Y-%m-%d %I:%M:%S %p")
+        if self.a:
+            return t
+        else:
+            cmd = "theterm -a '-c __floatme__ -g 70x35' 'cal -y && read -p \"\"'"
+            return f"%{{A:{cmd}&:}}{t}%{{A}}"
 
-MAP='
-D donno
-L lang
-P pray
-W weat
-T sens
-V volu
-S wifi
-B batt
-C clock
-'
+    def battery(self, arg=None):
+        if arg == "period":
+            return 3
 
-MAP_CMDS=$(echo "$MAP" | sed -En "s/. (.+)/\1/p" | tr '\n' ' ')
+        acpi = os.popen("acpi -b").read().strip()
+        percent = int(acpi.split(", ")[1].replace("%", ""))
+        charging = "Discharging" not in acpi
 
-lines() {
-    for c in $MAP_CMDS; do
-        printf '%s:%s\n' \
-               "$(echo "$MAP" | sed -En "s/(.) $c/\1/p")" \
-               "$(eval "$c" -a)"
-    done
-}
+        if self.a:
+            charging = "~" if charging else ""
+            return charging + percent + "%"
+        else:
+            out = ""
+            r = "-"
+            
+            if charging:
+                r = '#00FF00' if percent >= 99 else '#FFD700'
+                out += f"%{{F{r}}} "
+            elif percent <= 20:
+                r = '#FF0000'
+                if percent <= 5:
+                    out += f"%{{F{r}}} "
 
-line() {
-    for c in $MAP_CMDS; do
-        printf '%s:%s ' \
-               "$(echo "$MAP" | sed -En "s/(.) $c/\1/p")" \
-               "$(eval "$c" -a)"
-    done
-}
+            if percent < 50:
+                out += ""
+            elif percent < 60:
+                out += ""
+            elif percent < 90:
+                out += ""
+            else:
+                out += ""
 
-gui() {
-    L=$(lines | menu-interface -i | awk -F':' '{print $1}')
-    [ "$L" ] && {
-        C=$(echo "$MAP" | sed -En "s/$L (.+)/\1/p")
-        dmenufixfocus -l 2>/dev/null &
-        BLOCK_BUTTON=1 "$C" >/dev/null
-    }
-}
+            out += f"%{{F-}} {percent}%"
+            out = f"%{{A:echo battery:}}{out}%{{A}}"
+            return out
 
-count=0
-end=$(($# - 1))
-for arg in "$@"; do
-    eval "$arg" $a
-    [ $count -lt $end ] && printf '%s' "$sep"
-    count=$((count+1))
-done
-echo
+    def wifi(self, arg=None):
+        if arg == "period":
+            return 5
+
+        with open("/proc/net/wireless") as f:
+            v = re.split(r"\s+", f.read().split("\n")[2])[2]
+            v = int(float(v))
+
+            if self.a:
+                return f"{v}%"
+            else:
+                return f"%{{A:networkmanager_dmenu&:}} {v}%%{{A}}"
+
+        return None
+
+    def lang(self, arg=None):
+        if arg == "period":
+            return 3 # TODO
+
+        out = os.popen(f"lang-toggle -v").read().strip()
+        if self.a:
+            return out
+        else:
+            return f"%{{A:lang-toggle >/dev/null:}}{out}%{{A}}"
+
+    def pray(self, arg=None):
+        if arg == "period":
+            return 30
+
+        out = os.popen("theprayer n").read().strip()
+        if not out:
+            return None
+
+        if self.a:
+            return out
+        else:
+            cmd = "theterm -a '-c __floatme__ -g 25x8' 'theprayer && read -p \"\"'"
+            return f"%{{A:{cmd}&:}}  {out}%{{A}}"
+
+    def weather(self, arg=None):
+        if arg == "period":
+            return 30 * 60
+
+        f = os.getenv("HOME") + "/.cache/weatherreport"
+        with open(f) as f:
+            out = f.read().split("\n")[3] # third line
+            # remove colors https://stackoverflow.com/a/14693789/3825872
+            r = re.compile(r'\x1B(?:[@-Z\\-_]|\[[0-?]*[ -/]*[@-~])')
+            out = r.sub("", out).strip()
+            out = out[-15:].strip() # take last few chars
+
+            if self.a:
+                return out
+            else:
+                cmd = "theterm -a '-c __floatme__ -g 63x38' 'weather-update & head -n 37 ~/.cache/weatherreport && read -p \"\"'"
+                return f"%{{A:{cmd}&:}}  {out}%{{A}}"
+
+        return None
+
+    def temperature(self, arg=None):
+        if arg == "period":
+            return 5
+
+        o = json.loads(os.popen(f"sensors coretemp-isa-0000 -j").read()) \
+            ["coretemp-isa-0000"]["Package id 0"]
+        t = float(o["temp1_input"])
+        m = float(o["temp1_max"])
+
+        if self.a:
+            return f"{int(t)}°C"
+        else:
+            percent = int((t / m) * 100)
+            out = ""
+            if percent > 90:
+                out += "%{F#FF0000} "
+            elif percent > 50:
+                out += ""
+            elif percent > 40:
+                out += ""
+            else:
+                out += ""
+            out += f"%{{F-}} {int(t)}°C"
+            cmd = "theterm -a '-c __floatme__ -g 65x19' 'watch -tn 1 sensors'"
+            return f"%{{A:{cmd}&:}}{out}%{{A}}"
+
+    def close(self, arg=None):
+        if arg == "period":
+            return 0
+
+        return "%{A:i3-msg kill >/dev/null:}%{A}"
+
+    def power(self, arg=None):
+        if arg == "period":
+            return 0
+
+        return "%{A:dmenupower:}%{A}"
+
+    def systray(self, arg=None):
+        if arg == "period":
+            return 0
+
+        return "%{A:toggle-systray&:}%{A}"
+
+    def donno(self, arg=None):
+        if arg == "period":
+            return 0
+
+        return "%{A:theterm 'lolcowforune -p'&:}¯\_(ツ)_/¯%{A}"
+
+    def render(self):
+        out = ""
+
+        for place in self.items_map:
+            out += f"%{{{place}}}"
+            items_out = []
+            for item in self.items_map[place]:
+                items_out.append(self.last[item.__name__])
+            out += "  ".join(items_out)
+
+        out += " "
+        
+        print(out)
+        sys.stdout.flush()
+
+    def run_and_sleep(self, item):
+        if item not in self.items:
+            return
+
+        while self.running:
+            self.last[item.__name__] = item()
+            self.render()
+            #print(f">>>>> CALLED {item.__name__}, sleeping {item('period')}\n")
+            period = item("period")
+            if period <= 0:
+                break
+            time.sleep(period)
+
+    def run_wm_items(self, wm):
+        self.run_and_sleep(self.workspaces)
+        self.run_and_sleep(self.program)
+
+    def run(self):
+        self.running = True
+
+        # init calls
+        for item in self.items:
+            self.last[item.__name__] = item()
+        self.render()
+
+        # async calls
+        threading.Thread(target=self.wm.run).start()
+        for item in self.items:
+            if item("period") > 0:
+                # periodic items run on their own thread
+                threading.Thread(target=lambda: self.run_and_sleep(item)).start()
+
+def lemonbar():
+    bin = os.path.abspath(__file__)
+
+    # fonts = ["Iosevka Fixed",
+    #          "DejaVu Sans Mono",
+    #          "Source Han Sans CN",
+    #          "Font Awesome 5 Free",
+    #          "Font Awesome 5 Brands",
+    #          "Font Awesome 5 Free Solid"]
+    fonts = ["Iosevka Fixed",
+             "Source Han Sans CN",
+             "Font Awesome 5 Free Solid"]
+    awesome_size = 20
+    background = '#000000'
+    foreground = '#ffffff'
+
+    tmp = ""
+    for f in fonts:
+        if "Awesome" in f:
+            f += f":pixelsize={awesome_size}"
+        tmp += f"-f '{f}' "
+    fonts = tmp
+
+    os.system(f"""python3 '{bin}' feed |
+    lemonbar -p {fonts} -B '{background}' -F '{foreground}' -a 30 | sh""")
+
+if __name__ == "__main__":
+    if len(sys.argv) > 1 and sys.argv[1]:
+        arg = sys.argv[1]
+    else:
+        arg = None
+
+    if arg == "feed":
+        Bar(use_ascii=False).run()
+    else:
+        lemonbar()
+
+#WM(lambda wm: print(wm.json())).run()

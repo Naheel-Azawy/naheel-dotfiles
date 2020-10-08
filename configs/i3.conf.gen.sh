@@ -342,7 +342,7 @@ outconfigs() {
     block bar
     {
         out workspace_buttons no
-        out status_command bar.py
+        out status_command bar lemon
         out position top
 		out tray_output none
 		out mode invisible
