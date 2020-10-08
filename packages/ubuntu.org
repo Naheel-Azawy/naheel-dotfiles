@@ -18,7 +18,7 @@
 | go   | fzf               | github.com/junegunn/fzf                  | fuzzy finder tool                                            |
 | apt  | highlight         | N.A.                                     | can highlight code output                                    |
 | git  | fish              | https://github.com/fish-shell/fish-shell | the friendly shell!                                          |
-| apt  | emacs             | N.A.                                     | the best editor on this planet                               |
+| apt  | emacs27           | ppa:kelleyk/emacs                        | the best editor on this planet                               |
 | apt  | acpi              | N.A.                                     | laptop battery information                                   |
 | apt  | jq                | N.A.                                     | json in the shell                                            |
 | apt  | ffmpeg            | N.A.                                     | can record and splice video and audio on the command line    |

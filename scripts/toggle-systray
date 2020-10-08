@@ -1,0 +1,17 @@
+#!/bin/sh
+
+pgrep trayer && pkill trayer && exit 0
+
+eval "$(xdotool getmouselocation --shell)"
+Y=$((Y+15))
+
+trayer --edge top \
+	   --align left \
+	   --distance "$Y" \
+	   --margin "$X" \
+	   --widthtype request \
+	   --tint 0x000000 \
+	   --transparent true \
+	   --expand true \
+	   --SetDockType false \
+	   --alpha 0

@@ -2,6 +2,16 @@
 
 MAX_VOL=500
 
+notif() {
+    V=$(pamixer --get-volume)
+	if [ "$(pamixer --get-mute)" = "true" ] || [ "$V" = 0 ]; then
+        V="Muted"
+	else
+		V="$V%"
+    fi
+	dunstify -i none -r 123 "Volume: $V"
+}
+
 vol() {
     LOCK='/tmp/__audioctl_vol_lock'
     [ -f "$LOCK" ] && return
@@ -19,8 +29,8 @@ vol() {
             pamixer --allow-boost --set-volume $V
         fi
     fi
-    pkill "-RTMIN+$I3BLOCKS_SIG_VOLU" i3blocks
     rm -f "$LOCK"
+	notif
 }
 
 vol() {
@@ -36,7 +46,7 @@ vol() {
                 amixer -q set Master "$V%-"
             fi;;
     esac
-    pkill "-RTMIN+$I3BLOCKS_SIG_VOLU" i3blocks
+	notif
 }
 
 V="$2"

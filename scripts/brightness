@@ -1,4 +1,5 @@
 #!/bin/sh
+
 MAX=661
 MIN=10
 file="/sys/class/backlight/intel_backlight/brightness"
@@ -36,4 +37,5 @@ fi
 
 echo $new > "$file"
 
-pkill -RTMIN+$I3BLOCKS_SIG_BRIG i3blocks
+v=$(printf '%.0f' $(echo "$new/$MAX*100" | bc -l))
+dunstify -i none -r 123 "Brightness: $v"

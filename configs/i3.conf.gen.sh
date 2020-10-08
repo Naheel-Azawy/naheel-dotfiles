@@ -193,7 +193,7 @@ outbindings() {
            "$mod+F1" "exec theterm '\"$(realpath $0)\" -d | less'"
 
     bindoc 'Show the system monitor' \
-           "$mod+grave" "workspace ⮺; exec system-monitor -1"
+           "$mod+grave" "workspace #; exec system-monitor -1"
 
     # PERSONAL BINDINGS ------------------------------------------------------
 
@@ -341,23 +341,11 @@ outconfigs() {
     # The top bar
     block bar
     {
-        block colors
-        {
-            #   <colorclass>       <border>   <background> <text>
-            out background         $color_bg
-            out statusline         '#ffffff'
-            out separator          '#666666'
-            out focused_workspace  $color_bl  $color_bl    '#ffffff'
-            out active_workspace   $color_gr  $color_gr    '#ffffff'
-            out inactive_workspace $color_bg  $color_bg    '#888888'
-            out urgent_workspace   $color_rd  $color_rd    '#ffffff'
-            out binding_mode       $color_rd  $color_rd    '#ffffff'
-        }
-        blockend
-        out workspace_buttons yes
-        out status_command i3blocks
+        out workspace_buttons no
+        out status_command bar.py
         out position top
-        out separator_symbol '" "'
+		out tray_output none
+		out mode invisible
     }
     blockend
 }
