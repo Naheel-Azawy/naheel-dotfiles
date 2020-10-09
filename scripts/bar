@@ -132,7 +132,7 @@ class Bar:
         if arg == "period":
             return 1
 
-        t = datetime.datetime.now().strftime("%a %Y-%m-%d %I:%M:%S %p")
+        t = datetime.datetime.now().strftime("%a %Y.%m.%d %I:%M:%S %p")
         if self.a:
             return t
         else:
@@ -172,7 +172,8 @@ class Bar:
                 out += ""
 
             out += f"%{{F-}} {percent}%"
-            out = f"%{{A:echo battery:}}{out}%{{A}}"
+            cmd = "theterm -a '-c __floatme__ -g 75x3' 'watch -tn 1 acpi -i'"
+            out = f"%{{A:{cmd}:}}{out}%{{A}}"
             return out
 
     def wifi(self, arg=None):
@@ -225,6 +226,7 @@ class Bar:
             r = re.compile(r'\x1B(?:[@-Z\\-_]|\[[0-?]*[ -/]*[@-~])')
             out = r.sub("", out).strip()
             out = out[-15:].strip() # take last few chars
+            out = out.replace(" ", "") # remove space between numbers and C
 
             if self.a:
                 return out
@@ -259,6 +261,12 @@ class Bar:
             out += f"%{{F-}} {int(t)}°C"
             cmd = "theterm -a '-c __floatme__ -g 65x19' 'watch -tn 1 sensors'"
             return f"%{{A:{cmd}&:}}{out}%{{A}}"
+
+    def menu(self, arg=None):
+        if arg == "period":
+            return 0
+
+        return "%{A:dmenulauncher&:}%{A}"
 
     def close(self, arg=None):
         if arg == "period":
@@ -375,7 +383,7 @@ def lemonbar():
     fonts = ["Iosevka Fixed",
              "Source Han Sans CN",
              "Font Awesome 5 Free Solid"]
-    awesome_size = 20
+    awesome_size = 19
     background = '#000000'
     foreground = '#ffffff'
 

@@ -172,6 +172,9 @@
           (yellow-bg     . "#32322c"))))
   (load-theme 'spacemacs-dark t))
 
+;; ---- SPACES ----
+(setq-default indent-tabs-mode nil)
+
 ;; ---- MODELINE ----
 (use-package doom-modeline
   :init (doom-modeline-mode 1))
