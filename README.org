@@ -3,15 +3,16 @@
 
   Warning: This thing is not so stable and might explode at any moment.
 
-  [[./screenshots/1.png]]
+  [[./screenshots/2.png]]
 
 ** Toys
-   - i3
    - emacs
    - fish
    - st
    - lf
    - tmux everywhere ([[https://github.com/Naheel-Azawy/theterm][theterm]])
+   - i3
+   - lemonbar
    - [[https://github.com/Naheel-Azawy/sxiv][sxiv]] (custom fork)
    - mpd and ncmpcpp
    - chromium

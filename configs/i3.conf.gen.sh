@@ -360,10 +360,6 @@ outautostart() {
     # Start the clipmenu daemon
     exec_start --no-startup-id clipmenud
 
-    # conky
-    exec_start --no-startup-id conky -c "/usr/share/conky/naheel/bin.rc"
-    exec_start --no-startup-id conky -c "/usr/share/conky/naheel/main.rc"
-
     # mouse setup
     exec_start --no-startup-id setup-xinput
 
@@ -376,7 +372,7 @@ outautostart() {
     # start emacs daemon
     exec_start --no-startup-id emacs-daemon
 
-    # compton / gives conky transparency
+    # compton
     exec_always --no-startup-id compton
 
     # wallpaper
