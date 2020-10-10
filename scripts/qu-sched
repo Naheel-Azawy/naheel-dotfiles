@@ -1,3 +1,6 @@
 #!/bin/sh
+
+# TODO: move to personal
+
 cd "$QU_SCHED/cli" &&
     java -jar qu.jar "$@"

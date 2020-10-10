@@ -12,10 +12,15 @@ import socket
 
 port = 9876
 
+background = '#ff000000'
+foreground = '#ffffff'
+
 color_bg = "#000000"
 color_bl = "#285577"
 color_rd = "#900000"
 color_gr = "#333333"
+
+default_items = "workspaces | clock | systray donno lang pray weather temperature wifi battery power"
 
 class WM:
     def __init__(self, callback):
@@ -80,7 +85,7 @@ class Bar:
         self.wm = WM(self.run_wm_items)
 
         if items is None:
-            self.items_str = "workspaces | clock | systray donno lang pray weather temperature wifi battery power"
+            self.items_str = default_items
         else:
             self.items_str = items
 
@@ -225,8 +230,11 @@ class Bar:
             # remove colors https://stackoverflow.com/a/14693789/3825872
             r = re.compile(r'\x1B(?:[@-Z\\-_]|\[[0-?]*[ -/]*[@-~])')
             out = r.sub("", out).strip()
-            out = out[-15:].strip() # take last few chars
-            out = out.replace(" ", "") # remove space between numbers and C
+            s = re.search(".+[ \.](\d+) °C", out) # extract the temperature
+            try:
+                out = s.group(1) + "°C"
+            except:
+                return None
 
             if self.a:
                 return out
@@ -384,8 +392,6 @@ def lemonbar():
              "Source Han Sans CN",
              "Font Awesome 5 Free Solid"]
     awesome_size = 19
-    background = '#000000'
-    foreground = '#ffffff'
 
     tmp = ""
     for f in fonts:

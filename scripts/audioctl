@@ -1,9 +1,10 @@
 #!/bin/sh
 
-MAX_VOL=500
+MAX_VOL=250
 
 notif() {
-    V=$(pamixer --get-volume)
+    V="$1"
+    [ "$V" ] || V=$(pamixer --get-volume)
 	if [ "$(pamixer --get-mute)" = "true" ] || [ "$V" = 0 ]; then
         V="Muted"
 	else
@@ -26,14 +27,19 @@ vol() {
         V=$((V+C))
         if [ $V -le $MAX_VOL ]; then
             V=$((V/5*5))
-            pamixer --allow-boost --set-volume $V
+        else
+            V=$MAX_VOL
         fi
+        if [ $V -lt 0 ]; then
+            V=0
+        fi
+        pamixer --allow-boost --set-volume $V
     fi
     rm -f "$LOCK"
-	notif
+	notif "$V"
 }
 
-vol() {
+vol1() {
     case "$1" in
         t) amixer -q set Master toggle;;
         m) amixer -q set Master mute;;
@@ -62,4 +68,5 @@ case "$1" in
 	"next")     mpc -q next       || cmus-remote --next       ;;
 	"prev")     mpc -q prev       || cmus-remote --prev       ;;
 	"replay")   mpc seek 0%       || cmus-remote --seek 0     ;;
+    "ctrl")     pavucontrol ;;
 esac 2>/dev/null
