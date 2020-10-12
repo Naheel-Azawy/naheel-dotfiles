@@ -2,7 +2,7 @@
 
 MAX_VOL=250
 
-notif() {
+vol_notif() {
     V="$1"
     [ "$V" ] || V=$(pamixer --get-volume)
 	if [ "$(pamixer --get-mute)" = "true" ] || [ "$V" = 0 ]; then
@@ -36,7 +36,7 @@ vol() {
         pamixer --allow-boost --set-volume $V
     fi
     rm -f "$LOCK"
-	notif "$V"
+	vol_notif "$V"
 }
 
 vol1() {
@@ -52,7 +52,7 @@ vol1() {
                 amixer -q set Master "$V%-"
             fi;;
     esac
-	notif
+	vol_notif
 }
 
 V="$2"

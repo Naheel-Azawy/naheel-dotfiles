@@ -10,7 +10,7 @@ import datetime
 import threading
 import socket
 
-port = 9876
+port = 9877
 
 background = '#ff000000'
 foreground = '#ffffff'
@@ -22,6 +22,7 @@ color_gr = "#333333"
 
 default_items = "workspaces | clock | systray donno lang pray weather temperature wifi battery power"
 
+# example: WM(lambda wm: print(wm.json())).run()
 class WM:
     def __init__(self, callback):
         self.i3 = i3ipc.Connection()
@@ -164,8 +165,9 @@ class Bar:
                 out += f"%{{F{r}}} "
             elif percent <= 20:
                 r = '#FF0000'
-                if percent <= 5:
-                    out += f"%{{F{r}}} "
+                out += f"%{{F{r}}}"
+                if percent <= 15:
+                    out += " "
 
             if percent < 50:
                 out += ""
@@ -179,6 +181,19 @@ class Bar:
             out += f"%{{F-}} {percent}%"
             cmd = "theterm -a '-c __floatme__ -g 75x3' 'watch -tn 1 acpi -i'"
             out = f"%{{A:{cmd}:}}{out}%{{A}}"
+
+            def notif(msg):
+                os.system(f"dunstify -u critical -r 12345 '{msg}'")
+
+            if not charging:
+                if percent <= 5:
+                    notif("SHUTTING DOWN!")
+                    os.system("systemctl poweroff")
+                elif percent <= 7:
+                    notif(f"VERY LOW BATTERY {percent}% WILL SHUTDOWN AT 5%!!!")
+                elif percent < 10:
+                    notif(f"LOW BATTERY {percent}%")
+
             return out
 
     def wifi(self, arg=None):
@@ -374,20 +389,18 @@ class Bar:
                 tmp = conn.recv(1024)
                 data += tmp
                 if not tmp: break
-            item = getattr(self, data.decode())
-            self.last[item.__name__] = item()
-            self.render()
+            data = data.decode().split("?")
+            cmd = data[0]
+            data = data[1]
+            if cmd == "update":
+                item = getattr(self, data)
+                self.last[item.__name__] = item()
+                self.render()
         self.server.close()
 
 def lemonbar():
     bin = os.path.abspath(__file__)
 
-    # fonts = ["Iosevka Fixed",
-    #          "DejaVu Sans Mono",
-    #          "Source Han Sans CN",
-    #          "Font Awesome 5 Free",
-    #          "Font Awesome 5 Brands",
-    #          "Font Awesome 5 Free Solid"]
     fonts = ["Iosevka Fixed",
              "Source Han Sans CN",
              "Font Awesome 5 Free Solid"]
@@ -412,7 +425,7 @@ if __name__ == "__main__":
         item = args[2].encode()
         s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         s.connect(("127.0.0.1", port))
-        s.send(item)
+        s.send(b"update?" + item)
         s.close()
     else:
         a = False
@@ -436,5 +449,3 @@ if __name__ == "__main__":
         else:
             b.init()
             b.render()
-
-#WM(lambda wm: print(wm.json())).run()

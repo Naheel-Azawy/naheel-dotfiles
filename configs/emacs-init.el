@@ -530,3 +530,4 @@ Inserted by installing 'org-mode' or when a release is made."
                  ("\\subsubsection\{%s\}" . "\\subsubsection*\{%s\}"))))
 
 ;;; emacs-init.el ends here
+(put 'upcase-region 'disabled nil)
