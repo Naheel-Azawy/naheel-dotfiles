@@ -1,69 +1,15 @@
 #!/bin/sh
 
-#SIMPLE=1
-
-blur_convert() {
-    if [ -f /usr/bin/convert ]; then
-        convert "$1" -blur 0x09 "$2"
-        echo "$2"
-    else
-        echo "$1"
-    fi
-}
-
-blur_ffmpeg() {
-    if [ -f /usr/bin/ffmpeg ]; then
-        ffmpeg -loglevel quiet -y -i "$1" -vf "scale=iw/2:-1, gblur=9, scale=2*iw:-1" "$2"
-        echo "$2"
-    else
-        echo "$1"
-    fi
-}
-
-blur() {
-    #blur_convert "$@"
-    blur_ffmpeg "$@"
-}
-
-gen_bg() {
-    W=~/.cache/lock-base.png
-    O=~/.cache/lock-lock.png
-    rm -f "$W" "$O"
-    scrot -m -z "$W"
-    blur "$W" "$O"
-}
-
-gen_bg_simple() {
-    W=$(setwallpaper -g)
-    O=~/.cache/lock-blur.png
-    if [ ! -f "$O" ] || [ "$O" -ot "$W" ]; then
-        blur "$W" "$O"
-    else
-        echo $O
-    fi
-}
-
 lang-set us >/dev/null
-#audioctl stop >/dev/null
 
-if [ $SIMPLE ]; then
-    B=$(gen_bg_simple)
-    echo "$B"
-else
-    B=$(gen_bg)
-fi
-
-[ "$FONT" = '' ] && FONT='DejaVu Sans Mono'
-if imgtoobright "$B"; then
-    COLOR='000000ff'
-else
-    COLOR='ffffffff'
-fi
+[ "$FONT" ] || FONT='DejaVu Sans Mono'
+COLOR='ffffffff'
 X=960
 Y=800
 
+# using picom for blur and opacity
 i3lock \
-    -e -f -c 000000 -i "$B" \
+    -e -f -c 000000 \
     --clock \
     --indicator \
     --timestr '%H:%M' \
@@ -75,9 +21,8 @@ i3lock \
     --timepos "$X:$Y" \
     --datepos "$X:$((Y+70))" \
     --timecolor "$COLOR" \
-    --datecolor "$COLOR"
-
-#xset dpms force off
-
-# In five seconds, turn off display unless key press in last 4 seconds.
-#sleep 5 && [[ 4000 -lt $(xssstate -i) ]] &&  pgrep -x i3lock && xset dpms force off
+    --datecolor "$COLOR" \
+    --pass-media-keys \
+    --pass-screen-keys \
+    --pass-power-keys \
+    --pass-volume-keys

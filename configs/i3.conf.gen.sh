@@ -372,8 +372,8 @@ outautostart() {
     # start emacs daemon
     exec_start --no-startup-id emacs-daemon
 
-    # compton
-    exec_always --no-startup-id compton
+    # compositor
+    exec_always --no-startup-id picom
 
     # wallpaper
     exec_always --no-startup-id setwallpaper

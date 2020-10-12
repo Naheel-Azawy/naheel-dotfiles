@@ -69,7 +69,7 @@ dots_link() {
     lnnn "$D/configs/lfrc.sh"             "$H/.config/lf/lfrc"
     lnnn "$D/configs/sxiv-key-handler.sh" "$H/.config/sxiv/exec/key-handler"
     lnnn "$D/configs/sxiv-image-info.sh"  "$H/.config/sxiv/exec/image-info"
-    lnnn "$D/configs/compton.conf"        "$H/.config/compton.conf"
+    lnnn "$D/configs/picom.conf"          "$H/.config/picom.conf"
     lnnn "$D/configs/user-dirs.dirs"      "$H/.config/user-dirs.dirs"
     lnnn "$D/configs/mednafen.cfg"        "$H/.mednafen/mednafen.cfg"
     lnnn "$D/configs/bashrc.sh"           "$H/.bashrc"

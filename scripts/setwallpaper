@@ -1,5 +1,16 @@
 #!/bin/sh
-F="$DOTFILES_DIR/configs/wall"
-[ "$1" = '-g' ] && echo "$F" && exit
-[ "$1" != '' ] && cp "$1" "$F"
+
+if F=$(gsettings get org.gnome.desktop.background picture-uri 2>/dev/null); then
+    F=$(echo "$F" | sed -En "s@'file://(.+)'@\1@p")
+    [ "$1" = '-g' ] && echo "$F" && exit
+    [ "$1" ] && {
+        F=$(realpath "$1")
+        gsettings set org.gnome.desktop.background picture-uri "file://$F"
+    }
+else
+    F="$DOTFILES_DIR/configs/wall.png"
+    [ "$1" = '-g' ] && echo "$F" && exit
+    [ "$1" ] && cp "$1" "$F"
+fi
+
 feh --bg-fill "$F"

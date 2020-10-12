@@ -263,6 +263,7 @@
   ("M-j" . dumb-jump-back))
 (use-package writeroom-mode)
 (use-package anzu :config (global-anzu-mode +1))
+(use-package academic-phrases)
 
 ;; ---- MULTIPLE CURSERS ----
 (use-package multiple-cursors
@@ -382,6 +383,42 @@ from: https://stackoverflow.com/a/998472/3825872"
                      cfw:fchar-top-right-corner ?┓)))
 
 ;; ---- ORG ----
+;; Installing Org with straight.el
+;; https://github.crookster.org/switching-to-straight.el-from-emacs-26-builtin-package.el/#put-in-place-org-workaround
+;; https://github.com/raxod502/straight.el/blob/develop/README.md#integration-with-org
+;; https://github.com/raxod502/straight.el/blob/develop/README.md#installing-org-with-straightel
+
+(require 'subr-x)
+(straight-use-package 'git)
+
+(defun org-git-version ()
+  "The Git version of 'org-mode'.
+Inserted by installing 'org-mode' or when a release is made."
+  (require 'git)
+  (let ((git-repo (expand-file-name
+                   "straight/repos/org/" user-emacs-directory)))
+    (string-trim
+     (git-run "describe"
+              "--match=release\*"
+              "--abbrev=6"
+              "HEAD"))))
+
+(defun org-release ()
+  "The release version of 'org-mode'.
+Inserted by installing 'org-mode' or when a release is made."
+  (require 'git)
+  (let ((git-repo (expand-file-name
+                   "straight/repos/org/" user-emacs-directory)))
+    (string-trim
+     (string-remove-prefix
+      "release_"
+      (git-run "describe"
+               "--match=release\*"
+               "--abbrev=0"
+               "HEAD")))))
+
+(provide 'org-version)
+
 (use-package org
   :init
   (setq org-agenda-files (list "~/Dropbox/orgmode/TODO.org") ; TODO: move to personal
@@ -429,8 +466,7 @@ from: https://stackoverflow.com/a/998472/3825872"
   (add-hook 'org-mode-hook #'org-bullets-mode)
 
   ;; -- TEMPO --
-  (require 'org-tempo)
-  )
+  (require 'org-tempo))
 
 (use-package org-bullets)
 
