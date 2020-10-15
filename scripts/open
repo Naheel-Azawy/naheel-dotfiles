@@ -48,8 +48,6 @@ openfile() {
                         else
                             sxivv "$f" >/dev/null 2>&1 | lfsend &
                         fi;;
-                    video/*)
-                        mpv "$f" >/dev/null 2>&1 | lfsend &;;
                     audio/*)
                         music-play "$f";;
                     *)

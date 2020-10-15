@@ -52,6 +52,28 @@ else
     CATEGORIES="base base-gui addtions themostsignificant devel electronics games"
 fi
 
+# systemd service to run lockscreen on suspend
+lock_service() {
+    echo "[Unit]
+Description = Lock screen when going to sleep/suspend
+Before=sleep.target
+Before=suspend.target
+
+[Service]
+User=%i
+Type=forking
+Environment=DISPLAY=:0
+ExecStart=$D/scripts/lockscreen
+TimeoutSec=infinity
+ExecStartPost=/usr/bin/sleep 1
+
+[Install]
+WantedBy=sleep.target
+WantedBy=suspend.target" |
+        sudo tee /etc/systemd/system/wakelock@.service >/dev/null
+    sudo systemctl enable "wakelock@$USER.service"
+}
+
 # symlink configs
 dots_link() {
     lnnn() {
@@ -187,6 +209,7 @@ dots_install() {
 
     info "Setting up systemd services"
     sudo systemctl enable org.cups.cupsd
+    lock_service
 
     info "Setting up sensors"
     sudo sensors-detect --auto
@@ -657,6 +680,8 @@ main() {
         gitp)
             cd "$DOTFILES_DIR" &&
                 git pull origin master;;
+        'eval')
+            eval "$@";;
         '')
             cd "$DOTFILES_DIR" && open ;;
         *)

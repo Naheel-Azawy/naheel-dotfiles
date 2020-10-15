@@ -1,6 +1,11 @@
 #!/bin/sh
 
-lang-set us >/dev/null
+pgrep i3lock && {
+    echo Already locked
+    exit 0
+}
+
+setxkbmap -layout us >/dev/null
 
 [ "$FONT" ] || FONT='DejaVu Sans Mono'
 COLOR='ffffffff'
@@ -8,21 +13,21 @@ X=960
 Y=800
 
 # using picom for blur and opacity
-i3lock \
-    -e -f -c 000000 \
-    --clock \
-    --indicator \
-    --timestr '%H:%M' \
-    --datestr '%Y-%m-%d' \
-    --time-font "$FONT" \
-    --date-font "$FONT" \
-    --timesize 70 \
-    --datesize 50 \
-    --timepos "$X:$Y" \
-    --datepos "$X:$((Y+70))" \
-    --timecolor "$COLOR" \
-    --datecolor "$COLOR" \
-    --pass-media-keys \
-    --pass-screen-keys \
-    --pass-power-keys \
-    --pass-volume-keys
+exec i3lock \
+     -e -f -c 000000 \
+     --clock \
+     --indicator \
+     --timestr '%H:%M' \
+     --datestr '%Y-%m-%d' \
+     --time-font "$FONT" \
+     --date-font "$FONT" \
+     --timesize 70 \
+     --datesize 50 \
+     --timepos "$X:$Y" \
+     --datepos "$X:$((Y+70))" \
+     --timecolor "$COLOR" \
+     --datecolor "$COLOR" \
+     --pass-media-keys \
+     --pass-screen-keys \
+     --pass-power-keys \
+     --pass-volume-keys

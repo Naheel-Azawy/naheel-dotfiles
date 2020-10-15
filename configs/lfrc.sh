@@ -343,10 +343,10 @@ cmd fzf ${{
          }}
 
 # select which program to open the current file with
-cmd open-with $open --lfid $id --ask $f
+cmd open-with &open --lfid $id --ask $f
 
 # set the default program for the current file
-cmd open-with-default $mimeopen -d $f
+cmd open-with-default &open --lfid $id --ask-default $f
 
 # chmod +x
 cmd chmod+x &{{

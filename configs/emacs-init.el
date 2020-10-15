@@ -479,7 +479,10 @@ Inserted by installing 'org-mode' or when a release is made."
 (use-package org-ref)
 
 (with-eval-after-load 'ox-latex
-  (customize-set-value 'org-latex-with-hyperref nil)
+  (customize-set-value 'org-latex-hyperref-template "
+\\hypersetup{\n pdfauthor={%a},\n pdftitle={%t},
+ pdfsubject={%d},\n pdfcreator={%c}, \n pdflang={%L},
+ hidelinks=true,\n draft=false\n}\n")
 
   (add-to-list 'org-latex-classes
                '("IEEEtran"
