@@ -218,6 +218,7 @@
 (use-package gnuplot-mode)
 (use-package sparql-mode)
 (use-package ttl-mode)
+(use-package protobuf-mode)
 (use-package yaml-mode)
 (use-package glsl-mode)
 (use-package haxe-mode)

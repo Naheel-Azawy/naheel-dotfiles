@@ -1,13 +1,14 @@
 #!/bin/node
 
-const sh = require("/usr/lib/node_modules/shelljs/shell.js");
+require("/usr/lib/node_modules/shelljs/global.js");
 const argv = process.argv.slice(2);
-const notify = msg => sh.exec(`notify-send '${msg}'`);
+const str = s => new ShellString(s);
+const notify = msg => exec(`notify-send '${msg}'`);
 
-sh.config.silent = true;
+config.silent = true;
 
 function ls_parts() {
-    let blocks = JSON.parse(sh.exec("lsblk --json -po 'name,type,size,label,mountpoint'").toString())
+    let blocks = JSON.parse(exec("lsblk --json -po 'name,type,size,label,mountpoint'").toString())
         .blockdevices;
     let parts = [];
     for (let block of blocks) {
@@ -21,10 +22,10 @@ function ls_parts() {
     return parts;
 }
 
-const mtp_dir = sh.env["HOME"] + "/MTP Drives";
+const mtp_dir = env["HOME"] + "/MTP Drives";
 
 function ls_mtp() {
-    let res = sh.exec("simple-mtpfs -l");
+    let res = exec("simple-mtpfs -l");
     if (res.code != 0) {
         return [];
     }
@@ -32,7 +33,7 @@ function ls_mtp() {
     let mp;
     for (let i in res) {
         mp = `${mtp_dir}/${res[i]}`;
-        mp = sh.test("-d", mp) ? mp : null;
+        mp = test("-d", mp) ? mp : null;
         res[i] = {
             name: res[i],
             type: 'mtp',
@@ -46,16 +47,16 @@ function ls_mtp() {
 
 function mount_mtp(name) {
     let num = name.split(":")[0];
-    sh.mkdir("-p", `${mtp_dir}/${name}`);
-    return sh.exec(`simple-mtpfs --device ${num} '${mtp_dir}/${name}'`);
+    mkdir("-p", `${mtp_dir}/${name}`);
+    return exec(`simple-mtpfs --device ${num} '${mtp_dir}/${name}'`);
 }
 
 function unmount_mtp(name) {
-    let ret = sh.exec(`fusermount -u '${mtp_dir}/${name}'`);
+    let ret = exec(`fusermount -u '${mtp_dir}/${name}'`);
     if (ret.code == 0) {
-        sh.rm("-r", `${mtp_dir}/${name}`);
-        if (sh.ls(mtp_dir).toString().trim().length == 0) {
-            sh.rm("-r", mtp_dir);
+        rm("-r", `${mtp_dir}/${name}`);
+        if (ls(mtp_dir).toString().trim().length == 0) {
+            rm("-r", mtp_dir);
         }
     }
     return ret;
@@ -82,7 +83,7 @@ function stringify(drives) {
         res.push(line);
     }
     res.sort();
-    return new sh.ShellString(res.join("\n"));
+    return str(res.join("\n"));
 }
 
 function main() {
@@ -116,20 +117,20 @@ function main() {
             }
         } else {
             sel = sel[1].trim();
-            ret = sh.exec(`udisksctl ${command} -b ${sel}`);
+            ret = exec(`udisksctl ${command} -b ${sel}`);
             ret_msg = ret.stdout || ret.stderr;
             if (ret.stdout.includes(" at ")) { // mounted successfully
                 mp = ret.split(" at ")[1].trim();
             }
         }
-        sh.echo(ret_msg);
+        echo(ret_msg);
         notify(ret_msg);
         if (mp) {
-            sh.exec(`dmenuopendir '${mp}'`); // open dir
+            exec(`dmenuopendir '${mp}'`); // open dir
         }
-        sh.exit(ret.code);
+        exit(ret.code);
     } else {
-        sh.exit(0);
+        exit(0);
     }
 }
 
