@@ -455,6 +455,10 @@ Inserted by installing 'org-mode' or when a release is made."
   ;; -- MY "DIRTY" LaTeX EXPORT --
   (setq org-latex-pdf-process '("pdflatexorgwraper -p %f"))
 
+  ;; -- LaTeX PREVIEWS --
+  (setq org-format-latex-options (plist-put org-format-latex-options :scale 1.5))
+  (setq org-latex-create-formula-image-program 'imagemagick)
+
   ;; -- TODO --
   (setq org-todo-keywords
         '((sequence "TODO" "PROG" "|" "DONE" "CNCL")))

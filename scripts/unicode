@@ -1,0 +1,15 @@
+#!/usr/bin/env jsh
+
+// http://webhome.auburn.edu/~tamtiny/Symbols.pdf
+greek_hebrew = {
+    "α": "\\alpha", "κ": "\\kappa", "ψ": "\\psi", "Ϝ": "\\digamma", "∆": "\\Delta", "Θ": "\\Theta",
+    "β": "\\beta", "λ": "\\lambda", "ρ": "\\rho", "ε": "\\varepsilon", "Γ": "\\Gamma", "Υ": "\\Upsilon",
+    "χ": "\\chi", "µ": "\\mu", "σ": "\\sigma", "κ": "\\varkappa", "Λ": "\\Lambda", "Ξ": "\\Xi",
+    "δ": "\\delta", "ν": "\\nu", "τ": "\\tau", "ϕ": "\\varphi", "Ω": "\\Omega",
+    "ε": "\\epsilon", "θ": "\\theta", "ϖ": "\\varpi", "Φ": "\\Phi", "ℵ": "\\aleph",
+    "η": "\\eta", "ω": "\\omega", "υ": "\\upsilon", "ϱ": "\\varrho", "Π": "\\Pi", "i": "\\beth",
+    "γ": "\\gamma", "φ": "\\phi", "ξ": "\\xi", "ς": "\\varsigma", "Ψ": "\\Psi", "k": "\\daleth",
+    "ι": "\\iota", "π": "\\pi", "ζ": "\\zeta", "ϑ": "\\vartheta", "Σ": "\\Sigma", "ג": "\\gimel"
+}
+
+echo(greek_hebrew[$1])

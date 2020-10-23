@@ -1,0 +1,58 @@
+#!/bin/sh
+
+# The extremely inefficient javascript-based scripting language, kinda..
+# Basically, for now, just adding shelljs and few other things as a header
+
+H='require("/usr/lib/node_modules/shelljs/global.js");
+config.silent = true;
+argv = process.argv.slice(2);
+str = s => new ShellString(s);
+notify = msg => exec(`notify-send "${msg}"`);
+for (let e in env)
+    eval(`${e} = "${env[e]}";`);
+for (let i = 0; i < 10 || i < argv.length; ++i)
+    eval(`\$${i} = argv[${i}]`);
+function $(strings, ...values) {
+    let r = "";
+    for (let i in strings) {
+        r += strings[i];
+        if (values[i]) r += values[i];
+    }
+    return exec(r);
+}
+function $$(strings, ...values) {
+    let tmp = config.silent;
+    config.silent = false;
+    let res = $(strings, values);
+    config.silent = tmp;
+    return res;
+}
+'
+
+if [ -f "$1" ]; then
+    { echo "$H"; grep -v '#!/' "$1"; } | exec node - "$@"
+elif [ "$1" = '-e' ]; then
+    IN="$2"
+    shift
+    exec node -e "$H$IN" "$@"
+elif [ -p /dev/stdin ]; then
+    IN=$(cat)
+    exec node -e "$H$IN" "$@"
+else
+    # https://stackoverflow.com/a/18670532/3825872
+    exec node -e "$H
+    //config.silent = false;
+    const vm = require('vm');
+    require('repl').start({
+        ignoreUndefined: true,
+        eval: function(cmd, ctx, fn, cb) {
+            let err = null;
+            try {
+                vm.runInContext(cmd, ctx, fn);
+            } catch (e) {
+                err = e;
+            }
+            cb(err);
+        }
+    });" "$@"
+fi

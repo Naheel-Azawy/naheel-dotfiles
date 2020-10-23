@@ -1,15 +1,7 @@
-#!/bin/node
-
-require("/usr/lib/node_modules/shelljs/global.js");
-const argv = process.argv.slice(2);
-const str = s => new ShellString(s);
-const notify = msg => exec(`notify-send '${msg}'`);
-
-config.silent = true;
+#!/usr/bin/env jsh
 
 function ls_parts() {
-    let blocks = JSON.parse(exec("lsblk --json -po 'name,type,size,label,mountpoint'").toString())
-        .blockdevices;
+    let blocks = JSON.parse($`lsblk --json -po 'name,type,size,label,mountpoint'`).blockdevices;
     let parts = [];
     for (let block of blocks) {
         if (!block.children) continue;
@@ -18,14 +10,14 @@ function ls_parts() {
                 parts.push(part);
             }
         }
-    }    
+    }
     return parts;
 }
 
-const mtp_dir = env["HOME"] + "/MTP Drives";
+const mtp_dir = `${HOME}/MTP Drives`;
 
 function ls_mtp() {
-    let res = exec("simple-mtpfs -l");
+    let res = $`simple-mtpfs -l`;
     if (res.code != 0) {
         return [];
     }
@@ -48,11 +40,11 @@ function ls_mtp() {
 function mount_mtp(name) {
     let num = name.split(":")[0];
     mkdir("-p", `${mtp_dir}/${name}`);
-    return exec(`simple-mtpfs --device ${num} '${mtp_dir}/${name}'`);
+    return $`simple-mtpfs --device ${num} '${mtp_dir}/${name}'`;
 }
 
 function unmount_mtp(name) {
-    let ret = exec(`fusermount -u '${mtp_dir}/${name}'`);
+    let ret = $`fusermount -u '${mtp_dir}/${name}'`;
     if (ret.code == 0) {
         rm("-r", `${mtp_dir}/${name}`);
         if (ls(mtp_dir).toString().trim().length == 0) {
@@ -117,7 +109,7 @@ function main() {
             }
         } else {
             sel = sel[1].trim();
-            ret = exec(`udisksctl ${command} -b ${sel}`);
+            ret = $`udisksctl ${command} -b ${sel}`;
             ret_msg = ret.stdout || ret.stderr;
             if (ret.stdout.includes(" at ")) { // mounted successfully
                 mp = ret.split(" at ")[1].trim();
@@ -126,7 +118,7 @@ function main() {
         echo(ret_msg);
         notify(ret_msg);
         if (mp) {
-            exec(`dmenuopendir '${mp}'`); // open dir
+            $`dmenuopendir '${mp}'`; // open dir
         }
         exit(ret.code);
     } else {

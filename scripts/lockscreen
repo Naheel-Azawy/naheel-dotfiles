@@ -9,8 +9,6 @@ pgrep i3lock && {
 
 [ "$FONT" ] || FONT='DejaVu Sans Mono'
 COLOR='ffffffff'
-X=960
-Y=800
 
 # using picom for blur and opacity
 exec i3lock \
@@ -21,10 +19,10 @@ exec i3lock \
      --datestr '%Y-%m-%d' \
      --time-font "$FONT" \
      --date-font "$FONT" \
-     --timesize 70 \
-     --datesize 50 \
-     --timepos "$X:$Y" \
-     --datepos "$X:$((Y+70))" \
+     --timesize 40 \
+     --datesize 20 \
+     --time-align 0 \
+     --date-align 0 \
      --timecolor "$COLOR" \
      --datecolor "$COLOR" \
      --pass-media-keys \

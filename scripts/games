@@ -1,22 +1,18 @@
-#!/bin/node
+#!/usr/bin/env jsh
 
-const exe   = require('child_process').execSync;
-const print = s => console.log(s);
-const argv  = process.argv.slice(2);
+dir     = `/mnt/hdd1/Public/Games`
+dir_gb  = `${dir}/gameboy`
+dir_n64 = `${dir}/n64`
+dir_psx = `${dir}/psx`
+dir_win = `${dir}/windows`
 
-const dir     = `/mnt/hdd1/Public/Games`;
-const dir_gb  = `${dir}/gameboy`;
-const dir_n64 = `${dir}/n64`;
-const dir_psx = `${dir}/psx`;
-const dir_win = `${dir}/windows`;
+gbc = (name)    => `mgba-qt "${dir_gb}/${name}"`
+n64 = (name)    => `mupen64plus "${dir_n64}/${name}"`
+psx = (name)    => `mednafen "${dir_psx}/${name}"`
+win = (d, name) => `winejail win-games-${d} "${dir_win}/${d}" "${name}"`
+tui = (name)    => `theterm "${name}"`
 
-const gbc = (name)    => `mgba-qt "${dir_gb}/${name}"`;
-const n64 = (name)    => `mupen64plus "${dir_n64}/${name}"`;
-const psx = (name)    => `mednafen "${dir_psx}/${name}"`;
-const win = (d, name) => `winejail win-games-${d} "${dir_win}/${d}" "${name}"`;
-const tui = (name)    => `theterm "${name}"`;
-
-const games = {
+games = {
     "supermario":      gbc("Super Mario Bros. Deluxe (USA, Europe).gbc"),
     "supermario64":    n64("Super Mario 64 (U) [!].z64"),
     "mariokart":       gbc("Mario Kart Super Circuit (U) [!].gba"),
@@ -34,24 +30,22 @@ const games = {
     "nudoku":          tui("nudoku"),
     "tetris":          tui("tetris"),
     "snake":           tui("snake")
-};
+}
 
-switch (argv[0]) {
+switch ($1) {
 case undefined:
-    exe("games list | menu-interface -l 20");
-    break;
+    $`games $(games list | menu-interface -l 20)`
+    break
 case "list":
-    for (let g in games) {
-        print(g);
-    }
-    break;
+    for (let g in games) echo(g)
+    break
 default:
-    let cmd = games[argv[0]];
+    let cmd = games[$1]
     if (cmd) {
-        print(cmd);
-        exe(cmd);
+        echo(cmd)
+        exec(cmd)
     } else {
-        print(`Unknown game '${argv[0]}'`);
-        process.exit(1);
+        echo(`Unknown game '${$1}'`)
+        exit(1)
     }
 }
