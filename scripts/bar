@@ -215,11 +215,11 @@ class Bar:
         if arg == "period":
             return 0
 
-        out = os.popen(f"lang-toggle -v").read().strip()
+        out = os.popen("lang").read().strip()
         if self.a:
             return out
         else:
-            return f"%{{A:lang-toggle >/dev/null:}}{out}%{{A}}"
+            return f"%{{A:lang tog:}}{out}%{{A}}"
 
     def pray(self, arg=None):
         if arg == "period":

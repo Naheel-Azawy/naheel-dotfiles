@@ -109,10 +109,10 @@ outbindings() {
            "$mod+d" "exec dmenulauncher"
 
     bindoc 'Switch language' \
-           "$mod+space" "exec lang-toggle"
+           "$mod+space" "exec lang tog"
 
     bindoc 'Switch language (extended)' \
-           "$mod+Shift+space" "exec lang-toggle -e"
+           "$mod+Shift+space" "exec lang tog -e"
 
     bindoc 'Toggle on-screen keyboard' \
            "$mod+k" "exec sh -c 'pkill onboard || onboard'"
@@ -342,10 +342,9 @@ outconfigs() {
     block bar
     {
         out workspace_buttons no
-        out status_command bar lemon
-        out position top
-		out tray_output none
-		out mode invisible
+        out status_command    bar lemon
+		out tray_output       none
+		out mode              invisible
     }
     blockend
 }
@@ -379,7 +378,7 @@ outautostart() {
     exec_always --no-startup-id setwallpaper
 
     # set language to 'us' by default, runs xmodmap as well
-    exec_always --no-startup-id lang-set us
+    exec_always --no-startup-id lang us
 
     # mount encfs private directory
     exec_always --no-startup-id mount-private

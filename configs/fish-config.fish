@@ -185,11 +185,11 @@ function plot
     command plot $argv & disown
 end
 
-abbr ث  'lang-set us >/dev/null; exit'
-abbr مس 'lang-set us >/dev/null; ls'
-abbr م  'lang-set us >/dev/null; ls'
-abbr ؤي 'lang-set us >/dev/null; cd'
-abbr ب  'lang-set us >/dev/null; lf'
+abbr ث  'lang us; exit'
+abbr مس 'lang us; ls'
+abbr م  'lang us; ls'
+abbr ؤي 'lang us; cd'
+abbr ب  'lang us; lf'
 
 alias please=sudo
 

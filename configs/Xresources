@@ -45,3 +45,6 @@ XTerm.vt100.translations: #override \n\
 ! SXIV options
 Sxiv.foreground: rgb:bb/bb/bb
 Sxiv.background: rgb:00/00/00
+
+! Cursor size
+Xcursor.size: 16

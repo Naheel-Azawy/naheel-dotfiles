@@ -5,7 +5,7 @@ pgrep i3lock && {
     exit 0
 }
 
-"$(dirname "$0")/lang-set" us >/dev/null
+"$(dirname "$0")/lang" us
 
 [ "$FONT" ] || FONT='DejaVu Sans Mono'
 COLOR='ffffffff'

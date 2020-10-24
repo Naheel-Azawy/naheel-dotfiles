@@ -1,0 +1,38 @@
+#!/bin/sh
+
+langget() {
+    setxkbmap -query | sed -En 's/layout:\s*(.+)/\1/p' 2>/dev/null
+}
+
+langset() {
+    L="$1"
+    [ ! "$L" ] && {
+        echo 'ERROR: No language selected'
+        exit 1
+    }
+    setxkbmap -layout "$L"
+    [ -f ~/.Xmodmap ] && xmodmap ~/.Xmodmap
+    bar update lang 2>/dev/null ||:
+}
+
+langtog() {
+    LANGS='us ar'
+    [ "$1" = '-e' ] && LANGS='us ru ir fr de'
+    LANGS=$(echo "$LANGS" | tr ' ' '\n')
+    L=$(langget)
+    N=$(echo "$LANGS" | grep -A 1 "$L" | tail -1)
+    if [ "$N" = "$L" ] || ! [ "$N" ]; then
+        N=$(echo "$LANGS" | head -1)
+    fi
+    langset "$N"
+}
+
+main() {
+    case "$1" in
+        'tog') shift; langtog "$@" ;;
+        '')           langget      ;;
+        *)            langset "$@" ;;
+    esac
+}
+
+main "$@"
