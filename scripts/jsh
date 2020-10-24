@@ -2,6 +2,7 @@
 
 # The extremely inefficient javascript-based scripting language, kinda..
 # Basically, for now, just adding shelljs and few other things as a header
+# https://github.com/shelljs/shelljs
 
 H='require("/usr/lib/node_modules/shelljs/global.js");
 config.silent = true;
@@ -12,20 +13,23 @@ for (let e in env)
     eval(`${e} = "${env[e]}";`);
 for (let i = 0; i < 10 || i < argv.length; ++i)
     eval(`\$${i} = argv[${i}]`);
-function $(strings, ...values) {
+
+function _cmd_template_build(strings, ...values) {
     let r = "";
     for (let i in strings) {
         r += strings[i];
         if (values[i]) r += values[i];
     }
-    return exec(r);
+    return r;
+}
+function $(strings, ...values) {
+    return exec(_cmd_template_build(strings, ...values), {silent:true});
 }
 function $$(strings, ...values) {
-    let tmp = config.silent;
-    config.silent = false;
-    let res = $(strings, values);
-    config.silent = tmp;
-    return res;
+    return exec(_cmd_template_build(strings, ...values), {silent:false});
+}
+function $a(strings, ...values) {
+    return exec(_cmd_template_build(strings, ...values), {async:true});
 }
 '
 
@@ -41,7 +45,7 @@ elif [ -p /dev/stdin ]; then
 else
     # https://stackoverflow.com/a/18670532/3825872
     exec node -e "$H
-    //config.silent = false;
+    config.silent = false;
     const vm = require('vm');
     require('repl').start({
         ignoreUndefined: true,
