@@ -6,3 +6,15 @@ decoration {
     padding-right: 0px;
     padding-left: 0px;
 }
+
+headerbar {
+    background: black;
+}
+
+popover {
+    background-color: black;
+}
+
+window {
+    background-color: black;
+}
