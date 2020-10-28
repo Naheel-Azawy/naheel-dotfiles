@@ -29,7 +29,7 @@
     # the top and down respectively.
     # The width can be negative.  In this case the actual width is the
     # screen width minus the width defined in within the geometry option.
-    geometry = "350x5-5+30"
+    geometry = "300x10-5+32"
 
     # Show how many messages are currently hidden (because of geometry).
     indicate_hidden = yes
@@ -171,7 +171,7 @@
 
     # Should a notification popped up from history be sticky or timeout
     # as if it would normally do.
-    sticky_history = yes
+    sticky_history = no
 
     # Maximum amount of notifications kept in history
     history_length = 20
@@ -228,19 +228,19 @@
     # Xev might be helpful to find names for keys.
 
     # Close notification.
-    close = ctrl+space
+    # close = ctrl+space
 
     # Close all notifications.
-    close_all = ctrl+shift+space
+    # close_all = ctrl+shift+space
 
     # Redisplay last message(s).
     # On the US keyboard layout "grave" is normally above TAB and left
     # of "1". Make sure this key actually exists on your keyboard layout,
     # e.g. check output of 'xmodmap -pke'
-    history = ctrl+grave
+    # history = ctrl+grave
 
     # Context menu.
-    context = ctrl+shift+period
+    # context = ctrl+shift+period
 
 [urgency_low]
     # IMPORTANT: colors have to be defined in quotation marks.
@@ -250,7 +250,7 @@
     frame_color = "#285577"
     timeout = 5
     # Icon for notifications with low urgency, uncomment to enable
-    #icon = /path/to/icon
+    icon =
 
 [urgency_normal]
     background = "#000000"
@@ -258,7 +258,7 @@
     frame_color = "#285577"
     timeout = 5
     # Icon for notifications with normal urgency, uncomment to enable
-    #icon = /path/to/icon
+    icon =
 
 [urgency_critical]
     background = "#900000"
@@ -266,7 +266,7 @@
     frame_color = "#ff0000"
     timeout = 0
     # Icon for notifications with critical urgency, uncomment to enable
-    #icon = /path/to/icon
+    icon =
 
 # Every section that isn't one of the above is interpreted as a rules to
 # override settings for certain messages.

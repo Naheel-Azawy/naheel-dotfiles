@@ -165,6 +165,10 @@ outbindings() {
 
     bindoc 'Toggle notifications' \
            "$mod+i" "exec --no-startup-id notiftog"
+    bindoc 'Notifications pop history' \
+           "$mod+Control+i" "exec --no-startup-id dunstctl history-pop"
+    bindoc 'Close all notifications' \
+           "$mod+Shift+i" "exec --no-startup-id dunstctl close-all"
 
     bindoc 'Take a screenshot' \
            "Print"               "exec --no-startup-id screenshot"
