@@ -15,12 +15,7 @@ port = 9877
 background = '#ff000000'
 foreground = '#ffffff'
 
-color_bg = "#000000"
-color_bl = "#285577"
-color_rd = "#900000"
-color_gr = "#333333"
-
-default_items = "workspaces | clock | systray donno lang pray weather temperature wifi battery power"
+default_items = "menu workspaces | clock | systray donno lang pray weather temperature wifi battery power"
 
 # example: WM(lambda wm: print(wm.json())).run()
 class WM:
@@ -64,13 +59,13 @@ class WM:
         out = ""
         for w in self.workspaces:
             if w.focused:
-                out += f"%{{F#ffffff B{color_bl}}}"
+                out += "%{F#000000 B#ffffff}"
             elif w.visible:
-                out += f"%{{F#ffffff B{color_gr}}}"
+                out += "%{F#ffffff B#333333}"
             elif w.urgent:
-                out += f"%{{F#ffffff B{color_rd}}}"
+                out += "%{F#ffffff B#900000}"
             else:
-                out += f"%{{F#888888 B-}}"
+                out += "%{F#ffffff B-}"
             onclick = f"i3-msg workspace '{w.name}' >/dev/null"
             out += f"%{{A:{onclick}:}} "
             out += w.name
@@ -161,7 +156,7 @@ class Bar:
             r = "-"
 
             if charging:
-                r = '#00FF00' if percent >= 99 else '#FFD700'
+                r = '#FFFFFF' if percent >= 99 else '#FFD700'
                 out += f"%{{F{r}}} "
             elif percent <= 20:
                 r = '#FF0000'
@@ -289,7 +284,7 @@ class Bar:
         if arg == "period":
             return 0
 
-        return "%{A:dmenulauncher&:}%{A}"
+        return "%{A:dmenulauncher&:} START%{A}"
 
     def close(self, arg=None):
         if arg == "period":

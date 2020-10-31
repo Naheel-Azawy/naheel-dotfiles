@@ -25,6 +25,7 @@ exec i3lock \
      --date-align 0 \
      --timecolor "$COLOR" \
      --datecolor "$COLOR" \
+     --ringcolor ffffffff \
      --pass-media-keys \
      --pass-screen-keys \
      --pass-power-keys \
