@@ -445,6 +445,10 @@ map <c-p> &sxivv --lf $id $f -t
 map p $stpv "$f" | less -R
 map l $less "$f"
 
+# drag in/out
+map d &dragon -x $fx
+#map di &dragon -t
+
 # Nautilus...
 map n &nautilus .
 

@@ -305,13 +305,14 @@ outconfigs() {
     # Border size
     out for_window [class='"^.*"'] border pixel 2
 
-    # Floating windows main class
+    # Floating windows
     out for_window [class=".*__floatme__.*"] floating enable
     out for_window [title=".*__floatme__.*"] floating enable
 
-    # Sticking windows main class
+    # Sticking windows
     out for_window [class=".*__stickme__.*"] sticky enable
     out for_window [title=".*__stickme__.*"] sticky enable
+    out for_window [title="dragon"]          sticky enable
 
     # Hide borders if only one window is in the current workspace
     out hide_edge_borders smart

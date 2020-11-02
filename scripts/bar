@@ -15,7 +15,7 @@ port = 9877
 background = '#ff000000'
 foreground = '#ffffff'
 
-default_items = "menu workspaces | clock | systray donno lang pray weather temperature wifi battery power"
+default_items = "start workspaces | clock | systray donno lang pray weather temperature wifi battery power"
 
 # example: WM(lambda wm: print(wm.json())).run()
 class WM:
@@ -280,7 +280,7 @@ class Bar:
             cmd = "theterm -a '-c __floatme__ -g 65x19' 'watch -tn 1 sensors'"
             return f"%{{A:{cmd}&:}}{out}%{{A}}"
 
-    def menu(self, arg=None):
+    def start(self, arg=None):
         if arg == "period":
             return 0
 
