@@ -4,7 +4,7 @@ import sys
 import json
 
 CACHE = os.getenv("HOME") + "/.cache/launcher_recent.json"
-I3 = os.getenv("DOTFILES_DIR") + "/configs/i3.conf.gen.sh"
+KEYS = os.getenv("DOTFILES_DIR") + "/configs/sxhkdrc.gen.sh"
 
 TUIAPPS = [
     "music-player",
@@ -78,7 +78,7 @@ if cmd == "run":
         os.system("dmenupower " + run)
     elif type == "shortcuts":
         run = run.split(":")[0].strip()
-        msg = os.popen(f"{I3} -r {run}").read()
+        msg = os.popen(f"{KEYS} -r {run}").read()
         os.system(f"i3-msg '{msg}'")
     elif type == "bar":
         os.system("bar gui")
@@ -138,7 +138,7 @@ else:
     for p in [ "Suspend", "Shutdown", "Reboot", "Logout", "Lock", "Hibernate" ]:
         res.append(ident("power") + p)
 
-    shortcuts = os.popen(I3 + " -d").read().split("\n")
+    shortcuts = os.popen(KEYS + " -d").read().split("\n")
     shortcuts.pop() # remove last empty line
     for s in shortcuts:
         res.append(ident("shortcuts") + s)

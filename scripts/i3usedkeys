@@ -1,2 +1,0 @@
-#!/bin/sh
-eval "$DOTFILES_DIR/configs/i3.conf.gen.sh" --used-keys

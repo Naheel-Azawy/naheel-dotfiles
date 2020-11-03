@@ -1,5 +1,0 @@
-#!/bin/bash
-KEYS=$(eval "$DOTFILES_DIR/configs/i3.conf.gen.sh" --used-keys)
-for s in {a..z}; do
-    echo "$KEYS" | grep -Eiq "mod.*\+$s" || echo "mod+$s"
-done
