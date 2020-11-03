@@ -83,6 +83,7 @@ dots_link() {
         ln -s "$1" "$2"
     }
 
+    lnnn "$D/configs/i3.conf"             "$H/.config/i3/config"
     lnnn "$D/configs/dunstrc"             "$H/.config/dunst/dunstrc"
     lnnn "$D/configs/fish-config.fish"    "$H/.config/fish/config.fish"
     lnnn "$D/configs/fonts.conf"          "$H/.config/fontconfig/fonts.conf"
@@ -114,8 +115,8 @@ dots_link() {
 
 # update dots configs
 dots_update() {
-    mkdir -p "$HOME/.config/i3"
-    "$D/configs/i3.conf.gen.sh"
+    mkdir -p "$HOME/.config/sxhkd/"
+    "$D/configs/sxhkdrc.gen.sh"
     "$D/configs/onboard-gsettings.sh"
     dots_link
 }
