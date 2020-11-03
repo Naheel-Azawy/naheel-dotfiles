@@ -1,0 +1,29 @@
+#!/bin/sh
+
+# Tiny interface to emacs
+
+#BIDI=1
+
+BINPATH=$(realpath "$0")
+
+daemon() { emacsclient -e 0 >/dev/null || emacs --daemon "$@"; }
+die()    { exec emacsclient -e '(kill-emacs)'; }
+client() { daemon; exec emacsclient "$@"; }
+
+gui() { client -c "$@"; }
+nw()  { client -nw "$@"; }
+tnw() { exec theterm "$BINPATH" nw "$@"; }
+
+[ "$BIDI" ] &&
+    nw() { exec bicon.bin --reshape-only "$BINPATH" c -nw "$@" 2>/dev/null; }
+
+CMD="$1"
+case "$CMD" in
+    d|daemon)   shift && daemon "$@";;
+    k|kill|die)          die        ;;
+    c|client)   shift && client "$@";;
+    g|gui)      shift && gui    "$@";;
+    n|nw)       shift && nw     "$@";;
+    t|tnw)      shift && tnw    "$@";;
+    *)                   nw     "$@";;
+esac

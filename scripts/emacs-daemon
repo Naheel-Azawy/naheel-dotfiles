@@ -1,3 +1,0 @@
-#!/bin/sh
-emacsclient -e 0 >/dev/null || emacs --daemon "$@"
-

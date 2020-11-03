@@ -3,7 +3,7 @@
 # Profile file. Runs on login.
 
 export TERM="screen-256color"
-export EDITOR="emacs-in"
+export EDITOR="emx"
 export VISUAL="$EDITOR"
 export TERMINAL="st"
 export BROWSER="browser"

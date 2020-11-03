@@ -184,7 +184,7 @@ outbindings() {
     # TODO: move to personal
 
     bindhidden 'super+shift+v' '/mnt/hdd1/Private/m-launcher.sh'
-    bindhidden 'super+semicolon' "theterm 'emacs-in $HOME/Dropbox/orgmode/TODO.org'"
+    bindhidden 'super+semicolon' "emx t '$HOME/Dropbox/orgmode/TODO.org'"
     bindhidden 'super+shift+semicolon' 'calendar'
 
     # XF86 KEYS BINDINGS -----------------------------------------------------

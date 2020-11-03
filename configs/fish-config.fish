@@ -219,10 +219,7 @@ abbr stime 'date "+%s"'    # time in seconds
 abbr mtime 'date "+%s%3N"' # time in milliseconds
 abbr ntime 'date "+%s%N"'  # time in nanoseconds
 
-abbr x     'emacs-in'
-abbr xg    'emacs-gui'
-abbr xd    'emacs-daemon'
-abbr xk    'emacs-daemon-kill'
+abbr x     'emx'
 abbr xsh   'new-shell-script'
 
 abbr gita  'git add -A'

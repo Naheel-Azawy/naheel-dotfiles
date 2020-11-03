@@ -14,7 +14,7 @@ alias l='ls'
 alias ll='ls -lh'
 alias la='ls -lha'
 alias f='lf'
-alias x='emacs-in'
+alias x='emx'
 alias t='theterm --tmux'
 alias java='java $SHHH_JAVA_OPTIONS'
 

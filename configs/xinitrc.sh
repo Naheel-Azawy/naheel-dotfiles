@@ -39,6 +39,19 @@ xset r rate 230 50
 eval "$(/usr/bin/gnome-keyring-daemon --start --components=pkcs11,secrets,ssh)"
 export SSH_AUTH_SOCK
 
+# autostart programs
+env SXHKD_SHELL=dash sxhkd & # keyboard daemon
+dunst &                      # notifications daemon
+clipmenud &                  # clipboard manager daemon
+setup-xinput &               # mouse setup
+xbanish &                    # hides the cursor while typing
+syndaemon -i 0.5 -t -K -R &  # disable touchpad while typing
+emx daemon &                 # emacs daemon
+picom &                      # compositor
+setwallpaper &               # wallpaper
+lang us &                    # set language to 'us' and runs xmodmap
+mount-private &              # mount encfs private directory
+
 # start the window manager
 exec i3
 #exec sway

@@ -9,7 +9,7 @@ KEYS = os.getenv("DOTFILES_DIR") + "/configs/sxhkdrc.gen.sh"
 TUIAPPS = [
     "music-player",
     "cmus",
-    "emacs-in",
+    "emx",
     "lf",
     "vis",
     "corona",
