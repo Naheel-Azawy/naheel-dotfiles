@@ -101,7 +101,7 @@ outbindings() {
          'super+b' "$BROWSER"
 
     bind 'Open calculator' \
-         'super+plus' 'calc-floating'
+         'super+equal' 'calc-floating'
 
     bind 'Open tiny camera' \
          'super+minus' 'tiny-camera'
@@ -159,9 +159,9 @@ outbindings() {
     bind 'Take a screenshot of area to clipboard' \
          'shift+ctrl+Print' 'screenshot -a -c'
     bind 'Take a screenshot of current window' \
-         'super+Print'      'screenshot -w'
+         'alt+Print'      'screenshot -w'
     bind 'Take a screenshot of current window to clipboard' \
-         'super+ctrl+Print' 'screenshot -w -c'
+         'alt+ctrl+Print' 'screenshot -w -c'
 
     bind '¯\_(ツ)_/¯' \
          'super+backslash'       'lolcowforune'

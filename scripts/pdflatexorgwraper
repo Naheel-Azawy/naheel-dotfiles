@@ -50,7 +50,7 @@ else
         echo "$WRNS"
     fi
     #echo "$OUT"
-    rm -f "$F.aux" "$F.bbl" "$F.bcf" "$F.blg" "$F.log" "$F.out" "$F.run.xml" "$F.aux" "$F.lof" "$F.lot" "$F.toc"
+    rm -f "$F.aux" "$F.bbl" "$F.bcf" "$F.blg" "$F.log" "$F.out" "$F.run.xml" "$F.aux" "$F.lof" "$F.lot" "$F.toc" "texput.log"
     if [ "$ERRS" ]; then
         exit 1
     fi

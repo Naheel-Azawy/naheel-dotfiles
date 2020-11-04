@@ -1,28 +1,51 @@
 #!/bin/sh
-C=0 # clipboard
-W=0 # window
-A=0 # area
-for arg in $@; do
-    case $arg in
-        -c|--clipboard) C=1;;
-        -w|--window)    W=1;;
-        -a|--area)      A=1;;
-        *) echo "Unknown argument '$arg'";;
+
+# acts like gnome-screenshot
+# uses maim, xdotool, xclip
+
+help() {
+    BIN=$(basename "$0")
+    echo "usage: $BIN [-cwa] [-f FILE]"
+    echo '
+Options:
+  -c        Send the grab directly to the clipboard
+  -w        Grab a window instead of the entire screen
+  -a        Grab an area of the screen instead of the entire screen
+  -f=FILE   Save screenshot directly to this file'
+    exit 1
+}
+
+C= # clipboard
+W= # window
+A= # area
+F= # file name
+
+while getopts 'cwaf:' arg; do
+    case "$arg" in
+        c) C=1         ;;
+        w) W=1         ;;
+        a) A=1         ;;
+        f) F="$OPTARG" ;;
+        *) help        ;;
     esac
 done
+shift $((OPTIND-1))
 
 CMD="maim --hidecursor"
-if [ $W = 1 ]; then
+if [ "$W" ]; then
     CMD="$CMD -i $(xdotool getactivewindow)"
-elif [ $A = 1 ]; then
+elif [ "$A" ]; then
     CMD="$CMD -s"
 fi
 
-if [ $C = 1 ]; then
+if [ "$C" ]; then
     CMD="$CMD | xclip -selection clipboard -t image/png"
 else
-    mkdir -p "$HOME/Pictures/"
-    CMD="$CMD '$HOME/Pictures/Screenshot from $(date '+%Y-%m-%d %H-%M-%S').png'"
+    [ "$F" ] || {
+        mkdir -p "$HOME/Pictures/"
+        F="$HOME/Pictures/Screenshot from $(date '+%Y-%m-%d %H-%M-%S').png"
+    }
+    CMD="$CMD '$F'"
 fi
 
 eval "$CMD"
