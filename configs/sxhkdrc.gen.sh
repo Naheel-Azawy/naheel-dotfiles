@@ -1,3 +1,15 @@
+#!/bin/sh
+
+# A wrapper script over sxhkd config file.
+# Used to generate the config, show the shortcuts in
+# a friendly way, and few other things.
+#
+# Why not just bind keys from i3 config?
+# - sxhkd is nicer, cleaner, and smarter
+# - better to split the work
+# - I used to do it in an ugly way
+#   https://github.com/Naheel-Azawy/naheel-dotfiles/blob/b72670f9b75c56f765ff0a7897ef478be29b7a99/configs/i3.conf.gen.sh
+# - might leave i3 someday
 
 BINPATH=$(realpath "$0")
 
