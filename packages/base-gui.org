@@ -67,3 +67,4 @@
 | git      | theprayer              | https://github.com/Naheel-Azawy/theprayer        | CLI prayer time                                                  |
 | aur      | gotop                  | N.A.                                             | a nice system monitor                                            |
 | npm      | shelljs                | N.A.                                             | shell commands on js                                             |
+| git      | dragon                 | https://github.com/mwh/dragon                    | drag and drop                                                    |

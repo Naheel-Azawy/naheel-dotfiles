@@ -386,7 +386,7 @@ pkg_install_from() {
                             if [ -f autogen.sh ];  then ./autogen.sh; fi
                             if [ -f ./configure ]; then ./configure;  fi
                         } && sudo make &&
-                        sudo make install &&
+                        sudo make PREFIX=/usr/bin install &&
                         cd /tmp &&
                         sudo rm -rf "$dir" || return 1
                 else
