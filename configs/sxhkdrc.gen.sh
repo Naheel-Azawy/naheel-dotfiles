@@ -60,14 +60,6 @@ outbindings() {
     bind 'Move to previous workspace' \
          'super+shift+Tab' 'i3-msg workspace prev'
 
-    bind 'Move workspace to next monitor' \
-         'super+ctrl+p' 'i3-msg move workspace to output right'
-
-    bind 'Reload the configuration file' \
-         'super+shift+c' 'i3-msg reload'
-    bind 'Restart i3 inplace' \
-         'super+shift+r' 'i3-msg restart; pkill -USR1 -x sxhkd'
-
     bind 'Resize window' \
          'super+ctrl+{Left,Right,Up,Down}' \
          'i3-msg resize {shrink width,grow width,shrink height,grow height} 10 px or 10 ppt'
@@ -75,6 +67,12 @@ outbindings() {
     bind 'Resize window (a little bit)' \
          'super+shift+ctrl+{Left,Right,Up,Down}' \
          'i3-msg resize {shrink width,grow width,shrink height,grow height} 1 px or 1 ppt'
+
+    bind 'Move workspace to next monitor' \
+         'super+ctrl+p' 'i3-msg move workspace to output right'
+
+    bind 'Restart i3 inplace' \
+         'super+shift+r' 'i3-msg restart; pkill -USR1 -x sxhkd'
 
     # GENERAL BINDINGS -------------------------------------------------------
 
@@ -191,14 +189,6 @@ outbindings() {
     bind 'Show the system monitor' \
          'super+grave' 'i3-msg workspace \\#; system-monitor -1'
 
-    # PERSONAL BINDINGS ------------------------------------------------------
-
-    # TODO: move to personal
-
-    bindhidden 'super+shift+v' '/mnt/hdd1/Private/m-launcher.sh'
-    bindhidden 'super+semicolon' "emx t '$HOME/Dropbox/orgmode/TODO.org'"
-    bindhidden 'super+shift+semicolon' 'calendar'
-
     # XF86 KEYS BINDINGS -----------------------------------------------------
 
     bindhidden 'XF86AudioMute'                    'audioctl mute'
@@ -285,6 +275,14 @@ outbindings() {
     #bindhidden 'XF86Battery'                     ''
     #bindhidden 'XF86Bluetooth'                   ''
     bindhidden 'XF86WLAN'                         'sudo -A systemctl restart NetworkManager'
+
+    # PERSONAL BINDINGS ------------------------------------------------------
+
+    # TODO: move to personal
+
+    bindhidden 'super+shift+v' '/mnt/hdd1/Private/m-launcher.sh'
+    bindhidden 'super+semicolon' "emx t '$HOME/Dropbox/orgmode/TODO.org'"
+    bindhidden 'super+shift+semicolon' 'calendar'
 }
 
 main() {
