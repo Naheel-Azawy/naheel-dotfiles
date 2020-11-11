@@ -10,6 +10,7 @@ gbc = (name)    => `mgba-qt "${dir_gb}/${name}"`
 n64 = (name)    => `mupen64plus "${dir_n64}/${name}"`
 psx = (name)    => `mednafen "${dir_psx}/${name}"`
 win = (d, name) => `winejail win-games-${d} "${dir_win}/${d}" "${name}"`
+pol = (name)    => `pol "${name}"`
 tui = (name)    => `theterm "${name}"`
 
 games = {
@@ -29,7 +30,8 @@ games = {
     "invaders":        tui("invaders"),
     "nudoku":          tui("nudoku"),
     "tetris":          tui("tetris"),
-    "snake":           tui("snake")
+    "snake":           tui("snake"),
+    "nfs-mw":          pol("most wanted")
 }
 
 switch ($1) {
