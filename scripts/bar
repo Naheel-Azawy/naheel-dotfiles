@@ -17,6 +17,11 @@ foreground = '#ffffff'
 
 default_items = "start workspaces | clock | systray donno lang pray weather temperature wifi battery power"
 
+def primary():
+    x = os.popen("xrandr -q").read()
+    m = re.search(r"connected primary \d+x\d+(\+\d+\+\d+) ", x)
+    return m.group(1)
+
 # example: WM(lambda wm: print(wm.json())).run()
 class WM:
     def __init__(self, callback):
@@ -396,6 +401,10 @@ class Bar:
 def lemonbar():
     bin = os.path.abspath(__file__)
 
+    geometry = primary()
+    if geometry:
+        geometry = f"-g {geometry}"
+
     fonts = ["Iosevka Fixed",
              "Source Han Sans CN",
              "Font Awesome 5 Free Solid"]
@@ -409,7 +418,7 @@ def lemonbar():
     fonts = tmp
 
     os.system(f"""python3 '{bin}' -p |
-    lemonbar -p {fonts} -B '{background}' -F '{foreground}' -a 30 | sh""")
+    lemonbar {geometry} -p {fonts} -B '{background}' -F '{foreground}' -a 30 | sh""")
 
 if __name__ == "__main__":
     args = sys.argv
