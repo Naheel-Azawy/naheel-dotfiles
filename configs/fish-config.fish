@@ -206,14 +206,8 @@ abbr la    'ls -lha'
 abbr cd..  'cd ..'
 abbr mkd   'mkdir -p'
 abbr mkdc  'mkdircd'
-abbr h     'history'
 abbr g     'grep'
 abbr gr    'grep -r'
-
-abbr t     'true'
-abbr nil   'false'
-abbr fn    'function'
-abbr fun   'function'
 
 abbr stime 'date "+%s"'    # time in seconds
 abbr mtime 'date "+%s%3N"' # time in milliseconds
@@ -239,7 +233,6 @@ abbr f     'lf'
 abbr s     'please'
 abbr cb    'clipboard'
 abbr py    'python3'
-abbr ly    'lyrics'
 abbr trn   'trans'
 abbr trna  'trans :ar'
 abbr trnp  'trans -b --play'

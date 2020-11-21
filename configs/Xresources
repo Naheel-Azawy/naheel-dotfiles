@@ -48,3 +48,7 @@ Sxiv.background: rgb:00/00/00
 
 ! Cursor size
 Xcursor.size: 16
+
+! Sixel
+XTerm*decTerminalID: vt340
+XTerm*numColorRegisters: 256

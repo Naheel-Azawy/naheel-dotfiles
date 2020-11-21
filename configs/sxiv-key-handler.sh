@@ -25,7 +25,8 @@ Rotate 90
 Rotate 180
 Flip horizontally
 Flip vertically
-Set as wallpaper'
+Set as wallpaper
+Drag and drop'
 
 # put files in an array
 files=()
@@ -91,4 +92,6 @@ case "$choice" in
         esac;;
     "Play video" | "p")
         open "${files[@]}";;
+    "Drag and drop")
+        dragon "${files[@]}";;
 esac

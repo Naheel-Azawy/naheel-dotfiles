@@ -7,8 +7,11 @@
 b=/etc/pacman.d/mirrorlist."$(date '+%Y%m%d%H%M')".backup
 cp /etc/pacman.d/mirrorlist "$b"
 
+# download new list
+curl 'https://www.archlinux.org/mirrorlist/?country=all&protocol=https&ip_version=4' > /etc/pacman.d/mirrorlist
+
 # uncomment all
 sed -i 's/^#Server/Server/' "$b"
 
 # rank
-rankmirrors -n 20 "$b" | tee /etc/pacman.d/mirrorlist
+rankmirrors -n 100 "$b" | tee /etc/pacman.d/mirrorlist

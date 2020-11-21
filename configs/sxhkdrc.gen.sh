@@ -13,6 +13,14 @@
 
 BINPATH=$(realpath "$0")
 
+# TODO: move all i3 specific commands
+WM_KILL='i3-msg kill'
+WM_FULLSCREEN='i3-msg fullscreen toggle'
+WM_FLOAT='i3-msg floating toggle'
+WM_STICK='i3-msg sticky toggle'
+WM_FLOAT_FOCUS='i3-msg focus mode_toggle'
+WM_SPLIT='i3-msg split t'
+
 outbindings() {
     # WM BINDINGS ------------------------------------------------------------
 

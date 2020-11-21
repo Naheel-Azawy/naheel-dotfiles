@@ -25,9 +25,15 @@ def primary():
 # example: WM(lambda wm: print(wm.json())).run()
 class WM:
     def __init__(self, callback):
-        self.i3 = i3ipc.Connection()
-        self.title = self.i3.get_tree().find_focused().name
-        self.workspaces = self.i3.get_workspaces()
+        try:
+            self.i3 = i3ipc.Connection()
+            self.title = self.i3.get_tree().find_focused().name
+            self.workspaces = self.i3.get_workspaces()
+        except:
+            print("i3 is not connected")
+            self.title = ""
+            self.workspaces = {}
+            pass
         self.callback = callback
 
     def on_title_change(self, caller, e):
@@ -39,6 +45,8 @@ class WM:
         self.callback(self)
 
     def run(self):
+        if self.i3 is None:
+            return
         self.i3.on('workspace::focus', self.on_workspace_change)
         self.i3.on('window::title',    self.on_title_change)
         self.i3.on('window::focus',    self.on_title_change)
@@ -200,14 +208,17 @@ class Bar:
         if arg == "period":
             return 5
 
-        with open("/proc/net/wireless") as f:
-            v = re.split(r"\s+", f.read().split("\n")[2])[2]
-            v = int(float(v))
+        try:
+            with open("/proc/net/wireless") as f:
+                v = re.split(r"\s+", f.read().split("\n")[2])[2]
+                v = int(float(v))
 
-            if self.a:
-                return f"{v}%"
-            else:
-                return f"%{{A:networkmanager_dmenu&:}} {v}%%{{A}}"
+                if self.a:
+                    return f"{v}%"
+                else:
+                    return f"%{{A:networkmanager_dmenu&:}} {v}%%{{A}}"
+        except:
+            pass
 
         return None
 
@@ -272,6 +283,8 @@ class Bar:
             return f"{int(t)}°C"
         else:
             percent = int((t / m) * 100)
+            if percent < 70:
+                return None
             out = ""
             if percent > 90:
                 out += "%{F#FF0000} "
