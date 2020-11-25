@@ -17,7 +17,10 @@ case "$RES" in
     Lock)
         lockscreen;;
     Logout)
-        confirm && i3-msg exit;;
+        confirm && case "$WINDOW_MANAGER" in
+            i3)    i3-msg exit;;
+            bspwm) bspwm quit;;
+        esac;;
     Suspend)
         lockscreen && systemctl suspend;;
     Hibernate)

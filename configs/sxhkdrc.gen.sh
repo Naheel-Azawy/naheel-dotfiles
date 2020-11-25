@@ -13,95 +13,143 @@
 
 BINPATH=$(realpath "$0")
 
-# TODO: move all i3 specific commands
-WM_KILL='i3-msg kill'
-WM_FULLSCREEN='i3-msg fullscreen toggle'
-WM_FLOAT='i3-msg floating toggle'
-WM_STICK='i3-msg sticky toggle'
-WM_FLOAT_FOCUS='i3-msg focus mode_toggle'
-WM_SPLIT='i3-msg split t'
+# TODO: create your own wmctl with an option to get the cmd text.
+#       also, subscribe for events.
+[ "$WINDOW_MANAGER" ] || WINDOW_MANAGER=i3
+case "$WINDOW_MANAGER" in
+    i3)
+        WM_FULLSCREEN='i3-msg fullscreen toggle'
+        WM_FLOAT='i3-msg floating toggle'
+        WM_STICK='i3-msg sticky toggle'
+        WM_SPLIT='i3-msg split t'
+        WM_FLOAT_FOCUS='i3-msg focus mode_toggle'
+        WM_CONTAINER_FOCUS_PARENT='i3-msg focus parent'
+        WM_CONTAINER_FOCUS_CHILD='i3-msg focus child'
+        WM_WINDOW_CLOSE='i3-msg kill'
+        WM_WINDOW_FOCUS='i3-msg focus {left,right,up,down}'
+        WM_WINDOW_MOVE='i3-msg move {left,right,up,down}'
+        WM_WINDOW_RESIZE='i3-msg resize {shrink width,grow width,shrink height,grow height} 10 px or 10 ppt'
+        WM_WINDOW_RESIZE_TINY='i3-msg resize {shrink width,grow width,shrink height,grow height} 1 px or 1 ppt'
+        WM_WORKSPACE='i3-msg workspace'
+        WM_WORKSPACE_NUM='i3-msg workspace {1-9,10}'
+        WM_WORKSPACE_MOVE='i3-msg move container to workspace {1-9,10}'
+        WM_WORKSPACE_MOVE_GO='w={1-9,10}; i3-msg move container to workspace $w\\; workspace $w'
+        WM_WORKSPACE_NEXT='i3-msg workspace next'
+        WM_WORKSPACE_PREV='i3-msg workspace prev'
+        WM_WORKSPACE_MONITOR_NEXT='i3-msg move workspace to output right'
+        WM_RESTART='i3-msg restart; pkill -USR1 -x sxhkd'
+        WM_KILL='i3-msg exit'
+        ;;
+    bspwm)
+        WM_FULLSCREEN='bspc node -t ~fullscreen'
+        WM_FLOAT='bspc node -t ~floating'
+        WM_STICK='bspc node -s sticky'
+        WM_SPLIT='' # TODO
+        WM_FLOAT_FOCUS='' # TODO
+        WM_CONTAINER_FOCUS_PARENT='' # TODO
+        WM_CONTAINER_FOCUS_CHILD='' # TODO
+        WM_WINDOW_CLOSE='bspc node -c' # -k for kill
+        WM_WINDOW_FOCUS='bspc node -f {west,east,north,south}'
+        WM_WINDOW_MOVE='bspc node -s {west,east,north,south}'
+        WM_WINDOW_RESIZE='s=30; bspc node -z {right -$s 0,right $s 0,bottom 0 -$s,bottom 0 $s}'
+        WM_WINDOW_RESIZE_TINY='s=1; bspc node -z {right -$s 0,right $s 0,bottom 0 -$s,bottom 0 $s}'
+        WM_WORKSPACE='bspc desktop -f'
+        WM_WORKSPACE_NUM='bspc desktop -f {1-9,10}'
+        WM_WORKSPACE_MOVE='bspc node -d {1-9,10}'
+        WM_WORKSPACE_MOVE_GO='w={1-9,10}; bspc node -d $w && bspc desktop -f $w'
+        WM_WORKSPACE_NEXT='bspc desktop -f next'
+        WM_WORKSPACE_PREV='bspc desktop -f prev'
+        WM_WORKSPACE_MONITOR_NEXT='' # TODO
+        WM_RESTART='bspc wm -r'
+        WM_KILL='bspc quit'
+        ;;
+    *)
+        echo "Unknown window manager $WM"
+esac
 
 outbindings() {
     # WM BINDINGS ------------------------------------------------------------
 
     bind 'Kill focused window' \
-         'super+q' 'i3-msg kill'
+         'super+q' "$WM_WINDOW_CLOSE"
+
     bind 'Ignore the tmux session (if is) and kill focused window' \
-         'super+shift+q' 'theterm --tmux-ignore && i3-msg kill'
+         'super+shift+q' "theterm --tmux-ignore && $WM_WINDOW_CLOSE"
 
     bind 'Enter fullscreen mode for the focused container' \
-         'super+f' 'i3-msg fullscreen toggle'
+         'super+f' "$WM_FULLSCREEN"
 
     bind 'Toggle tiling / floating' \
-         'super+t' 'i3-msg floating toggle'
+         'super+t' "$WM_FLOAT"
 
     bind 'Toggle sticky window' \
-         'super+shift+t' 'i3-msg sticky toggle'
-
-    bind 'Change focus between tiling / floating windows' \
-         'super+slash' 'i3-msg focus mode_toggle'
+         'super+shift+t' "$WM_STICK"
 
     bind 'Toggle split' \
-         'super+shift+slash' 'i3-msg split t'
+         'super+slash' "$WM_SPLIT"
+
+    bind 'Change focus between tiling / floating windows' \
+         'super+shift+slash' "$WM_FLOAT_FOCUS"
 
     bind 'Focus the parent container' \
-         'super+a' 'i3-msg focus parent'
+         'super+a' "$WM_CONTAINER_FOCUS_PARENT"
 
     bind 'Focus the child container' \
-         'super+shift+a' 'i3-msg focus child'
+         'super+shift+a' "$WM_CONTAINER_FOCUS_CHILD"
 
     bind 'Change focus' \
-         'super+{Left,Right,Up,Down}' 'i3-msg focus {left,right,up,down}'
+         'super+{Left,Right,Up,Down}' "$WM_WINDOW_FOCUS"
 
     bind 'Move focused window' \
-         'super+shift+{Left,Right,Up,Down}' 'i3-msg move {left,right,up,down}'
-
-    bind 'Switch to workspace' \
-         'super+{0-9}' 'i3-msg workspace {0-9}'
-    bind 'Move focused container to workspace' \
-         'super+ctrl+{0-9}' 'i3-msg move container to workspace {0-9}'
-    bind 'Move focused container to workspace and go there' \
-         'super+shift+{0-9}' 'w={0-9}; i3-msg move container to workspace $w\\; workspace $w'
-
-    bind 'Move to next workspace' \
-         'super+Tab' 'i3-msg workspace next'
-    bind 'Move to previous workspace' \
-         'super+shift+Tab' 'i3-msg workspace prev'
+         'super+shift+{Left,Right,Up,Down}' "$WM_WINDOW_MOVE"
 
     bind 'Resize window' \
-         'super+ctrl+{Left,Right,Up,Down}' \
-         'i3-msg resize {shrink width,grow width,shrink height,grow height} 10 px or 10 ppt'
+         'super+ctrl+{Left,Right,Up,Down}' "$WM_WINDOW_RESIZE"
 
     bind 'Resize window (a little bit)' \
-         'super+shift+ctrl+{Left,Right,Up,Down}' \
-         'i3-msg resize {shrink width,grow width,shrink height,grow height} 1 px or 1 ppt'
+         'super+shift+ctrl+{Left,Right,Up,Down}' "$WM_WINDOW_RESIZE_TINY"
+
+    bind 'Switch to workspace' \
+         'super+{1-9,0}' "$WM_WORKSPACE_NUM"
+
+    bind 'Move focused container to workspace' \
+         'super+ctrl+{1-9,0}' "$WM_WORKSPACE_MOVE"
+
+    bind 'Move focused container to workspace and go there' \
+         'super+shift+{1-9,0}' "$WM_WORKSPACE_MOVE_GO"
+
+    bind 'Move to next workspace' \
+         'super+Tab' "$WM_WORKSPACE_NEXT"
+
+    bind 'Move to previous workspace' \
+         'super+shift+Tab' "$WM_WORKSPACE_PREV"
 
     bind 'Move workspace to next monitor' \
-         'super+ctrl+p' 'i3-msg move workspace to output right'
+         'super+ctrl+p' "$WM_WORKSPACE_MONITOR_NEXT"
 
-    bind 'Restart i3 inplace' \
-         'super+shift+r' 'i3-msg restart; pkill -USR1 -x sxhkd'
+    bind 'Restart window manager' \
+         'super+shift+r' "$WM_RESTART"
 
     # GENERAL BINDINGS -------------------------------------------------------
 
     bind 'Start a terminal' \
          'super+Return'            'theterm'
     bind 'Start a terminal with opposite split' \
-         'super+shift+Return'      'i3-msg split t; theterm'
+         'super+shift+Return'      "$WM_SPLIT; theterm"
     bind 'Start a terminal (without tmux)' \
          'super+ctrl+Return'       "$TERMINAL bash"
     bind 'Start a terminal with opposite split (without tmux)' \
-         'super+shift+ctrl+Return' "i3-msg split t; $TERMINAL bash"
+         'super+shift+ctrl+Return' "$WM_SPLIT; $TERMINAL bash"
 
     bind 'Start file manager' \
          'super+apostrophe'       'theterm lf'
     bind 'Start file manager with opposite split' \
-         'super+shift+apostrophe' 'i3-msg split t; theterm lf'
+         'super+shift+apostrophe' "$WM_SPLIT; theterm lf"
 
     bind 'Empty window' \
-         'super+e'                       'empty'
+         'super+e'                  'empty'
     bind 'Empty window with opposite split' \
-         'super+shift+e' 'i3-msg split t; empty'
+         'super+shift+e' "$WM_SPLIT; empty"
 
     bind 'Start the program launcher' \
          'super+d' 'dmenulauncher'
@@ -195,7 +243,7 @@ outbindings() {
          'super+F1' "theterm '\"$BINPATH\" -d | less'"
 
     bind 'Show the system monitor' \
-         'super+grave' 'i3-msg workspace \\#; system-monitor -1'
+         'super+grave' "$WM_WORKSPACE \\#; system-monitor -1"
 
     # XF86 KEYS BINDINGS -----------------------------------------------------
 
@@ -258,7 +306,7 @@ outbindings() {
     bindhidden 'XF86TouchpadOn'                   'synclient TouchpadOff=0'
     bindhidden 'XF86TouchpadOff'                  'synclient TouchpadOff=1'
     bindhidden 'XF86Suspend'                      'lockscreen'
-    bindhidden 'XF86Close'                        'i3-msg kill'
+    bindhidden 'XF86Close'                        "$WM_WINDOW_CLOSE"
     bindhidden 'XF86WebCam'                       'camtoggle'
     #bindhidden 'XF86Mail'                        ''
     #bindhidden 'XF86Messenger'                   ''

@@ -2,6 +2,10 @@
 
 # Profile file. Runs on login.
 
+export WINDOW_MANAGER='i3'
+# export WINDOW_MANAGER='sway'
+# export WINDOW_MANAGER='bspwm'
+# export WINDOW_MANAGER='gnome-session'
 export TERM="screen-256color"
 export EDITOR="emx"
 export VISUAL="$EDITOR"
@@ -37,7 +41,7 @@ if ! command -v apt >/dev/null; then
 
     # Start graphical server if i3 not already running.
     if [ "$(tty)" = "/dev/tty1" ]; then
-	    pgrep -x i3 || exec startx
+        pgrep -x "$WINDOW_MANAGER" || exec startx
     fi
 
 fi

@@ -79,7 +79,7 @@ if cmd == "run":
     elif type == "shortcuts":
         run = run.split(":")[0].strip()
         msg = os.popen(f"{KEYS} -r {run}").read()
-        os.system(f"i3-msg '{msg}'")
+        os.system(msg)
     elif type == "bar":
         os.system("bar gui")
     elif type == "games":

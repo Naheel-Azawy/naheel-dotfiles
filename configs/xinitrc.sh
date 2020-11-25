@@ -53,7 +53,4 @@ lang us &                    # set language to 'us' and runs xmodmap
 mount-private &              # mount encfs private directory
 
 # start the window manager
-exec i3
-#exec sway
-#exec bspwm
-#exec gnome-session
+exec "$WINDOW_MANAGER" # defined in profile
