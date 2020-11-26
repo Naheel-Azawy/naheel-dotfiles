@@ -8,6 +8,7 @@ import re
 import time
 import datetime
 import threading
+import subprocess
 import socket
 
 port = 9877
@@ -19,22 +20,72 @@ default_items = "start workspaces | clock | systray donno lang pray weather temp
 
 def primary():
     x = os.popen("xrandr -q").read()
-    m = re.search(r"connected primary \d+x\d+(\+\d+\+\d+) ", x)
-    return m.group(1)
+    m = re.search(r"connected primary \d+x\d+(\+\d+)\+\d+ ", x)
+    return m.group(1) + "+0"
 
 # example: WM(lambda wm: print(wm.json())).run()
 class WM:
     def __init__(self, callback):
-        try:
-            self.i3 = i3ipc.Connection()
-            self.title = self.i3.get_tree().find_focused().name
-            self.workspaces = self.i3.get_workspaces()
-        except:
-            print("i3 is not connected")
-            self.title = ""
-            self.workspaces = {}
-            pass
+        wm = os.environ["WINDOW_MANAGER"]
+        if wm == "i3":
+            self.impl = I3WM(callback)
+        elif wm == "bspwm":
+            self.impl = BSPWM(callback)
+        else:
+            raise Exception(f"Unknown window manager {wm}")
+
+    def run(self):
+        self.impl.run()
+
+    def title(self):
+        return self.impl.title
+
+    def json(self):
+        workspaces = {}
+        for w in self.impl.workspaces:
+            workspaces[w.name] = {
+                "visible": w.visible,
+                "focused": w.focused,
+                "urgent":  w.urgent
+            }
+        return json.dumps({
+            "title": self.impl.title,
+            "workspaces": workspaces
+        })
+
+    def lemon(self):
+        out = ""
+        for w in self.impl.workspaces:
+            if w.focused:
+                out += "%{F#000000 B#ffffff}"
+            elif w.visible:
+                out += "%{F#ffffff B#333333}"
+            elif w.urgent:
+                out += "%{F#ffffff B#900000}"
+            else:
+                out += "%{F#ffffff B-}"
+            onclick = f"{self.impl.workspace_cmd} '{w.name}' >/dev/null"
+            out += f"%{{A:{onclick}:}} "
+            out += w.name
+            #.encode(encoding="ascii",errors="backslashreplace").decode()
+            out += " %{A}"
+        out += "%{F- B-}" # reset the colors
+        return out
+
+class WMImpl:
+    def __init__(self):
+        raise Exception("Unimplemented")
+
+    def run(self):
+        raise Exception("Unimplemented")
+
+class I3WM(WMImpl):
+    def __init__(self, callback):
         self.callback = callback
+        self.i3 = i3ipc.Connection()
+        self.title = self.i3.get_tree().find_focused().name
+        self.workspaces = self.i3.get_workspaces()
+        self.workspace_cmd = "i3-msg workspace"
 
     def on_title_change(self, caller, e):
         self.title = e.container.name
@@ -45,8 +96,6 @@ class WM:
         self.callback(self)
 
     def run(self):
-        if self.i3 is None:
-            return
         self.i3.on('workspace::focus', self.on_workspace_change)
         self.i3.on('window::title',    self.on_title_change)
         self.i3.on('window::focus',    self.on_title_change)
@@ -55,37 +104,46 @@ class WM:
 
         self.i3.main()
 
-    def json(self):
-        workspaces = {}
-        for w in self.workspaces:
-            workspaces[w.name] = {
-                "visible": w.visible,
-                "focused": w.focused,
-                "urgent":  w.urgent
-            }
-        return json.dumps({
-            "title": self.title,
-            "workspaces": workspaces
-        })
+class BSPWM(WMImpl):
+    def __init__(self, callback):
+        self.callback = callback
+        self.title = ""
+        self.workspaces = []
+        self.workspace_cmd = "bspc desktop -f"
 
-    def lemon(self):
-        out = ""
-        for w in self.workspaces:
-            if w.focused:
-                out += "%{F#000000 B#ffffff}"
-            elif w.visible:
-                out += "%{F#ffffff B#333333}"
-            elif w.urgent:
-                out += "%{F#ffffff B#900000}"
-            else:
-                out += "%{F#ffffff B-}"
-            onclick = f"i3-msg workspace '{w.name}' >/dev/null"
-            out += f"%{{A:{onclick}:}} "
-            out += w.name
-            #.encode(encoding="ascii",errors="backslashreplace").decode()
-            out += " %{A}"
-        out += "%{F- B-}" # reset the colors
-        return out
+    class Workspace:
+        def __init__(self):
+            self.name    = ""
+            self.visible = False
+            self.focused = False
+            self.urgent  = False
+
+    def run(self):
+        popen = subprocess.Popen(["bspc", "subscribe", "report"],
+                                 stdout=subprocess.PIPE,
+                                 universal_newlines=True)
+        for line in iter(popen.stdout.readline, ""):
+            # check man bspc, REPORT FORMAT
+            workspaces = []
+            focused_monitor = False
+            for item in line.split(":"):
+                if item[0] == "W":
+                    item = item[1:]
+                if item[0] in ["M", "m"]:
+                    focused_monitor = item[0] == "M"
+                elif item[0] in ["O","o","F","U","u"]:
+                    w = BSPWM.Workspace()
+                    w.name    = item[1:]
+                    w.visible = item[0] in ["O", "F"]
+                    w.focused = w.visible and focused_monitor
+                    w.urgent  = item[0] in ["U", "u"]
+                    workspaces.append(w)
+            self.workspaces = workspaces
+            self.callback(self)
+        popen.stdout.close()
+        code = popen.wait()
+        if code != 0:
+            raise Exception(f"BSPWM exited with code {code}")
 
 class Bar:
     def __init__(self, use_ascii=False, items=None):
@@ -129,7 +187,7 @@ class Bar:
             return 0
 
         # TODO: title is not cleared when there is no focused window
-        title = self.wm.title
+        title = self.wm.title()
         if len(title) > 40:
             title = title[:40] + "..."
 
@@ -356,7 +414,10 @@ class Bar:
             out += " "
 
         print(out)
-        sys.stdout.flush()
+        try:
+            sys.stdout.flush()
+        except BrokenPipeError:
+            exit()
 
     def run_and_sleep(self, item):
         if item not in self.items:
@@ -394,7 +455,11 @@ class Bar:
         self.server.bind(('', port))
         self.server.listen(1)
         while self.running:
-            conn, addr = self.server.accept()
+            try:
+                conn, addr = self.server.accept()
+            except KeyboardInterrupt:
+                self.running = False
+                break
             #print(f"Connection address: {addr}")
             # recieving data
             data = b""
@@ -436,7 +501,9 @@ def lemonbar():
 if __name__ == "__main__":
     args = sys.argv
 
-    if len(args) >= 2 and args[1] == "lemon":
+    if len(args) >= 2 and args[1] == "xrandr":
+        print(primary())
+    elif len(args) >= 2 and args[1] == "lemon":
         lemonbar()
     elif len(args) >= 3 and args[1] == "update":
         item = args[2].encode()

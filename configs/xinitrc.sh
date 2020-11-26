@@ -41,6 +41,7 @@ export SSH_AUTH_SOCK
 
 # autostart programs
 env SXHKD_SHELL=dash sxhkd & # keyboard daemon
+bar lemon &                  # top bar
 dunst &                      # notifications daemon
 clipmenud &                  # clipboard manager daemon
 setup-xinput &               # mouse setup

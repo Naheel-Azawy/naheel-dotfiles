@@ -19,7 +19,7 @@ case "$RES" in
     Logout)
         confirm && case "$WINDOW_MANAGER" in
             i3)    i3-msg exit;;
-            bspwm) bspwm quit;;
+            bspwm) bspc quit;;
         esac;;
     Suspend)
         lockscreen && systemctl suspend;;

@@ -44,10 +44,10 @@ case "$WINDOW_MANAGER" in
         WM_FULLSCREEN='bspc node -t ~fullscreen'
         WM_FLOAT='bspc node -t ~floating'
         WM_STICK='bspc node -s sticky'
-        WM_SPLIT='' # TODO
-        WM_FLOAT_FOCUS='' # TODO
-        WM_CONTAINER_FOCUS_PARENT='' # TODO
-        WM_CONTAINER_FOCUS_CHILD='' # TODO
+        WM_SPLIT=':' # TODO
+        WM_FLOAT_FOCUS=':' # TODO
+        WM_CONTAINER_FOCUS_PARENT=':' # TODO
+        WM_CONTAINER_FOCUS_CHILD=':' # TODO
         WM_WINDOW_CLOSE='bspc node -c' # -k for kill
         WM_WINDOW_FOCUS='bspc node -f {west,east,north,south}'
         WM_WINDOW_MOVE='bspc node -s {west,east,north,south}'
@@ -59,7 +59,7 @@ case "$WINDOW_MANAGER" in
         WM_WORKSPACE_MOVE_GO='w={1-9,10}; bspc node -d $w && bspc desktop -f $w'
         WM_WORKSPACE_NEXT='bspc desktop -f next'
         WM_WORKSPACE_PREV='bspc desktop -f prev'
-        WM_WORKSPACE_MONITOR_NEXT='' # TODO
+        WM_WORKSPACE_MONITOR_NEXT=':' # TODO
         WM_RESTART='bspc wm -r'
         WM_KILL='bspc quit'
         ;;

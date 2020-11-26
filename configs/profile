@@ -3,9 +3,9 @@
 # Profile file. Runs on login.
 
 export WINDOW_MANAGER='i3'
-# export WINDOW_MANAGER='sway'
-# export WINDOW_MANAGER='bspwm'
-# export WINDOW_MANAGER='gnome-session'
+#export WINDOW_MANAGER='sway'
+#export WINDOW_MANAGER='bspwm'
+#export WINDOW_MANAGER='gnome-session'
 export TERM="screen-256color"
 export EDITOR="emx"
 export VISUAL="$EDITOR"
