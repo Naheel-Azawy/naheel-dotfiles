@@ -12,7 +12,12 @@ langset() {
     }
     setxkbmap -layout "$L"
     [ -f ~/.Xmodmap ] && xmodmap ~/.Xmodmap
-    bar update lang 2>/dev/null ||:
+    {
+        bar update lang &
+        BARPID=$!
+        # dunstify -i none -r 123 "Keyboard: $L"
+        kill -9 $BARPID # in case the server lags
+    } 2>/dev/null ||:
 }
 
 langtog() {

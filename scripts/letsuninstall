@@ -1,0 +1,43 @@
+#!/bin/sh
+
+list() {
+    {
+        pacman -Qdt # list orphans
+        pacman -Qet # list installed but not dependencies
+    } | cut -d ' ' -f1
+}
+
+main() {
+    # skip ones from the dotfiles
+    dotted=$(ndots list)
+
+    # ones explicitly chosen not to uninstall
+    saved_file="$HOME/.cache/letsuninstall-saved"
+    saved=$(cat "$saved_file" 2>/dev/null)
+    [ "$saved" ] || {
+        echo 'HOLDER' > "$saved_file"
+    }
+
+    while :; do
+        saved=$(cat "$saved_file")
+        pkgs=$(list | grep -v "$dotted" | grep -v "$saved" | shuf)
+        pkgs_len=$(echo "$pkgs" | wc -l)
+        pkg=$(echo "$pkgs" | head -n1)
+        info=$(pacman -Qi "$pkg")
+        pkg_size=$(echo "$info" | sed -En 's/Installed Size *: *(.+)/\1/p')
+        pkg_des=$(echo "$info" | sed -En 's/Description *: *(.+)/\1/p')
+
+        echo "There are $pkgs_len suspicious packages"
+        printf 'Would you like to remove "%s", (%s), %s?\n(y/n/q) ' \
+               "$pkg" "$pkg_size" "$pkg_des"
+        read -r ans
+        case "$ans" in
+            y) sudo pacman -R "$pkg";;
+            n) echo "$pkg" >> "$saved_file";;
+            q) break;;
+        esac
+        echo
+    done
+}
+
+main

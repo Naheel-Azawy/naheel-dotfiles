@@ -12,3 +12,10 @@ bspc config gapless_monocle      true
 # bspc rule -a '.*__floatme__.*' state=floating
 # bspc rule -a '.*__stickme__.*' sticky=on
 # bspc rule -a 'dragon'          sticky=on
+
+# dynamic workspaces
+# https://gitlab.com/protesilaos/dotfiles/-/blob/v2.2.0/bspwm/.config/bspwm/bspwmrc
+
+# borderless single window (auto monocle enabler)
+# https://github.com/baskerville/bspwm/issues/617
+# for p in {single,borderless}_monocle; do bspc config "$p" true; done

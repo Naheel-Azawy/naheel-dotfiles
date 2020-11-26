@@ -1,0 +1,77 @@
+#!/bin/sh
+
+[ "$WINDOW_MANAGER" ] || WINDOW_MANAGER=i3
+
+unknown_cmd() {
+    echo "Unknown command '$1'" 1>&2
+    exit 1
+}
+
+unknown_wm() {
+    echo "Unknown window manager '$1'" 1>&2
+    exit 1
+}
+
+get_cmd() {
+    cmd="$1"
+    case "$WINDOW_MANAGER" in
+    i3) case "$cmd" in
+        fullscreen) echo 'i3-msg fullscreen toggle';;
+        float) echo 'i3-msg floating toggle';;
+        stick) echo 'i3-msg sticky toggle';;
+        split) echo 'i3-msg split t';;
+        float_focus) echo 'i3-msg focus mode_toggle';;
+        container_focus_parent) echo 'i3-msg focus parent';;
+        container_focus_child) echo 'i3-msg focus child';;
+        window_close) echo 'i3-msg kill';;
+        window_focus) echo 'i3-msg focus {left,right,up,down}';;
+        window_move) echo 'i3-msg move {left,right,up,down}';;
+        window_resize) echo 'i3-msg resize {shrink width,grow width,shrink height,grow height} 10 px or 10 ppt';;
+        window_resize_tiny) echo 'i3-msg resize {shrink width,grow width,shrink height,grow height} 1 px or 1 ppt';;
+        workspace) echo 'i3-msg workspace';;
+        workspace_num) echo 'i3-msg workspace {1-9,10}';;
+        workspace_move) echo 'i3-msg move container to workspace {1-9,10}';;
+        workspace_move_go) echo 'w={1-9,10}; i3-msg move container to workspace $w\\; workspace $w';;
+        workspace_next) echo 'i3-msg workspace next';;
+        workspace_prev) echo 'i3-msg workspace prev';;
+        workspace_monitor_next) echo 'i3-msg move workspace to output right';;
+        restart) echo 'i3-msg restart; pkill -USR1 -x sxhkd';;
+        kill) echo 'i3-msg exit';;
+        *) unknown_cmd "$cmd";;
+        esac;;
+
+    bspwm) case "$cmd" in
+        fullscreen) echo 'bspc node -t ~fullscreen';;
+        float) echo 'bspc node -t ~floating';;
+        stick) echo 'bspc node -s sticky';;
+        split) echo ':';; # TODO
+        float_focus) echo ':';; # TODO
+        container_focus_parent) echo ':';; # TODO
+        container_focus_child) echo ':';; # TODO
+        window_close) echo 'bspc node -c';; # -k for kill
+        window_focus) echo 'bspc node -f {west,east,north,south}';;
+        window_move) echo 'bspc node -s {west,east,north,south}';;
+        window_resize) echo 's=30; bspc node -z {right -$s 0,right $s 0,bottom 0 -$s,bottom 0 $s}';;
+        window_resize_tiny) echo 's=1; bspc node -z {right -$s 0,right $s 0,bottom 0 -$s,bottom 0 $s}';;
+        workspace) echo 'bspc desktop -f';;
+        workspace_num) echo 'bspc desktop -f {1-9,10}';;
+        workspace_move) echo 'bspc node -d {1-9,10}';;
+        workspace_move_go) echo 'w={1-9,10}; bspc node -d $w && bspc desktop -f $w';;
+        workspace_next) echo 'bspc desktop -f next';;
+        workspace_prev) echo 'bspc desktop -f prev';;
+        workspace_monitor_next) echo ':';; # TODO
+        restart) echo 'bspc wm -r';;
+        kill) echo 'bspc quit';;
+        *) unknown_cmd "$cmd";;
+           esac;;
+
+    *) unknown_wm "$WINDOW_MANAGER";;
+    esac
+}
+
+main() {
+    cmd=$(get_cmd "$1")
+    eval "$cmd"
+}
+
+main "$@"
