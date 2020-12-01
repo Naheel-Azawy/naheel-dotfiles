@@ -12,10 +12,16 @@ complete -c docker-toys -a size -a          'Containers sizes'
 " | fish
 
 die() {
-    echo 'Killing all...'
-    docker kill "$(docker ps -q)"
-    echo 'Removing all...'
-    docker rm "$(docker ps -qa)"
+    PS=$(docker ps -q)
+    [ "$PS" ] && {
+        echo 'Killing all...'
+        docker kill $PS
+    }
+    PS=$(docker ps -qa)
+    [ "$PS" ] && {
+        echo 'Removing all...'
+        docker rm $PS
+    }
 }
 
 alias pop='_pop $#; eval "$POP_EXPR"'
@@ -93,7 +99,11 @@ case "$CMD" in
         read -r ans
         [ "$ans" = y ] && {
             die
-            docker rmi "$(docker images -q)"
+            IMGS=$(docker images -q)
+            [ "$IMGS" ] && {
+                echo 'Removing images...'
+                docker rmi $IMGS
+            }
         };;
 
     size)

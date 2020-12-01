@@ -1,6 +1,6 @@
 #!/bin/sh
 
-pgrep trayer && pkill trayer && exit 0
+killall trayer && exit 0
 
 eval "$(xdotool getmouselocation --shell)"
 Y=$((Y+15))

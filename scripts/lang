@@ -15,8 +15,11 @@ langset() {
     {
         bar update lang &
         BARPID=$!
+        {
+            sleep 1
+            kill -9 $BARPID # in case the server lags
+        } &
         # dunstify -i none -r 123 "Keyboard: $L"
-        kill -9 $BARPID # in case the server lags
     } 2>/dev/null ||:
 }
 
