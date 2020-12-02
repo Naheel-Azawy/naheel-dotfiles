@@ -1,104 +1,144 @@
-#!/bin/bash
+#!/bin/sh
 
-LYRICS_DIR="$HOME/Music/Music/lyrics"
-[[ ! -d "$LYRICS_DIR" ]] && mkdir -p "$LYRICS_DIR"
+LYRICS_DIR="$HOME/.lyrics"
+[ ! -d "$LYRICS_DIR" ] && mkdir -p "$LYRICS_DIR"
 
-PAGER='more'
-#PAGER='less -R -F -X'
+PAGER='less -R'
 
-function printout {
+printout() {
     fribidi --nopad | $PAGER
 }
 
-function strbetweenlines {
-    A="$1"
-    B="$2"
-    P=0
-    while read line; do
-        if echo "$line" | grep -q "$B"; then
-            P=0
-        fi
-        [[ "$P" = "1" ]] && echo "$line"
-        if echo "$line" | grep -q "$A"; then
-            P=1
-        fi
-    done
-}
-
-function getbrowsertitle {
-    WIN=$(xdotool search --onlyvisible --class "chromium")
-    [[ "$WIN" != '' ]] && xprop -id "$WIN" | sed -E -n 's/_NET_WM_NAME\(UTF8_STRING\) = "(.*)"/\1/p' | \
-            sed -rn 's/^\([0-9]+\)\s+(.+).*/\1/; s/\s*\(.+\)//; s/\s*\[.+\]//; s/[lL]yrics//; s/ - YouTube - Chromium//; s/\-//gp'
-}
-
-SET=0
-TRANS=0
-TRANS_LANG=''
-case "$1" in
-    -s|--set)   SET=1   && shift;;
-    -t|--trans) TRANS=1 && shift && TRANS_LANG="$1" && shift;;
-esac
-[[ $TRANS_LANG == '' ]] && TRANS_LANG=':en'
-
-Q="$@"
-
-if [[ "$Q" == '' ]] || [[ "$SET" == 1 ]]; then
-    cmus-remote -Q &>/dev/null && \
-        [[ $(cmus-remote -Q | sed -rn 's/status (.+)/\1/p') == playing ]] && {
-            C="$(cmus-remote -Q 2>/dev/null)"
-            T=$(echo "$C" | sed -rn 's/tag title (.+)/\1/p')
-            A=$(echo "$C" | sed -rn 's/tag artist (.+)/\1/p')
-            [[ "$T" = '' ]] && [[ "$A" = '' ]] && {
-                echo "ERROR: couldn't get info from cmus or browser"
-                exit 1
-            }
-            Q="$T by $A"
-        } || {
-            Q=$(getbrowsertitle)
-            [[ "$Q" == '' ]] && {
-                echo 'ERROR: no arguments provided, cmus is not running, and browser title not found'
-                exit 1
-            }
-        }
-fi
-
-# remove extra spaces
-Q=$(echo "$Q" | tr -s ' ')
-
-F="$LYRICS_DIR/$Q"
-
-[[ "$SET" == 1 ]] && {
-    clipboard > "$F"
-    exit 0
-}
-
-[[ "$TRANS" == 1 ]] && {
-    TF="${F} - trans$TRANS_LANG"
-    [[ -f "$TF" ]] && {
-        cat "$TF" | printout
-        exit 0
+exist() {
+    command -v "$1" >/dev/null || {
+        echo "$1 is not installed" >&2
+        return 1
     }
 }
 
-[[ -f "$F" ]] && {
-    S=$(cat "$F")
-} || {
-    Q=$(echo "$Q" | sed 's/ /+/g')
-    U=$(curl -s "https://search.azlyrics.com/search.php?q=$Q")
-    U=$(echo "$U" | sed -rn 's/.* 1\. <a href="(.+).html" .+/\1.html/p')
-    O=$(lynx -cfg=<(echo 'CHARACTER_SET:UNICODE (UTF-8)') -dump "$U")
-    S=$(echo "$O" | strbetweenlines 'Print' '\[[0-9]')
-    [[ "$S" = '' ]] && echo "ERROR on Q='$Q', U='$U'" && exit 1
-    echo "$S" | grep -q 'ERROR on' && exit 1
-    echo "$S" > "$F"
+help() {
+    echo 'Usage: lyrics [OPTION] [QUERY]'
+    echo
+    echo '  -s, --save-clipboard save the clipboard content as the lyrics'
+    echo '  -t, --trans LANG     show the translation'
+    echo '  -h, --help           display this help and exit'
 }
 
-[[ "$TRANS" == 1 ]] && {
-    echo "$S" | trans -no-bidi -b "$TRANS_LANG" 2>/dev/null | tee "$TF" | \
-        while read line; do
-            echo "$line" | fribidi --nopad
-        done | $PAGER
-} || {
-    echo "$S" | printout
+getmpd() {
+    M=$(mpc -f '%title% - %artist%' | head -n -1) && {
+        S=$(echo "$M" | tail -n 1 | sed -En 's/\[(.+)\].+/\1/p')
+        [ "$S" = playing ] && {
+            M=$(echo "$M" | head -n -1)
+            echo "$M"
+        }
+    }
 }
 
+getcmus() {
+    C=$(cmus-remote -Q) && {
+        S=$(echo "$C" | sed -En 's/status (.+)/\1/p')
+        [ "$S" = playing ] && {
+            T=$(echo "$C" | sed -rn 's/tag title (.+)/\1/p')
+            A=$(echo "$C" | sed -rn 's/tag artist (.+)/\1/p')
+            [ "$T" ] && [ "$A" ] && {
+                echo "$T - $A"
+            }
+        }
+    }
+}
+
+getbrowser() {
+    WIN=$(xdotool search --onlyvisible --class "chromium")
+    # sorry :)
+    [ "$WIN" ] || xprop -id "$WIN" | sed -En 's/_NET_WM_NAME\(UTF8_STRING\) = "(.*)"/\1/p' | sed -En 's/^\([0-9]+\)\s+(.+).*/\1/; s/\s*\(.+\)//; s/\s*\[.+\]//; s/[lL]yrics//; s/ - YouTube - Chromium//; s/\-//gp'
+}
+
+justdoit() {
+    Q=$(echo "$1" | sed 's/ /+/g')
+    URL="https://lyric-a.herokuapp.com/?action=search&name=$Q"
+    RES=$(curl "$URL")
+    RES=$(echo "$RES" | awk '
+    {
+        split($0, arr, "<hr>")
+        str = arr[2]
+        gsub("<br>", "\n", str)
+        gsub("<[^>]+>", "", str)
+        print str
+    }')
+    # https://stackoverflow.com/a/7363393/3825872
+    echo "$RES" | awk '
+    /[[:graph:]]/ {
+        # a non-empty line
+        # set the flag to begin printing lines
+        p=1      
+        # print the accumulated "interior" empty lines 
+        for (i=1; i<=n; i++) print ""
+        n=0
+        # then print this line
+        print
+    }
+    p && /^[[:space:]]*$/ {
+        # a potentially "interior" empty line. remember it.
+        n++
+    }'
+}
+
+main() {
+    SET=
+    TRANS=
+    case "$1" in
+        -s|--save-clipboard) SET=1      && shift    ;;
+        -t|--trans)          TRANS="$2" && shift 2  ;;
+        -*)                  help       && return 1 ;;
+    esac
+
+    Q=$(echo "$*" | tr -s ' ') # query; remove extra spaces
+
+    # try finding a query
+    [ "$Q" ] || Q=$(getmpd)
+    [ "$Q" ] || Q=$(getcmus)
+    [ "$Q" ] || Q=$(getbrowser)
+    [ "$Q" ] || {
+        echo 'No query found' >&2
+        return 1
+    }
+    
+    F="$LYRICS_DIR/$Q"     # cache file
+    TF="$F - trans $TRANS" # translation cache file
+
+    # save the clipboard text
+    [ "$SET" ] && {
+        exist xclip || return 1
+        xclip -o -selection clipboard > "$F"
+        return
+    }
+
+    # if the translation is cached
+    if [ "$TRANS" ]; then
+        exist trans || return 1
+        [ -f "$TF" ] && {
+            printout < "$TF"
+            exit 0
+        }
+    fi
+
+    # get the lyrics
+    if [ -f "$F" ]; then
+        S=$(cat "$F")
+    else
+        S=$(justdoit "$Q")
+        echo "$S" > "$F"
+    fi
+
+    # translate if needed
+    if [ "$TRANS" ]; then
+        echo "$S" | trans -no-bidi -b :"$TRANS" 2>/dev/null | tee "$TF" | \
+            while read -r line; do
+                echo "$line" | fribidi --nopad
+            done | $PAGER
+    else
+        echo "$S" | printout
+    fi
+}
+
+main "$@"
