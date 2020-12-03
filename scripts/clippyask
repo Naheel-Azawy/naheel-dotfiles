@@ -1,7 +1,0 @@
-#!/bin/sh
-args=$(printf "%s\n [Yes] [No]" "$@")
-clippysay "$args"
-printf '> '
-read -r c
-case "$c" in Y|y|Yes) exit 0;; esac
-exit 1

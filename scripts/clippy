@@ -1,0 +1,39 @@
+#!/bin/sh
+
+COW='# From https://github.com/curusarn/clippy-the-paperclip-cow
+# Clippy 
+# via seznam email scli
+$the_cow = <<EOC;
+   $thoughts     
+    $thoughts __ 
+     /  \\  
+    ~    ~ 
+   / \\  /_\\
+   \\o/  \\o/
+    |    | 
+    ||   |/
+    ||   ||
+    ||   ||
+    | \\_/ |
+    \\     /
+     \\___/  
+
+EOC'
+
+COW_FILE=~/.cache/clippy.cow
+[ -f $COW_FILE ] || echo "$COW" > $COW_FILE
+
+ASK=
+[ "$1" = --ask ] && ASK=1 && shift
+
+ARGS="$*"
+[ "$ASK" ] && ARGS=$(printf "%s\n [Yes] [No]" "$ARGS")
+
+cowsay -f $COW_FILE "$ARGS"
+
+if [ "$ASK" ]; then
+    printf '> '
+    read -r c
+    case "$c" in Y|y|Yes) exit 0;; esac
+    exit 1
+fi
