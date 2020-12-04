@@ -1,6 +1,12 @@
 #!/bin/sh
 
+# start the daemon
 mpd 2>/dev/null >/dev/null
+
+# start the notification daemon
+pgrep mpd-notificatio >/dev/null || {
+    nohup mpd-notification &
+}
 
 case "$1" in
     --find)

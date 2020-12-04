@@ -14,4 +14,9 @@ trayer --edge top \
 	   --transparent true \
 	   --expand true \
 	   --SetDockType false \
-	   --alpha 0
+	   --alpha 0 &
+
+# trayer doesn't set the location correctly
+# for multi-monitor setup
+sleep .1
+xdotool getactivewindow windowmove "$X" "$Y"
