@@ -2,8 +2,8 @@
 
 [ -z "$MENU_INTERFACE" ] && MENU_INTERFACE='dmenu'
 
-LANGUAGE=$(lang)
-lang us &
+#LANGUAGE=$(lang)
+#lang us &
 
 case $MENU_INTERFACE in
     dmenu)
@@ -82,4 +82,4 @@ case $MENU_INTERFACE in
         rm -f "$TMPI" "$TMPO";;
 esac
 
-lang "$LANGUAGE"
+#lang "$LANGUAGE"

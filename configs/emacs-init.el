@@ -259,9 +259,11 @@
   :bind
   ("C-x e" . iedit-mode))
 (use-package dumb-jump
+  :config
+  (add-hook 'xref-backend-functions #'dumb-jump-xref-activate)
   :bind
-  ("C-j" . dumb-jump-go)
-  ("M-j" . dumb-jump-back))
+  ("C-j" . xref-find-definitions)
+  ("M-j" . xref-pop-marker-stack))
 (use-package writeroom-mode)
 (use-package anzu :config (global-anzu-mode +1))
 (use-package academic-phrases)
