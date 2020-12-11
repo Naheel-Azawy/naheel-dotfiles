@@ -11,10 +11,6 @@ headerbar {
     background: black;
 }
 
-popover {
-    background-color: black;
-}
-
-window {
+window, dialog, messagedialog, viewport, stack, header, toolbar, popover {
     background-color: black;
 }

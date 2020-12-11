@@ -43,7 +43,6 @@
 | pacman   | system-config-printer  | N.A.                                             | a little GUI to control your printers                            |
 | aur      | xbanish                | N.A.                                             | hide the mouse cursor while typing                               |
 | pacman   | clipmenu               | N.A.                                             | a clipboard manger                                               |
-| git      | adwaita-too-dark       | https://github.com/Naheel-Azawy/adwaita-too-dark | the used GTK theme                                               |
 | pacman   | pulseaudio             | N.A.                                             | the audio system (>inb4 bloat)                                   |
 | pacman   | pamixer                | N.A.                                             | terminal audio control interface                                 |
 | pacman   | pulsemixer             | N.A.                                             | an intuitive ncurses audio controller                            |
