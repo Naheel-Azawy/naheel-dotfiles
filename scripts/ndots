@@ -151,10 +151,16 @@ dots_install() {
             /etc/sudoers 2>/dev/null
     }
 
+    ARCH_ROOT_UPDATED=
     [ "$(whoami)" = root ] && {
-        # double check sudo
-        isubuntu || pacman --noconfirm -Sy &&
-                pacman --noconfirm --needed -S sudo
+        # double check keyring, updates, sudo
+        if isarch; then
+            info "Upgrading the system"
+            pacman -S archlinux-keyring
+            pacman --noconfirm -Syu &&
+                pacman --noconfirm --needed -S sudo &&
+                ARCH_ROOT_UPDATED=1
+        fi
         if [ ! "$QUICK" ]; then
             info "Looks like you're running as root!"
             echo '1) Create a new user'
@@ -198,7 +204,7 @@ dots_install() {
     if isubuntu; then
         sudo apt update --yes
         sudo apt upgrade --yes
-    else
+    elif [ "$ARCH_ROOT_UPDATED" != 1 ]; then
         sudo grep -q '^\[multilib\]' /etc/pacman.conf ||
             printf '[multilib]\nInclude = /etc/pacman.d/mirrorlist\n' | sudo tee -a /etc/pacman.conf
         sudo pacman --noconfirm -Syu
