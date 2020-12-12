@@ -5,7 +5,8 @@ mpd 2>/dev/null >/dev/null
 
 # start the notification daemon
 pgrep mpd-notificatio >/dev/null || {
-    nohup mpd-notification &
+    # https://stackoverflow.com/a/10408906
+    nohup mpd-notification </dev/null >/dev/null 2>&1 &
 }
 
 case "$1" in
