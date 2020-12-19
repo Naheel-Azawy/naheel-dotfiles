@@ -385,6 +385,17 @@ from: https://stackoverflow.com/a/998472/3825872"
                      cfw:fchar-top-left-corner ?┏
                      cfw:fchar-top-right-corner ?┓)))
 
+;; ---- LATEX ----
+(use-package tex-site
+  :straight auctex
+  :config
+  (custom-set-variables
+   '(TeX-PDF-mode t)
+   '(TeX-source-correlate-method 'synctex)
+   '(TeX-source-correlate-mode t)
+   '(TeX-source-correlate-start-server t)
+   ))
+
 ;; ---- ORG ----
 ;; Installing Org with straight.el
 ;; https://github.crookster.org/switching-to-straight.el-from-emacs-26-builtin-package.el/#put-in-place-org-workaround

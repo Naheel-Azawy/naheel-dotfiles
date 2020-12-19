@@ -1,0 +1,8 @@
+#!/bin/sh
+
+PKG="$1"
+PID=$(adb shell ps |
+          grep "$PKG" | head -n 1 |
+          awk '{print $2}')
+
+adb logcat --pid "$PID"

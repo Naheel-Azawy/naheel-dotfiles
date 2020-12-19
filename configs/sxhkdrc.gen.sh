@@ -175,7 +175,7 @@ outbindings() {
     bind 'Lock screen' \
          'super+l'       'lockscreen'
     bind 'Power options' \
-         'super+shift+l' 'dmenupower'
+         'super+x'       'dmenupower'
 
     bind 'Mount a drive' \
          'super+m'       'dmenumount'
