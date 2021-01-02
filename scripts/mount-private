@@ -5,14 +5,30 @@
 ENC=/mnt/hdd1/Private-enc/
 DEC=/mnt/hdd1/Private/
 
-sudo mount /dev/sdb1 /mnt/hdd1
+mountpoint -q /mnt/hdd1 || sudo mount /dev/sdb1 /mnt/hdd1
 
-if [ "$1" = '-u' ]; then
-    [ "$(ls -A "$HOME/M")" ] && fusermount -u "$HOME/M"
-    [ "$(ls -A $DEC)" ]      && fusermount -u "$DEC"
-    :
-elif [ -d $ENC ] && [ ! "$(ls -A $DEC)" ]; then
-    theterm \
-        -a '-c __floatme__ -g 40x5' \
-        "echo;echo;encfs '$ENC' '$DEC'"
-fi
+case "$1" in
+    -u)
+        mountpoint -q "$HOME/M"      && fusermount -u "$HOME/M"
+        mountpoint -q "$DEC"         && fusermount -u "$DEC"
+        mountpoint -q "$HOME/.cache" && fusermount -u "$HOME/.cache"
+        ;;
+
+    -m)
+        printf 'Enter password: '
+        read -r -s p
+        mountpoint -q "$DEC" || {
+            echo "$p" | encfs -S "$ENC" "$DEC"
+        }
+        mountpoint -q "$HOME/.cache" || {
+            rm -rf ~/.cache && mkdir -p ~/.cache
+            echo "$p" | encfs -S "$HOME/.cache-enc/" "$HOME/.cache"
+        }
+        ;;
+
+    '')
+        theterm \
+            -a '-c __floatme__ -g 40x5' \
+            "echo;echo;exec '$0' -m"
+        ;;
+esac

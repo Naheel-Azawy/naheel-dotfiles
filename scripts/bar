@@ -325,6 +325,9 @@ class Bar:
             return 30 * 60
 
         f = os.getenv("HOME") + "/.cache/weatherreport"
+        if not os.path.exists(f):
+            return None
+
         with open(f) as f:
             out = f.read().split("\n")[3] # third line
             # remove colors https://stackoverflow.com/a/14693789/3825872

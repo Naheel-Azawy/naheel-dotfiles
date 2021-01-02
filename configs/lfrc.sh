@@ -348,6 +348,17 @@ cmd open-with &open --lfid $id --ask $f
 # set the default program for the current file
 cmd open-with-default &open --lfid $id --ask-default $f
 
+# chmod
+cmd chmod ${{
+               echo Enter new mode for
+               echo $fx
+               printf 'mod: '
+               read -r m
+               chmod "$m" $fx
+               lf -remote "send $id unselect"
+               lf -remote "send $id reload"
+           }}
+
 # chmod +x
 cmd chmod+x &{{
                  chmod +x $fx
@@ -424,6 +435,7 @@ map <c-v>    paste
 map <a-v>l   paste-symlink
 map <a-v>e   paste-extract
 map <a-v>s   paste-shell-executable
+map c        chmod
 
 # up and down
 map <esc><lt> top
@@ -474,9 +486,9 @@ map gp cd ~/Pictures
 map gm cd ~/Music
 map gv cd ~/Videos
 map gj cd ~/Projects
-map gg cd ~/MEGA/orgmode
-map go $lf -remote "send $id cd \"$DOTFILES_DIR\""
-map gQ $lf -remote "send $id cd \"$QU\""
-map gq $lf -remote "send $id cd \"$QU/2-Masters/3-fall-2020\""
-map gb cd ~/GoodStuff/vbox-shared/
 map gu go_usb
+map go $lf -remote "send $id cd \"$DOTFILES_DIR\""
+
+# TODO: move to personal
+map gQ $lf -remote "send $id cd \"$QU\""
+map gq $lf -remote "send $id cd \"$QU/2-Masters/4-spring-2021\""

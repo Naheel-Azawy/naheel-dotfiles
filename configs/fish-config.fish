@@ -177,10 +177,6 @@ function wdiffstr
     wdiff $a (echo -e $argv[1] | psub) (echo -e $argv[2] | psub)
 end
 
-function arduino-cli
-    command arduino-cli --config-file="$DOTFILES_DIR/configs/arduino-cli.yaml" $argv
-end
-
 function plot
     command plot $argv & disown
 end

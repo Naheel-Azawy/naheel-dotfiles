@@ -78,7 +78,7 @@ case "$choice" in
         for f in "${files[@]}"; do convert "$f" -flop "$f"; done;;
     "Flip vertically")
         for f in "${files[@]}"; do convert "$f" -flip "$f"; done;;
-    "Delete" | "d")
+    "Delete")
         if [ "${#files[@]}" = 1 ]; then
             P=$(basename "$f")
         else
@@ -87,11 +87,11 @@ case "$choice" in
         R=$(printf "Trash\nDelete permanently\nCancel" |
                 menu-interface -p "Delete $P?" -i -sb red -nf red)
         case "$R" in
-            Trash)   for f in "${files[@]}"; do trash-put "$f"; done;;
-            Delete*) for f in "${files[@]}"; do rm -f "$f";     done;;
+            Trash)   for f in "${files[@]}"; do gio trash "$f" || trash-put "$f"; done;;
+            Delete*) for f in "${files[@]}"; do rm -f "$f";                       done;;
         esac;;
     "Play video" | "p")
         open "${files[@]}";;
-    "Drag and drop")
+    "Drag and drop" | "d")
         dragon "${files[@]}";;
 esac

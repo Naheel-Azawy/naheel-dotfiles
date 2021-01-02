@@ -111,6 +111,7 @@ dots_link() {
     lnnn "$D/configs/gtk2rc"              "$H/.gtkrc-2.0"
     lnnn "$D/configs/gotop.conf"          "$H/.config/gotop/gotop.conf"
     lnnn "$D/configs/gotop-layout"        "$H/.config/gotop/mylayout"
+    lnnn "$D/configs/arduino-cli.yaml"    "$H/.arduino15/arduino-cli.yaml"
 }
 
 # update dots configs
