@@ -86,10 +86,10 @@ outbindings() {
          'super+shift+t' "$WM_STICK"
 
     bind 'Toggle split' \
-         'super+slash' "$WM_SPLIT"
+         'super+shift+slash' "$WM_SPLIT"
 
     bind 'Change focus between tiling / floating windows' \
-         'super+shift+slash' "$WM_FLOAT_FOCUS"
+         'super+slash' "$WM_FLOAT_FOCUS"
 
     bind 'Focus the parent container' \
          'super+a' "$WM_CONTAINER_FOCUS_PARENT"

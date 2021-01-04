@@ -35,7 +35,7 @@ getmpd() {
 }
 
 getcmus() {
-    C=$(cmus-remote -Q) && {
+    C=$(cmus-remote -Q 2>/dev/null) && {
         S=$(echo "$C" | sed -En 's/status (.+)/\1/p')
         [ "$S" = playing ] && {
             T=$(echo "$C" | sed -rn 's/tag title (.+)/\1/p')
@@ -49,8 +49,14 @@ getcmus() {
 
 getbrowser() {
     WIN=$(xdotool search --onlyvisible --class "chromium")
-    # sorry :)
-    [ "$WIN" ] || xprop -id "$WIN" | sed -En 's/_NET_WM_NAME\(UTF8_STRING\) = "(.*)"/\1/p' | sed -En 's/^\([0-9]+\)\s+(.+).*/\1/; s/\s*\(.+\)//; s/\s*\[.+\]//; s/[lL]yrics//; s/ - YouTube - Chromium//; s/\-//gp'
+    [ "$WIN" ] && xprop -id "$WIN" |
+            sed -En 's/_NET_WM_NAME\(UTF8_STRING\) = "(.*)"/\1/p' |
+            sed -E 's/[lL]yrics//g;
+                    s/\s*\(.+\)//g;
+                    s/\s*\[.+\]//g;
+                    s/\-//g;
+                    s/[Yy]ou[Tt]ube//g;
+                    s/[Cc]hromium//g;'
 }
 
 justdoit() {
@@ -70,8 +76,8 @@ justdoit() {
     /[[:graph:]]/ {
         # a non-empty line
         # set the flag to begin printing lines
-        p=1      
-        # print the accumulated "interior" empty lines 
+        p=1
+        # print the accumulated "interior" empty lines
         for (i=1; i<=n; i++) print ""
         n=0
         # then print this line
@@ -102,7 +108,7 @@ main() {
         echo 'No query found' >&2
         return 1
     }
-    
+
     F="$LYRICS_DIR/$Q"     # cache file
     TF="$F - trans $TRANS" # translation cache file
 

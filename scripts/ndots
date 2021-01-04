@@ -198,7 +198,9 @@ dots_install() {
     # allow no password sudo
     sudo sed -i 's/# %wheel ALL=(ALL) NOPASSWD: ALL/%wheel ALL=(ALL) NOPASSWD: ALL/' /etc/sudoers
     # add some commands to no password sudo if needed
-    nopass='%wheel ALL=(ALL) NOPASSWD: /usr/bin/updatedb,/usr/bin/shutdown,/usr/bin/reboot,/usr/bin/systemctl suspend,/usr/bin/wifi-menu,/usr/bin/mount,/usr/bin/umount,/usr/bin/pacman -Syu,/usr/bin/pacman -Syyu,/usr/bin/systemctl restart NetworkManager,/usr/bin/rc-service NetworkManager restart,/usr/bin/pacman -Syyu --noconfirm,/usr/bin/loadkeys,/usr/bin/yay,/usr/bin/chmod a+rw /sys/class/backlight/intel_backlight/brightness'
+    #  `sudo updatedb` is needed for `locate`
+    #  `sudo encfs` is needed when using the `--public` option
+    nopass='%wheel ALL=(ALL) NOPASSWD: /usr/bin/updatedb,/usr/bin/encfs,/usr/bin/chmod a+rw /sys/class/backlight/intel_backlight/brightness,/usr/bin/mount,/usr/bin/umount'
     sudo grep -q "$nopass" /etc/sudoers ||
         echo "$nopass" | sudo tee -a /etc/sudoers
 

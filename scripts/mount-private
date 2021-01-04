@@ -17,12 +17,15 @@ case "$1" in
     -m)
         printf 'Enter password: '
         read -r -s p
+        printf '\nLoading...\n'
         mountpoint -q "$DEC" || {
             echo "$p" | encfs -S "$ENC" "$DEC"
         }
         mountpoint -q "$HOME/.cache" || {
-            rm -rf ~/.cache && mkdir -p ~/.cache
-            echo "$p" | encfs -S "$HOME/.cache-enc/" "$HOME/.cache"
+            [ -d "$HOME/.cache-enc/" ] && {
+                rm -rf ~/.cache && mkdir -p ~/.cache
+                echo "$p" | sudo encfs --public -S "$HOME/.cache-enc/" "$HOME/.cache"
+            }
         }
         ;;
 
