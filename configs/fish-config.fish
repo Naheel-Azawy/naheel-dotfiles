@@ -28,7 +28,7 @@ function fish_greeting
 end
 
 function fish_prompt --description 'Write out the prompt'
-	  set -l color_cwd
+	set -l color_cwd
     set -l suffix
     set -l face
     set -l cwd
@@ -122,15 +122,6 @@ function lf
     command lf -command \
         '$printf $id > '"$fid"'' -last-dir-path=$fwd $argv
     set id (cat $fid)
-    # archivemount integration
-    set archivemount_dir "/tmp/__lf_archivemount_$id"
-    if test -f "$archivemount_dir"
-        for line in (cat "$archivemount_dir")
-            sudo umount "$line"
-            rmdir "$line"
-        end
-        rm -f "$archivemount_dir"
-    end
     # cd on exit
     if test -f "$fwd"
         set dir (cat $fwd)

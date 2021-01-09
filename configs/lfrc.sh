@@ -32,26 +32,9 @@ set icons
 # COMMANDS -------------------------------------------------------------------
 
 # define a custom 'open' command
-# This command is called when current file is not a directory. You may want to
-# use either file extensions and/or mime types here. Below uses an editor for
-# text files and a file opener for the rest.
 cmd open ${{
-              # file name
-              case "$f" in
-                  *.tar.bz|*.tar.bz2|*.tbz|*.tbz2|*.tar.gz|*.tgz|*.tar.xz|*.txz|*.zip|*.rar|*.iso)
-                      s='' && [ ! -w . ] && s='sudo'
-                      mntdir="$f-archivemount"
-                      [ ! -d "$mntdir" ] && {
-                          $s mkdir "$mntdir"
-                          $s archivemount "$f" "$mntdir"
-                          echo "$mntdir" >> "/tmp/__lf_archivemount_$id"
-                      }
-                      lf -remote "send $id cd \"$mntdir\""
-                      lf -remote "send $id reload"
-                      ;;
-                  *)
-                      open --lfid $id $fx;;
-              esac
+              archive lfopen $id $f ||
+                  open --lfid $id $fx
           }}
 
 # display git repository status in your prompt (from docs)
@@ -67,10 +50,7 @@ cmd on-cd &{{
                #fmt="\033[32;1m%u@%h\033[0m:\033[34;1m%w/\033[0m\033[1m%f$dev$git\033[0m"
                fmt=" \033[1m\033[34m%w\033[1m: \033[37m$dev\033[1m\033[32m$git\033[0m\033[0m"
                lf -remote "send $id set promptfmt \"$fmt\""
-               am="/tmp/__lf_archivemount_$id"
-               if [ "$f" ] && [ -f "$am" ] && grep -q "$f\$" "$am"; then
-                   lf -remote "send $id umountarchive"
-               fi
+               archive lfoncd $id $f
            }}
 on-cd
 
@@ -163,14 +143,7 @@ cmd paste-extract ${{
                        if [ $mode = 'copy' ]; then
                            s='' && [ ! -w . ] && s='sudo'
                            for f in $list; do
-                               case $f in
-                                   *.tar.bz|*.tar.bz2|*.tbz|*.tbz2) $s tar xjvf $f;;
-                                   *.tar.gz|*.tgz) $s tar xzvf $f;;
-                                   *.tar.xz|*.txz) $s tar xJvf $f;;
-                                   *.zip) $s unzip $f;;
-                                   *.rar) $s unrar x $f;;
-                                   *.7z) $s 7z x $f;;
-                               esac
+                               archive extract "$f"
                            done
                            lf -remote 'send load'
                            lf -remote 'send clear'
@@ -197,39 +170,13 @@ cmd paste-shell-executable ${{
                             }}
 
 # extract the current file with the right command
-# (xkcd link: https://xkcd.com/1168/)
-cmd extract ${{
-                 set -f
-                 s='' && [ ! -w . ] && s='sudo'
-                 case $f in
-                     *.tar.bz|*.tar.bz2|*.tbz|*.tbz2) $s tar xjvf $f;;
-                     *.tar.gz|*.tgz) $s tar xzvf $f;;
-                     *.tar.xz|*.txz) $s tar xJvf $f;;
-                     *.zip) $s unzip $f;;
-                     *.rar) $s unrar x $f;;
-                     *.7z) $s 7z x $f;;
-                 esac
-             }}
+cmd extract $archive extract "$f"
 
 # compress current file or selected files with tar and gunzip
-cmd tar ${{
-             set -f
-             s='' && [ ! -w . ] && s='sudo'
-             $s mkdir $1
-             $s cp -r $fx $1
-             $s tar czf $1.tar.gz $1
-             $s rm -rf $1
-         }}
+cmd tar $archive tar $1 $fx
 
 # compress current file or selected files with zip
-cmd zip ${{
-             set -f
-             s='' && [ ! -w . ] && s='sudo'
-             $s mkdir $1
-             $s cp -r $fx $1
-             $s zip -r $1.zip $1
-             $s rm -rf $1
-         }}
+cmd zip $archive zip $1 $fx
 
 # rename current file without overwrite
 cmd rename ${{
@@ -300,17 +247,6 @@ cmd pdf-auto-rename &{{
                              fi
                          done
                      }}
-
-# unmount archivemount archives if any
-cmd umountarchive ${{
-                       s='' && [ ! -w . ] && s='sudo'
-                       cat "/tmp/__lf_archivemount_$id" |
-                           while read -r line; do
-                               sudo umount "$line" &&
-                                   $s rmdir "$line"
-                           done &&
-                           $s rm -f "/tmp/__lf_archivemount_$id"
-                   }}
 
 # dynamically set number of columns
 cmd autoratios &{{

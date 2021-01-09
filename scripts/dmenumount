@@ -16,6 +16,8 @@ function ls_parts() {
 
 const mtp_dir = `${HOME}/MTP Drives`;
 
+// TODO: remove dirs if MTP mounting fails
+
 function ls_mtp() {
     let res = $`simple-mtpfs -l`;
     if (res.code != 0) {

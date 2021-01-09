@@ -1,0 +1,216 @@
+#!/bin/sh
+
+# lf integration:
+# cmd open ${{
+#     archive lfopen $id $f ||
+#         ... usual way of opening
+# }}
+# cmd on-cd &{{
+#     ...
+#     archive lfoncd $id $f
+# }}
+
+isarchive() {
+    case "$1" in
+        *.tar.bz|*.tar.bz2|*.tbz|*.tbz2|*.tar.gz|*.tgz|*.tar.xz|*.txz|*.zip|*.apk|*.jar|*.rar|*.iso)
+            return 0;;
+        *)  return 1;;
+    esac
+}
+
+getmnt() {
+    md5=$(echo "$1" | md5sum - | cut -d ' ' -f 1)
+    echo "/tmp/archivemount-wrapper/$md5"
+}
+
+getln() {
+    echo "$1-archive"
+}
+
+# 0: mounted
+# 1: not mounted
+# 2: error, cleanup required
+ismounted() {
+    q= && [ "$1" = '-q' ] && q=1 && shift
+    p=$(realpath "$1")
+    mntpath=$(getmnt "$p")
+    linkpath=$(getln "$p")
+    if [ -e "$mntpath" ]; then
+        if [ -d "$mntpath" ]; then
+            if mountpoint -q "$mntpath"; then
+                if [ -L "$linkpath" ]; then
+                    return 0
+                else
+                    return 2 # all good but not linked
+                fi
+            elif [ ! "$(ls -A "$mntpath")" ]; then
+                [ "$q" ] || echo "Error: '$mntpath' is not empty"
+                return 2
+            fi
+        else
+            [ "$q" ] || echo "Error: '$mntpath' is not a directory"
+            return 2
+        fi
+    else
+        if [ -L "$linkpath" ]; then
+            [ "$q" ] || echo "Error: '$p' is not mounted with dead link"
+            return 2
+        else
+            [ "$q" ] || echo "'$p' is not mounted"
+            return 1
+        fi
+    fi
+}
+
+umount() {
+    q= && [ "$1" = '-q' ] && q=1 && shift
+    p=$(realpath "$1")
+    if [ "$q" ]; then
+        ismounted -q "$p"
+    else
+        ismounted "$p"
+    fi
+    case $? in
+        0|2) # mounted or needs cleanup
+            mntpath=$(getmnt "$p")
+            linkpath=$(getln "$p")
+            mountpoint -q "$mntpath" &&
+                fusermount -u "$mntpath"
+            [ -d "$mntpath" ] &&
+                rmdir "$mntpath"
+            [ -L "$linkpath" ] &&
+                rm "$linkpath"
+            rm -f "${mntpath}-origin"
+            ;;
+        *) return $?;;
+    esac
+}
+
+mount() {
+    lf= && [ "$1" = '--lfid' ] && lf="$2" && shift 2
+    p=$(realpath "$1")
+    d=$(dirname "$p")
+    mntpath=$(getmnt "$p")
+    linkpath=$(getln "$p")
+    s='' && [ ! -w "$d" ] && s='sudo'
+
+    isarchive "$p" || {
+        echo "'$p' is not archive"
+        return 1
+    }
+
+    umount -q "$p"
+
+    mkdir -p "$mntpath" &&
+        archivemount "$p" "$mntpath" &&
+        $s ln -s "$mntpath" "$linkpath" &&
+        echo "$p" > "${mntpath}-origin"
+
+    echo "$linkpath"
+}
+
+umountall() {
+    for d in /tmp/archivemount-wrapper/*-origin; do
+        p=$(cat "$d")
+        if [ "$p" ]; then
+            echo "unmounting '$p'..."
+            umount "$p"
+        fi
+    done
+}
+
+extract() {
+    here= && [ "$1" = '--here' ] && here=1 && shift
+    p=$(realpath "$1")
+    s='' && [ ! -w . ] && s='sudo'
+    out="$p-extracted"
+    if [ ! "$here" ]; then
+        $s mkdir -p "$out" && cd "$out" || return 1
+    fi
+    # https://xkcd.com/1168/
+    case "$p" in
+        *.tar.bz|*.tar.bz2|*.tbz|*.tbz2) $s tar xjvf "$p" ;;
+        *.tar.gz|*.tgz)                  $s tar xzvf "$p" ;;
+        *.tar.xz|*.txz)                  $s tar xJvf "$p" ;;
+        *.zip)                           $s unzip "$p"    ;;
+        *.rar)                           $s unrar x "$p"  ;;
+        *.7z)                            $s 7z x "$p"     ;;
+        *)
+            echo "Error: unknown file format"
+            return 1;;
+    esac
+}
+
+mktar() {
+    s='' && [ ! -w . ] && s='sudo'
+    n="$1"
+    shift
+    $s tar czf "$n".tar.gz "$@"
+}
+
+mkzip() {
+    s='' && [ ! -w . ] && s='sudo'
+    n="$1"
+    shift
+    $s zip -j -r "$n".zip "$@"
+}
+
+lfopen() {
+    id="$1"
+    f="$2"
+    if isarchive "$f"; then
+        mnt=$(mount "$f")
+        [ -L "$mnt" ] && {
+            lf -remote "send $id reload"
+            lf -remote "send $id cd '$mnt'"
+        }
+    else
+        return 1
+    fi
+}
+
+lfoncd() {
+    id="$1"
+    f="$2"
+    if mountpoint -q "$f"; then
+        arc=$(echo "$f" | sed -En 's/(.+)\-archive/\1/p')
+        if ismounted "$arc"; then
+            umount "$arc"
+            lf -remote "send $id reload"
+            lf -remote "send $id select '$arc'"
+        fi
+    fi
+}
+
+help() {
+    echo 'usage: archive CMD [ARGS]'
+    echo 'Commands:'
+    echo 'mount <ARCHIVE>             mounts the archive here'
+    echo 'umount <ARCHIVE>            unmounts the archive from here'
+    echo 'umountall                   unmounts all mounted archives'
+    echo 'ismounted [-q] <ARCHIVE>    is archive mounted here'
+    echo 'isarchive <ARCHIVE>         file is archive'
+    echo 'extract [--here] <ARCHIVE>  extract the archive'
+    echo 'zip <FILE>.zip <FILES>      create a zip archive'
+    echo 'tar <FILE>.tar.gz <FILES>   create a tar.gz archive'
+}
+
+main() {
+    case "$1" in
+        mount)     shift; mount     "$@" ;;
+        umount)    shift; umount    "$@" ;;
+        umountall) shift; umountall      ;;
+        ismounted) shift; ismounted "$@" ;;
+        isarchive) shift; isarchive "$@" ;;
+        extract)   shift; extract   "$@" ;;
+        zip)       shift; mkzip     "$@" ;;
+        tar)       shift; mktar     "$@" ;;
+        lfopen)    shift; lfopen    "$@" ;;
+        lfoncd)    shift; lfoncd    "$@" ;;
+        *)
+            help
+            return 1;;
+    esac
+}
+
+main "$@"
