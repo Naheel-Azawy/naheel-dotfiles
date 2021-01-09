@@ -1,17 +1,20 @@
-#!/usr/bin/env jsh
+#!/usr/bin/env python3
+from pythonish import *
 
-dir     = `/mnt/hdd1/Public/Games`
-dir_gb  = `${dir}/gameboy`
-dir_n64 = `${dir}/n64`
-dir_psx = `${dir}/psx`
-dir_win = `${dir}/windows`
+# TODO: move to personal
 
-gbc = (name)    => `mgba-qt "${dir_gb}/${name}"`
-n64 = (name)    => `mupen64plus "${dir_n64}/${name}"`
-psx = (name)    => `mednafen "${dir_psx}/${name}"`
-win = (d, name) => `winejail win-games-${d} "${dir_win}/${d}" "${name}"`
-pol = (name)    => `pol "${name}"`
-tui = (name)    => `theterm "${name}"`
+dir     = "/mnt/hdd1/Public/Games"
+dir_gb  = f"{dir}/gameboy"
+dir_n64 = f"{dir}/n64"
+dir_psx = f"{dir}/psx"
+dir_win = f"{dir}/windows"
+
+gbc = lambda name:    sh.mgba_qt.bake(f"{dir_gb}/{name}")
+n64 = lambda name:    sh.mupen64plus.bake(f"{dir_n64}/{name}")
+psx = lambda name:    sh.mednafen.bake(f"{dir_psx}/{name}")
+win = lambda d, name: sh.winejail.bake(f"win-games-{d}", f"{dir_win}/{d}", name)
+pol = lambda name:    sh.pol.bake(name)
+tui = lambda name:    sh.theterm.bake(name)
 
 games = {
     "supermario":      gbc("Super Mario Bros. Deluxe (USA, Europe).gbc"),
@@ -26,7 +29,7 @@ games = {
     "pinball":         win("solitaire_xp", "Pinball/PINBALL.EXE"),
     "tekken3":         psx("Tekken 3/Tekken 3.cue"),
     "pepsiman":        psx("pepsiman/Pepsiman (Japan).cue"),
-    "gnome-chess":     "gnome-chess",
+    "gnome-chess":     sh.gnome_chess.bake(),
     "invaders":        tui("invaders"),
     "nudoku":          tui("nudoku"),
     "tetris":          tui("tetris"),
@@ -34,20 +37,20 @@ games = {
     "nfs-mw":          pol("most wanted")
 }
 
-switch ($1) {
-case undefined:
-    $`games $(games list | menu-interface -l 20)`
-    break
-case "list":
-    for (let g in games) echo(g)
-    break
-default:
-    let cmd = games[$1]
-    if (cmd) {
-        echo(cmd)
-        exec(cmd)
-    } else {
-        echo(`Unknown game '${$1}'`)
+if len(argv) < 2:
+    games_str = '\n'.join(games.keys())
+    game = sh.menu_interface(sh.echo(games_str), "-l", 20).strip()
+    if game in games:
+        games[game]()
+    else:
         exit(1)
-    }
-}
+else:
+    arg = argv[1]
+    if arg == "list":
+        for g in games: print(g)
+    else:
+        if arg in games:
+            games[arg]()
+        else:
+            print(f"Unknown game {arg}")
+            exit(1)

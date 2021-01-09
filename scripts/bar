@@ -9,6 +9,7 @@ import datetime
 import threading
 import subprocess
 import socket
+import signal
 
 background = '#ff000000'
 foreground = '#ffffff'
@@ -160,6 +161,19 @@ class BSPWM(WMImpl):
         if code != 0:
             raise Exception(f"bspc exited with code {code}")
 
+def item(period=0):
+    """A decorator to simplify defining periodic functions"""
+    def decorate(func):
+        def wrapper(*args, **kwargs):
+            if "period" in args:
+                return period
+            elif "name" in args:
+                return func.__name__
+            else:
+                return func(*args, **kwargs)
+        return wrapper
+    return decorate
+
 class Bar:
     def __init__(self, use_ascii=False, items=None):
         self.server = None
@@ -188,20 +202,20 @@ class Bar:
             self.items_map["c"] + \
             self.items_map["r"]
 
+        # for i in self.items:
+        #     print(i("name"), i("period"))
+        # print()
+
         self.last = {}
         self.running = False
         self.threads = []
 
-    def workspaces(self, arg=None):
-        if arg == "period":
-            return 0
-
+    @item()
+    def workspaces(self):
         return self.wm.lemon()
 
-    def program(self, arg=None):
-        if arg == "period":
-            return 0
-
+    @item()
+    def program(self):
         # TODO: title is not cleared when there is no focused window
         title = self.wm.title()
         if len(title) > 40:
@@ -216,10 +230,8 @@ class Bar:
             out += title
             return out
 
-    def clock(self, arg=None):
-        if arg == "period":
-            return 1
-
+    @item(period=1)
+    def clock(self):
         t = datetime.datetime.now().strftime("%a %Y.%m.%d %I:%M:%S %p")
         if self.a:
             return t
@@ -227,10 +239,8 @@ class Bar:
             cmd = "theterm -a '-c __floatme__ -g 70x35' 'cal -y && read -p \"\"'"
             return f"%{{A:{cmd}&:}}{t}%{{A}}"
 
-    def battery(self, arg=None):
-        if arg == "period":
-            return 3
-
+    @item(period=3)
+    def battery(self):
         acpi = os.popen("acpi -b").read().strip()
         percent = int(acpi.split(", ")[1].replace("%", ""))
         charging = "Discharging" not in acpi
@@ -278,58 +288,48 @@ class Bar:
 
             return out
 
-    def wifi(self, arg=None):
-        if arg == "period":
-            return 5
-
+    @item(period=5)
+    def wifi(self):
         try:
             with open("/proc/net/wireless") as f:
                 v = re.split(r"\s+", f.read().split("\n")[2])[2]
                 v = int(float(v))
-
                 if self.a:
                     return f"{v}%"
                 else:
                     return f"%{{A:networkmanager_dmenu&:}} {v}%%{{A}}"
         except:
             pass
-
         return None
 
-    def lang(self, arg=None):
-        if arg == "period":
-            return 0
-
+    @item()
+    def lang(self):
         out = os.popen("lang").read().strip()
         if self.a:
             return out
         else:
             return f"%{{A:lang tog:}}{out}%{{A}}"
 
-    def pray(self, arg=None):
-        if arg == "period":
-            return 30
-
+    @item(period=30)
+    def pray(self):
         out = os.popen("theprayer n 2>/dev/null").read().strip()
         if not out:
             return None
-
         if self.a:
             return out
         else:
             cmd = "theterm -a '-c __floatme__ -g 25x8' 'theprayer && read -p \"\"'"
             return f"%{{A:{cmd}&:}}  {out}%{{A}}"
 
-    def weather(self, arg=None):
-        if arg == "period":
-            return 30 * 60
-
+    @item(period=30 * 60)
+    def weather(self):
         f = os.getenv("HOME") + "/.cache/weatherreport"
         if not os.path.exists(f):
             return None
 
-        with open(f) as f:
-            out = f.read().split("\n")[3] # third line
+        with open(f, "rb") as f:
+            out = f.read().decode(errors="ignore") \
+                          .split("\n")[3] # third line
             # remove colors https://stackoverflow.com/a/14693789/3825872
             r = re.compile(r'\x1B(?:[@-Z\\-_]|\[[0-?]*[ -/]*[@-~])')
             out = r.sub("", out).strip()
@@ -347,10 +347,8 @@ class Bar:
 
         return None
 
-    def temperature(self, arg=None):
-        if arg == "period":
-            return 5
-
+    @item(period=5)
+    def temperature(self):
         o = json.loads(os.popen(f"sensors coretemp-isa-0000 -j").read()) \
             ["coretemp-isa-0000"]["Package id 0"]
         t = float(o["temp1_input"])
@@ -375,44 +373,37 @@ class Bar:
             cmd = "theterm -a '-c __floatme__ -g 65x19' 'watch -tn 1 sensors'"
             return f"%{{A:{cmd}&:}}{out}%{{A}}"
 
-    def start(self, arg=None):
-        if arg == "period":
-            return 0
-
+    @item()
+    def start(self):
         return "%{A:dmenulauncher&:} START%{A}"
 
-    def close(self, arg=None):
-        if arg == "period":
-            return 0
-
+    @item()
+    def close(self):
         return "%{A:i3-msg kill >/dev/null:}%{A}"
 
-    def power(self, arg=None):
-        if arg == "period":
-            return 0
-
+    @item()
+    def power(self):
         return "%{A:dmenupower:}%{A}"
 
-    def systray(self, arg=None):
-        if arg == "period":
-            return 0
-
+    @item()
+    def systray(self):
         return "%{A:toggle-systray&:}%{A}"
 
-    def donno(self, arg=None):
-        if arg == "period":
-            return 0
-
+    @item()
+    def donno(self):
         return "%{A:theterm 'lolcowforune -p'&:}¯\_(ツ)_/¯%{A}"
 
-    def host(self, arg=None):
-        if arg == "period":
-            return 0
-
+    @item()
+    def host(self):
         return os.uname()[1]
 
     def start_thread(self, func):
-        t = threading.Thread(target=func)
+        def wrapper():
+            try:
+                func()
+            except Exception as e:
+                print(e)
+        t = threading.Thread(target=wrapper)
         self.threads.append(t)
         t.start()
 
@@ -422,7 +413,7 @@ class Bar:
         if self.a:
             items_out = []
             for item in self.items:
-                content = self.last[item.__name__]
+                content = self.last[item("name")]
                 if not content: continue
                 items_out.append(content)
             out += " | ".join(items_out)
@@ -431,7 +422,7 @@ class Bar:
                 out += f"%{{{place}}}"
                 items_out = []
                 for item in self.items_map[place]:
-                    content = self.last[item.__name__]
+                    content = self.last[item("name")]
                     if not content: continue
                     items_out.append(content)
                 out += "  ".join(items_out)
@@ -448,9 +439,9 @@ class Bar:
             return
 
         while self.running:
-            self.last[item.__name__] = item()
+            self.last[item("name")] = item()
             self.render()
-            #print(f">>>>> CALLED {item.__name__}, sleeping {item('period')}\n")
+            # print(f">>>>> CALLED {item('name')}, sleeping {item('period')}\n")
             period = item("period")
             if period <= 0:
                 break
@@ -462,7 +453,7 @@ class Bar:
 
     def init(self):
         for item in self.items:
-            self.last[item.__name__] = item()
+            self.last[item("name")] = item()
 
     def run(self):
         self.running = True
@@ -483,13 +474,7 @@ class Bar:
         self.server.listen(1)
 
         while self.running:
-            try:
-                conn, addr = self.server.accept()
-            except KeyboardInterrupt:
-                self.running = False
-                for t in self.threads:
-                    t.join()
-                break
+            conn, addr = self.server.accept()
 
             # recieving data
             data = b""
@@ -502,10 +487,13 @@ class Bar:
             data = data[1]
             if cmd == "update":
                 item = getattr(self, data)
-                self.last[item.__name__] = item()
+                self.last[item("name")] = item()
                 self.render()
 
         self.server.close()
+
+    def stop(self):
+        self.running = False
 
 def lemonbar():
     bin = os.path.abspath(__file__)
@@ -527,7 +515,14 @@ def lemonbar():
     fonts = tmp
 
     os.system(f"""python3 '{bin}' -p |
-    lemonbar {geometry} -p {fonts} -B '{background}' -F '{foreground}' -a 30 | sh""")
+    lemonbar {geometry} -p {fonts} -B '{background}' -F '{foreground}' -a 30 |
+    sh""")
+
+def on_int(bar):
+    bar.stop()
+    # for t in b.threads:
+    #     t.join()
+    exit() # TODO: close threads properly
 
 if __name__ == "__main__":
     args = sys.argv
@@ -564,6 +559,7 @@ if __name__ == "__main__":
             items = args[1]
 
         b = Bar(use_ascii=a, items=items)
+        signal.signal(signal.SIGINT, lambda signal, frame: on_int(b))
         if p:
             b.run()
         else:
