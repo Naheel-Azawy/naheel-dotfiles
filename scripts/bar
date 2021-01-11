@@ -212,7 +212,7 @@ class Bar:
 
     @item()
     def workspaces(self):
-        return self.wm.lemon()
+        return self.wm.lemon() if not self.a else None
 
     @item()
     def program(self):
@@ -247,7 +247,7 @@ class Bar:
 
         if self.a:
             charging = "~" if charging else ""
-            return f"{charging}{percent}%"
+            return f"b{charging}{percent}%"
         else:
             out = ""
             r = "-"
@@ -295,7 +295,7 @@ class Bar:
                 v = re.split(r"\s+", f.read().split("\n")[2])[2]
                 v = int(float(v))
                 if self.a:
-                    return f"{v}%"
+                    return f"s{v}%"
                 else:
                     return f"%{{A:networkmanager_dmenu&:}} {v}%%{{A}}"
         except:
@@ -316,7 +316,7 @@ class Bar:
         if not out:
             return None
         if self.a:
-            return out
+            return f"p{out}"
         else:
             cmd = "theterm -a '-c __floatme__ -g 25x8' 'theprayer && read -p \"\"'"
             return f"%{{A:{cmd}&:}}  {out}%{{A}}"
@@ -335,7 +335,7 @@ class Bar:
             out = r.sub("", out).strip()
             s = re.search(".+[ \.](\d+) °C", out) # extract the temperature
             try:
-                out = s.group(1) + "°C"
+                out = f"w{s.group(1)}°C"
             except:
                 return None
 
@@ -353,13 +353,14 @@ class Bar:
             ["coretemp-isa-0000"]["Package id 0"]
         t = float(o["temp1_input"])
         m = float(o["temp1_max"])
+        
+        percent = int((t / m) * 100)
+        if percent < 70:
+            return None
 
         if self.a:
-            return f"{int(t)}°C"
+            return f"t{int(t)}°C"
         else:
-            percent = int((t / m) * 100)
-            if percent < 70:
-                return None
             out = ""
             if percent > 90:
                 out += "%{F#FF0000} "
@@ -375,23 +376,24 @@ class Bar:
 
     @item()
     def start(self):
-        return "%{A:dmenulauncher&:} START%{A}"
+        return "%{A:dmenulauncher&:} START%{A}" if not self.a else None
 
     @item()
     def close(self):
-        return "%{A:i3-msg kill >/dev/null:}%{A}"
+        return "%{A:i3-msg kill >/dev/null:}%{A}" if not self.a else None
 
     @item()
     def power(self):
-        return "%{A:dmenupower:}%{A}"
+        return "%{A:dmenupower:}%{A}" if not self.a else None
 
     @item()
     def systray(self):
-        return "%{A:toggle-systray&:}%{A}"
+        return "%{A:toggle-systray&:}%{A}" if not self.a else None
 
     @item()
     def donno(self):
-        return "%{A:theterm 'lolcowforune -p'&:}¯\_(ツ)_/¯%{A}"
+        return "%{A:theterm 'lolcowforune -p'&:}¯\_(ツ)_/¯%{A}" \
+            if not self.a else None
 
     @item()
     def host(self):

@@ -1,10 +1,9 @@
 #!/bin/python3
-import os
-import sys
+from pythonish import *
 import json
 
-CACHE = os.getenv("HOME") + "/.cache/launcher_recent.json"
-KEYS = os.getenv("DOTFILES_DIR") + "/configs/sxhkdrc.gen.sh"
+CACHE = f"{HOME}/.cache/launcher_recent.json"
+KEYS = f"{DOTFILES_DIR}/configs/sxhkdrc.gen.sh"
 
 TUIAPPS = [
     "music-player",
@@ -13,11 +12,11 @@ TUIAPPS = [
     "lf",
     "vis",
     "corona",
-    "alsamixer"
+    "alsamixer",
+    "lyrics"
 ]
 
-GAMES = os.popen("games list").read().split("\n")
-GAMES.pop() # remove last empty line
+GAMES = sh.games("list").strip().split("\n")
 
 # TODO: commands from x window apps
 COMMANDS = {
@@ -43,8 +42,8 @@ def inc(recent, b):
         recent[b] = 1
     json.dump(recent, open(CACHE, 'w'))
 
-cmd = sys.argv[1] if len(sys.argv) > 1 else None
-arg = sys.argv[2] if len(sys.argv) > 2 else None
+cmd = argv[1] if len(argv) > 1 else None
+arg = argv[2] if len(argv) > 2 else None
 
 if cmd == "istui":
     exit(0 if istui(arg) else 1)
@@ -75,21 +74,22 @@ if cmd == "run":
     type = type.strip()
 
     if type == "power":
-        os.system("dmenupower " + run)
+        sh.dmenupower(run)
     elif type == "shortcuts":
         run = run.split(":")[0].strip()
         msg = os.popen(f"{KEYS} -r {run}").read()
         os.system(msg)
     elif type == "bar":
-        os.system("bar gui")
+        #os.system("bar gui") # TODO: handle
+        pass
     elif type == "games":
-        os.system(f"games {run}")
+        sh.games(run)
     else:
         exe = run.split()[0]
         if os.popen(f"command -v {exe}").close() != 256:
             inc(recent, exe)
             if istui(exe):
-                os.system(f"theterm '{run}'")
+                sh.theterm(run)
             else:
                 os.system(run)
     exit()
@@ -131,22 +131,24 @@ elif cmd == "all":
     for b in allbins:
         print(b)
 else:
-    res = []
+    items_count = 0
+    def printout(s):
+        print(s)
+        #global items_count
+        #items_count += 1
+        #if items_count == 5:
+        #    print(ident("bar") + sh.bar("-a").strip())
+    
     for b in recent:
-        res.append(ident("games" if b in GAMES else "recent") + b)
+        printout(ident("games" if b in GAMES else "recent") + b)
 
     for p in [ "Suspend", "Shutdown", "Reboot", "Logout", "Lock", "Hibernate" ]:
-        res.append(ident("power") + p)
+        printout(ident("power") + p)
 
     shortcuts = os.popen(KEYS + " -d").read().split("\n")
     shortcuts.pop() # remove last empty line
     for s in shortcuts:
-        res.append(ident("shortcuts") + s)
+        printout(ident("shortcuts") + s)
 
     for b in bins:
-        res.append(ident("games" if b in GAMES else "bins") + b)
-
-    #res.insert(5, ident("bar") + os.popen("bar line").read().split('\n')[0])
-
-    for e in res:
-        print(e)
+        printout(ident("games" if b in GAMES else "bins") + b)
