@@ -1,5 +1,6 @@
 #!/bin/python3
 
+from pythonish import *
 import os
 import sys
 import json
@@ -14,7 +15,7 @@ import signal
 background = '#ff000000'
 foreground = '#ffffff'
 
-default_items = "start workspaces | clock | systray donno lang pray weather temperature wifi battery power"
+default_items = "start workspaces program | clock | systray donno lang pray weather temperature wifi battery power"
 
 port_file = "/tmp/.nbarport"
 
@@ -26,7 +27,7 @@ def primary():
 # example: WM(lambda wm: print(wm.json())).run()
 class WM:
     def __init__(self, callback):
-        wm = os.environ["WINDOW_MANAGER"]
+        wm = WINDOW_MANAGER
         if wm == "i3":
             self.impl = I3WM(callback)
         elif wm == "bspwm":
@@ -105,10 +106,10 @@ class I3WM(WMImpl):
             w.urgent  = item["urgent"]
             workspaces.append(w)
         self.workspaces = workspaces
-        self.callback(self)
 
     def run(self):
         self.update()
+        self.callback(self)
         popen = subprocess.Popen(["i3-msg", "-t", "subscribe", "-m",
                                   '[ "workspace", "window" ]'],
                                  stdout=subprocess.PIPE,
@@ -122,6 +123,7 @@ class I3WM(WMImpl):
                     self.update()
             except KeyError:
                 workspace_event = False
+            self.callback(self)
         popen.stdout.close()
         code = popen.wait()
         if code != 0:
@@ -216,19 +218,26 @@ class Bar:
 
     @item()
     def program(self):
-        # TODO: title is not cleared when there is no focused window
-        title = self.wm.title()
-        if len(title) > 40:
-            title = title[:40] + "..."
+        try:
+            win_id = sh.xdotool("getactivewindow").strip()
+            prop = sh.xprop("-id", win_id).strip()
+            match = re.search('.*WM_NAME\(UTF8_STRING\) = "(.+)"', prop)
+            if not match: return None
+            title = match.group(1)
 
-        if self.a:
-            return title
-        else:
-            out = ""
-            if title:
-                out += "%{A:i3-msg kill >/dev/null:}%{A} "
-            out += title
-            return out
+            if len(title) > 40:
+                title = title[:40] + "..."
+
+            if self.a:
+                return title
+            else:
+                out = ""
+                if title:
+                    out += "%{A:i3-msg kill >/dev/null:}%{A} "
+                out += title
+                return out
+        except:
+            return None
 
     @item(period=1)
     def clock(self):
@@ -323,7 +332,7 @@ class Bar:
 
     @item(period=30 * 60)
     def weather(self):
-        f = os.getenv("HOME") + "/.cache/weatherreport"
+        f = f"{HOME}/.cache/weatherreport"
         if not os.path.exists(f):
             return None
 
@@ -335,12 +344,12 @@ class Bar:
             out = r.sub("", out).strip()
             s = re.search(".+[ \.](\d+) °C", out) # extract the temperature
             try:
-                out = f"w{s.group(1)}°C"
+                out = f"{s.group(1)}°C"
             except:
                 return None
 
             if self.a:
-                return out
+                return f"w{out}"
             else:
                 cmd = "theterm -a '-c __floatme__ -g 63x38' 'weather-update & head -n 37 ~/.cache/weatherreport && read -p \"\"'"
                 return f"%{{A:{cmd}&:}}  {out}%{{A}}"
@@ -353,7 +362,7 @@ class Bar:
             ["coretemp-isa-0000"]["Package id 0"]
         t = float(o["temp1_input"])
         m = float(o["temp1_max"])
-        
+
         percent = int((t / m) * 100)
         if percent < 70:
             return None
