@@ -15,7 +15,7 @@ import signal
 background = '#ff000000'
 foreground = '#ffffff'
 
-default_items = "start workspaces program | clock | systray donno lang pray weather temperature wifi battery power"
+default_items = "start workspaces | clock | systray donno lang pray weather temperature wifi battery power"
 
 port_file = "/tmp/.nbarport"
 
@@ -224,6 +224,15 @@ class Bar:
             match = re.search('.*WM_NAME\(UTF8_STRING\) = "(.+)"', prop)
             if not match: return None
             title = match.group(1)
+            cmd = None
+            if title.endswith("theterm"):
+                try:
+                    pid = sh.theterm("--good-pid").strip()
+                    cmd = sh.ps("-p", pid, "-o", "command", "-h").strip()
+                except:
+                    pass
+            if cmd:
+                title = cmd
 
             if len(title) > 40:
                 title = title[:40] + "..."
