@@ -694,7 +694,7 @@ main() {
         'eval')
             eval "$@";;
         '')
-            cd "$DOTFILES_DIR" && open ;;
+            cd "$DOTFILES_DIR" && exec open ;;
         *)
             help;;
     esac

@@ -2,5 +2,5 @@
 
 TOP=gotop
 
-[ "$1" = -1 ] && pgrep $TOP && exit 1
-theterm $TOP
+[ "$1" = -1 ] && G=$(pgrep $TOP) && exit 1
+theterm "exec $TOP"

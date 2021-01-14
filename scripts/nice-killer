@@ -1,0 +1,32 @@
+#!/bin/sh
+
+# For normal windows, just kill them the usual way.
+# For terminal windows, send keys base on the currnet command.
+# If the pid doesn't change, close the usual way.
+
+ID=$(xdotool getactivewindow)
+PROP=$(xprop -id "$ID")
+CLASS=$(echo "$PROP" | sed -En 's/WM_CLASS\(STRING\) = "(.*)"/\1/p')
+
+case "$CLASS" in
+    st-*) # assuming st is the terminal
+        # sleep .1
+        PID=$(theterm --good-pid) # this already takes some time
+        CMD=$(ps -p "$PID" -o command -h)
+
+        case "$CMD" in
+            less*|lf*) xdotool key q                   ;;
+            nano*)     xdotool key Control+x           ;;
+            emacs*)    xdotool key Control+x Control+c ;;
+            *)         xdotool key Control+q           ;;
+        esac
+
+        OLD_PID="$PID"
+        sleep .1
+        PID=$(theterm --good-pid)
+        if [ "$OLD_PID" = "$PID" ]; then
+            exec xdotool windowkill "$ID"
+        fi;;
+
+    *) exec xdotool windowkill "$ID";;
+esac

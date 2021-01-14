@@ -34,14 +34,14 @@ openfile() {
                 url=$(cat "$f")
                 browser "$url" 2>&1 | lfsend &;;
             *.el.gz)
-                $EDITOR "$f";;
+                exec "$EDITOR" "$f";;
             *)
                 # mime type
                 case $(file --mime-type "$(realpath """$f""")" -b) in
                     text/*|*/json|*empty|application/javascript|application/x-elc)
-                        $EDITOR "$f";;
+                        exec "$EDITOR" "$f";;
                     image/x-xcf)
-                        $OPENER "$f" 2>&1 | lfsend &;;
+                        "$OPENER" "$f" 2>&1 | lfsend &;;
                     image/*)
                         if [ "$LFID" ]; then
                             sxivv --lf "$LFID" "$f" >/dev/null 2>&1 | lfsend &
@@ -51,7 +51,7 @@ openfile() {
                     audio/*)
                         music-play "$f";;
                     *)
-                        $OPENER "$f" 2>&1 | lfsend &;;
+                        "$OPENER" "$f" 2>&1 | lfsend &;;
                 esac
         esac
     fi
@@ -111,11 +111,13 @@ FORCEOPENER=''
     exit 0
 }
 
-for f in "$@"; do
-    # if no such file
-    [ ! -e "$f" ] && {
-        $EDITOR "$f"
-        exit 0
-    }
-    openfile "$f"
-done
+# open the first, skip others.
+# this choice was made so we can exec
+f="$1"
+
+# if no such file
+[ ! -e "$f" ] && {
+    exec "$EDITOR" "$f"
+    exit
+}
+openfile "$f"

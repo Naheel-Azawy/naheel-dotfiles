@@ -248,6 +248,8 @@ abbr ytdla 'youtube-dl --add-metadata -xic --audio-format mp3'
 
 set -x TERM "screen-256color"
 
+bind \cq exit
+
 function try_export;   [ -d $argv[2] ] && export $argv[1]=$argv[2];:;     end
 function try_add_path; [ -d $argv[1] ] && export PATH="$PATH:$argv[1]";:; end
 test -f "$DOTFILES_DIR/configs/more-paths.sh" && \
