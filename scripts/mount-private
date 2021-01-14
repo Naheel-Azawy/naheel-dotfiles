@@ -5,7 +5,16 @@
 ENC=/mnt/hdd1/Private-enc/
 DEC=/mnt/hdd1/Private/
 
-mountpoint -q /mnt/hdd1 || sudo mount /dev/sdb1 /mnt/hdd1
+mountpoint -q /mnt/hdd1 || {
+    mkdir -p /mnt/hdd1
+    sudo mount /dev/sdb1 /mnt/hdd1
+    [ -d "$ENC" ] || {
+        # if the expect directory is not there,
+        # then this is not supposed to run here.
+        sudo umount /mnt/hdd1
+        exit
+    }
+}
 
 case "$1" in
     -u)
