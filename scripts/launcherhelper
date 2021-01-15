@@ -89,7 +89,7 @@ if cmd == "run":
         if os.popen(f"command -v {exe}").close() != 256:
             inc(recent, exe)
             if istui(exe):
-                sh.theterm(run)
+                sh.theterm(f"exec {run}")
             else:
                 os.system(run)
     exit()

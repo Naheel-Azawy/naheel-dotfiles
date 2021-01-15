@@ -219,15 +219,10 @@ class Bar:
     @item()
     def program(self):
         try:
-            win_id = sh.xdotool("getactivewindow").strip()
-            prop = sh.xprop("-id", win_id).strip()
-            match = re.search('.*WM_NAME\(UTF8_STRING\) = "(.+)"', prop)
-            if not match: return None
-            title = match.group(1)
-
-            if len(title) > 40:
-                title = title[:40] + "..."
-
+            title = sh.xdotool("getactivewindow", "getwindowname").strip()
+            max_title = 55
+            if len(title) > max_title:
+                title = title[:max_title] + "..."
             if self.a:
                 return title
             else:
