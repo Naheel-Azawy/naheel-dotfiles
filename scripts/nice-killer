@@ -3,7 +3,8 @@
 # For normal windows, just kill them the usual way.
 # For terminal windows, close magically.
 
-CLASS=$(xprop -id "$(xdotool getactivewindow)" |
+ID=$(xdotool getactivewindow)
+CLASS=$(xprop -id "$ID" |
             sed -En 's/WM_CLASS\(STRING\) = "(.*)"/\1/p' |
             sed 's/".*//')
 
