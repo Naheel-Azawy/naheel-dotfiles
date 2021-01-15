@@ -7,7 +7,7 @@ import json
 import re
 import time
 import datetime
-import threading
+import asyncio
 import subprocess
 import socket
 import signal
@@ -18,11 +18,6 @@ foreground = '#ffffff'
 default_items = "start workspaces program | clock | systray donno lang pray weather temperature wifi battery power"
 
 port_file = "/tmp/.nbarport"
-
-def primary():
-    x = os.popen("xrandr -q").read()
-    m = re.search(r"connected primary \d+x\d+(\+\d+)\+\d+ ", x)
-    return m.group(1) + "+0"
 
 # example: WM(lambda wm: print(wm.json())).run()
 class WM:
@@ -35,8 +30,8 @@ class WM:
         else:
             raise Exception(f"Unknown window manager {wm}")
 
-    def run(self):
-        self.impl.run()
+    async def run(self):
+        await asyncio.to_thread(self.impl.run)
 
     def title(self):
         return self.impl.title
@@ -176,7 +171,7 @@ def item(period=0):
         return wrapper
     return decorate
 
-class Bar:
+class BarBase:
     def __init__(self, use_ascii=False, items=None):
         self.server = None
         self.a = use_ascii
@@ -204,17 +199,119 @@ class Bar:
             self.items_map["c"] + \
             self.items_map["r"]
 
-        # for i in self.items:
-        #     print(i("name"), i("period"))
-        # print()
-
         self.last = {}
         self.running = False
-        self.threads = []
+        self.coroutines = []
+        self.tasks = None
+
+    def print_items(self):
+        for i in self.items:
+            print(i("name"), i("period"))
+
+    def render(self):
+        out = ""
+
+        if self.a:
+            items_out = []
+            for item in self.items:
+                content = self.last[item("name")]
+                if not content: continue
+                items_out.append(content)
+            out += " | ".join(items_out)
+        else:
+            for place in self.items_map:
+                out += f"%{{{place}}}"
+                items_out = []
+                for item in self.items_map[place]:
+                    content = self.last[item("name")]
+                    if not content: continue
+                    items_out.append(content)
+                out += "  ".join(items_out)
+            out += " "
+
+        print(out)
+        try:
+            sys.stdout.flush()
+        except BrokenPipeError:
+            exit(1)
+
+    def run_item(self, item):
+        self.last[item("name")] = item()
+
+    async def run_periodic_item(self, item):
+        if item not in self.items:
+            return
+        while self.running:
+            self.run_item(item)
+            self.render()
+            # print(f">>>>> CALLED {item('name')}, sleeping {item('period')}\n")
+            period = item("period")
+            if period <= 0:
+                break
+            await asyncio.sleep(period)
+
+    def run_wm_items(self, wm):
+        self.run_item(self.workspaces)
+        self.run_item(self.program)
+        self.render()
+
+    async def handle_connection(self, reader, writer):
+        data = b""
+        while True:
+            tmp = await reader.read(1024)
+            data += tmp
+            if not tmp: break
+        data = data.decode().split("?")
+        cmd = data[0]
+        data = data[1]
+        if cmd == "update":
+            item = getattr(self, data)
+            self.last[item("name")] = item()
+            self.render()
+
+    def init(self):
+        for item in self.items:
+            self.run_item(item)
+
+    async def run(self):
+        if self.running:
+            return
+        self.running = True
+        self.init()
+        self.render()
+        coroutines = []
+        # window manager
+        coroutines.append(self.wm.run())
+        # periodic items
+        for item in self.items:
+            if item("period") > 0:
+                coroutines.append(self.run_periodic_item(item))
+        # server
+        server = await asyncio.start_server(
+            self.handle_connection, "localhost", 0)
+        port = server.sockets[0].getsockname()[1]
+        with open(port_file, "w") as f:
+            f.write(str(port))
+        coroutines.append(server.serve_forever())
+        self.tasks = asyncio.gather(*coroutines)
+        try:
+            await self.tasks
+        except asyncio.CancelledError:
+            pass
+
+    def stop(self):
+        self.running = False
+        self.tasks.cancel()
+
+class Bar(BarBase):
 
     @item()
     def workspaces(self):
         return self.wm.lemon() if not self.a else None
+
+    @item()
+    def add(self):
+        return "%{A:echo:}%{A}" if not self.a else None
 
     @item()
     def program(self):
@@ -258,10 +355,12 @@ class Bar:
 
             if charging:
                 r = '#FFFFFF' if percent >= 99 else '#FFD700'
-                out += f"%{{F{r}}} "
+                out += " "
             elif percent <= 20:
-                r = '#FF0000'
-                out += f"%{{F{r}}}"
+                if percent > 10:
+                    r = '#FF0000'
+                else:
+                    r = '#000000'
                 if percent <= 15:
                     out += " "
 
@@ -274,21 +373,21 @@ class Bar:
             else:
                 out += ""
 
-            out += f"%{{F-}} {percent}%"
-            cmd = "theterm -a '-c __floatme__ -g 75x3' 'watch -tn 1 acpi -i'"
-            out = f"%{{A:{cmd}:}}{out}%{{A}}"
+            out += f" {percent}%"
 
-            def notif(msg):
-                os.system(f"dunstify -u critical -r 12345 '{msg}'")
-
-            if not charging:
+            if percent <= 10 and not charging:
+                msg = "%{B#FF0000} "
                 if percent <= 5:
-                    notif("SHUTTING DOWN!")
-                    os.system("systemctl poweroff")
+                    msg += "SHUTTING DOWN "
+                    sh.systemctl("poweroff")
                 elif percent <= 7:
-                    notif(f"VERY LOW BATTERY {percent}% WILL SHUTDOWN AT 5%!!!")
-                elif percent < 10:
-                    notif(f"LOW BATTERY {percent}%")
+                    msg += "WILL SHUTDOWN AT 5% "
+                elif percent <= 10:
+                    msg += "LOW BATTERY "
+                out = msg + out + " %{B-}"
+
+            cmd = "theterm -a '-c __floatme__ -g 75x3' 'watch -tn 1 acpi -i'"
+            out = f"%{{F{r}}}%{{A:{cmd}:}}{out}%{{A}}%{{F-}}"
 
             return out
 
@@ -399,110 +498,15 @@ class Bar:
     def host(self):
         return os.uname()[1]
 
-    def start_thread(self, func):
-        def wrapper():
-            try:
-                func()
-            except Exception as e:
-                print(e)
-        t = threading.Thread(target=wrapper)
-        self.threads.append(t)
-        t.start()
-
-    def render(self):
-        out = ""
-
-        if self.a:
-            items_out = []
-            for item in self.items:
-                content = self.last[item("name")]
-                if not content: continue
-                items_out.append(content)
-            out += " | ".join(items_out)
-        else:
-            for place in self.items_map:
-                out += f"%{{{place}}}"
-                items_out = []
-                for item in self.items_map[place]:
-                    content = self.last[item("name")]
-                    if not content: continue
-                    items_out.append(content)
-                out += "  ".join(items_out)
-            out += " "
-
-        print(out)
-        try:
-            sys.stdout.flush()
-        except BrokenPipeError:
-            exit()
-
-    def run_and_sleep(self, item):
-        if item not in self.items:
-            return
-
-        while self.running:
-            self.last[item("name")] = item()
-            self.render()
-            # print(f">>>>> CALLED {item('name')}, sleeping {item('period')}\n")
-            period = item("period")
-            if period <= 0:
-                break
-            time.sleep(period)
-
-    def run_wm_items(self, wm):
-        self.run_and_sleep(self.workspaces)
-        self.run_and_sleep(self.program)
-
-    def init(self):
-        for item in self.items:
-            self.last[item("name")] = item()
-
-    def run(self):
-        self.running = True
-        self.init()
-        self.render()
-        self.start_thread(self.wm.run)
-        for item in self.items:
-            if item("period") > 0:
-                # periodic items run on their own thread
-                self.start_thread(lambda: self.run_and_sleep(item))
-
-        # start server
-        self.server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        self.server.bind(("localhost", 0))
-        port = self.server.getsockname()[1]
-        with open(port_file, "w") as f:
-            f.write(str(port))
-        self.server.listen(1)
-
-        while self.running:
-            conn, addr = self.server.accept()
-
-            # recieving data
-            data = b""
-            while True:
-                tmp = conn.recv(1024)
-                data += tmp
-                if not tmp: break
-            data = data.decode().split("?")
-            cmd = data[0]
-            data = data[1]
-            if cmd == "update":
-                item = getattr(self, data)
-                self.last[item("name")] = item()
-                self.render()
-
-        self.server.close()
-
-    def stop(self):
-        self.running = False
-
 def lemonbar():
     bin = os.path.abspath(__file__)
 
-    geometry = primary()
-    if geometry:
-        geometry = f"-g {geometry}"
+    try: # try to get the x geometry from xrandr
+        match = re.search(r"connected primary \d+x\d+(\+\d+)\+\d+ ",
+                          sh.xrandr("-q").strip())
+        geometry = f"-g {match.group(1)}+0"
+    except:
+        geometry = ""
 
     fonts = ["Iosevka Fixed",
              "Source Han Sans CN",
@@ -520,50 +524,42 @@ def lemonbar():
     lemonbar {geometry} -p {fonts} -B '{background}' -F '{foreground}' -a 30 |
     sh""")
 
-def on_int(bar):
-    bar.stop()
-    # for t in b.threads:
-    #     t.join()
-    exit() # TODO: close threads properly
-
-if __name__ == "__main__":
-    args = sys.argv
-
-    if len(args) >= 2 and args[1] == "xrandr":
-        print(primary())
-    elif len(args) >= 2 and args[1] == "lemon":
+async def main():
+    if len(argv) >= 2 and argv[1] == "lemon":
         lemonbar()
-    elif len(args) >= 3 and args[1] == "update":
-        item = args[2].encode()
+    elif len(argv) >= 3 and argv[1] == "update":
+        item = argv[2].encode()
         with open(port_file, "r") as f:
             try:
                 port = int(f.read())
-                s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-                s.connect(("localhost", port))
-                s.send(b"update?" + item)
-                s.close()
+                reader, writer = await asyncio.open_connection("localhost", port)
+                writer.write(b"update?" + item)
+                writer.close()
             except:
                 print("Error finding socket port")
     else:
-        a = False
-        p = False
+        a = False # ascii
+        p = False # persistent
         items = None
 
-        if len(args) >= 2 and args[1] == "-a":
+        if len(argv) >= 2 and argv[1] == "-a":
             a = True
-            del args[1]
+            del argv[1]
 
-        if len(args) >= 2 and args[1] == "-p":
+        if len(argv) >= 2 and argv[1] == "-p":
             p = True
-            del args[1]
+            del argv[1]
 
-        if len(args) >= 2 and args[1]:
-            items = args[1]
+        if len(argv) >= 2 and argv[1]:
+            items = argv[1]
 
-        b = Bar(use_ascii=a, items=items)
-        signal.signal(signal.SIGINT, lambda signal, frame: on_int(b))
+        bar = Bar(use_ascii=a, items=items)
         if p:
-            b.run()
+            signal.signal(signal.SIGINT, lambda signal, frame: bar.stop())
+            await bar.run()
         else:
-            b.init()
-            b.render()
+            bar.init()
+            bar.render()
+
+if __name__ == "__main__":
+    asyncio.run(main())

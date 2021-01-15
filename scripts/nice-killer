@@ -11,7 +11,7 @@ CLASS=$(xprop -id "$ID" |
 case "$CLASS" in
     # assuming st is the terminal
     st|st-256color)
-        exec theterm --kill-window ;;
+        theterm --kill-window ||: ;;
     *)
         exec xdotool windowkill "$ID" ;;
 esac
