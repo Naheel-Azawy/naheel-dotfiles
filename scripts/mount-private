@@ -39,6 +39,7 @@ case "$1" in
         ;;
 
     '')
+        mountpoint -q "$DEC" && exit 0
         theterm \
             -a '-c __floatme__ -g 40x5' \
             "echo;echo;exec '$0' -m"

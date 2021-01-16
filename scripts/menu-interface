@@ -2,9 +2,6 @@
 
 [ -z "$MENU_INTERFACE" ] && MENU_INTERFACE='dmenu'
 
-#LANGUAGE=$(lang)
-#lang us &
-
 case $MENU_INTERFACE in
     dmenu)
         dmenu "$@"
@@ -25,7 +22,8 @@ case $MENU_INTERFACE in
                     && args[i+1]='' \
                     && inc=1
 
-            [[ $a == '-l' ]] \
+            [[ $a == '-l' ]] || \
+                [[ $a == '-r' ]] \
                 && lines=${args[i+1]} \
                 && args[i]='' \
                 && args[i+1]='' \
@@ -48,6 +46,7 @@ case $MENU_INTERFACE in
         for ((i=0; i < ${#args[@]}; ++i)); do
             a=${args[i]}
             [[ $a ==  '-l' ]] || \
+                [[ $a ==  '-r' ]] || \
                 [[ $a ==  '-fn' ]] || \
                 [[ $a ==  '-nb' ]] || \
                 [[ $a ==  '-nf' ]] || \
@@ -81,5 +80,3 @@ case $MENU_INTERFACE in
         cat "$TMPO"
         rm -f "$TMPI" "$TMPO";;
 esac
-
-#lang "$LANGUAGE"

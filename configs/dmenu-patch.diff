@@ -5,7 +5,7 @@ Applied:
   - https://tools.suckless.org/dmenu/patches/password/
 Changed font and colors
 diff --git a/config.def.h b/config.def.h
-index 1edb647..868e449 100644
+index 1edb647..9c348b6 100644
 --- a/config.def.h
 +++ b/config.def.h
 @@ -2,15 +2,16 @@
@@ -71,7 +71,7 @@ index 323f93c..f5775e6 100644
  defines the font or font set used.
  .TP
 diff --git a/dmenu.c b/dmenu.c
-index 65f25ce..6e39b5a 100644
+index 65f25ce..c893439 100644
 --- a/dmenu.c
 +++ b/dmenu.c
 @@ -1,5 +1,6 @@
@@ -186,7 +186,16 @@ index 65f25ce..6e39b5a 100644
  	calcoffsets();
  }
  
-@@ -500,6 +518,119 @@ draw:
+@@ -495,11 +513,128 @@ insert:
+ 		match();
+ 		break;
+ 	}
++	if (incremental) {
++		puts(text);
++		fflush(stdout);
++	}
+ 
+ draw:
  	drawmenu();
  }
  
@@ -306,14 +315,10 @@ index 65f25ce..6e39b5a 100644
  static void
  paste(void)
  {
-@@ -515,47 +646,25 @@ paste(void)
- 		insert(p, (q = strchr(p, '\n')) ? q - p : (ssize_t)strlen(p));
- 		XFree(p);
- 	}
--	drawmenu();
--}
--
--static void
+@@ -519,43 +654,17 @@ paste(void)
+ }
+ 
+ static void
 -readstdin(void)
 -{
 -	char buf[sizeof text], *p;
@@ -335,18 +340,14 @@ index 65f25ce..6e39b5a 100644
 -			inputw = tmpmax;
 -			imax = i;
 -		}
-+	if (incremental) {
-+		puts(text);
-+		fflush(stdout);
- 	}
+-	}
 -	if (items)
 -		items[i].text = NULL;
 -	inputw = items ? TEXTW(items[imax].text) : 0;
 -	lines = MIN(lines, i);
-+	drawmenu();
- }
- 
- static void
+-}
+-
+-static void
 -run(void)
 +readevent(void)
  {
@@ -495,7 +496,7 @@ index 65f25ce..6e39b5a 100644
  			usage();
  		/* these options take one argument */
  		else if (!strcmp(argv[i], "-l"))   /* number of lines in vertical list */
-@@ -757,12 +948,6 @@ main(int argc, char *argv[])
+@@ -757,13 +948,7 @@ main(int argc, char *argv[])
  		die("pledge");
  #endif
  
@@ -509,4 +510,4 @@ index 65f25ce..6e39b5a 100644
 +	grabkeyboard();
  	setup();
  	run();
-
+ 

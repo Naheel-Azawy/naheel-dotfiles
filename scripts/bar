@@ -479,7 +479,7 @@ class Bar(BarBase):
 
     @item()
     def start(self):
-        return "%{A:dmenulauncher&:} START%{A}" if not self.a else None
+        return "%{A:launcher&:} START%{A}" if not self.a else None
 
     @item()
     def power(self):

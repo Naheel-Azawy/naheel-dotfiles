@@ -152,7 +152,7 @@ outbindings() {
          'super+shift+e' "$WM_SPLIT; empty"
 
     bind 'Start the program launcher' \
-         'super+d' 'dmenulauncher'
+         'super+d' 'launcher'
 
     bind 'Switch language' \
          'super+space' 'lang tog'
