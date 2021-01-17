@@ -1,5 +1,9 @@
 #!/bin/sh
 
+# let's keep it this way for now. the magic below
+# is still risky sometimes
+exec xdotool getactivewindow windowkill
+
 # For normal windows, just kill them the usual way.
 # For terminal windows, close magically.
 
