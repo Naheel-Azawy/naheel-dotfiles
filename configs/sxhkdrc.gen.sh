@@ -25,7 +25,7 @@ case "$WINDOW_MANAGER" in
         WM_FLOAT_FOCUS='i3-msg focus mode_toggle'
         WM_CONTAINER_FOCUS_PARENT='i3-msg focus parent'
         WM_CONTAINER_FOCUS_CHILD='i3-msg focus child'
-        WM_WINDOW_CLOSE='nice-killer || i3-msg kill'
+        WM_WINDOW_CLOSE='i3-msg kill'
         WM_WINDOW_FOCUS='i3-msg focus {left,right,up,down}'
         WM_WINDOW_MOVE='i3-msg move {left,right,up,down}'
         WM_WINDOW_RESIZE='i3-msg resize {shrink width,grow width,shrink height,grow height} 10 px or 10 ppt'
@@ -48,7 +48,7 @@ case "$WINDOW_MANAGER" in
         WM_FLOAT_FOCUS=':' # TODO
         WM_CONTAINER_FOCUS_PARENT=':' # TODO
         WM_CONTAINER_FOCUS_CHILD=':' # TODO
-        WM_WINDOW_CLOSE='nice-killer || bspc node -c' # -k for kill
+        WM_WINDOW_CLOSE='bspc node -c' # -k for kill
         WM_WINDOW_FOCUS='bspc node -f {west,east,north,south}'
         WM_WINDOW_MOVE='bspc node -s {west,east,north,south}'
         WM_WINDOW_RESIZE='s=30; bspc node -z {right -$s 0,right $s 0,bottom 0 -$s,bottom 0 $s}'
@@ -70,11 +70,14 @@ esac
 outbindings() {
     # WM BINDINGS ------------------------------------------------------------
 
-    bind 'Kill focused window' \
-         'super+q' "$WM_WINDOW_CLOSE"
+    bind 'Close focused program' \
+         'super+q' "nice-killer || $WM_WINDOW_CLOSE"
+
+    bind 'Close focused window keeping tmux sessions' \
+         'super+shift+q' "$WM_WINDOW_CLOSE"
 
     bind 'Ignore the tmux session (if is) and kill focused window' \
-         'super+shift+q' "theterm --tmux-ignore && $WM_WINDOW_CLOSE"
+         'super+control+q' "theterm --tmux-ignore && $WM_WINDOW_CLOSE"
 
     bind 'Enter fullscreen mode for the focused container' \
          'super+f' "$WM_FULLSCREEN"
