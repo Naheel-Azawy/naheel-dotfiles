@@ -50,3 +50,4 @@
 | pip        | trash-cli           | N.A.                                   | CLI XDG trash                                                |
 | pacman     | strace              | N.A.                                   | trace system calls. Needed for cp-p                          |
 | pacman     | expect              | N.A.                                   | needed for ttylock                                           |
+| pip        | sh                  | N.A.                                   | shell integration in python. Needed for many commands        |

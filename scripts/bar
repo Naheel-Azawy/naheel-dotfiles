@@ -342,9 +342,12 @@ class Bar(BarBase):
 
     @item(period=3)
     def battery(self):
-        acpi = os.popen("acpi -b").read().strip()
-        percent = int(acpi.split(", ")[1].replace("%", ""))
-        charging = "Discharging" not in acpi
+        try:
+            acpi = sh.acpi("-b").strip()
+            percent = int(acpi.split(", ")[1].replace("%", ""))
+            charging = "Discharging" not in acpi
+        except:
+            return None
 
         if self.a:
             charging = "~" if charging else ""

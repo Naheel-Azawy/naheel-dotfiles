@@ -14,6 +14,7 @@ vol_notif() {
 }
 
 vol() {
+    [ "$1" ] || return 1
     LOCK='/tmp/__audioctl_vol_lock'
     [ -f "$LOCK" ] && return
     touch "$LOCK"

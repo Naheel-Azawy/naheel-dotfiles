@@ -1,21 +1,12 @@
 #!/bin/sh
 
-# let's keep it this way for now. the magic below
-# is still risky sometimes
-exec xdotool getactivewindow windowkill
-
 # For normal windows, just kill them the usual way.
-# For terminal windows, close magically.
+# For tmux terminal windows, close magically.
 
-ID=$(xdotool getactivewindow)
-CLASS=$(xprop -id "$ID" |
-            sed -En 's/WM_CLASS\(STRING\) = "(.*)"/\1/p' |
-            sed 's/".*//')
-
-case "$CLASS" in
-    # assuming st is the terminal
-    st|st-256color)
-        theterm --kill-window ||: ;;
-    *)
-        exec xdotool windowkill "$ID" ;;
+theterm --kill-window
+case $? in
+    1) # not a tmux session window
+        exec xdotool getactivewindow windowkill ;;
+    2) # is tmux session but don't know how to exit
+    ;;
 esac

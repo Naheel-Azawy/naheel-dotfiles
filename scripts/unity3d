@@ -1,0 +1,21 @@
+#!/bin/sh
+
+IMG_URL='https://public-cdn.cloud.unity3d.com/hub/prod/UnityHub.AppImage'
+IMG_DIR="$HOME/.local/share/unity3d"
+IMG="$IMG_DIR/UnityHub.AppImage"
+JAIL="$HOME/Firejail/unity3d"
+
+[ -f "$IMG" ] || {
+    echo "Downloading Unity Hub AppImage..."
+    mkdir -p "$IMG_DIR" &&
+        cd "$IMG_DIR" &&
+        wget "$IMG_URL"
+}
+
+[ -x "$IMG" ] || chmod +x "$IMG"
+
+mkdir -p "$JAIL"
+firejail --appimage --noprofile \
+         --private-tmp --blacklist=/mnt \
+         --private="$JAIL" \
+         "$IMG"
