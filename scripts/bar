@@ -1,6 +1,6 @@
 #!/bin/python3
 
-from pythonish import *
+import sh
 import os
 import sys
 import json
@@ -18,6 +18,10 @@ foreground = '#ffffff'
 default_items = "start workspaces program | clock | systray donno lang pray weather temperature wifi battery power"
 
 port_file = "/tmp/.nbarport"
+
+argv = sys.argv
+HOME = os.getenv("HOME")
+WINDOW_MANAGER = os.getenv("WINDOW_MANAGER")
 
 # example: WM(lambda wm: print(wm.json())).run()
 class WM:
@@ -325,7 +329,8 @@ class Bar(BarBase):
             else:
                 out = ""
                 if title:
-                    return f"%{{A:nice-killer >/dev/null:}}%{{A}}  {title}"
+                    return "%{A:wmctl nice-kill:}%{A}  " + \
+                        "%{A:wmctl window-menu:}" + title + "%{A}"
                 else:
                     return None
         except:

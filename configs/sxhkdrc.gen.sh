@@ -13,146 +13,92 @@
 
 BINPATH=$(realpath "$0")
 
-# TODO: create your own wmctl with an option to get the cmd text.
-#       also, subscribe for events.
-[ "$WINDOW_MANAGER" ] || WINDOW_MANAGER=i3
-case "$WINDOW_MANAGER" in
-    i3)
-        WM_FULLSCREEN='i3-msg fullscreen toggle'
-        WM_FLOAT='i3-msg floating toggle'
-        WM_STICK='i3-msg sticky toggle'
-        WM_SPLIT='i3-msg split t'
-        WM_FLOAT_FOCUS='i3-msg focus mode_toggle'
-        WM_CONTAINER_FOCUS_PARENT='i3-msg focus parent'
-        WM_CONTAINER_FOCUS_CHILD='i3-msg focus child'
-        WM_WINDOW_CLOSE='i3-msg kill'
-        WM_WINDOW_FOCUS='i3-msg focus {left,right,up,down}'
-        WM_WINDOW_MOVE='i3-msg move {left,right,up,down}'
-        WM_WINDOW_RESIZE='i3-msg resize {shrink width,grow width,shrink height,grow height} 10 px or 10 ppt'
-        WM_WINDOW_RESIZE_TINY='i3-msg resize {shrink width,grow width,shrink height,grow height} 1 px or 1 ppt'
-        WM_WORKSPACE='i3-msg workspace'
-        WM_WORKSPACE_NUM='i3-msg workspace {1-9,10}'
-        WM_WORKSPACE_MOVE='i3-msg move container to workspace {1-9,10}'
-        WM_WORKSPACE_MOVE_GO='w={1-9,10}; i3-msg move container to workspace $w\\; workspace $w'
-        WM_WORKSPACE_NEXT='i3-msg workspace next'
-        WM_WORKSPACE_PREV='i3-msg workspace prev'
-        WM_WORKSPACE_MONITOR_NEXT='i3-msg move workspace to output right'
-        WM_RESTART='i3-msg restart; pkill -USR1 -x sxhkd'
-        WM_KILL='i3-msg exit'
-        ;;
-    bspwm)
-        WM_FULLSCREEN='bspc node -t ~fullscreen'
-        WM_FLOAT='bspc node -t ~floating'
-        WM_STICK='bspc node -s sticky'
-        WM_SPLIT=':' # TODO
-        WM_FLOAT_FOCUS=':' # TODO
-        WM_CONTAINER_FOCUS_PARENT=':' # TODO
-        WM_CONTAINER_FOCUS_CHILD=':' # TODO
-        WM_WINDOW_CLOSE='bspc node -c' # -k for kill
-        WM_WINDOW_FOCUS='bspc node -f {west,east,north,south}'
-        WM_WINDOW_MOVE='bspc node -s {west,east,north,south}'
-        WM_WINDOW_RESIZE='s=30; bspc node -z {right -$s 0,right $s 0,bottom 0 -$s,bottom 0 $s}'
-        WM_WINDOW_RESIZE_TINY='s=1; bspc node -z {right -$s 0,right $s 0,bottom 0 -$s,bottom 0 $s}'
-        WM_WORKSPACE='bspc desktop -f'
-        WM_WORKSPACE_NUM='bspc desktop -f {1-9,10}'
-        WM_WORKSPACE_MOVE='bspc node -d {1-9,10}'
-        WM_WORKSPACE_MOVE_GO='w={1-9,10}; bspc node -d $w && bspc desktop -f $w'
-        WM_WORKSPACE_NEXT='bspc desktop -f next'
-        WM_WORKSPACE_PREV='bspc desktop -f prev'
-        WM_WORKSPACE_MONITOR_NEXT=':' # TODO
-        WM_RESTART='bspc wm -r'
-        WM_KILL='bspc quit'
-        ;;
-    *)
-        echo "Unknown window manager $WM"
-esac
-
 outbindings() {
     # WM BINDINGS ------------------------------------------------------------
 
     bind 'Close focused program' \
-         'super+q' "nice-killer || $WM_WINDOW_CLOSE"
+         'super+q' "wmctl nice-kill"
 
     bind 'Close focused window keeping tmux sessions' \
-         'super+shift+q' "$WM_WINDOW_CLOSE"
+         'super+shift+q' "$(wmctl show window_close)"
 
     bind 'Ignore the tmux session (if is) and kill focused window' \
-         'super+control+q' "theterm --tmux-ignore && $WM_WINDOW_CLOSE"
+         'super+control+q' "theterm --tmux-ignore && $(wmctl show window_close)"
 
     bind 'Enter fullscreen mode for the focused container' \
-         'super+f' "$WM_FULLSCREEN"
+         'super+f' "$(wmctl show fullscreen)"
 
     bind 'Toggle tiling / floating' \
-         'super+t' "$WM_FLOAT"
+         'super+t' "$(wmctl show float)"
 
     bind 'Toggle sticky window' \
-         'super+shift+t' "$WM_STICK"
+         'super+shift+t' "$(wmctl show stick)"
 
     bind 'Toggle split' \
-         'super+shift+slash' "$WM_SPLIT"
+         'super+shift+slash' "$(wmctl show split)"
 
     bind 'Change focus between tiling / floating windows' \
-         'super+slash' "$WM_FLOAT_FOCUS"
+         'super+slash' "$(wmctl show float_focus)"
 
     bind 'Focus the parent container' \
-         'super+a' "$WM_CONTAINER_FOCUS_PARENT"
+         'super+a' "$(wmctl show container_focus_parent)"
 
     bind 'Focus the child container' \
-         'super+shift+a' "$WM_CONTAINER_FOCUS_CHILD"
+         'super+shift+a' "$(wmctl show container_focus_child)"
 
     bind 'Change focus' \
-         'super+{Left,Right,Up,Down}' "$WM_WINDOW_FOCUS"
+         'super+{Left,Right,Up,Down}' "$(wmctl show window_focus)"
 
     bind 'Move focused window' \
-         'super+shift+{Left,Right,Up,Down}' "$WM_WINDOW_MOVE"
+         'super+shift+{Left,Right,Up,Down}' "$(wmctl show window_move)"
 
     bind 'Resize window' \
-         'super+ctrl+{Left,Right,Up,Down}' "$WM_WINDOW_RESIZE"
+         'super+ctrl+{Left,Right,Up,Down}' "$(wmctl show window_resize)"
 
     bind 'Resize window (a little bit)' \
-         'super+shift+ctrl+{Left,Right,Up,Down}' "$WM_WINDOW_RESIZE_TINY"
+         'super+shift+ctrl+{Left,Right,Up,Down}' "$(wmctl show window_resize_tiny)"
 
     bind 'Switch to workspace' \
-         'super+{1-9,0}' "$WM_WORKSPACE_NUM"
+         'super+{1-9,0}' "$(wmctl show workspace_num)"
 
     bind 'Move focused container to workspace' \
-         'super+ctrl+{1-9,0}' "$WM_WORKSPACE_MOVE"
+         'super+ctrl+{1-9,0}' "$(wmctl show workspace_move)"
 
     bind 'Move focused container to workspace and go there' \
-         'super+shift+{1-9,0}' "$WM_WORKSPACE_MOVE_GO"
+         'super+shift+{1-9,0}' "$(wmctl show workspace_move_go)"
 
     bind 'Move to next workspace' \
-         'super+Tab' "$WM_WORKSPACE_NEXT"
+         'super+Tab' "$(wmctl show workspace_next)"
 
     bind 'Move to previous workspace' \
-         'super+shift+Tab' "$WM_WORKSPACE_PREV"
+         'super+shift+Tab' "$(wmctl show workspace_prev)"
 
     bind 'Move workspace to next monitor' \
-         'super+ctrl+p' "$WM_WORKSPACE_MONITOR_NEXT"
+         'super+ctrl+p' "$(wmctl show workspace_monitor_next)"
 
     bind 'Restart window manager' \
-         'super+shift+r' "$WM_RESTART"
+         'super+shift+r' "$(wmctl show restart)"
 
     # GENERAL BINDINGS -------------------------------------------------------
 
     bind 'Start a terminal' \
          'super+Return'            'theterm'
     bind 'Start a terminal with opposite split' \
-         'super+shift+Return'      "$WM_SPLIT; theterm"
+         'super+shift+Return'      "$(wmctl show split); theterm"
     bind 'Start a terminal (without tmux)' \
          'super+ctrl+Return'       "$TERMINAL bash"
     bind 'Start a terminal with opposite split (without tmux)' \
-         'super+shift+ctrl+Return' "$WM_SPLIT; $TERMINAL bash"
+         'super+shift+ctrl+Return' "$(wmctl show split); $TERMINAL bash"
 
     bind 'Start file manager' \
          'super+apostrophe'       'theterm lf'
     bind 'Start file manager with opposite split' \
-         'super+shift+apostrophe' "$WM_SPLIT; theterm lf"
+         'super+shift+apostrophe' "$(wmctl show split); theterm lf"
 
     bind 'Empty window' \
          'super+e'                  'empty'
     bind 'Empty window with opposite split' \
-         'super+shift+e' "$WM_SPLIT; empty"
+         'super+shift+e' "$(wmctl show split); empty"
 
     bind 'Start the program launcher' \
          'super+d' 'launcher'
@@ -246,7 +192,7 @@ outbindings() {
          'super+F1' "theterm '\"$BINPATH\" -d | less'"
 
     bind 'Show the system monitor' \
-         'super+grave' "$WM_WORKSPACE \\#; system-monitor -1"
+         'super+grave' "$(wmctl show workspace) \\#; system-monitor -1"
 
     # XF86 KEYS BINDINGS -----------------------------------------------------
 
@@ -309,7 +255,7 @@ outbindings() {
     bindhidden 'XF86TouchpadOn'                   'synclient TouchpadOff=0'
     bindhidden 'XF86TouchpadOff'                  'synclient TouchpadOff=1'
     bindhidden 'XF86Suspend'                      'lockscreen'
-    bindhidden 'XF86Close'                        "$WM_WINDOW_CLOSE"
+    bindhidden 'XF86Close'                        "wmctl nice-kill"
     bindhidden 'XF86WebCam'                       'camtoggle'
     #bindhidden 'XF86Mail'                        ''
     #bindhidden 'XF86Messenger'                   ''

@@ -1,13 +1,18 @@
 #!/bin/python3
-from pythonish import *
+
 from subprocess import Popen, PIPE, STDOUT
+import keybindings
+import sh
+import os
 import sys
 import json
+
+argv = sys.argv
+HOME = os.getenv("HOME")
 
 cache = f"{HOME}/.cache"
 cache_recent = f"{cache}/launcher_recent.json"
 cache_path = f"{cache}/launcher_path.txt"
-keybindings = f"{DOTFILES_DIR}/configs/sxhkdrc.gen.sh"
 
 tui_apps = [
     "music-player", "emx", "lf", "vis", "corona",
@@ -61,8 +66,7 @@ def run(arg):
         sh.dmenupower(run)
     elif type == "shortcuts":
         run = run.split(":")[0].strip()
-        msg = os.popen(f"{keybindings} -r {run}").read()
-        os.system(msg)
+        keybindings.run(run)
     elif type == "bar":
         #os.system("bar gui") # TODO: handle
         pass
@@ -127,9 +131,7 @@ def ls(cmd="", out=sys.stdout):
                    "Logout", "Lock", "Hibernate" ]:
             printout(ident("power") + p)
 
-        shortcuts = os.popen(keybindings + " -d").read().split("\n")
-        shortcuts.pop() # remove last empty line
-        for s in shortcuts:
+        for s in keybindings.get_doc():
             printout(ident("shortcuts") + s)
 
         for b in bins:

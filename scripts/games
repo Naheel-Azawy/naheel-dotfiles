@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
-from pythonish import *
+
+import sh
+from sys import argv
 
 # TODO: move to personal
 
