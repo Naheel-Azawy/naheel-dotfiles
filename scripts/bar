@@ -491,7 +491,7 @@ class Bar(BarBase):
 
     @item()
     def power(self):
-        return "%{A:dmenupower:}%{A}" if not self.a else None
+        return "%{A:power:}%{A}" if not self.a else None
 
     @item()
     def systray(self):

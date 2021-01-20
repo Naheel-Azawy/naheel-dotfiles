@@ -63,7 +63,7 @@ def run(arg):
     type = type.strip()
 
     if type == "power":
-        sh.dmenupower(run)
+        sh.power(run)
     elif type == "shortcuts":
         run = run.split(":")[0].strip()
         keybindingsgen.run(run)
