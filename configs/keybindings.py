@@ -1,12 +1,5 @@
-import sys, os
-sys.path.append(os.getenv("DOTFILES_DIR") + '/scripts')
-from wmctl import get_cmd as wmcmd
-
-HOME = os.getenv("HOME")
-TERMINAL = os.getenv("TERMINAL")
-BROWSER = os.getenv("BROWSER")
-
-bindings = [
+def get_bindings(wmcmd=lambda c: f"wmctl {c}"):
+    return [
     # WM BINDINGS ------------------------------------------------------------
 
     ('Close focused program',
@@ -79,9 +72,9 @@ bindings = [
     ('Start a terminal with opposite split',
      'super+shift+Return',      wmcmd("split") + "; theterm"),
     ('Start a terminal (without tmux)',
-     'super+ctrl+Return',       f"{TERMINAL} bash"),
+     'super+ctrl+Return',       "$TERMINAL bash"),
     ('Start a terminal with opposite split (without tmux)',
-     'super+shift+ctrl+Return', wmcmd("split") + f"; {TERMINAL} bash"),
+     'super+shift+ctrl+Return', wmcmd("split") + "; $TERMINAL bash"),
 
     ('Start file manager',
      'super+apostrophe',       'theterm lf'),
@@ -106,7 +99,7 @@ bindings = [
      'super+k', 'pkill onboard || onboard'),
 
     ('Open the internet browser',
-     'super+b', BROWSER),
+     'super+b', "browser"),
 
     ('Open calculator',
      'super+equal', 'calc-floating'),
@@ -182,7 +175,7 @@ bindings = [
      'super+ctrl+j', 'quickcmd -e'),
 
     ('Show shortcuts help screen',
-     'super+F1', f"theterm '\"{__file__}\" -d | less'"),
+     'super+F1', "theterm 'keybindingsgen.py -d | less'"),
 
     ('Show the system monitor',
      'super+grave', wmcmd("workspace") + " \\#; system-monitor -1"),
@@ -216,7 +209,7 @@ bindings = [
     ('XF86Explorer',                     'theterm lf'),
     #('XF86Send',                        ''),
     #('XF86Xfer',                        ''),
-    ('XF86WWW',                          BROWSER),
+    ('XF86WWW',                          "browser"),
     #('XF86DOS',                         ''),
     ('XF86ScreenSaver',                  'lockscreen'),
     #('XF86RotateWindows',               ''),
@@ -228,7 +221,7 @@ bindings = [
     ('XF86Eject',                        'dmenuumount'),
     #('XF86Phone',                       ''),
     #('XF86Tools',                       ''),
-    ('XF86HomePage',                     f"{BROWSER} https://www.duckduckgo.com"),
+    ('XF86HomePage',                     "browser https://www.duckduckgo.com"),
     ('XF86Reload',                       'restart'),
     #('XF86ScrollUp',                    ''),
     #('XF86ScrollDown',                  ''),
@@ -252,11 +245,11 @@ bindings = [
     ('XF86WebCam',                       'camtoggle'),
     #('XF86Mail',                        ''),
     #('XF86Messenger',                   ''),
-    ('XF86Search',                       f"{BROWSER} https://duckduckgo.com"),
+    ('XF86Search',                       "browser https://duckduckgo.com"),
     #('XF86Go',                          ''),
     #('XF86Finance',                     ''),
     #('XF86Game',                        ''),
-    ('XF86Shop',                         f"{BROWSER} https://ebay.com"),
+    ('XF86Shop',                         "browser https://ebay.com"),
     ('XF86MonBrightnessDown',            'brightness -dec 15'),
     ('XF86MonBrightnessUp',              'brightness -inc 15'),
     ('shift+XF86MonBrightnessDown',      'brightness -dec 5'),
@@ -269,7 +262,7 @@ bindings = [
     #('XF86Reply',                       ''),
     #('XF86MailForward',                 ''),
     #('XF86Save',                        ''),
-    ('XF86Documents',                    f"theterm lf '{HOME}/Documents'"),
+    ('XF86Documents',                    "theterm lf \"$HOME/Documents\""),
     #('XF86Battery',                     ''),
     #('XF86Bluetooth',                   ''),
     ('XF86WLAN',                         'sudo -A systemctl restart NetworkManager'),
@@ -279,6 +272,6 @@ bindings = [
     # TODO: move to personal
 
     ('super+shift+v', '/mnt/hdd1/Private/m-launcher.sh'),
-    ('super+semicolon', f"emx t '{HOME}/Dropbox/orgmode/TODO.org'"),
+    ('super+semicolon', "emx t \"$HOME/Dropbox/orgmode/TODO.org\""),
     ('super+shift+semicolon', 'calendar')
 ]

@@ -156,3 +156,7 @@ def run(args):
             cmd = get_cmd(args)
             if cmd is not None:
                 os.system(cmd)
+
+if __name__ == "__main__":
+    from sys import argv
+    run(argv[1:])
