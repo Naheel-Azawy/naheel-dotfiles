@@ -26,6 +26,7 @@ export QT_AUTO_SCREEN_SCALE_FACTOR=0
 export SHHH_JAVA_OPTIONS='-Dawt.useSystemAAFontSettings=on' # check bashrc
 export CLOUDCONVERT_API_KEY='bUGujVfvGQ6nkPZo5MvFoIz65C3spOZMtiD4Bz613XxnXsUIVDDwZILqOJZghP3D' # TODO: move to personal
 export LF_ICONS='di=📁:tw=📁:st=📁:ow=📁:fi=📄:'
+export NEWT_COLORS='root=,black'
 
 export PI=3.14159265358979323844
 export EU=2.71828182845904523537

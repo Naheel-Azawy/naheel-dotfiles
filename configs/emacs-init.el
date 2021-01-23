@@ -267,6 +267,11 @@
 (use-package writeroom-mode)
 (use-package anzu :config (global-anzu-mode +1))
 (use-package academic-phrases)
+(use-package adaptive-wrap)
+;; (straight-use-package
+;;  '(phscroll :type git :host github :repo "misohena/phscroll"))
+(use-package so-long)
+(global-so-long-mode 1)
 
 ;; ---- MULTIPLE CURSERS ----
 (use-package multiple-cursors
@@ -481,6 +486,7 @@ Inserted by installing 'org-mode' or when a release is made."
 
   ;; -- HOOKS --
   (add-hook 'org-mode-hook #'toggle-word-wrap)
+  (add-hook 'org-mode-hook #'adaptive-wrap-prefix-mode)
   (add-hook 'org-mode-hook #'org-bullets-mode)
 
   ;; -- TEMPO --
