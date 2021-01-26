@@ -1,21 +1,8 @@
 #!/bin/sh
 # Little hack... No idea why but dmenu messes the foucs
 
-getidi3() {
-    i3-msg -t get_tree | jq . |
-        grep '"focused": true' -A 50 |
-        sed -En 's/.*"window": ([0-9]+),.*/\1/p'
-}
-
-getid() {
-    xdotool getactivewindow
-}
-
 doit() {
-    WINID=$(getid)
-    if [ "$WINID" ]; then
-        xdotool windowfocus "$WINID"
-    fi
+    xdotool getactivewindow windowfocus
 }
 
 main() {

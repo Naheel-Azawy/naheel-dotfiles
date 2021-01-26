@@ -86,7 +86,7 @@ def run(arg):
             except Exception as e:
                 print(e)
         else:
-            os.system(exe)
+            sh.Command(exe)()
     else:
         exe = run.split()[0]
         if os.popen(f"command -v {exe}").close() != 256:
@@ -97,13 +97,12 @@ def run(arg):
                 except Exception as e:
                     print(e)
             else:
-                os.system(run)
+                sh.Command(exe)()
         else:
             raise ValueError("Couldn't run given command")
 
 def ls(cmd="", out=sys.stdout):
-    bins = os.popen("dmenu_path").read().split("\n")
-    bins.pop() # remove last empty line
+    bins = sh.dmenu_path().strip().split("\n")
     bins += games
     bins = list(set(bins))
     global recent
@@ -177,6 +176,7 @@ def main():
                 pipe.stdin.write(res)
                 print(res)
         print(line)
+        sh.dmenufixfocus("-l", _bg=True)
         if line:
             run(line)
     else:
