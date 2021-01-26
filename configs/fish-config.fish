@@ -120,7 +120,7 @@ function lf
     set fwd (mktemp) # last working directory temp file
     set fid (mktemp) # lf id temp file
     command lf -command \
-        '$printf $id > '"$fid"'' -last-dir-path=$fwd $argv
+        '&printf $id > '"$fid"'' -last-dir-path=$fwd $argv
     set id (cat $fid)
     # cd on exit
     if test -f "$fwd"

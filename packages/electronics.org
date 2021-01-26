@@ -4,6 +4,7 @@
 | aur    | fritzing                  | N.A.                                                      | simple and easy circuit design          |
 | pacman | arduino                   | N.A.                                                      | well, arduino..                         |
 | pacman | arduino-cli               | N.A.                                                      | cli for arduino                         |
+| aur    | platformio                | N.A.                                                      | code builder and library manager        |
 | git    | fish-complete-arduino-cli | https://github.com/Naheel-Azawy/fish-complete-arduino-cli | fish completion for arduino-cli         |
 | aur    | qucs                      | N.A.                                                      | circuit simulator                       |
 | pacman | uucp                      | N.A.                                                      | to use 'cu' for serial connection       |

@@ -413,6 +413,20 @@ map sT :set sortby time; set info time
 map sn :set sortby natural; set info; set noreverse
 map st :set sortby time; set info time; set reverse
 
+# mouse
+map <m-1> open   # primary
+map <m-2> updir  # secondary
+# map <m-3> down   # middle
+# map <m-4> down
+# map <m-5> down
+# map <m-6> down
+# map <m-7> down
+# map <m-8> down
+map <m-up>    up
+map <m-down>  down
+# map <m-left>  down
+# map <m-right> down
+
 # bookmarks
 map gh cd ~
 map gd :cd ~/Downloads; set sortby time; set info time; set reverse

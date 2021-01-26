@@ -1,2 +1,10 @@
 #!/bin/sh
-exec curl -F-=\<- qrenco.de
+
+command -v qrcode >/dev/null && exec qrcode "$@"
+command -v npm >/dev/null && {
+    echo 'Installing...'
+    sudo npm i qrcode &&
+        exec qrcode "$@"
+}
+
+echo "$@" | curl -F-=\<- qrenco.de

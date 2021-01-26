@@ -6,8 +6,6 @@
 | pacman | libreoffice                    | N.A.                                  | because off course someone will send a file that is not a plain text...                        |
 | pacman | jdk8-openjdk                   | N.A.                                  | Java 8 development kit                                                                         |
 | pacman | firejail                       | N.A.                                  | keeps untrusted software in jail                                                               |
-| pacman | net-tools                      | N.A.                                  | some handy networking tools                                                                    |
-| pacman | traceroute                     | N.A.                                  | trace the route to the host                                                                    |
 | pacman | arch-install-scripts           | N.A.                                  | contains some helpful scripts to install or maintain arch                                      |
 | pacman | gimp                           | N.A.                                  | the gnu image manipulation program                                                             |
 | aur    | gimp-plugin-resynthesizer      | N.A.                                  | gimp resynthesizer                                                                             |
@@ -40,8 +38,6 @@
 | pacman | tree                           | N.A.                                  | list tree of directories                                                                       |
 | pacman | gnuplot                        | N.A.                                  | Gnu plotting program                                                                           |
 | pacman | lsof                           | N.A.                                  | list open files                                                                                |
-| pacman | wireshark-qt                   | N.A.                                  | interactively dump and analyze network traffic                                                 |
-| pacman | tcpdump                        | N.A.                                  | dump network traffic                                                                           |
 | pacman | iotop                          | N.A.                                  | top for disk io                                                                                |
 | pacman | sysstat                        | N.A.                                  | a collection of performance monitoring tools (iostat,isag,mpstat,pidstat,sadf,sar)             |
 | npm    | cloudconvert                   | N.A.                                  | usefull to convert ugly documents written in non-free softwares                                |

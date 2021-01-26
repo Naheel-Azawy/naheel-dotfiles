@@ -395,7 +395,7 @@ class Bar(BarBase):
                 out = msg + out + " %{B-}"
 
             cmd = "theterm -a '-c __floatme__ -g 75x3' 'watch -tn 1 acpi -i'"
-            out = f"%{{F{r}}}%{{A:{cmd}:}}{out}%{{A}}%{{F-}}"
+            out = f"%{{F{r}}}%{{A:{cmd}&:}}{out}%{{A}}%{{F-}}"
 
             return out
 
@@ -491,7 +491,7 @@ class Bar(BarBase):
 
     @item()
     def power(self):
-        return "%{A:power:}%{A}" if not self.a else None
+        return "%{A:power&:}%{A}" if not self.a else None
 
     @item()
     def systray(self):

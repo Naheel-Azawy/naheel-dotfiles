@@ -110,7 +110,7 @@ def get_bindings(wmcmd=lambda c: f"wmctl {c}"):
     ('Lock screen',
      'super+l',       'lockscreen'),
     ('Power options',
-     'super+x',       'dmenupower'),
+     'super+x',       'power'),
 
     ('Mount a drive',
      'super+m',       'dmenumount'),
@@ -197,7 +197,7 @@ def get_bindings(wmcmd=lambda c: f"wmctl {c}"):
     ('XF86AudioRewind',                  'audioctl back    10'),
     ('XF86AudioForward',                 'audioctl forward 10'),
     #(XF86AudioRecord ,                  ''),
-    ('XF86PowerOff',                     'dmenupower'),
+    ('XF86PowerOff',                     'power'),
     #('XF86Copy',                        ''),
     #('XF86Open',                        ''),
     #('XF86Paste',                       ''),

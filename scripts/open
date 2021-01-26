@@ -35,6 +35,8 @@ openfile() {
                 browser "$url" 2>&1 | lfsend &;;
             *.el.gz)
                 exec "$EDITOR" "$f";;
+            *.pcapng|*.cap)
+                exec termshark "$f";;
             *)
                 # mime type
                 case $(file --mime-type "$(realpath """$f""")" -b) in

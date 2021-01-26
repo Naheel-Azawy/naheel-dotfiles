@@ -14,6 +14,12 @@ cache = f"{HOME}/.cache"
 cache_recent = f"{cache}/launcher_recent.json"
 cache_path = f"{cache}/launcher_path.txt"
 
+pinned = {
+    "terminal": "theterm",
+    "files":    "lf",
+    "browser":  "browser"
+}
+
 tui_apps = [
     "music-player", "emx", "lf", "vis", "corona",
     "alsamixer", "lyrics"
@@ -72,12 +78,24 @@ def run(arg):
         pass
     elif type == "games":
         sh.games(run)
+    elif type == "pinned":
+        exe = pinned[run]
+        if istui(exe):
+            try:
+                sh.theterm(f"exec {exe}")
+            except Exception as e:
+                print(e)
+        else:
+            os.system(exe)
     else:
         exe = run.split()[0]
         if os.popen(f"command -v {exe}").close() != 256:
             inc(exe)
             if istui(exe):
-                sh.theterm(f"exec {run}")
+                try:
+                    sh.theterm(f"exec {run}")
+                except Exception as e:
+                    print(e)
             else:
                 os.system(run)
         else:
@@ -123,6 +141,9 @@ def ls(cmd="", out=sys.stdout):
     else:
         def ident(i):
             return ("%9s: ") % i
+
+        for b in pinned:
+            printout(ident("pinned") + b)
 
         for b in rec:
             printout(ident("games" if b in games else "recent") + b)
