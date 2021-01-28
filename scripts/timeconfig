@@ -1,0 +1,39 @@
+#!/bin/sh
+
+# https://wiki.archlinux.org/index.php/System_time
+
+hwsync() {
+    msg='Sync hardware clock?'
+    printf '%s [Y/n] ' "$msg"
+    read -r ans
+    case "$ans" in
+        Y|y) sudo hwclock --systohc ;;
+    esac
+}
+
+auto() {
+    command -v ntpd >/dev/null || {
+        echo 'Install NTP...'
+        sudo pacman -S ntp
+    }
+    ntpd -qg
+}
+
+settime() {
+    timedatectl set-time "$1" #"yyyy-MM-dd hh:mm:ss"
+}
+
+tui() {
+    date=$(dialog --stdout --calendar 'Set current date' 0 0)
+    time=$(dialog --stdout --timebox 'Set current time' 0 0)
+    echo "$date $time"
+}
+
+tui
+
+# To check the current zone defined for the system:
+# $ timedatectl status
+# To list available zones:
+# $ timedatectl list-timezones
+# To set your time zone:
+# $ sudo timedatectl set-timezone Zone/SubZone

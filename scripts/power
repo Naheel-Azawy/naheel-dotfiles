@@ -16,7 +16,7 @@ confirm() {
 
 case "$RES" in
     [Ll]ock)      lockscreen ;;
-    [Ll]ogout)    confirm && wmctil kill ;;
+    [Ll]ogout)    confirm && wmctl kill ;;
     [Ss]uspend)   lockscreen && systemctl suspend ;;
     [Hh]ibernate) confirm && lockscreen && systemctl hibernate ;;
     [Rr]eboot)    confirm && systemctl reboot ;;

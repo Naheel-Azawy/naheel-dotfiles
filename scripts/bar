@@ -15,7 +15,7 @@ import signal
 background = '#ff000000'
 foreground = '#ffffff'
 
-default_items = "start workspaces program | clock | systray donno lang pray weather temperature wifi battery power"
+default_items = "start workspaces program | clock | systray lang pray weather temperature wifi battery power"
 
 port_file = "/tmp/.nbarport"
 
