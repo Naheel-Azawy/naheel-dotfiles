@@ -189,6 +189,15 @@
 (use-package lsp-ui)
 (use-package lsp-java :after lsp)
 (use-package lsp-dart)
+(setq gc-cons-threshold 100000000)
+(setq lsp-completion-provider :capf)
+(setq lsp-idle-delay 0.500)
+(setq lsp-log-io nil)
+;; (setq lsp-enable-links nil)
+;; (setq lsp-signature-render-documentation nil)
+;; (setq lsp-headerline-breadcrumb-enable nil)
+;; (setq lsp-ui-doc-enable nil)
+;; (setq lsp-completion-enable-additional-text-edit nil)
 
 ;; ---- WEB ----
 (use-package web-mode

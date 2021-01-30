@@ -1,2 +1,2 @@
 #!/bin/sh
-exec emx t --eval '(cfw:open-org-calendar)'
+exec edit --eval '(cfw:open-org-calendar)'

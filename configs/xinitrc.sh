@@ -47,7 +47,7 @@ clipmenud &                  # clipboard manager daemon
 setup-xinput &               # mouse setup
 xbanish &                    # hides the cursor while typing
 syndaemon -i 0.5 -t -K -R &  # disable touchpad while typing
-emx daemon &                 # emacs daemon
+edit daemon &                # emacs daemon
 picom &                      # compositor
 setwallpaper &               # wallpaper
 lang us &                    # set language to 'us' and runs xmodmap

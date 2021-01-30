@@ -54,3 +54,4 @@
 | pacman | fd                             | N.A.                                  | faster find                                                                                    |
 | pacman | ripgrep                        | N.A.                                  | faster grep                                                                                    |
 | npm    | qrcode                         | N.A.                                  | QR code generator                                                                              |
+| pacman | foliate                        | N.A.                                  | ebook reader                                                                                   |

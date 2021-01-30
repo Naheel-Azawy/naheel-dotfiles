@@ -7,11 +7,11 @@ export WINDOW_MANAGER='i3'
 #export WINDOW_MANAGER='bspwm'
 #export WINDOW_MANAGER='gnome-session'
 export TERM="screen-256color"
-export EDITOR="emx"
+export EDITOR="edit"
 export VISUAL="$EDITOR"
 export TERMINAL="st"
 export BROWSER="browser"
-export READER="evince"
+export READER="evince" # TODO: mk a script, add foliate
 export BIB="$HOME/Documents/LaTeX/refs.bib" # TODO: move to personal
 
 export FONT_MONO='Iosevka Fixed'

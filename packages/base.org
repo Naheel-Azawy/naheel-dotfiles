@@ -51,3 +51,4 @@
 | pacman     | strace              | N.A.                                   | trace system calls. Needed for cp-p                          |
 | pacman     | expect              | N.A.                                   | needed for ttylock                                           |
 | pip        | sh                  | N.A.                                   | shell integration in python. Needed for many commands        |
+| pacman     | dash                | N.A.                                   | the light quick shell                                        |

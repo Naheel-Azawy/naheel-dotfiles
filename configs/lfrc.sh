@@ -340,7 +340,7 @@ map <bs2> updir
 map D     updir
 
 # emacs
-map x push :$emx<space>
+map x push :$edit<space>
 
 # open a full shell
 map <c-s> $$SHELL

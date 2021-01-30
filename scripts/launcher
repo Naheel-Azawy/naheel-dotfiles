@@ -21,7 +21,7 @@ pinned = {
 }
 
 tui_apps = [
-    "music-player", "emx", "lf", "vis", "corona",
+    "music-player", "lf", "vis", "corona",
     "alsamixer", "lyrics"
 ]
 

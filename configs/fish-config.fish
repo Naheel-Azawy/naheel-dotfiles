@@ -200,8 +200,8 @@ abbr stime 'date "+%s"'    # time in seconds
 abbr mtime 'date "+%s%3N"' # time in milliseconds
 abbr ntime 'date "+%s%N"'  # time in nanoseconds
 
-abbr x     'emx'
-abbr xsh   'new-shell-script'
+abbr ed    'edit'
+abbr nsh   'new-shell-script'
 
 abbr gita  'git add -A'
 abbr gitc  'git commit -m'

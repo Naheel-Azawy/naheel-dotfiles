@@ -272,6 +272,6 @@ def get_bindings(wmcmd=lambda c: f"wmctl {c}"):
     # TODO: move to personal
 
     ('super+shift+v', '/mnt/hdd1/Private/m-launcher.sh'),
-    ('super+semicolon', "emx t \"$HOME/Dropbox/orgmode/TODO.org\""),
+    ('super+semicolon', "edit \"$HOME/Dropbox/orgmode/TODO.org\""),
     ('super+shift+semicolon', 'calendar')
 ]

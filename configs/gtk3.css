@@ -5,6 +5,10 @@ decoration {
     padding-bottom: 0px;
     padding-right: 0px;
     padding-left: 0px;
+    border-right-color: black;
+    border-top-color: black;
+    border-bottom-color: black;
+    border-left-color: black;
 }
 
 headerbar {
