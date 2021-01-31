@@ -16,6 +16,7 @@ cache_path = f"{cache}/launcher_path.txt"
 
 pinned = {
     "terminal": "theterm",
+    "editor":   "edit",
     "files":    "lf",
     "browser":  "browser"
 }

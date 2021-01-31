@@ -85,6 +85,16 @@
 (setq-default tab-width 4)
 ;;(setq-default show-trailing-whitespace nil)
 
+;; ---- TITLE ----
+(defun xterm-title-update ()
+  (send-string-to-terminal
+   (concat "\033]2; " (buffer-name) " - " invocation-name "\007")))
+(defun frame-title-update ()
+  (setq frame-title-format
+		(concat (buffer-name) " - " invocation-name)))
+;; (add-hook 'window-configuration-change-hook 'xterm-title-update)
+(add-hook 'window-configuration-change-hook 'frame-title-update)
+
 ;; ---- SCROLL ----
 (setq scroll-step 1
       scroll-conservatively 10000
