@@ -29,7 +29,7 @@
 | pacman   | gnome-themes-extra     | N.A.                                         | gives the dark GTK theme                                         |
 | aur      | lemonbar-xft-git       | N.A.                                         | status bar                                                       |
 | pacman   | trayer                 | N.A.                                         | a standalone system tray                                         |
-| pacman   | i3lock                 | N.A.                                         | screen lock                                                      |
+| aur      | i3lock-color           | N.A.                                         | screen lock                                                      |
 | pacman   | mpv                    | N.A.                                         | patrician's choice video/gif player                              |
 | pacman   | network-manager-applet | N.A.                                         | appears in the top right corner and manages the wi-fi connection |
 | pacman   | maim                   | N.A.                                         | can take quick screenshots at your request                       |
