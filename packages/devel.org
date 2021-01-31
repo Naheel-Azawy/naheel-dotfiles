@@ -24,3 +24,4 @@
 | npm    | vscode-css-languageserver-bin | N.A.                     | LSP for CSS                            |
 | npm    | typescript-language-server    | N.A.                     | LSP for typescript                     |
 | pip    | python-language-server        | N.A.                     | LSP for python                         |
+| aur    | gitui-bin                     | N.A.                     | a nice and quick git tui               |
