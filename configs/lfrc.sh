@@ -22,6 +22,7 @@ set scrolloff 10
 
 # set the previewer script
 set previewer stpv
+set cleaner stpvimgclr
 
 # set the cleaner script
 #set cleaner stpvimgclr
