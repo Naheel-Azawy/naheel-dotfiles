@@ -12,10 +12,17 @@ import subprocess
 import socket
 import signal
 
+try:
+    import bidi.algorithm
+    import arabic_reshaper
+    use_arabic = True
+except:
+    use_arabic = False
+
 background = '#ff000000'
 foreground = '#ffffff'
 
-default_items = "start workspaces program | clock | systray lang pray weather temperature wifi battery power"
+default_items = "start workspaces add program | clock | systray lang pray weather temperature wifi battery power"
 
 port_file = "/tmp/.nbarport"
 
@@ -34,11 +41,14 @@ class WM:
         else:
             raise Exception(f"Unknown window manager {wm}")
 
+        self.title = None # to be set by bar.program()
+
+        # names to be picked for new workspaces
+        self.nice_workspaces = list(range(1, 10)) + [0]
+        self.nice_workspaces = list(map(lambda i: str(i), self.nice_workspaces))
+
     async def run(self):
         await asyncio.to_thread(self.impl.run)
-
-    def title(self):
-        return self.impl.title
 
     def json(self):
         workspaces = {}
@@ -49,7 +59,7 @@ class WM:
                 "urgent":  w.urgent
             }
         return json.dumps({
-            "title": self.impl.title,
+            "title": self.title,
             "workspaces": workspaces
         })
 
@@ -89,7 +99,6 @@ class Workspace:
 class I3WM(WMImpl):
     def __init__(self, callback):
         self.callback = callback
-        self.title = ""
         self.workspaces = []
         self.workspace_cmd = "i3-msg workspace"
 
@@ -131,7 +140,6 @@ class I3WM(WMImpl):
 class BSPWM(WMImpl):
     def __init__(self, callback):
         self.callback = callback
-        self.title = ""
         self.workspaces = []
         self.workspace_cmd = "bspc desktop -f"
 
@@ -240,7 +248,8 @@ class BarBase:
             exit(1)
 
     def run_item(self, item):
-        self.last[item("name")] = item()
+        if item in self.items:
+            self.last[item("name")] = item()
 
     async def run_periodic_item(self, item):
         if item not in self.items:
@@ -257,6 +266,7 @@ class BarBase:
     def run_wm_items(self, wm):
         self.run_item(self.workspaces)
         self.run_item(self.program)
+        self.run_item(self.add)
         self.render()
 
     async def handle_connection(self, reader, writer):
@@ -315,7 +325,14 @@ class Bar(BarBase):
 
     @item()
     def add(self):
-        return "%{A:echo:}%{A}" if not self.a else None
+        if self.a or self.wm.title == "":
+            return None
+        names = list(map(lambda w: w.name, self.wm.impl.workspaces))
+        for w in self.wm.nice_workspaces:
+            if w not in names:
+                onclick = f"{self.wm.impl.workspace_cmd} '{w}' >/dev/null"
+                return f"%{{A:{onclick}:}}%{{A}}"
+        return None
 
     @item()
     def program(self):
@@ -324,6 +341,11 @@ class Bar(BarBase):
             max_title = 55
             if len(title) > max_title:
                 title = title[:max_title] + "..."
+            if use_arabic:
+                title = bidi.algorithm.get_display(
+                    arabic_reshaper.reshape(title))
+            if self.wm is not None:
+                self.wm.title = title
             if self.a:
                 return title
             else:
@@ -334,6 +356,8 @@ class Bar(BarBase):
                 else:
                     return None
         except:
+            if self.wm is not None:
+                self.wm.title = ""
             return None
 
     @item(period=1)
@@ -517,14 +541,14 @@ def lemonbar():
         geometry = ""
 
     fonts = ["Iosevka Fixed",
+             # "Kawkab Mono:pixelsize=12",
              "Source Han Sans CN",
-             "Font Awesome 5 Free Solid"]
-    awesome_size = 19
+             "DejaVu Sans Mono",
+             "Font Awesome 5 Free Solid:pixelsize=19",
+             "Hack Nerd Font"]
 
     tmp = ""
     for f in fonts:
-        if "Awesome" in f:
-            f += f":pixelsize={awesome_size}"
         tmp += f"-f '{f}' "
     fonts = tmp
 
