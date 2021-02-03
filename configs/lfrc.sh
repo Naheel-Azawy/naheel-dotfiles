@@ -24,8 +24,8 @@ set scrolloff 10
 set previewer stpv
 set cleaner stpvimgclr
 
-# set the cleaner script
-#set cleaner stpvimgclr
+# enable mouse support
+set mouse on
 
 # show icons
 set icons
