@@ -6,8 +6,9 @@ import sys
 
 argv = sys.argv
 HOME = os.getenv("HOME")
+DOTFILES_DIR = os.getenv("DOTFILES_DIR") or '.'
 
-sys.path.append(os.getenv("DOTFILES_DIR") + '/configs')
+sys.path.append(DOTFILES_DIR + '/configs')
 from keybindings import get_bindings
 import wmctl
 
