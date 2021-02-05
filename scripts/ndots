@@ -118,7 +118,7 @@ dots_link() {
 # update dots configs
 dots_update() {
     mkdir -p "$HOME/.config/sxhkd/"
-    "$D/scripts/keybindingsgen.py" -g
+    ( cd "$D/scripts" && ./keybindingsgen.py -g )
     "$D/configs/onboard-gsettings.sh"
     dots_link
 }
