@@ -71,3 +71,5 @@
 | git      | dragon                 | https://github.com/mwh/dragon                | drag and drop                                                    |
 | pacman   | acpilight              | N.A.                                         | brightness control                                               |
 | pacman   | udisks2                | N.A.                                         | nice disks management                                            |
+| pacman   | ueberzug               | N.A.                                         | image previews in the terminal                                   |
+| pacman   | sxhkd                  | N.A.                                         | keyboard bindings                                                |

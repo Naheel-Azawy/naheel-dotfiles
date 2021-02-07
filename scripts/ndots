@@ -220,6 +220,7 @@ dots_install() {
     pkg_install "$PACS"
 
     info "Setting up systemd services"
+    sudo systemctl enable NetworkManager
     sudo systemctl enable org.cups.cupsd
     lock_service
 
