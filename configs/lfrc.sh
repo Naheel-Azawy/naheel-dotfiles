@@ -23,6 +23,7 @@ set scrolloff 10
 # set the previewer script
 set previewer stpv
 set cleaner stpvimgclr
+&stpvimg --listen $id
 
 # enable mouse support
 set mouse on

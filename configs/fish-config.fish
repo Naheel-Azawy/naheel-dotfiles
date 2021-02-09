@@ -86,9 +86,7 @@ end
 function lf
     set fwd (mktemp) # last working directory temp file
     set fid (mktemp) # lf id temp file
-    command lf -command \
-        '&printf $id > '"$fid"'
-    &stpvimg --listen $id' -last-dir-path=$fwd $argv
+    command lf -command '&printf $id > '"$fid"'' -last-dir-path=$fwd $argv
     set id (cat $fid)
     # end the image preview listener
     stpvimg --end $id
