@@ -43,5 +43,5 @@ if [ -f "$txt" ]; then
     caption="${s}$caption"
 fi
 
-echo "${filesize}${s}${geometry}${type}${s}${filename}${caption}"
+echo "${filename}${s}${filesize}${s}${geometry}${type}${caption}"
 

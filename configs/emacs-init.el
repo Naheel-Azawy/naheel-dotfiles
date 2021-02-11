@@ -421,47 +421,12 @@ from: https://stackoverflow.com/a/998472/3825872"
    ))
 
 ;; ---- ORG ----
-;; Installing Org with straight.el
-;; https://github.crookster.org/switching-to-straight.el-from-emacs-26-builtin-package.el/#put-in-place-org-workaround
-;; https://github.com/raxod502/straight.el/blob/develop/README.md#integration-with-org
-;; https://github.com/raxod502/straight.el/blob/develop/README.md#installing-org-with-straightel
-
-(require 'subr-x)
-(straight-use-package 'git)
-
-(defun org-git-version ()
-  "The Git version of 'org-mode'.
-Inserted by installing 'org-mode' or when a release is made."
-  (require 'git)
-  (let ((git-repo (expand-file-name
-                   "straight/repos/org/" user-emacs-directory)))
-    (string-trim
-     (git-run "describe"
-              "--match=release\*"
-              "--abbrev=6"
-              "HEAD"))))
-
-(defun org-release ()
-  "The release version of 'org-mode'.
-Inserted by installing 'org-mode' or when a release is made."
-  (require 'git)
-  (let ((git-repo (expand-file-name
-                   "straight/repos/org/" user-emacs-directory)))
-    (string-trim
-     (string-remove-prefix
-      "release_"
-      (git-run "describe"
-               "--match=release\*"
-               "--abbrev=0"
-               "HEAD")))))
-
-(provide 'org-version)
-
 (use-package org
   :init
   (setq org-agenda-files (list "~/Dropbox/orgmode/TODO.org") ; TODO: move to personal
         org-log-done 'time
-        org-image-actual-width 500)
+        org-image-actual-width 500
+        org-export-in-background nil)
 
   :config
   ;; -- BABEL LANGS --
@@ -493,8 +458,8 @@ Inserted by installing 'org-mode' or when a release is made."
   (setq org-latex-pdf-process '("pdflatexorgwraper -p %f"))
 
   ;; -- LaTeX PREVIEWS --
-  (setq org-format-latex-options (plist-put org-format-latex-options :scale 1.5))
-  (setq org-latex-create-formula-image-program 'imagemagick)
+  (setq org-format-latex-options (plist-put org-format-latex-options :scale 1.7))
+  (setq org-preview-latex-default-process 'dvipng)
 
   ;; -- TODO --
   (setq org-todo-keywords
