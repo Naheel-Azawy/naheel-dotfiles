@@ -439,7 +439,10 @@ class Bar(BarBase):
 
     @item()
     def lang(self):
-        out = os.popen("lang").read().strip()
+        try:
+            out = sh.lang().strip()
+        except:
+            return None
         if self.a:
             return out
         else:
@@ -484,10 +487,13 @@ class Bar(BarBase):
 
     @item(period=5)
     def temperature(self):
-        o = json.loads(os.popen(f"sensors coretemp-isa-0000 -j").read()) \
-            ["coretemp-isa-0000"]["Package id 0"]
-        t = float(o["temp1_input"])
-        m = float(o["temp1_max"])
+        try:
+            o = json.loads(sh.sensors("coretemp-isa-0000", "-j").strip()) \
+                ["coretemp-isa-0000"]["Package id 0"]
+            t = float(o["temp1_input"])
+            m = float(o["temp1_max"])
+        except:
+            return None
 
         percent = int((t / m) * 100)
         if percent < 70:
