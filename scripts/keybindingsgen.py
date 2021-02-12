@@ -46,7 +46,10 @@ def gen_sxhkdrc():
             if b.doc is not None:
                 outfile.write("# %s\n" % b.doc)
             outfile.write("%s\n\t%s\n\n" % (b.keys, b.cmd))
-    sh.pkill("-USR1", "-x", "sxhkd")
+    try:
+        sh.pkill("-USR1", "-x", "sxhkd")
+    except:
+        pass
 
 def main(args):
     if len(args) > 0:
