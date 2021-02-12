@@ -18,3 +18,4 @@
 | apt  | gawk        | N.A.     | weird Ubuntu no gawk by default...  |
 | pip  | RPi.GPIO    | N.A.     | GPIO interface for python           |
 | pip  | gpiozero    | N.A.     | simpler GPIO interface for python   |
+| pip  | sh          | N.A.     | shell integration in python         |
