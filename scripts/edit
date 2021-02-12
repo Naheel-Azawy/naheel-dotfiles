@@ -17,6 +17,17 @@ tnw() { exec theterm "$BINPATH" nw "$@"; }
 [ "$BIDI" ] &&
     nw() { exec bicon.bin --reshape-only "$BINPATH" c -nw "$@" 2>/dev/null; }
 
+command -v emacs >/dev/null || {
+    # emacs is not installed, assume nano is
+    daemon() { :; }
+    die()    { :; }
+    client() { exec nano "$@"; }
+
+    tnw() { exec theterm "$BINPATH" nw "$@"; }
+    gui() { tnw "$@"; }
+    nw()  { client "$@"; }
+}
+
 main() {
     CMD="$1"
     case "$CMD" in

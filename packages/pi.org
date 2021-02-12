@@ -11,7 +11,6 @@
 | func | tpm         | N.A.     | tmux package manager                |
 | apt  | highlight   | N.A.     | can highlight code output           |
 | apt  | fish        | N.A.     | the friendly shell!                 |
-| apt  | emacs       | N.A.     | the best editor on this planet      |
 | apt  | jq          | N.A.     | json in the shell                   |
 | apt  | moreutils   | N.A.     | vidir and other toys                |
 | apt  | strace      | N.A.     | trace system calls. Needed for cp-p |
