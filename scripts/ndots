@@ -49,7 +49,7 @@ if ispi; then
 elif isubuntu; then
     CATEGORIES="ubuntu"
 else
-    CATEGORIES="base base-gui addtions themostsignificant devel electronics games"
+    CATEGORIES="base base-gui additions themostsignificant devel electronics games"
 fi
 
 # systemd service to run lockscreen on suspend
