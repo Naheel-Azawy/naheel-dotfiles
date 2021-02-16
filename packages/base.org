@@ -53,3 +53,4 @@
 | pacman     | expect              | N.A.                                   | needed for ttylock                                           |
 | pip        | sh                  | N.A.                                   | shell integration in python. Needed for many commands        |
 | pacman     | dash                | N.A.                                   | the light quick shell                                        |
+| pacman     | lsof                | N.A.                                   | list open files                                              |

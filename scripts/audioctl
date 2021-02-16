@@ -19,49 +19,47 @@ vol() {
     [ -f "$LOCK" ] && return
     touch "$LOCK"
     C="$1"
-    if [ "$C" = m ]; then
-        pamixer -m
-    elif [ "$C" = t ]; then
-        pamixer -t
-    else
-        V=$(pamixer --get-volume)
-        V=$((V+C))
-        if [ $V -le $MAX_VOL ]; then
-            V=$((V/5*5))
-        else
-            V=$MAX_VOL
-        fi
-        if [ $V -lt 0 ]; then
-            V=0
-        fi
-        pamixer --allow-boost --set-volume $V
-    fi
+    D="$2"; [ "$D" ] || D=5
+    case "$C" in
+        m) pamixer -m ;;
+        t) pamixer -t ;;
+        up|down)
+            [ "$C" = down ] && D="-$D"
+            V=$(pamixer --get-volume)
+            V=$((V+D))
+            if [ $V -le $MAX_VOL ]; then
+                V=$((V/5*5))
+            else
+                V=$MAX_VOL
+            fi
+            if [ $V -lt 0 ]; then
+                V=0
+            fi
+            pamixer --allow-boost --set-volume $V
+            ;;
+    esac
     rm -f "$LOCK"
 	vol_notif "$V"
 }
 
 vol1() {
-    case "$1" in
-        t) amixer -q set Master toggle;;
-        m) amixer -q set Master mute;;
-        *)
-            V="$1"
-            if [ "$V" -ge 0 ]; then
-                amixer -q set Master "$V%+"
-            else
-                V=$((-V))
-                amixer -q set Master "$V%-"
-            fi;;
+    C="$1"
+    D="$2"; [ "$D" ] || D=5
+    case "$C" in
+        t)    amixer -q set Master toggle ;;
+        m)    amixer -q set Master mute   ;;
+        up)   amixer -q set Master "$D%+" ;;
+        down) amixer -q set Master "$D%-" ;;
     esac
 	vol_notif
 }
 
 V="$2"
 case "$1" in
-	"up")       vol "$V"  ;;
-	"down")     vol "-$V" ;;
-	"mute")     vol t     ;;
-	"truemute") vol m     ;;
+	"up")       vol up   "$V" ;;
+	"down")     vol down "$V" ;;
+	"mute")     vol t         ;;
+	"truemute") vol m         ;;
 	"stop")     mpc -q stop       || cmus-remote --stop       ;;
 	"pause")    mpc -q toggle     || cmus-remote --pause      ;;
 	"forward")  mpc -q seek +"$V" || cmus-remote --seek +"$V" ;;
@@ -69,5 +67,5 @@ case "$1" in
 	"next")     mpc -q next       || cmus-remote --next       ;;
 	"prev")     mpc -q prev       || cmus-remote --prev       ;;
 	"replay")   mpc seek 0%       || cmus-remote --seek 0     ;;
-    "ctrl")     pavucontrol ;;
+    "gui")      pavucontrol ;;
 esac 2>/dev/null
