@@ -22,3 +22,9 @@ try_export() {   [ -d "$2" ] && export "$1=$2";:;       }
 try_add_path() { [ -d "$1" ] && export PATH="$PATH:$1";:; }
 test -f "$DOTFILES_DIR/configs/more-paths.sh" &&
     source "$DOTFILES_DIR/configs/more-paths.sh"
+
+# Start tmux if is in an ssh session
+if [ ! "$TMUX" ] && [ "$SSH_CONNECTION" ]; then
+    . ~/.profile
+    tmux a || tmux
+fi
