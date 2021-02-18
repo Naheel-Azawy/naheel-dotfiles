@@ -1,0 +1,70 @@
+#!/bin/bash
+
+# a funny hack for workspace sliding animation
+# adopted from https://unix.stackexchange.com/a/545840/183147
+# depends on: wmctrl, i3-msg, scrot, feh
+# don't forget to add the following to your i3 config:
+# for_window [class="feh"] floating enable, sticky enable, border none, move absolute position 0 px 0 px
+
+W=1920
+H=1080
+STEP=20
+SCRSHOT=~/.cache/slide-prtscr.jpg
+
+slide() {
+    DIR="$1"
+    FEH_ID=$(wmctrl -l | grep "$SCRSHOT" | awk '{print $1}')
+    case "$DIR" in
+        right)
+            for x in $(seq 0 -$STEP -$((W + STEP))); do
+                wmctrl -i -r "$FEH_ID" -e "1,$x,0,$W,$H"
+            done ;;
+        left)
+            for x in $(seq 0 $STEP $((W + STEP))); do
+                wmctrl -i -r "$FEH_ID" -e "1,$x,0,$W,$H"
+            done ;;
+        up)
+            for y in $(seq 0 $STEP $((H + STEP))); do
+                wmctrl -i -r "$FEH_ID" -e "1,0,$y,$W,$H"
+            done ;;
+        down)
+            for y in $(seq 0 -$STEP -$((H + STEP))); do
+                wmctrl -i -r "$FEH_ID" -e "1,0,$y,$W,$H"
+            done ;;
+    esac
+}
+
+main() {
+    WORKSPACE="$1"
+    # WKSP=$(xprop -root -notype _NET_CURRENT_DESKTOP | sed 's#.* =##')
+    # CURRENT_WORKSPACE=$((WKSP + 1))
+    # TODO: remove the i3isim
+    CURRENT_WORKSPACE=$(i3-msg -t get_workspaces |
+                            jq -r '.[] | select(.focused==true).name')
+
+    if [ "$CURRENT_WORKSPACE" != "$WORKSPACE" ]; then
+        rm -f "$SCRSHOT"
+        scrot -q 50 "$SCRSHOT"
+        feh --title '%f' "$SCRSHOT" &
+        FEH_WINDOW=$!
+        sleep .1
+        i3-msg workspace "$WORKSPACE"
+        sleep .2
+
+        case "$WORKSPACE" in
+            next) slide right ;;
+            prev) slide left  ;;
+            *)
+                # TODO: get rif of the bashisim
+                if [[ "$CURRENT_WORKSPACE" > "$WORKSPACE" ]]; then
+                    slide left
+                else
+                    slide right
+                fi
+        esac
+
+        kill $FEH_WINDOW
+    fi
+}
+
+main "$@"
