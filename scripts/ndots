@@ -113,6 +113,7 @@ dots_link() {
     lnnn "$D/configs/gotop-layout"        "$H/.config/gotop/mylayout"
     lnnn "$D/configs/arduino-cli.yaml"    "$H/.arduino15/arduino-cli.yaml"
     lnnn "$D/configs/stpv-config.sh"      "$H/.config/stpv/config.sh"
+    lnnn "$D/configs/nanorc"              "$H/.nanorc"
 }
 
 # update dots configs
