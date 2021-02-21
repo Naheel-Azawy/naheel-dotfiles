@@ -39,6 +39,10 @@ xset r rate 230 50
 eval "$(/usr/bin/gnome-keyring-daemon --start --components=pkcs11,secrets,ssh)"
 export SSH_AUTH_SOCK
 
+# enable the HUD menu
+export GTK_MODULES="$GTK_MODULES:unity-gtk-module:appmenu-gtk-module"
+export UBUNTU_MENUPROXY=1
+
 # autostart programs
 env SXHKD_SHELL=dash sxhkd & # keyboard daemon
 bar lemon &                  # top bar
@@ -52,6 +56,7 @@ picom &                      # compositor
 setwallpaper &               # wallpaper
 lang us &                    # set language to 'us' and runs xmodmap
 mount-private &              # mount encfs private directory
+hud daemon &                 # hud menu daemon
 
 # start the window manager
 exec "$WINDOW_MANAGER" # defined in profile

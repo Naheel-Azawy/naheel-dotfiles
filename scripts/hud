@@ -1,0 +1,227 @@
+#!/usr/bin/env python3
+
+# bring back the only one thing I miss from unity,
+# the Head-Up Display (HUD) menu
+# based on https://github.com/RafaelBocquet/i3-hud-menu
+#
+# don't forget to add:
+# if [ -n "$GTK_MODULES" ]; then
+#     export GTK_MODULES="$GTK_MODULES:unity-gtk-module"
+# else
+#     export GTK_MODULES="unity-gtk-module"
+# fi
+# if [ -z "$UBUNTU_MENUPROXY" ]; then
+#     export UBUNTU_MENUPROXY=1
+# fi
+#
+# start the daemon with `hud daemon` and run `hud` to show the menu
+# TODO: integrate with `launcher` and keep as a seperate repo
+
+import dbus
+import subprocess
+import sys
+
+def start_service():
+    import gi
+    gi.require_version("Gtk", "3.0")
+    from gi.repository import Gtk
+    import dbus.service
+    from dbus.mainloop.glib import DBusGMainLoop
+
+    class Service(dbus.service.Object):
+        def __init__(self):
+            bus_name = dbus.service.BusName("com.canonical.AppMenu.Registrar", bus = dbus.SessionBus())
+            dbus.service.Object.__init__(self, bus_name, "/com/canonical/AppMenu/Registrar")
+            self.window_dict = dict()
+
+        @dbus.service.method("com.canonical.AppMenu.Registrar",
+                             in_signature="uo",
+                             sender_keyword="sender")
+        def RegisterWindow(self, windowId, menuObjectPath, sender):
+            self.window_dict[windowId] = (sender, menuObjectPath)
+
+        @dbus.service.method("com.canonical.AppMenu.Registrar",
+                             in_signature="u",
+                             out_signature="so")
+        def GetMenuForWindow(self, windowId):
+            if windowId in self.window_dict:
+                sender, menuObjectPath = self.window_dict[windowId]
+                return [dbus.String(sender), dbus.ObjectPath(menuObjectPath)]
+
+        @dbus.service.method("com.canonical.AppMenu.Registrar")
+        def Q(self):
+            Gtk.main_quit()
+
+    DBusGMainLoop(set_as_default=True)
+    myservice = Service()
+    Gtk.main()
+
+def dmenu(items, main_bar=[]):
+    main_bar = set(main_bar)
+    dmenu_string = ""
+    if len(main_bar) > 0:
+        dmenu_string += " | ".join(main_bar) + "\n"
+    dmenu_string += "\n".join(items.keys())
+    cmd = "menu-interface"
+    if subprocess.call(["which", cmd],
+                       stdout=subprocess.PIPE,
+                       stderr=subprocess.PIPE) != 0:
+        cmd = "dmenu"
+    dmenu_cmd = subprocess.Popen([cmd, "-i", "-l", "20"],
+                                 stdout=subprocess.PIPE, stdin=subprocess.PIPE)
+    dmenu_cmd.stdin.write(dmenu_string.encode())
+    dmenu_result = dmenu_cmd.communicate()[0].decode().strip()
+    dmenu_cmd.stdin.close()
+    return dmenu_result
+
+def format_label_list(label_list):
+    return "| " + " > ".join(label_list).replace("_", "")
+
+# FIXME: inactive items are shown normally
+
+class GtkNotFoundExcpetion(Exception):
+    pass
+
+def run_gtk_interface(window_id):
+    # Get GTK MenuModel Bus name
+    gtk_bus_name_cmd = subprocess.check_output(["xprop", "-id", window_id,
+                                                "-notype", "_GTK_UNIQUE_BUS_NAME"]).decode()
+    gtk_object_path_cmd = subprocess.check_output(["xprop", "-id", window_id,
+                                                   "-notype", "_GTK_MENUBAR_OBJECT_PATH"]).decode()
+
+    if "not found" in gtk_bus_name_cmd or "not found" in gtk_object_path_cmd:
+        raise GtkNotFoundExcpetion()
+
+    gtk_bus_name = gtk_bus_name_cmd.split(' ')[-1].strip().split('"')[1]
+    gtk_object_path = gtk_object_path_cmd.split(' ')[-1].strip().split('"')[1]
+
+    # Ask for menus over DBus
+    session_bus = dbus.SessionBus()
+    gtk_menubar_object = session_bus.get_object(gtk_bus_name, gtk_object_path)
+    gtk_menubar_object_iface = dbus.Interface(gtk_menubar_object, dbus_interface="org.gtk.Menus")
+    gtk_action_object_actions_iface = dbus.Interface(gtk_menubar_object, dbus_interface="org.gtk.Actions")
+    gtk_menubar_results = gtk_menubar_object_iface.Start([x for x in range(1024)])
+
+    # Construct menu list
+    gtk_menubar_menus = {}
+    for gtk_menubar_result in gtk_menubar_results:
+        gtk_menubar_menus[(gtk_menubar_result[0], gtk_menubar_result[1])] = gtk_menubar_result[2]
+
+    main_bar = []
+    actions = {}
+    targets = {}
+
+    def explore_menu(menu_id, label_list=[]):
+        if menu_id not in gtk_menubar_menus:
+            return
+        for menu in gtk_menubar_menus[menu_id]:
+            if "label" in menu:
+                menu_label = menu["label"]
+            else:
+                menu_label = "?"
+
+            new_label_list = label_list + [menu_label]
+            formatted_label = format_label_list(new_label_list)
+
+            if len(new_label_list) == 1 and menu_label != "?":
+                main_bar.append(new_label_list[0].replace("_", ""))
+
+            if "accel" in menu and menu["accel"]:
+                formatted_label += f" ({menu['accel']})"
+
+            if ":section" in menu:
+                menu_section = menu[":section"]
+                section_menu_id = (menu_section[0], menu_section[1])
+                explore_menu(section_menu_id, label_list)
+
+            if ":submenu" in menu:
+                menu_submenu = menu[":submenu"]
+                submenu_menu_id = (menu_submenu[0], menu_submenu[1])
+                explore_menu(submenu_menu_id, new_label_list)
+
+            if ":section" not in menu and \
+               ":submenu" not in menu and \
+               "action" in menu:
+                menu_action = menu["action"]
+                actions[formatted_label] = menu_action
+                if "target" in menu:
+                    menu_target = menu["target"]
+                    targets[formatted_label] = menu_target
+
+    explore_menu((0, 0))
+
+    # Run dmenu
+    dmenu_result = dmenu(actions, main_bar)
+
+    # Use dmenu result
+    if dmenu_result in actions:
+        action = actions[dmenu_result].replace("unity.", "")
+        # FIXME: fails for libreoffice
+        gtk_action_object_actions_iface.Activate(action, [], {})
+
+def run_appmenu_interface(window_id):
+    # Get Appmenu Registrar DBus interface
+    session_bus = dbus.SessionBus()
+    appmenu_registrar_object = session_bus.get_object("com.canonical.AppMenu.Registrar",
+                                                      "/com/canonical/AppMenu/Registrar")
+    appmenu_registrar_object_iface = dbus.Interface(appmenu_registrar_object,
+                                                    "com.canonical.AppMenu.Registrar")
+
+    # Get dbusmenu object path
+    try:
+        dbusmenu_bus, dbusmenu_object_path = appmenu_registrar_object_iface.GetMenuForWindow(window_id)
+    except dbus.exceptions.DBusException:
+        return
+
+    # Access dbusmenu items
+    dbusmenu_object = session_bus.get_object(dbusmenu_bus, dbusmenu_object_path)
+    dbusmenu_object_iface = dbus.Interface(dbusmenu_object, "com.canonical.dbusmenu")
+    dbusmenu_items = dbusmenu_object_iface.GetLayout(0, -1, ["label"])
+
+    main_bar = []
+    actions = {}
+
+    def explore_dbusmenu_item(item, label_list=[]):
+        item_id = item[0]
+        item_props = item[1]
+        item_children = item[2]
+
+        if 'label' in item_props:
+            new_label_list = label_list + [item_props["label"]]
+        else:
+            new_label_list = label_list
+
+        if len(new_label_list) == 1:
+            main_bar.append(new_label_list[0].replace("_", ""))
+
+        if len(item_children) == 0:
+            if "label" in item_props:
+                actions[format_label_list(new_label_list)] = item_id
+        else:
+            for child in item_children:
+                explore_dbusmenu_item(child, new_label_list)
+
+    explore_dbusmenu_item(dbusmenu_items[1])
+
+    # Run dmenu
+    dmenu_result = dmenu(actions, main_bar)
+
+    # Use dmenu result
+    if dmenu_result in actions:
+        action = actions[dmenu_result]
+        dbusmenu_object_iface.Event(action, "clicked", 0, 0)
+
+def main(args):
+    if len(args) > 1 and args[1] == "daemon":
+        start_service()
+    else:
+        window_id = subprocess.check_output(["xdotool", "getactivewindow"]) \
+                              .decode().strip()
+        window_title = subprocess.check_output(["xdotool", "getwindowname", window_id]) \
+                                 .decode().strip()
+        try:
+            run_gtk_interface(window_id)
+        except GtkNotFoundExcpetion:
+            run_appmenu_interface(window_id)
+
+main(sys.argv)

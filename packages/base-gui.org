@@ -73,3 +73,4 @@
 | pacman   | udisks2                | N.A.                                         | nice disks management                                            |
 | pacman   | ueberzug               | N.A.                                         | image previews in the terminal                                   |
 | pacman   | sxhkd                  | N.A.                                         | keyboard bindings                                                |
+| pacman   | appmenu-gtk-module     | N.A.                                         | needed for the hud menu                                          |

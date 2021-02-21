@@ -352,7 +352,7 @@ class Bar(BarBase):
                 out = ""
                 if title:
                     return "%{A:wmctl nice-kill:}%{A}  " + \
-                        "%{A:wmctl window-menu:}" + title + "%{A}"
+                        "%{A:hud:}" + title + "%{A}"
                 else:
                     return None
         except:

@@ -89,6 +89,9 @@ def get_bindings(wmcmd=lambda c: f"wmctl {c}"):
     ('Start the program launcher',
      'super+d', 'launcher'),
 
+    ('Start the application menu',
+     'super+s', 'hud'),
+
     ('Switch language',
      'super+space', 'lang tog'),
 
