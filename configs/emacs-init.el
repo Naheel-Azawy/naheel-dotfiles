@@ -2,7 +2,7 @@
 
 ;;; Commentary:
 
-;; Copyright 2020 Naheel Azawy.  All rights reserved.
+;; Copyright 2020-2021 Naheel Azawy.  All rights reserved.
 
 ;; This program is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -26,30 +26,39 @@
 ;;; Code:
 
 ;; ---- STRAIGHT ----
-(require 'package)
-(defvar package-enable-at-startup nil)
-(defvar straight-use-package-by-default t)
-(defvar straight-repository-branch "develop")
-(defvar straight-vc-git-default-clone-depth 1)
-(defvar bootstrap-version)
-(let ((bootstrap-file
-       (expand-file-name "straight/repos/straight.el/bootstrap.el" user-emacs-directory))
-      (bootstrap-version 5))
-  (unless (file-exists-p bootstrap-file)
-    (with-current-buffer
-        (url-retrieve-synchronously
-         "https://raw.githubusercontent.com/raxod502/straight.el/develop/install.el"
-         'silent 'inhibit-cookies)
-      (goto-char (point-max))
-      (eval-print-last-sexp)))
-  (load bootstrap-file nil 'nomessage))
-(straight-use-package 'use-package)
-(eval-when-compile (require 'use-package))
+;; Straight is cool. But it is still relatively unstable
+;; (require 'package)
+;; (defvar package-enable-at-startup nil)
+;; (defvar straight-use-package-by-default t)
+;; (defvar straight-repository-branch "develop")
+;; (defvar straight-vc-git-default-clone-depth 1)
+;; (defvar bootstrap-version)
+;; (let ((bootstrap-file
+;;        (expand-file-name "straight/repos/straight.el/bootstrap.el" user-emacs-directory))
+;;       (bootstrap-version 5))
+;;   (unless (file-exists-p bootstrap-file)
+;;     (with-current-buffer
+;;         (url-retrieve-synchronously
+;;          "https://raw.githubusercontent.com/raxod502/straight.el/develop/install.el"
+;;          'silent 'inhibit-cookies)
+;;       (goto-char (point-max))
+;;       (eval-print-last-sexp)))
+;;   (load bootstrap-file nil 'nomessage))
+;; (straight-use-package 'use-package)
+;; (eval-when-compile (require 'use-package))
 
-;; ---- MELPA ----
-;; to be able to access MELPA packages from package-list-packages
-;; https://github.crookster.org/switching-to-straight.el-from-emacs-26-builtin-package.el
-(add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/") t)
+;; ---- MELPA and USE_PACKAGE ----
+(require 'package)
+(setq package-archives '(("melpa" . "https://melpa.org/packages/")
+                         ("org" . "https://orgmode.org/elpa/")
+                         ("elpa" . "https://elpa.gnu.org/packages/")))
+(package-initialize)
+(unless package-archive-contents
+  (package-refresh-contents))
+(unless (package-installed-p 'use-package)
+  (package-install 'use-package))
+(require 'use-package)
+(setq use-package-always-ensure t)
 
 ;; ---- KEYS ----
 (global-set-key (kbd "C-x <up>")    'windmove-up)
@@ -58,6 +67,7 @@
 (global-set-key (kbd "C-x <left>")  'windmove-left)
 ;; because no one knows how to use emacs...
 (cua-mode 1)
+(setq cua-keep-region-after-copy t)
 (global-set-key (kbd "C-a") 'mark-whole-buffer)
 (with-eval-after-load 'org
   (define-key org-mode-map "\C-a" 'mark-whole-buffer))
@@ -253,8 +263,8 @@
   :mode "\\.js\\'"
   :config (custom-set-faces
            '(js2-external-variable ((t (:foreground "brightblack"))))))
-(straight-use-package
- '(vlang-mode :type git :host github :repo "Naheel-Azawy/vlang-mode"))
+;; (straight-use-package
+;;  '(vlang-mode :type git :host github :repo "Naheel-Azawy/vlang-mode"))
 
 (add-to-list 'auto-mode-alist '("\\.ttl\\'" . ttl-mode))
 (add-to-list 'auto-mode-alist '("\\.rpg\\'" . sparql-mode))
@@ -283,7 +293,14 @@
   :bind
   ("C-j" . xref-find-definitions)
   ("M-j" . xref-pop-marker-stack))
-(use-package writeroom-mode)
+(use-package writeroom-mode
+  :config
+  (custom-set-variables
+   '(writeroom-fullscreen-effect 'maximized)
+   '(writeroom-border-width 50)
+   '(writeroom-bottom-divider-width 0)
+   '(writeroom-extra-line-spacing nil)
+   '(writeroom-fringes-outside-margins nil)))
 (use-package anzu :config (global-anzu-mode +1))
 (use-package academic-phrases)
 (use-package adaptive-wrap)
@@ -410,15 +427,14 @@ from: https://stackoverflow.com/a/998472/3825872"
                      cfw:fchar-top-right-corner ?┓)))
 
 ;; ---- LATEX ----
-(use-package tex-site
-  :straight auctex
+(use-package tex
+  :ensure auctex
   :config
   (custom-set-variables
    '(TeX-PDF-mode t)
    '(TeX-source-correlate-method 'synctex)
    '(TeX-source-correlate-mode t)
-   '(TeX-source-correlate-start-server t)
-   ))
+   '(TeX-source-correlate-start-server t)))
 
 ;; ---- ORG ----
 (use-package org
@@ -455,7 +471,7 @@ from: https://stackoverflow.com/a/998472/3825872"
   (add-to-list 'org-file-apps '("\\.html\\'" . "browser %s"))
 
   ;; -- MY "DIRTY" LaTeX EXPORT --
-  (setq org-latex-pdf-process '("pdflatexorgwraper -p %f"))
+  (setq org-latex-pdf-process '("pdflatexorgwraper %f"))
 
   ;; -- LaTeX PREVIEWS --
   (setq org-format-latex-options (plist-put org-format-latex-options :scale 1.7))
@@ -543,8 +559,6 @@ from: https://stackoverflow.com/a/998472/3825872"
                  ("\\subsubsection\{%s\}" . "\\subsubsection*\{%s\}"))))
 
 ;;; emacs-init.el ends here
-(put 'upcase-region 'disabled nil)
-(put 'downcase-region 'disabled nil)
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
@@ -554,10 +568,13 @@ from: https://stackoverflow.com/a/998472/3825872"
  '(TeX-source-correlate-method 'synctex)
  '(TeX-source-correlate-mode t)
  '(TeX-source-correlate-start-server t)
+ '(package-selected-packages
+   '(org-ref ox-reveal ox-pandoc org-bullets auctex calfw-org calfw flyspell-correct-helm helm xclip origami multiple-cursors adaptive-wrap academic-phrases anzu writeroom-mode dumb-jump iedit rainbow-mode flycheck js2-mode ein cmake-mode xonsh-mode elvish-mode fish-mode dockerfile-mode solidity-mode arduino-mode haxe-mode glsl-mode yaml-mode protobuf-mode ttl-mode sparql-mode gnuplot-mode kotlin-mode julia-mode typescript-mode rust-mode go-mode csharp-mode vala-mode basic-mode web-mode lsp-dart lsp-java lsp-ui company-lsp lsp-mode git-gutter doom-modeline spacemacs-theme undo-tree use-package))
  '(writeroom-border-width 50)
  '(writeroom-bottom-divider-width 0)
  '(writeroom-extra-line-spacing nil)
- '(writeroom-fringes-outside-margins nil))
+ '(writeroom-fringes-outside-margins nil)
+ '(writeroom-fullscreen-effect 'maximized))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
@@ -580,4 +597,5 @@ from: https://stackoverflow.com/a/998472/3825872"
  '(cfw:face-today-title ((t :background "#5f5f87" :weight bold)))
  '(cfw:face-toolbar ((t :foreground "#000000" :background "#000000")))
  '(cfw:face-toolbar-button-off ((t :foreground "#555555" :weight bold)))
- '(cfw:face-toolbar-button-on ((t :foreground "#ffffff" :weight bold))))
+ '(cfw:face-toolbar-button-on ((t :foreground "#ffffff" :weight bold)))
+ '(js2-external-variable ((t (:foreground "brightblack")))))
