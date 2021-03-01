@@ -256,6 +256,7 @@ cmd autoratios &{{
                     if [ $w -le 60 ]; then
                         lf -remote "send $id set nopreview"
                         lf -remote "send $id set ratios 1"
+                        stpvimgclr
                     elif [ $w -le 130 ]; then
                         lf -remote "send $id set ratios 1:2"
                         lf -remote "send $id set preview"
@@ -270,6 +271,7 @@ autoratios # auto-run at start
 cmd tinyratios &{{
                     lf -remote "send $id set nopreview"
                     lf -remote "send $id set ratios 1"
+                    stpvimgclr
                 }}
 
 # fuzzy search jump

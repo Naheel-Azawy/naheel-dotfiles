@@ -5,17 +5,11 @@
 # based on https://github.com/RafaelBocquet/i3-hud-menu
 #
 # don't forget to add:
-# if [ -n "$GTK_MODULES" ]; then
-#     export GTK_MODULES="$GTK_MODULES:unity-gtk-module"
-# else
-#     export GTK_MODULES="unity-gtk-module"
-# fi
-# if [ -z "$UBUNTU_MENUPROXY" ]; then
-#     export UBUNTU_MENUPROXY=1
-# fi
+# eval "$(hud env)"
 #
 # start the daemon with `hud daemon` and run `hud` to show the menu
 # TODO: integrate with `launcher` and keep as a seperate repo
+# TODO: integrate plotinus https://github.com/p-e-w/plotinus
 
 import dbus
 import subprocess
@@ -212,8 +206,14 @@ def run_appmenu_interface(window_id):
         dbusmenu_object_iface.Event(action, "clicked", 0, 0)
 
 def main(args):
-    if len(args) > 1 and args[1] == "daemon":
-        start_service()
+    if len(args) > 1:
+        if args[1] == "daemon":
+            start_service()
+        elif args[1] == "env":
+            print('export GTK_MODULES="$GTK_MODULES:unity-gtk-module:appmenu-gtk-module"')
+            print('PLOTINUS=$(whereis -b libplotinus | cut -d " " -f 2)')
+            print('[ -f "$PLOTINUS" ] && export GTK_MODULES="$GTK_MODULES:$PLOTINUS"')
+            print('export UBUNTU_MENUPROXY=1')
     else:
         window_id = subprocess.check_output(["xdotool", "getactivewindow"]) \
                               .decode().strip()

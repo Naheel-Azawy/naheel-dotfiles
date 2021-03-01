@@ -9,11 +9,9 @@ doit() {
 
 if [ "$1" = '-r' ]; then
     shift
-    ret=1
-    for f in *.pdf; do
-        doit "$f" "$@" && ret=0
+    find . -iname '*.pdf' | while read -r f; do
+        doit "$f" "$@"
     done
-    exit $ret
 else
     doit "$@"
 fi

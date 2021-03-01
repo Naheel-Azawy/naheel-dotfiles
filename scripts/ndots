@@ -440,6 +440,11 @@ pkg_install_from() {
                     dir=$(mktemp -d)
                     git clone --depth 1 "$link" "$dir" &&
                         cd "$dir" && {
+                            if [ -f CMakeLists.txt ]; then
+                                mkdir -p build &&
+                                    cd build &&
+                                    cmake ..
+                            fi
                             if [ -f autogen.sh ];  then ./autogen.sh; fi
                             if [ -f ./configure ]; then ./configure;  fi
                         } && sudo make &&

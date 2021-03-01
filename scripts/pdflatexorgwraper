@@ -1,57 +1,142 @@
 #!/bin/sh
 
-#PDF=pdflatex
-PDF=xelatex
-BIB=biber
-OPT="-interaction=nonstopmode -synctex=1 --halt-on-error"
-
-[ "$1" = '-p' ] && {
-    PDF=pdflatex
-    shift
-}
-
-DOCX=0
-[ "$1" = '-d' ] && {
-    DOCX=1
-    shift
-}
-
-F="$1"
-F="${F%.*}"
-
-if [ $DOCX = 1 ]; then
-    # TODO: move to personal
-    # or better download if not existing
-    pandoc --bibliography="$BIB" --filter pandoc-citeproc --csl "$HOME/Documents/LaTeX/ieee.csl" "$F.tex" -o "$F.docx"
+if [ -t 1 ]; then
+    BLUE='\e[1;34m'
+    RED='\e[1;31m'
+    YELLOW='\e[1;33m'
+    GREEN='\e[1;32m'
+    RESET='\e[0m'
 else
-    if OUT=$($PDF $OPT "$F.tex"); then
-        if BIBOUT=$($BIB "$F") &&
-                ! echo "$BIBOUT" | grep -q 'does not contain any citations!'
-        then
-            $PDF $OPT "$F.tex" >/dev/null 2>/dev/null
-        fi
-        OUT=$($PDF $OPT "$F.tex")
+    BLUE=
+    RED=
+    YELLOW=
+    GREEN=
+    RESET=
+fi
+
+LATEX_RERUN_NEEDED='Please rerun LaTeX.'
+BIBTEX_RERUN_NEEDED='Please (re)run Biber on the file:'
+
+run_showing() {
+    printf "$GREEN\$$RESET %s\n" "$*" >&2
+    eval "$@"
+}
+
+gen_pdf() {
+    run_showing xelatex -interaction=nonstopmode \
+                -synctex=1 --halt-on-error "$@"
+}
+
+gen_bib() {
+    run_showing biber "$@"
+}
+
+garbage() {
+    echo "$1.aux"
+    echo "$1.bbl"
+    echo "$1.bcf"
+    echo "$1.blg"
+    echo "$1.log"
+    echo "$1.out"
+    echo "$1.run.xml"
+    echo "$1.aux"
+    echo "$1.lof"
+    echo "$1.lot"
+    echo "$1.toc"
+    echo "$1.synctex.gz"
+    echo "texput.log"
+}
+
+garbage_hide() {
+    F="$1"
+    D=$(dirname "$F")
+    N=$(basename "$F")
+    cd "$D" || return 1
+    mkdir -p ".$N.build"
+    G=$(garbage "$N")
+    echo "$G" |
+        xargs -I {} mv {} ".$N.build/" 2>/dev/null
+}
+
+garbage_show() {
+    F="$1"
+    D=$(dirname "$F")
+    N=$(basename "$F")
+    cd "$D" || return 1
+    mv ".$N.build/"* . 2>/dev/null
+}
+
+cleanup() {
+    G=$(garbage "$1")
+    printf "$RED>>> DELETING:$RESET\n"
+    echo "$G"
+    echo "$G" | xargs rm -f
+}
+
+main() {
+    DOCX=; [ "$1" = '-d' ] && DOCX=1 && shift
+    F="$1"
+    F="${F%.*}"
+
+    garbage_show "$F"
+
+    if [ "$DOCX" ]; then
+        # TODO: move to personal
+        # or better download if not existing
+        pandoc --bibliography="$BIB" --filter pandoc-citeproc --csl "$HOME/Documents/LaTeX/ieee.csl" "$F.tex" -o "$F.docx"
+        return
     fi
+
+    # first latex run
+    if OUT=$(gen_pdf "$F.tex"); then
+
+        # run bib if needed
+        if echo "$OUT" | grep -q "$BIBTEX_RERUN_NEEDED"; then
+            if BIBOUT=$(gen_bib "$F") &&
+                    ! echo "$BIBOUT" | grep -q 'does not contain any citations!'
+            then
+                # another latex is always needed after biber
+                OUT=$(gen_pdf "$F.tex")
+
+                # sometimes, the files get messy and a clean build is needed
+                if echo "$OUT" | grep -q "$BIBTEX_RERUN_NEEDED"; then
+                    cleanup "$F"
+                    BIBOUT=$(gen_bib "$F") &&
+                        OUT=$(gen_pdf "$F.tex")
+                fi
+            fi
+        fi
+
+        # another latex run if needed
+        if echo "$OUT" | grep -q "$LATEX_RERUN_NEEDED"; then
+            OUT=$(gen_pdf "$F.tex")
+        fi
+    fi
+
     ERRS=$(echo "$OUT" |
                grep -A 1 -E '^\! .+')
     WRNS=$(echo "$OUT" |
                grep -A 1 -E 'Warning:' |
                grep -E '^[A-Za-z\(]')
+
     if [ "$BIBOUT" ]; then
-        printf "\e[1;34m>>> BIBLIOGRAPHY (%s):\e[0m\n" "$BIB"
+        printf "$BLUE>>> BIBLIOGRAPHY (%s):$RESET\n" "$BIB"
         echo "$BIBOUT"
     fi
     if [ "$ERRS" ]; then
-        printf "\e[1;31m>>> ERRORS:\e[0m\n"
+        printf "$RED>>> ERRORS:$RESET\n"
         echo "$ERRS"
     fi
     if [ "$WRNS" ]; then
-        printf "\e[1;33m>>> WARNINGS:\e[0m\n"
+        printf "$YELLOW>>> WARNINGS:$RESET\n"
         echo "$WRNS"
     fi
-    #echo "$OUT"
-    rm -f "$F.aux" "$F.bbl" "$F.bcf" "$F.blg" "$F.log" "$F.out" "$F.run.xml" "$F.aux" "$F.lof" "$F.lot" "$F.toc" "texput.log"
+
+    garbage_hide "$F"
+
     if [ "$ERRS" ]; then
-        exit 1
+        return 1
     fi
-fi
+}
+
+main "$@"
