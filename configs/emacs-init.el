@@ -50,8 +50,8 @@
 ;; ---- MELPA and USE_PACKAGE ----
 (require 'package)
 (setq package-archives '(("melpa" . "https://melpa.org/packages/")
-                         ("org" . "https://orgmode.org/elpa/")
-                         ("elpa" . "https://elpa.gnu.org/packages/")))
+                         ("org"   . "https://orgmode.org/elpa/")
+                         ("elpa"  . "https://elpa.gnu.org/packages/")))
 (package-initialize)
 (unless package-archive-contents
   (package-refresh-contents))
@@ -113,7 +113,7 @@
 ;; ---- FONT ----
 (set-face-attribute 'default nil
                     :family "Iosevka Fixed"
-                    :height 160)
+                    :height 130)
 (set-fontset-font "fontset-default"
                   'arabic
                   (font-spec :family "Kawkab Mono" :size 14)
@@ -245,8 +245,8 @@
 (use-package julia-mode)
 (use-package kotlin-mode)
 (use-package gnuplot-mode)
-(use-package sparql-mode)
-(use-package ttl-mode)
+(use-package sparql-mode :mode "\\.rpg\\'")
+(use-package ttl-mode :mode "\\.ttl\\'")
 (use-package protobuf-mode)
 (use-package yaml-mode)
 (use-package glsl-mode)
@@ -259,18 +259,14 @@
 (use-package xonsh-mode)
 (use-package cmake-mode)
 (use-package ein)
-(use-package js2-mode
-  :mode "\\.js\\'"
-  :config (custom-set-faces
-           '(js2-external-variable ((t (:foreground "brightblack"))))))
-;; (straight-use-package
-;;  '(vlang-mode :type git :host github :repo "Naheel-Azawy/vlang-mode"))
-
-(add-to-list 'auto-mode-alist '("\\.ttl\\'" . ttl-mode))
-(add-to-list 'auto-mode-alist '("\\.rpg\\'" . sparql-mode))
-(add-to-list 'auto-mode-alist '("\\.m\\'"   . octave-mode))
-(add-to-list 'auto-mode-alist '("\\.pyx\\'" . python-mode))
-(add-to-list 'auto-mode-alist '("\\.v\\'"   . vlang-mode))
+(use-package js2-mode :mode "\\.js\\'"
+  :custom-face
+  (js2-external-variable ((t (:foreground "brightblack")))))
+(use-package v-mode :mode "\\.v\\'")
+(use-package octave :mode "\\.m\\'")
+(use-package python :mode
+  ("\\.py\\'"  . python-mode)
+  ("\\.pyx\\'" . python-mode))
 
 ;; ---- RUN ----
 (defun run-program ()
@@ -284,9 +280,7 @@
 ;; ---- TOYS ----
 (use-package flycheck :init (global-flycheck-mode))
 (use-package rainbow-mode)
-(use-package iedit
-  :bind
-  ("C-x e" . iedit-mode))
+(use-package iedit :bind ("C-x e" . iedit-mode))
 (use-package dumb-jump
   :config
   (add-hook 'xref-backend-functions #'dumb-jump-xref-activate)
@@ -294,13 +288,12 @@
   ("C-j" . xref-find-definitions)
   ("M-j" . xref-pop-marker-stack))
 (use-package writeroom-mode
-  :config
-  (custom-set-variables
-   '(writeroom-fullscreen-effect 'maximized)
-   '(writeroom-border-width 50)
-   '(writeroom-bottom-divider-width 0)
-   '(writeroom-extra-line-spacing nil)
-   '(writeroom-fringes-outside-margins nil)))
+  :custom
+  (writeroom-fullscreen-effect 'maximized)
+  (writeroom-border-width 50)
+  (writeroom-bottom-divider-width 0)
+  (writeroom-extra-line-spacing nil)
+  (writeroom-fringes-outside-margins nil))
 (use-package anzu :config (global-anzu-mode +1))
 (use-package academic-phrases)
 (use-package adaptive-wrap)
@@ -308,13 +301,13 @@
 ;;  '(phscroll :type git :host github :repo "misohena/phscroll"))
 (use-package so-long)
 (global-so-long-mode 1)
+(put 'upcase-region 'disabled nil)
+(put 'downcase-region 'disabled nil)
 
 ;; ---- MULTIPLE CURSERS ----
 (use-package multiple-cursors
-  :init
-  (require 'multiple-cursors)
-  :bind
-  ("C-]" . mc/mark-next-like-this))
+  :init (require 'multiple-cursors)
+  :bind ("C-]" . mc/mark-next-like-this))
 
 ;; ---- ORIGAMI ----
 (use-package origami
@@ -381,8 +374,7 @@ from: https://stackoverflow.com/a/998472/3825872"
 
 ;; ---- HELM ----
 (use-package helm
-  :config
-  (helm-mode 1)
+  :config (helm-mode 1)
   :bind
   ("M-x"     . helm-M-x)
   ("C-x r b" . helm-filtered-bookmarks)
@@ -393,56 +385,83 @@ from: https://stackoverflow.com/a/998472/3825872"
   :bind ("C-\\" . flyspell-correct-wrapper))
 
 ;; ---- CALFW ----
-(use-package calfw :config
-             (use-package calfw-org
-               :init
-               (require 'calfw-org)
-               :config
-               (custom-set-faces
-                '(cfw:face-title ((t (:foreground "#f0dfaf" :weight bold :height 2.0 :inherit variable-pitch))))
-                '(cfw:face-header ((t (:foreground "#ffffff" :weight bold))))
-                '(cfw:face-sunday ((t :foreground "#ffffff" :weight bold)))
-                '(cfw:face-saturday ((t :foreground "#ffffff" :weight bold)))
-                '(cfw:face-holiday ((t :background "grey10" :foreground "#ffffff" :weight bold)))
-                '(cfw:face-grid ((t :foreground "DarkGrey")))
-                '(cfw:face-default-content ((t :foreground "#ffffff")))
-                '(cfw:face-periods ((t :foreground "cyan")))
-                '(cfw:face-day-title ((t :background "grey10")))
-                '(cfw:face-default-day ((t :weight bold :inherit cfw:face-day-title)))
-                '(cfw:face-annotation ((t :foreground "#ffffff" :inherit cfw:face-day-title)))
-                '(cfw:face-disable ((t :foreground "DarkGray" :inherit cfw:face-day-title)))
-                '(cfw:face-today-title ((t :background "#5f5f87" :weight bold)))
-                '(cfw:face-today ((t :background: "grey10" :weight bold)))
-                '(cfw:face-select ((t :background "#2f2f2f")))
-                '(cfw:face-toolbar ((t :foreground "#000000" :background "#000000")))
-                '(cfw:face-toolbar-button-off ((t :foreground "#555555" :weight bold)))
-                '(cfw:face-toolbar-button-on ((t :foreground "#ffffff" :weight bold))))
-               (setq cfw:fchar-junction ?╋
-                     cfw:fchar-vertical-line ?┃
-                     cfw:fchar-horizontal-line ?━
-                     cfw:fchar-left-junction ?┣
-                     cfw:fchar-right-junction ?┫
-                     cfw:fchar-top-junction ?┯
-                     cfw:fchar-top-left-corner ?┏
-                     cfw:fchar-top-right-corner ?┓)))
+(use-package calfw)
+(use-package calfw-org
+  :after calfw
+  :init
+  (require 'calfw-org)
+  (setq cfw:fchar-junction ?╋
+        cfw:fchar-vertical-line ?┃
+        cfw:fchar-horizontal-line ?━
+        cfw:fchar-left-junction ?┣
+        cfw:fchar-right-junction ?┫
+        cfw:fchar-top-junction ?┯
+        cfw:fchar-top-left-corner ?┏
+        cfw:fchar-top-right-corner ?┓)
+  :custom-face
+  (cfw:face-title ((t (:foreground "#f0dfaf" :weight bold :height 2.0 :inherit variable-pitch))))
+  (cfw:face-header ((t (:foreground "#ffffff" :weight bold))))
+  (cfw:face-sunday ((t :foreground "#ffffff" :weight bold)))
+  (cfw:face-saturday ((t :foreground "#ffffff" :weight bold)))
+  (cfw:face-holiday ((t :background "grey10" :foreground "#ffffff" :weight bold)))
+  (cfw:face-grid ((t :foreground "DarkGrey")))
+  (cfw:face-default-content ((t :foreground "#ffffff")))
+  (cfw:face-periods ((t :foreground "cyan")))
+  (cfw:face-day-title ((t :background "grey10")))
+  (cfw:face-default-day ((t :weight bold :inherit cfw:face-day-title)))
+  (cfw:face-annotation ((t :foreground "#ffffff" :inherit cfw:face-day-title)))
+  (cfw:face-disable ((t :foreground "DarkGray" :inherit cfw:face-day-title)))
+  (cfw:face-today-title ((t :background "#5f5f87" :weight bold)))
+  (cfw:face-today ((t :background: "grey10" :weight bold)))
+  (cfw:face-select ((t :background "#2f2f2f")))
+  (cfw:face-toolbar ((t :foreground "#000000" :background "#000000")))
+  (cfw:face-toolbar-button-off ((t :foreground "#555555" :weight bold)))
+  (cfw:face-toolbar-button-on ((t :foreground "#ffffff" :weight bold))))
 
 ;; ---- LATEX ----
 (use-package tex
   :ensure auctex
-  :config
-  (custom-set-variables
-   '(TeX-PDF-mode t)
-   '(TeX-source-correlate-method 'synctex)
-   '(TeX-source-correlate-mode t)
-   '(TeX-source-correlate-start-server t)))
+
+  :init
+  (setq
+   TeX-parse-self t
+   reftex-plug-into-AUCTeX t)
+
+  :hook
+  (LaTeX-mode . toggle-word-wrap)
+  (LaTeX-mode . adaptive-wrap-prefix-mode)
+  (LaTeX-mode . flyspell-mode)
+  (LaTeX-mode . LaTeX-math-mode)
+  (LaTeX-mode . turn-on-reftex)
+
+  :custom
+  (TeX-PDF-mode t)
+  (TeX-source-correlate-method 'synctex)
+  (TeX-source-correlate-mode t)
+  (TeX-source-correlate-start-server t))
 
 ;; ---- ORG ----
 (use-package org
   :init
-  (setq org-agenda-files (list "~/Dropbox/orgmode/TODO.org") ; TODO: move to personal
-        org-log-done 'time
-        org-image-actual-width 500
-        org-export-in-background nil)
+  (setq
+   ;; TODO: move to personal
+   org-agenda-files (list "~/Dropbox/orgmode/TODO.org")
+   org-log-done 'time
+   org-image-actual-width 500
+   org-export-in-background nil
+
+   org-latex-pdf-process '("pdflatexorgwraper %f")
+
+   org-preview-latex-default-process 'dvipng
+   org-format-latex-options (plist-put org-format-latex-options :scale 1.7)
+
+   org-todo-keywords '((sequence "TODO" "PROG" "|" "DONE" "CNCL"))
+   org-todo-keyword-faces '(("PROG" . "yellow") ("CNCL" . "blue")))
+
+  :hook
+  (org-mode . toggle-word-wrap)
+  (org-mode . adaptive-wrap-prefix-mode)
+  (org-mode . org-bullets-mode)
 
   :config
   ;; -- BABEL LANGS --
@@ -470,37 +489,15 @@ from: https://stackoverflow.com/a/998472/3825872"
   (delete '("\\.html\\'" . default) org-file-apps)
   (add-to-list 'org-file-apps '("\\.html\\'" . "browser %s"))
 
-  ;; -- MY "DIRTY" LaTeX EXPORT --
-  (setq org-latex-pdf-process '("pdflatexorgwraper %f"))
-
-  ;; -- LaTeX PREVIEWS --
-  (setq org-format-latex-options (plist-put org-format-latex-options :scale 1.7))
-  (setq org-preview-latex-default-process 'dvipng)
-
-  ;; -- TODO --
-  (setq org-todo-keywords
-        '((sequence "TODO" "PROG" "|" "DONE" "CNCL")))
-  (setq org-todo-keyword-faces
-        '(("PROG" . "yellow")
-          ("CNCL" . "blue")))
-
-  ;; -- HOOKS --
-  (add-hook 'org-mode-hook #'toggle-word-wrap)
-  (add-hook 'org-mode-hook #'adaptive-wrap-prefix-mode)
-  (add-hook 'org-mode-hook #'org-bullets-mode)
-
   ;; -- TEMPO --
   (require 'org-tempo))
 
+(use-package org-ref)
 (use-package org-bullets)
-
+(use-package ox-reveal)
 (use-package ox-pandoc :config
              (setq org-reveal-root "https://cdn.jsdelivr.net/npm/reveal.js")
              (setq org-reveal-mathjax t))
-
-(use-package ox-reveal)
-
-(use-package org-ref)
 
 (with-eval-after-load 'ox-latex
   (customize-set-value 'org-latex-hyperref-template "
@@ -558,18 +555,119 @@ from: https://stackoverflow.com/a/998472/3825872"
                  ("\\subsection\{%s\}" . "\\subsection*\{%s\}")
                  ("\\subsubsection\{%s\}" . "\\subsubsection*\{%s\}"))))
 
+;; ---- OUTLINE ----
+(use-package outline
+  :config
+  (defun outline-body-p ()
+    (save-excursion
+      (outline-back-to-heading)
+      (outline-end-of-heading)
+      (and (not (eobp))
+           (progn (forward-char 1)
+                  (not (outline-on-heading-p))))))
+
+  (defun outline-body-visible-p ()
+    (save-excursion
+      (outline-back-to-heading)
+      (outline-end-of-heading)
+      (not (outline-invisible-p))))
+
+  (defun outline-subheadings-p ()
+    (save-excursion
+      (outline-back-to-heading)
+      (let ((level (funcall outline-level)))
+        (outline-next-heading)
+        (and (not (eobp))
+             (< level (funcall outline-level))))))
+
+  (defun outline-subheadings-visible-p ()
+    (interactive)
+    (save-excursion
+      (outline-next-heading)
+      (not (outline-invisible-p))))
+
+  (defun outline-hide-more ()
+    (interactive)
+    (when (outline-on-heading-p)
+      (cond ((and (outline-body-p)
+                  (outline-body-visible-p))
+             (hide-entry)
+             (hide-leaves))
+            (t
+             (hide-subtree)))))
+
+  (defun outline-show-more ()
+    (interactive)
+    (when (outline-on-heading-p)
+      (cond ((and (outline-subheadings-p)
+                  (not (outline-subheadings-visible-p)))
+             (show-children))
+            ((and (not (outline-subheadings-p))
+                  (not (outline-body-visible-p)))
+             (show-subtree))
+            ((and (outline-body-p)
+                  (not (outline-body-visible-p)))
+             (show-entry))
+            (t
+             (show-subtree)))))
+
+  (let ((map outline-mode-map))
+    (define-key map (kbd "M-<left>") 'outline-hide-more)
+    (define-key map (kbd "M-<right>") 'outline-show-more)
+    (define-key map (kbd "M-<up>") 'outline-previous-visible-heading)
+    (define-key map (kbd "M-<down>") 'outline-next-visible-heading)
+    (define-key map (kbd "C-c J") 'outline-hide-more)
+    (define-key map (kbd "C-c L") 'outline-show-more)
+    (define-key map (kbd "C-c I") 'outline-previous-visible-heading)
+    (define-key map (kbd "C-c K") 'outline-next-visible-heading))
+
+  (let ((map outline-minor-mode-map))
+    (define-key map (kbd "M-<left>") 'outline-hide-more)
+    (define-key map (kbd "M-<right>") 'outline-show-more)
+    (define-key map (kbd "M-<up>") 'outline-previous-visible-heading)
+    (define-key map (kbd "M-<down>") 'outline-next-visible-heading)
+    (define-key map (kbd "C-c J") 'outline-hide-more)
+    (define-key map (kbd "C-c L") 'outline-show-more)
+    (define-key map (kbd "C-c I") 'outline-previous-visible-heading)
+    (define-key map (kbd "C-c K") 'outline-next-visible-heading))
+
+  (provide 'outline-mode-easy-bindings)
+
+  (add-hook 'outline-mode-hook 'my-outline-easy-bindings)
+  (add-hook 'outline-minor-mode-hook 'my-outline-easy-bindings)
+
+  (defun my-outline-easy-bindings ()
+    (require 'outline-mode-easy-bindings nil t))
+
+  (add-hook 'LaTeX-mode-hook #'outline-minor-mode))
+
+;; ---- VTERM ----
+(use-package vterm
+  :custom (vterm-shell "/usr/bin/fish"))
+
+;; ---- EXTRA LISP ----
+(setq lisp-directory (concat user-emacs-directory "lisp"))
+(unless (file-directory-p lisp-directory) (make-directory lisp-directory))
+(add-to-list 'load-path lisp-directory)
+
+;; --- LACARTE ---
+(unless (file-exists-p (expand-file-name "lacarte.el" lisp-directory))
+  (url-copy-file "https://www.emacswiki.org/emacs/download/lacarte.el"
+                 (expand-file-name "lacarte.el" lisp-directory)))
+(unless (file-exists-p (expand-file-name "lacarte.elc" lisp-directory))
+  (byte-compile-file (expand-file-name "lacarte.el" lisp-directory)))
+(require 'lacarte)
+(global-set-key [?\e ?\M-x] 'lacarte-execute-menu-command)
+
 ;;; emacs-init.el ends here
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(TeX-PDF-mode t)
- '(TeX-source-correlate-method 'synctex)
- '(TeX-source-correlate-mode t)
- '(TeX-source-correlate-start-server t)
  '(package-selected-packages
-   '(org-ref ox-reveal ox-pandoc org-bullets auctex calfw-org calfw flyspell-correct-helm helm xclip origami multiple-cursors adaptive-wrap academic-phrases anzu writeroom-mode dumb-jump iedit rainbow-mode flycheck js2-mode ein cmake-mode xonsh-mode elvish-mode fish-mode dockerfile-mode solidity-mode arduino-mode haxe-mode glsl-mode yaml-mode protobuf-mode ttl-mode sparql-mode gnuplot-mode kotlin-mode julia-mode typescript-mode rust-mode go-mode csharp-mode vala-mode basic-mode web-mode lsp-dart lsp-java lsp-ui company-lsp lsp-mode git-gutter doom-modeline spacemacs-theme undo-tree use-package))
+   '(lacarte ac-octave octave-mode v-mode vterm ranger org-ref ox-reveal ox-pandoc org-bullets auctex calfw-org calfw flyspell-correct-helm helm xclip origami multiple-cursors adaptive-wrap academic-phrases anzu writeroom-mode dumb-jump iedit rainbow-mode flycheck js2-mode ein cmake-mode xonsh-mode elvish-mode fish-mode dockerfile-mode solidity-mode arduino-mode haxe-mode glsl-mode yaml-mode protobuf-mode ttl-mode sparql-mode gnuplot-mode kotlin-mode julia-mode typescript-mode rust-mode go-mode csharp-mode vala-mode basic-mode web-mode lsp-dart lsp-java lsp-ui company-lsp lsp-mode git-gutter doom-modeline spacemacs-theme undo-tree use-package))
+ '(vterm-shell "/usr/bin/fish")
  '(writeroom-border-width 50)
  '(writeroom-bottom-divider-width 0)
  '(writeroom-extra-line-spacing nil)

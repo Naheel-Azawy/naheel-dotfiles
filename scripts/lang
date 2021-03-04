@@ -10,6 +10,7 @@ langset() {
         echo 'ERROR: No language selected'
         exit 1
     }
+    sleep .1
     setxkbmap -layout "$L"
     [ -f ~/.Xmodmap ] && xmodmap ~/.Xmodmap
     {

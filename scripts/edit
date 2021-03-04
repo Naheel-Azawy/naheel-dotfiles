@@ -11,6 +11,7 @@ die()    { exec emacsclient -e '(kill-emacs)'; }
 client() { daemon; exec emacsclient "$@"; }
 
 gui() { client -c "$@"; }
+existing() { client -n "$@"; }
 nw()  { client -nw "$@"; }
 tnw() { exec theterm "$BINPATH" nw "$@"; }
 
@@ -25,20 +26,24 @@ command -v emacs >/dev/null || {
 
     tnw() { exec theterm "$BINPATH" nw "$@"; }
     gui() { tnw "$@"; }
+    existing() { gui "$@"; }
     nw()  { client "$@"; }
 }
 
 main() {
     CMD="$1"
     case "$CMD" in
-        d|daemon)   shift && daemon "$@";;
-        k|kill|die)          die        ;;
-        c|client)   shift && client "$@";;
-        g|gui)      shift && gui    "$@";;
-        n|nw)       shift && nw     "$@";;
-        t|tnw)      shift && tnw    "$@";;
+        d|daemon)   shift && daemon   "$@";;
+        k|kill|die)          die          ;;
+        c|client)   shift && client   "$@";;
+        e|existing) shift && existing "$@";;
+        g|gui)      shift && gui      "$@";;
+        n|nw)       shift && nw       "$@";;
+        t|tnw)      shift && tnw      "$@";;
         *)
-            if [ -t 0 ]; then
+            if [ "$EMACS_VTERM_PATH" ]; then
+                existing "$@"
+            elif [ -t 0 ]; then
                 nw "$@"
             else
                 gui "$@"
