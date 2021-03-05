@@ -36,6 +36,10 @@ isarch() {
     cmd_exists pacman
 }
 
+istiny() {
+    ispi
+}
+
 info() {
     printf "${C}INFO:${R} %s\n" "$@"
 }
@@ -51,6 +55,8 @@ elif isubuntu; then
 else
     CATEGORIES="base base-gui additions themostsignificant devel electronics games"
 fi
+
+export TINY=$(istiny && echo t)
 
 # systemd service to run lockscreen on suspend
 lock_service() {
@@ -766,6 +772,8 @@ main() {
         newscript)
             cd "$DOTFILES_DIR/scripts" &&
                 new-shell-script "$@";;
+        istiny)
+            istiny;;
         gits)
             cd "$DOTFILES_DIR" &&
                 git status;;

@@ -25,27 +25,10 @@
 ;; This file is not part of GNU Emacs.
 ;;; Code:
 
-;; ---- STRAIGHT ----
-;; Straight is cool. But it is still relatively unstable
-;; (require 'package)
-;; (defvar package-enable-at-startup nil)
-;; (defvar straight-use-package-by-default t)
-;; (defvar straight-repository-branch "develop")
-;; (defvar straight-vc-git-default-clone-depth 1)
-;; (defvar bootstrap-version)
-;; (let ((bootstrap-file
-;;        (expand-file-name "straight/repos/straight.el/bootstrap.el" user-emacs-directory))
-;;       (bootstrap-version 5))
-;;   (unless (file-exists-p bootstrap-file)
-;;     (with-current-buffer
-;;         (url-retrieve-synchronously
-;;          "https://raw.githubusercontent.com/raxod502/straight.el/develop/install.el"
-;;          'silent 'inhibit-cookies)
-;;       (goto-char (point-max))
-;;       (eval-print-last-sexp)))
-;;   (load bootstrap-file nil 'nomessage))
-;; (straight-use-package 'use-package)
-;; (eval-when-compile (require 'use-package))
+;; ---- TINY ----
+;; option for tiny installations
+(setq tiny (getenv "TINY"))
+(setq tiny t)
 
 ;; ---- MELPA and USE_PACKAGE ----
 (require 'package)
@@ -92,6 +75,8 @@
 (show-paren-mode)
 (global-hl-line-mode 1)
 (xterm-mouse-mode)
+(global-set-key (kbd "<mouse-4>") 'scroll-down-line)
+(global-set-key (kbd "<mouse-5>") 'scroll-up-line)
 (setq-default tab-width 4)
 ;;(setq-default show-trailing-whitespace nil)
 
@@ -203,70 +188,71 @@
 (use-package git-gutter
   :config (global-git-gutter-mode 1))
 
-;; ---- LSP ----
-(use-package lsp-mode)
-(use-package company-lsp)
-(use-package lsp-ui)
-(use-package lsp-java :after lsp)
-(use-package lsp-dart)
-(setq gc-cons-threshold 100000000)
-(setq lsp-completion-provider :capf)
-(setq lsp-idle-delay 0.500)
-(setq lsp-log-io nil)
-;; (setq lsp-enable-links nil)
-;; (setq lsp-signature-render-documentation nil)
-;; (setq lsp-headerline-breadcrumb-enable nil)
-;; (setq lsp-ui-doc-enable nil)
-;; (setq lsp-completion-enable-additional-text-edit nil)
+(unless tiny
 
-;; ---- WEB ----
-(use-package web-mode
-  :config
-  (add-to-list 'auto-mode-alist '("\\.html?\\'" . web-mode))
-  (setq web-mode-engines-alist
-        '(("django" . "\\.html\\'")))
-  (setq web-mode-ac-sources-alist
-        '(("css" . (ac-source-css-property))
-          ("html" . (ac-source-words-in-buffer ac-source-abbrev))))
-  (setq web-mode-enable-auto-closing t)
-  (setq web-mode-enable-auto-quoting t)
-  (setq web-mode-enable-current-element-highlight t)
-  (setq web-mode-enable-current-column-highlight t))
+  ;; ---- LSP ----
+  (use-package lsp-mode)
+  (use-package company-lsp)
+  (use-package lsp-ui)
+  (use-package lsp-java :after lsp)
+  (use-package lsp-dart)
+  (setq gc-cons-threshold 100000000)
+  (setq lsp-completion-provider :capf)
+  (setq lsp-idle-delay 0.500)
+  (setq lsp-log-io nil)
+  ;; (setq lsp-enable-links nil)
+  ;; (setq lsp-signature-render-documentation nil)
+  ;; (setq lsp-headerline-breadcrumb-enable nil)
+  ;; (setq lsp-ui-doc-enable nil)
+  ;; (setq lsp-completion-enable-additional-text-edit nil)
 
-;; ---- OTHER LANGS ----
-(use-package basic-mode)
-(use-package cc-mode)
-(use-package vala-mode)
-(use-package csharp-mode)
-(use-package dart-mode)
-(use-package go-mode)
-(use-package rust-mode)
-(use-package typescript-mode)
-(use-package julia-mode)
-(use-package kotlin-mode)
-(use-package gnuplot-mode)
-(use-package sparql-mode :mode "\\.rpg\\'")
-(use-package ttl-mode :mode "\\.ttl\\'")
-(use-package protobuf-mode)
-(use-package yaml-mode)
-(use-package glsl-mode)
-(use-package haxe-mode)
-(use-package arduino-mode)
-(use-package solidity-mode)
-(use-package dockerfile-mode)
-(use-package fish-mode)
-(use-package elvish-mode)
-(use-package xonsh-mode)
-(use-package cmake-mode)
-(use-package ein)
-(use-package js2-mode :mode "\\.js\\'"
-  :custom-face
-  (js2-external-variable ((t (:foreground "brightblack")))))
-(use-package v-mode :mode "\\.v\\'")
-(use-package octave :mode "\\.m\\'")
-(use-package python :mode
-  ("\\.py\\'"  . python-mode)
-  ("\\.pyx\\'" . python-mode))
+  ;; ---- WEB ----
+  (use-package web-mode
+    :mode "\\.html?\\'"
+    :init
+    (setq web-mode-engines-alist '(("django" . "\\.html\\'")))
+    (setq web-mode-ac-sources-alist
+          '(("css" . (ac-source-css-property))
+            ("html" . (ac-source-words-in-buffer ac-source-abbrev))))
+    (setq web-mode-enable-auto-closing t)
+    (setq web-mode-enable-auto-quoting t)
+    (setq web-mode-enable-current-element-highlight t)
+    (setq web-mode-enable-current-column-highlight t))
+
+  ;; ---- OTHER LANGS ----
+  (use-package basic-mode)
+  (use-package cc-mode)
+  (use-package vala-mode)
+  (use-package csharp-mode)
+  (use-package dart-mode)
+  (use-package go-mode)
+  (use-package rust-mode)
+  (use-package typescript-mode)
+  (use-package julia-mode)
+  (use-package kotlin-mode)
+  (use-package gnuplot-mode)
+  (use-package sparql-mode :mode "\\.rpg\\'")
+  (use-package ttl-mode :mode "\\.ttl\\'")
+  (use-package protobuf-mode)
+  (use-package yaml-mode)
+  (use-package glsl-mode)
+  (use-package haxe-mode)
+  (use-package arduino-mode)
+  (use-package solidity-mode)
+  (use-package dockerfile-mode)
+  (use-package fish-mode)
+  (use-package elvish-mode)
+  (use-package xonsh-mode)
+  (use-package cmake-mode)
+  (use-package ein)
+  (use-package js2-mode :mode "\\.js\\'"
+    :custom-face
+    (js2-external-variable ((t (:foreground "brightblack")))))
+  (use-package v-mode :mode "\\.v\\'")
+  (use-package octave :mode "\\.m\\'")
+  (use-package python :mode
+    ("\\.py\\'"  . python-mode)
+    ("\\.pyx\\'" . python-mode)))
 
 ;; ---- RUN ----
 (defun run-program ()
@@ -278,31 +264,30 @@
 (global-set-key [C-f5] 'run-program)
 
 ;; ---- TOYS ----
-(use-package flycheck :init (global-flycheck-mode))
-(use-package rainbow-mode)
 (use-package iedit :bind ("C-x e" . iedit-mode))
-(use-package dumb-jump
-  :config
-  (add-hook 'xref-backend-functions #'dumb-jump-xref-activate)
-  :bind
-  ("C-j" . xref-find-definitions)
-  ("M-j" . xref-pop-marker-stack))
-(use-package writeroom-mode
-  :custom
-  (writeroom-fullscreen-effect 'maximized)
-  (writeroom-border-width 50)
-  (writeroom-bottom-divider-width 0)
-  (writeroom-extra-line-spacing nil)
-  (writeroom-fringes-outside-margins nil))
 (use-package anzu :config (global-anzu-mode +1))
-(use-package academic-phrases)
 (use-package adaptive-wrap)
-;; (straight-use-package
-;;  '(phscroll :type git :host github :repo "misohena/phscroll"))
 (use-package so-long)
 (global-so-long-mode 1)
 (put 'upcase-region 'disabled nil)
 (put 'downcase-region 'disabled nil)
+(unless tiny
+  (use-package flycheck :init (global-flycheck-mode))
+  (use-package rainbow-mode)
+  (use-package dumb-jump
+    :config
+    (add-hook 'xref-backend-functions #'dumb-jump-xref-activate)
+    :bind
+    ("C-j" . xref-find-definitions)
+    ("M-j" . xref-pop-marker-stack))
+  (use-package writeroom-mode
+    :custom
+    (writeroom-fullscreen-effect 'maximized)
+    (writeroom-border-width 50)
+    (writeroom-bottom-divider-width 0)
+    (writeroom-extra-line-spacing nil)
+    (writeroom-fringes-outside-margins nil))
+  (use-package academic-phrases))
 
 ;; ---- MULTIPLE CURSERS ----
 (use-package multiple-cursors
@@ -381,269 +366,275 @@ from: https://stackoverflow.com/a/998472/3825872"
   ("C-x C-f" . helm-find-files))
 
 ;; ---- HELM FLYSPELL ----
-(use-package flyspell-correct-helm
-  :bind ("C-\\" . flyspell-correct-wrapper))
+(unless tiny
+  (use-package flyspell-correct-helm
+    :bind ("C-\\" . flyspell-correct-wrapper)))
 
 ;; ---- CALFW ----
-(use-package calfw)
-(use-package calfw-org
-  :after calfw
-  :init
-  (require 'calfw-org)
-  (setq cfw:fchar-junction ?╋
-        cfw:fchar-vertical-line ?┃
-        cfw:fchar-horizontal-line ?━
-        cfw:fchar-left-junction ?┣
-        cfw:fchar-right-junction ?┫
-        cfw:fchar-top-junction ?┯
-        cfw:fchar-top-left-corner ?┏
-        cfw:fchar-top-right-corner ?┓)
-  :custom-face
-  (cfw:face-title ((t (:foreground "#f0dfaf" :weight bold :height 2.0 :inherit variable-pitch))))
-  (cfw:face-header ((t (:foreground "#ffffff" :weight bold))))
-  (cfw:face-sunday ((t :foreground "#ffffff" :weight bold)))
-  (cfw:face-saturday ((t :foreground "#ffffff" :weight bold)))
-  (cfw:face-holiday ((t :background "grey10" :foreground "#ffffff" :weight bold)))
-  (cfw:face-grid ((t :foreground "DarkGrey")))
-  (cfw:face-default-content ((t :foreground "#ffffff")))
-  (cfw:face-periods ((t :foreground "cyan")))
-  (cfw:face-day-title ((t :background "grey10")))
-  (cfw:face-default-day ((t :weight bold :inherit cfw:face-day-title)))
-  (cfw:face-annotation ((t :foreground "#ffffff" :inherit cfw:face-day-title)))
-  (cfw:face-disable ((t :foreground "DarkGray" :inherit cfw:face-day-title)))
-  (cfw:face-today-title ((t :background "#5f5f87" :weight bold)))
-  (cfw:face-today ((t :background: "grey10" :weight bold)))
-  (cfw:face-select ((t :background "#2f2f2f")))
-  (cfw:face-toolbar ((t :foreground "#000000" :background "#000000")))
-  (cfw:face-toolbar-button-off ((t :foreground "#555555" :weight bold)))
-  (cfw:face-toolbar-button-on ((t :foreground "#ffffff" :weight bold))))
+(unless tiny
+  (use-package calfw)
+  (use-package calfw-org
+    :after calfw
+    :init
+    (require 'calfw-org)
+    (setq cfw:fchar-junction ?╋
+          cfw:fchar-vertical-line ?┃
+          cfw:fchar-horizontal-line ?━
+          cfw:fchar-left-junction ?┣
+          cfw:fchar-right-junction ?┫
+          cfw:fchar-top-junction ?┯
+          cfw:fchar-top-left-corner ?┏
+          cfw:fchar-top-right-corner ?┓)
+    :custom-face
+    (cfw:face-title ((t (:foreground "#f0dfaf" :weight bold :height 2.0 :inherit variable-pitch))))
+    (cfw:face-header ((t (:foreground "#ffffff" :weight bold))))
+    (cfw:face-sunday ((t :foreground "#ffffff" :weight bold)))
+    (cfw:face-saturday ((t :foreground "#ffffff" :weight bold)))
+    (cfw:face-holiday ((t :background "grey10" :foreground "#ffffff" :weight bold)))
+    (cfw:face-grid ((t :foreground "DarkGrey")))
+    (cfw:face-default-content ((t :foreground "#ffffff")))
+    (cfw:face-periods ((t :foreground "cyan")))
+    (cfw:face-day-title ((t :background "grey10")))
+    (cfw:face-default-day ((t :weight bold :inherit cfw:face-day-title)))
+    (cfw:face-annotation ((t :foreground "#ffffff" :inherit cfw:face-day-title)))
+    (cfw:face-disable ((t :foreground "DarkGray" :inherit cfw:face-day-title)))
+    (cfw:face-today-title ((t :background "#5f5f87" :weight bold)))
+    (cfw:face-today ((t :background: "grey10" :weight bold)))
+    (cfw:face-select ((t :background "#2f2f2f")))
+    (cfw:face-toolbar ((t :foreground "#000000" :background "#000000")))
+    (cfw:face-toolbar-button-off ((t :foreground "#555555" :weight bold)))
+    (cfw:face-toolbar-button-on ((t :foreground "#ffffff" :weight bold)))))
 
 ;; ---- LATEX ----
-(use-package tex
-  :ensure auctex
+(unless tiny
+  (use-package tex
+    :ensure auctex
 
-  :init
-  (setq
-   TeX-parse-self t
-   reftex-plug-into-AUCTeX t)
+    :init
+    (setq
+     TeX-parse-self t
+     reftex-plug-into-AUCTeX t)
 
-  :hook
-  (LaTeX-mode . toggle-word-wrap)
-  (LaTeX-mode . adaptive-wrap-prefix-mode)
-  (LaTeX-mode . flyspell-mode)
-  (LaTeX-mode . LaTeX-math-mode)
-  (LaTeX-mode . turn-on-reftex)
+    :hook
+    (LaTeX-mode . toggle-word-wrap)
+    (LaTeX-mode . adaptive-wrap-prefix-mode)
+    (LaTeX-mode . flyspell-mode)
+    (LaTeX-mode . LaTeX-math-mode)
+    (LaTeX-mode . turn-on-reftex)
 
-  :custom
-  (TeX-PDF-mode t)
-  (TeX-source-correlate-method 'synctex)
-  (TeX-source-correlate-mode t)
-  (TeX-source-correlate-start-server t))
+    :custom
+    (TeX-PDF-mode t)
+    (TeX-source-correlate-method 'synctex)
+    (TeX-source-correlate-mode t)
+    (TeX-source-correlate-start-server t)))
 
 ;; ---- ORG ----
-(use-package org
-  :init
-  (setq
-   ;; TODO: move to personal
-   org-agenda-files (list "~/Dropbox/orgmode/TODO.org")
-   org-log-done 'time
-   org-image-actual-width 500
-   org-export-in-background nil
+(unless tiny
+  (use-package org
+    :init
+    (setq
+     org-agenda-files (list (getenv "ORG_TODO"))
+     org-log-done 'time
+     org-image-actual-width 500
+     org-export-in-background nil
 
-   org-latex-pdf-process '("pdflatexorgwraper %f")
+     org-latex-pdf-process '("pdflatexorgwraper %f")
 
-   org-preview-latex-default-process 'dvipng
-   org-format-latex-options (plist-put org-format-latex-options :scale 1.7)
+     org-preview-latex-default-process 'dvipng
+     org-format-latex-options (plist-put org-format-latex-options :scale 1.7)
 
-   org-todo-keywords '((sequence "TODO" "PROG" "|" "DONE" "CNCL"))
-   org-todo-keyword-faces '(("PROG" . "yellow") ("CNCL" . "blue")))
+     org-todo-keywords '((sequence "TODO" "PROG" "|" "DONE" "CNCL"))
+     org-todo-keyword-faces '(("PROG" . "yellow") ("CNCL" . "blue")))
 
-  :hook
-  (org-mode . toggle-word-wrap)
-  (org-mode . adaptive-wrap-prefix-mode)
-  (org-mode . org-bullets-mode)
+    :hook
+    (org-mode . toggle-word-wrap)
+    (org-mode . adaptive-wrap-prefix-mode)
+    (org-mode . org-bullets-mode)
 
-  :config
-  ;; -- BABEL LANGS --
-  (org-babel-do-load-languages
-   'org-babel-load-languages
-   '((C          . t)
-     (vala       . t)
-     (python     . t)
-     (js         . t)
-     (R          . t)
-     (octave     . t)
-     (emacs-lisp . t)
-     (java       . t)
-     (latex      . t)
-     (awk        . t)
-     (sed        . t)
-     (gnuplot    . t)
-     (perl       . t)
-     (ditaa      . t)
-     (shell      . t)))
+    :config
+    ;; -- BABEL LANGS --
+    (org-babel-do-load-languages
+     'org-babel-load-languages
+     '((C          . t)
+       (vala       . t)
+       (python     . t)
+       (js         . t)
+       (R          . t)
+       (octave     . t)
+       (emacs-lisp . t)
+       (java       . t)
+       (latex      . t)
+       (awk        . t)
+       (sed        . t)
+       (gnuplot    . t)
+       (perl       . t)
+       (ditaa      . t)
+       (shell      . t)))
 
-  ;; -- RUNNERS --
-  (delete '("\\.pdf\\'" . default) org-file-apps)
-  (add-to-list 'org-file-apps '("\\.pdf\\'" . "evince %s"))
-  (delete '("\\.html\\'" . default) org-file-apps)
-  (add-to-list 'org-file-apps '("\\.html\\'" . "browser %s"))
+    ;; -- RUNNERS --
+    (delete '("\\.pdf\\'" . default) org-file-apps)
+    (add-to-list 'org-file-apps '("\\.pdf\\'" . "evince %s"))
+    (delete '("\\.html\\'" . default) org-file-apps)
+    (add-to-list 'org-file-apps '("\\.html\\'" . "browser %s"))
 
-  ;; -- TEMPO --
-  (require 'org-tempo))
+    ;; -- TEMPO --
+    (require 'org-tempo))
 
-(use-package org-ref)
-(use-package org-bullets)
-(use-package ox-reveal)
-(use-package ox-pandoc :config
-             (setq org-reveal-root "https://cdn.jsdelivr.net/npm/reveal.js")
-             (setq org-reveal-mathjax t))
+  (use-package org-ref)
+  (use-package org-bullets)
+  (use-package ox-reveal)
+  (use-package ox-pandoc :init
+    (setq
+     org-reveal-root "https://cdn.jsdelivr.net/npm/reveal.js"
+     org-reveal-mathjax t))
 
-(with-eval-after-load 'ox-latex
-  (customize-set-value 'org-latex-hyperref-template "
+  (with-eval-after-load 'ox-latex
+    (customize-set-value 'org-latex-hyperref-template "
 \\hypersetup{\n pdfauthor={%a},\n pdftitle={%t},
  pdfsubject={%d},\n pdfcreator={%c}, \n pdflang={%L},
  hidelinks=true,\n draft=false\n}\n")
 
-  (add-to-list 'org-latex-classes
-               '("IEEEtran"
-                 "\\documentclass{IEEEtran}"
-                 ("\\section{%s}" . "\\section*{%s}")
-                 ("\\subsection{%s}" . "\\subsection*{%s}")
-                 ("\\subsubsection{%s}" . "\\subsubsection*{%s}")
-                 ("\\paragraph{%s}" . "\\paragraph*{%s}")
-                 ("\\subparagraph{%s}" . "\\subparagraph*{%s}")))
+    (add-to-list 'org-latex-classes
+                 '("IEEEtran"
+                   "\\documentclass{IEEEtran}"
+                   ("\\section{%s}" . "\\section*{%s}")
+                   ("\\subsection{%s}" . "\\subsection*{%s}")
+                   ("\\subsubsection{%s}" . "\\subsubsection*{%s}")
+                   ("\\paragraph{%s}" . "\\paragraph*{%s}")
+                   ("\\subparagraph{%s}" . "\\subparagraph*{%s}")))
 
-  (add-to-list 'org-latex-classes
-               '("usual"
-                 "\\documentclass{article}
+    (add-to-list 'org-latex-classes
+                 '("usual"
+                   "\\documentclass{article}
 \\usepackage[backend=biber,sorting=none,style=ieee]{biblatex}
 \\usepackage{geometry}
 \\geometry{a4paper, margin=1in}
 \\setlength{\\parindent}{0pt}"
-                 ("\\section{%s}" . "\\section*{%s}")
-                 ("\\subsection{%s}" . "\\subsection*{%s}")
-                 ("\\subsubsection{%s}" . "\\subsubsection*{%s}")
-                 ("\\paragraph{%s}" . "\\paragraph*{%s}")
-                 ("\\subparagraph{%s}" . "\\subparagraph*{%s}")))
+                   ("\\section{%s}" . "\\section*{%s}")
+                   ("\\subsection{%s}" . "\\subsection*{%s}")
+                   ("\\subsubsection{%s}" . "\\subsubsection*{%s}")
+                   ("\\paragraph{%s}" . "\\paragraph*{%s}")
+                   ("\\subparagraph{%s}" . "\\subparagraph*{%s}")))
 
-  (add-to-list 'org-latex-classes
-               '("ieee"
-                 "\\documentclass{IEEEtran}
+    (add-to-list 'org-latex-classes
+                 '("ieee"
+                   "\\documentclass{IEEEtran}
 \\usepackage[backend=biber,sorting=none,style=ieee]{biblatex}
 \\usepackage{geometry}
 \\geometry{a4paper, margin=1in}"
-                 ("\\section{%s}" . "\\section*{%s}")
-                 ("\\subsection{%s}" . "\\subsection*{%s}")
-                 ("\\subsubsection{%s}" . "\\subsubsection*{%s}")
-                 ("\\paragraph{%s}" . "\\paragraph*{%s}")
-                 ("\\subparagraph{%s}" . "\\subparagraph*{%s}")))
+                   ("\\section{%s}" . "\\section*{%s}")
+                   ("\\subsection{%s}" . "\\subsection*{%s}")
+                   ("\\subsubsection{%s}" . "\\subsubsection*{%s}")
+                   ("\\paragraph{%s}" . "\\paragraph*{%s}")
+                   ("\\subparagraph{%s}" . "\\subparagraph*{%s}")))
 
-  (add-to-list 'org-latex-classes
-               '("qutad"
-                 "\\documentclass{qutad}"
-                 ("\\chapter{%s}" . "\\chapter*{%s}")
-                 ("\\section{%s}" . "\\section*{%s}")
-                 ("\\subsection{%s}" . "\\subsection*{%s}")
-                 ("\\subsubsection{%s}" . "\\subsubsection*{%s}")
-                 ("\\paragraph{%s}" . "\\paragraph*{%s}")))
+    (add-to-list 'org-latex-classes
+                 '("qutad"
+                   "\\documentclass{qutad}"
+                   ("\\chapter{%s}" . "\\chapter*{%s}")
+                   ("\\section{%s}" . "\\section*{%s}")
+                   ("\\subsection{%s}" . "\\subsection*{%s}")
+                   ("\\subsubsection{%s}" . "\\subsubsection*{%s}")
+                   ("\\paragraph{%s}" . "\\paragraph*{%s}")))
 
-  (add-to-list 'org-latex-classes
-               '("beamer"
-                 "\\documentclass\[presentation\]\{beamer\}"
-                 ("\\section\{%s\}" . "\\section*\{%s\}")
-                 ("\\subsection\{%s\}" . "\\subsection*\{%s\}")
-                 ("\\subsubsection\{%s\}" . "\\subsubsection*\{%s\}"))))
+    (add-to-list 'org-latex-classes
+                 '("beamer"
+                   "\\documentclass\[presentation\]\{beamer\}"
+                   ("\\section\{%s\}" . "\\section*\{%s\}")
+                   ("\\subsection\{%s\}" . "\\subsection*\{%s\}")
+                   ("\\subsubsection\{%s\}" . "\\subsubsection*\{%s\}")))))
 
 ;; ---- OUTLINE ----
-(use-package outline
-  :config
-  (defun outline-body-p ()
-    (save-excursion
-      (outline-back-to-heading)
-      (outline-end-of-heading)
-      (and (not (eobp))
-           (progn (forward-char 1)
-                  (not (outline-on-heading-p))))))
-
-  (defun outline-body-visible-p ()
-    (save-excursion
-      (outline-back-to-heading)
-      (outline-end-of-heading)
-      (not (outline-invisible-p))))
-
-  (defun outline-subheadings-p ()
-    (save-excursion
-      (outline-back-to-heading)
-      (let ((level (funcall outline-level)))
-        (outline-next-heading)
+(unless tiny
+  (use-package outline
+    :config
+    (defun outline-body-p ()
+      (save-excursion
+        (outline-back-to-heading)
+        (outline-end-of-heading)
         (and (not (eobp))
-             (< level (funcall outline-level))))))
+             (progn (forward-char 1)
+                    (not (outline-on-heading-p))))))
 
-  (defun outline-subheadings-visible-p ()
-    (interactive)
-    (save-excursion
-      (outline-next-heading)
-      (not (outline-invisible-p))))
+    (defun outline-body-visible-p ()
+      (save-excursion
+        (outline-back-to-heading)
+        (outline-end-of-heading)
+        (not (outline-invisible-p))))
 
-  (defun outline-hide-more ()
-    (interactive)
-    (when (outline-on-heading-p)
-      (cond ((and (outline-body-p)
-                  (outline-body-visible-p))
-             (hide-entry)
-             (hide-leaves))
-            (t
-             (hide-subtree)))))
+    (defun outline-subheadings-p ()
+      (save-excursion
+        (outline-back-to-heading)
+        (let ((level (funcall outline-level)))
+          (outline-next-heading)
+          (and (not (eobp))
+               (< level (funcall outline-level))))))
 
-  (defun outline-show-more ()
-    (interactive)
-    (when (outline-on-heading-p)
-      (cond ((and (outline-subheadings-p)
-                  (not (outline-subheadings-visible-p)))
-             (show-children))
-            ((and (not (outline-subheadings-p))
-                  (not (outline-body-visible-p)))
-             (show-subtree))
-            ((and (outline-body-p)
-                  (not (outline-body-visible-p)))
-             (show-entry))
-            (t
-             (show-subtree)))))
+    (defun outline-subheadings-visible-p ()
+      (interactive)
+      (save-excursion
+        (outline-next-heading)
+        (not (outline-invisible-p))))
 
-  (let ((map outline-mode-map))
-    (define-key map (kbd "M-<left>") 'outline-hide-more)
-    (define-key map (kbd "M-<right>") 'outline-show-more)
-    (define-key map (kbd "M-<up>") 'outline-previous-visible-heading)
-    (define-key map (kbd "M-<down>") 'outline-next-visible-heading)
-    (define-key map (kbd "C-c J") 'outline-hide-more)
-    (define-key map (kbd "C-c L") 'outline-show-more)
-    (define-key map (kbd "C-c I") 'outline-previous-visible-heading)
-    (define-key map (kbd "C-c K") 'outline-next-visible-heading))
+    (defun outline-hide-more ()
+      (interactive)
+      (when (outline-on-heading-p)
+        (cond ((and (outline-body-p)
+                    (outline-body-visible-p))
+               (hide-entry)
+               (hide-leaves))
+              (t
+               (hide-subtree)))))
 
-  (let ((map outline-minor-mode-map))
-    (define-key map (kbd "M-<left>") 'outline-hide-more)
-    (define-key map (kbd "M-<right>") 'outline-show-more)
-    (define-key map (kbd "M-<up>") 'outline-previous-visible-heading)
-    (define-key map (kbd "M-<down>") 'outline-next-visible-heading)
-    (define-key map (kbd "C-c J") 'outline-hide-more)
-    (define-key map (kbd "C-c L") 'outline-show-more)
-    (define-key map (kbd "C-c I") 'outline-previous-visible-heading)
-    (define-key map (kbd "C-c K") 'outline-next-visible-heading))
+    (defun outline-show-more ()
+      (interactive)
+      (when (outline-on-heading-p)
+        (cond ((and (outline-subheadings-p)
+                    (not (outline-subheadings-visible-p)))
+               (show-children))
+              ((and (not (outline-subheadings-p))
+                    (not (outline-body-visible-p)))
+               (show-subtree))
+              ((and (outline-body-p)
+                    (not (outline-body-visible-p)))
+               (show-entry))
+              (t
+               (show-subtree)))))
 
-  (provide 'outline-mode-easy-bindings)
+    (let ((map outline-mode-map))
+      (define-key map (kbd "M-<left>") 'outline-hide-more)
+      (define-key map (kbd "M-<right>") 'outline-show-more)
+      (define-key map (kbd "M-<up>") 'outline-previous-visible-heading)
+      (define-key map (kbd "M-<down>") 'outline-next-visible-heading)
+      (define-key map (kbd "C-c J") 'outline-hide-more)
+      (define-key map (kbd "C-c L") 'outline-show-more)
+      (define-key map (kbd "C-c I") 'outline-previous-visible-heading)
+      (define-key map (kbd "C-c K") 'outline-next-visible-heading))
 
-  (add-hook 'outline-mode-hook 'my-outline-easy-bindings)
-  (add-hook 'outline-minor-mode-hook 'my-outline-easy-bindings)
+    (let ((map outline-minor-mode-map))
+      (define-key map (kbd "M-<left>") 'outline-hide-more)
+      (define-key map (kbd "M-<right>") 'outline-show-more)
+      (define-key map (kbd "M-<up>") 'outline-previous-visible-heading)
+      (define-key map (kbd "M-<down>") 'outline-next-visible-heading)
+      (define-key map (kbd "C-c J") 'outline-hide-more)
+      (define-key map (kbd "C-c L") 'outline-show-more)
+      (define-key map (kbd "C-c I") 'outline-previous-visible-heading)
+      (define-key map (kbd "C-c K") 'outline-next-visible-heading))
 
-  (defun my-outline-easy-bindings ()
-    (require 'outline-mode-easy-bindings nil t))
+    (provide 'outline-mode-easy-bindings)
 
-  (add-hook 'LaTeX-mode-hook #'outline-minor-mode))
+    (add-hook 'outline-mode-hook 'my-outline-easy-bindings)
+    (add-hook 'outline-minor-mode-hook 'my-outline-easy-bindings)
+
+    (defun my-outline-easy-bindings ()
+      (require 'outline-mode-easy-bindings nil t))
+
+    (add-hook 'LaTeX-mode-hook #'outline-minor-mode)))
 
 ;; ---- VTERM ----
-(use-package vterm
-  :custom (vterm-shell "/usr/bin/fish"))
+(unless tiny
+  (use-package vterm
+    :custom (vterm-shell "/usr/bin/fish")))
 
 ;; ---- EXTRA LISP ----
 (setq lisp-directory (concat user-emacs-directory "lisp"))
@@ -665,6 +656,75 @@ from: https://stackoverflow.com/a/998472/3825872"
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
+ '(TeX-command-list
+   '(("Quick" "pdflatexorgwraper -a %s" TeX-run-TeX nil
+      (latex-mode doctex-mode)
+      :help "Quick LaTeX compile")
+     ("TeX" "%(PDF)%(tex) %(file-line-error) %`%(extraopts) %S%(PDFout)%(mode)%' %t" TeX-run-TeX nil
+      (plain-tex-mode texinfo-mode ams-tex-mode)
+      :help "Run plain TeX")
+     ("LaTeX" "%`%l%(mode)%' %T" TeX-run-TeX nil
+      (latex-mode doctex-mode)
+      :help "Run LaTeX")
+     ("Makeinfo" "makeinfo %(extraopts) %t" TeX-run-compile nil
+      (texinfo-mode)
+      :help "Run Makeinfo with Info output")
+     ("Makeinfo HTML" "makeinfo %(extraopts) --html %t" TeX-run-compile nil
+      (texinfo-mode)
+      :help "Run Makeinfo with HTML output")
+     ("AmSTeX" "amstex %(PDFout) %`%(extraopts) %S%(mode)%' %t" TeX-run-TeX nil
+      (ams-tex-mode)
+      :help "Run AMSTeX")
+     ("ConTeXt" "%(cntxcom) --once --texutil %(extraopts) %(execopts)%t" TeX-run-TeX nil
+      (context-mode)
+      :help "Run ConTeXt once")
+     ("ConTeXt Full" "%(cntxcom) %(extraopts) %(execopts)%t" TeX-run-TeX nil
+      (context-mode)
+      :help "Run ConTeXt until completion")
+     ("BibTeX" "bibtex %s" TeX-run-BibTeX nil
+      (plain-tex-mode latex-mode doctex-mode context-mode texinfo-mode ams-tex-mode)
+      :help "Run BibTeX")
+     ("Biber" "biber %s" TeX-run-Biber nil
+      (plain-tex-mode latex-mode doctex-mode texinfo-mode ams-tex-mode)
+      :help "Run Biber")
+     ("View" "%V" TeX-run-discard-or-function t t :help "Run Viewer")
+     ("Print" "%p" TeX-run-command t t :help "Print the file")
+     ("Queue" "%q" TeX-run-background nil t :help "View the printer queue" :visible TeX-queue-command)
+     ("File" "%(o?)dvips %d -o %f " TeX-run-dvips t
+      (plain-tex-mode latex-mode doctex-mode texinfo-mode ams-tex-mode)
+      :help "Generate PostScript file")
+     ("Dvips" "%(o?)dvips %d -o %f " TeX-run-dvips nil
+      (plain-tex-mode latex-mode doctex-mode texinfo-mode ams-tex-mode)
+      :help "Convert DVI file to PostScript")
+     ("Dvipdfmx" "dvipdfmx %d" TeX-run-dvipdfmx nil
+      (plain-tex-mode latex-mode doctex-mode texinfo-mode ams-tex-mode)
+      :help "Convert DVI file to PDF with dvipdfmx")
+     ("Ps2pdf" "ps2pdf %f" TeX-run-ps2pdf nil
+      (plain-tex-mode latex-mode doctex-mode texinfo-mode ams-tex-mode)
+      :help "Convert PostScript file to PDF")
+     ("Glossaries" "makeglossaries %s" TeX-run-command nil
+      (plain-tex-mode latex-mode doctex-mode texinfo-mode ams-tex-mode)
+      :help "Run makeglossaries to create glossary
+     file")
+     ("Index" "makeindex %s" TeX-run-index nil
+      (plain-tex-mode latex-mode doctex-mode texinfo-mode ams-tex-mode)
+      :help "Run makeindex to create index file")
+     ("upMendex" "upmendex %s" TeX-run-index t
+      (plain-tex-mode latex-mode doctex-mode texinfo-mode ams-tex-mode)
+      :help "Run upmendex to create index file")
+     ("Xindy" "texindy %s" TeX-run-command nil
+      (plain-tex-mode latex-mode doctex-mode texinfo-mode ams-tex-mode)
+      :help "Run xindy to create index file")
+     ("Check" "lacheck %s" TeX-run-compile nil
+      (latex-mode)
+      :help "Check LaTeX file for correctness")
+     ("ChkTeX" "chktex -v6 %s" TeX-run-compile nil
+      (latex-mode)
+      :help "Check LaTeX file for common mistakes")
+     ("Spell" "(TeX-ispell-document \"\")" TeX-run-function nil t :help "Spell-check the document")
+     ("Clean" "TeX-clean" TeX-run-function nil t :help "Delete generated intermediate files")
+     ("Clean All" "(TeX-clean t)" TeX-run-function nil t :help "Delete generated intermediate and output files")
+     ("Other" "" TeX-run-command t t :help "Run an arbitrary command")))
  '(package-selected-packages
    '(lacarte ac-octave octave-mode v-mode vterm ranger org-ref ox-reveal ox-pandoc org-bullets auctex calfw-org calfw flyspell-correct-helm helm xclip origami multiple-cursors adaptive-wrap academic-phrases anzu writeroom-mode dumb-jump iedit rainbow-mode flycheck js2-mode ein cmake-mode xonsh-mode elvish-mode fish-mode dockerfile-mode solidity-mode arduino-mode haxe-mode glsl-mode yaml-mode protobuf-mode ttl-mode sparql-mode gnuplot-mode kotlin-mode julia-mode typescript-mode rust-mode go-mode csharp-mode vala-mode basic-mode web-mode lsp-dart lsp-java lsp-ui company-lsp lsp-mode git-gutter doom-modeline spacemacs-theme undo-tree use-package))
  '(vterm-shell "/usr/bin/fish")

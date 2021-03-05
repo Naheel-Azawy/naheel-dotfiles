@@ -1,18 +1,10 @@
 #!/bin/sh
 
-if [ -t 1 ]; then
-    BLUE='\e[1;34m'
-    RED='\e[1;31m'
-    YELLOW='\e[1;33m'
-    GREEN='\e[1;32m'
-    RESET='\e[0m'
-else
-    BLUE=
-    RED=
-    YELLOW=
-    GREEN=
-    RESET=
-fi
+BLUE='\e[1;34m'
+RED='\e[1;31m'
+YELLOW='\e[1;33m'
+GREEN='\e[1;32m'
+RESET='\e[0m'
 
 LATEX_RERUN_NEEDED='Please rerun LaTeX.'
 BIBTEX_RERUN_NEEDED='Please (re)run Biber on the file:'
@@ -74,7 +66,18 @@ cleanup() {
 }
 
 main() {
-    DOCX=; [ "$1" = '-d' ] && DOCX=1 && shift
+    DOCX=;  [ "$1" = '-d' ] && DOCX=1  && shift
+    ASCII=; [ "$1" = '-a' ] && ASCII=1 && shift
+    [ -t 1 ] && [ -t 0 ] || ASCII=1
+
+    if [ "$ASCII" ]; then
+        BLUE=
+        RED=
+        YELLOW=
+        GREEN=
+        RESET=
+    fi
+
     F="$1"
     F="${F%.*}"
 
