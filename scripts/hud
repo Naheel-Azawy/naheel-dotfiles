@@ -8,12 +8,16 @@
 # eval "$(hud env)"
 #
 # start the daemon with `hud daemon` and run `hud` to show the menu
+#
 # TODO: integrate with `launcher` and keep as a seperate repo
-# TODO: integrate plotinus https://github.com/p-e-w/plotinus
+# DONE: integrate plotinus https://github.com/p-e-w/plotinus
 
 import dbus
+import pydbus # you don't need both...
 import subprocess
 import sys
+import os
+import re
 
 def start_service():
     import gi
@@ -46,12 +50,22 @@ def start_service():
         def Q(self):
             Gtk.main_quit()
 
+    # start plotinus service
+    os.system("gsettings set com.worldwidemann.plotinus:/com/worldwidemann/plotinus/default/ dbus-enabled true")
+    os.popen("pgrep plotinus || plotinus")
+
+    # start dbus main service
     DBusGMainLoop(set_as_default=True)
     myservice = Service()
     Gtk.main()
 
 def dmenu(items, main_bar=[]):
-    main_bar = set(main_bar)
+    # main_bar = set(main_bar)
+    # like a set, but keeps order
+    main_bar_tmp = {}
+    for item in main_bar:
+        main_bar_tmp[item] = 1
+    main_bar = list(main_bar_tmp.keys())
     dmenu_string = ""
     if len(main_bar) > 0:
         dmenu_string += " | ".join(main_bar) + "\n"
@@ -69,25 +83,54 @@ def dmenu(items, main_bar=[]):
     return dmenu_result
 
 def format_label_list(label_list):
-    return "| " + " > ".join(label_list).replace("_", "")
+    return "| " + " → ".join(label_list).replace("_", "")
+
+def xprop(window_id, notype):
+    res = subprocess.check_output(["xprop", "-id", window_id,
+                                   "-notype", notype]).decode()
+    try:
+        return re.search('.+ = "(.+)"', res)[1]
+    except:
+        return None
+
+class NopeException(Exception):
+    pass
+
+def plotinus_interface(window_id):
+    gtk_path = xprop(window_id, "_GTK_WINDOW_OBJECT_PATH")
+    if gtk_path is None:
+        raise NopeException()
+
+    bus = pydbus.SessionBus()
+    try:
+        plotinus = bus.get("com.worldwidemann.plotinus")
+    except:
+        raise NopeException()
+    bus_name, command_paths = plotinus.GetCommands(gtk_path)
+    commands = [bus.get(bus_name, command_path) for command_path in command_paths]
+
+    actions = {}
+    for i, command in enumerate(commands):
+        path = command.Path + [command.Label]
+        path.pop(0)
+        l = format_label_list(path)
+        actions[l] = command
+
+    # Run dmenu
+    dmenu_result = dmenu(actions)
+
+    # Use dmenu result
+    if dmenu_result in actions:
+        actions[dmenu_result].Execute()
 
 # FIXME: inactive items are shown normally
 
-class GtkNotFoundExcpetion(Exception):
-    pass
+def gtk_interface(window_id):
+    gtk_bus_name = xprop(window_id, "_GTK_UNIQUE_BUS_NAME")
+    gtk_object_path = xprop(window_id, "_GTK_MENUBAR_OBJECT_PATH")
 
-def run_gtk_interface(window_id):
-    # Get GTK MenuModel Bus name
-    gtk_bus_name_cmd = subprocess.check_output(["xprop", "-id", window_id,
-                                                "-notype", "_GTK_UNIQUE_BUS_NAME"]).decode()
-    gtk_object_path_cmd = subprocess.check_output(["xprop", "-id", window_id,
-                                                   "-notype", "_GTK_MENUBAR_OBJECT_PATH"]).decode()
-
-    if "not found" in gtk_bus_name_cmd or "not found" in gtk_object_path_cmd:
-        raise GtkNotFoundExcpetion()
-
-    gtk_bus_name = gtk_bus_name_cmd.split(' ')[-1].strip().split('"')[1]
-    gtk_object_path = gtk_object_path_cmd.split(' ')[-1].strip().split('"')[1]
+    if None in [gtk_bus_name, gtk_object_path]:
+        raise NopeException()
 
     # Ask for menus over DBus
     session_bus = dbus.SessionBus()
@@ -153,7 +196,7 @@ def run_gtk_interface(window_id):
         # FIXME: fails for libreoffice
         gtk_action_object_actions_iface.Activate(action, [], {})
 
-def run_appmenu_interface(window_id):
+def appmenu_interface(window_id):
     # Get Appmenu Registrar DBus interface
     session_bus = dbus.SessionBus()
     appmenu_registrar_object = session_bus.get_object("com.canonical.AppMenu.Registrar",
@@ -205,23 +248,114 @@ def run_appmenu_interface(window_id):
         action = actions[dmenu_result]
         dbusmenu_object_iface.Event(action, "clicked", 0, 0)
 
+def emacs_interface(window_id):
+    win_class = xprop(window_id, "WM_CLASS")
+    win_name = xprop(window_id, "WM_NAME")
+
+    if None in [win_class, win_name] or \
+       (not win_class.startswith("emacs") and \
+        not win_name.startswith("emacs")):
+        raise NopeException()
+
+    lisp = """(string-join
+      (let (l)
+        (mapatoms
+         #'(lambda (f) (and
+                        (commandp f)
+                        (setq l (cons (symbol-name f) l)))))
+        (when (called-interactively-p 'any)
+          (with-current-buffer (get-buffer-create "*Major Modes*")
+            (clear-buffer-delete)
+            (let ((standard-output (current-buffer)))
+              (display-completion-list l)
+              (display-buffer (current-buffer)))))
+        l) " ")"""
+
+    out = subprocess.check_output(["emacsclient", "-e", lisp])\
+                    .decode().strip()
+    # remove starting and ending quotes
+    out = out[1:-1]
+
+    actions = {}
+    for cmd in out.split(" "):
+        actions[cmd] = cmd
+
+    # Run dmenu
+    dmenu_result = dmenu(actions)
+
+    # Use dmenu result
+    if dmenu_result in actions:
+        cmd = actions[dmenu_result]
+        os.system(f"emacsclient -e '({cmd})'")
+
+def emacs_lacarte_interface(window_id):
+    # lacarte needs to be setup in emacs
+    # https://www.emacswiki.org/emacs/download/lacarte.el
+
+    win_class = xprop(window_id, "WM_CLASS")
+    win_name = xprop(window_id, "WM_NAME")
+
+    if None in [win_class, win_name] or \
+       (not win_class.startswith("emacs") and \
+        not win_name.startswith("emacs")):
+        raise NopeException()
+
+    out = subprocess.check_output(["emacsclient", "-e", "(lacarte-get-overall-menu-item-alist)"])\
+                    .decode().strip()
+    # remove starting and ending parens
+    out = out[1:-1]
+
+    main_bar = []
+    actions = {}
+    for line in out.split("\n"):
+        # this is so bad and dirty, many are not matched
+        # maybe a lisp parser?..
+        m = re.search(' ?\(?\("(.+)" . (.+)\)', line)
+        if m is not None:
+            cmd = m[2]
+            l = m[1].split(" > ")
+            main_bar.append(l[0])
+            l = format_label_list(l) + f" ({cmd})"
+            actions[l] = cmd
+
+    # Run dmenu
+    dmenu_result = dmenu(actions, main_bar)
+
+    # Use dmenu result
+    if dmenu_result in actions:
+        cmd = actions[dmenu_result]
+        os.system(f"emacsclient -e '({cmd})'")
+
 def main(args):
     if len(args) > 1:
+
         if args[1] == "daemon":
             start_service()
         elif args[1] == "env":
-            print('export GTK_MODULES="$GTK_MODULES:unity-gtk-module:appmenu-gtk-module"')
+            print('export GTK_MODULES="$GTK_MODULES:appmenu-gtk-module"')
             print('PLOTINUS=$(whereis -b libplotinus | cut -d " " -f 2)')
             print('[ -f "$PLOTINUS" ] && export GTK_MODULES="$GTK_MODULES:$PLOTINUS"')
             print('export UBUNTU_MENUPROXY=1')
+
     else:
         window_id = subprocess.check_output(["xdotool", "getactivewindow"]) \
                               .decode().strip()
         window_title = subprocess.check_output(["xdotool", "getwindowname", window_id]) \
                                  .decode().strip()
-        try:
-            run_gtk_interface(window_id)
-        except GtkNotFoundExcpetion:
-            run_appmenu_interface(window_id)
 
-main(sys.argv)
+        interfaces = [emacs_interface, plotinus_interface,
+                      gtk_interface, appmenu_interface]
+
+        for interface in interfaces:
+            try:
+                interface(window_id)
+                return 0
+            except NopeException:
+                pass
+
+        print("Could not find a menu interface")
+        return 1
+
+    return 0
+
+exit(main(sys.argv))

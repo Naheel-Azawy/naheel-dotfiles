@@ -7,6 +7,7 @@ GREEN='\e[1;32m'
 RESET='\e[0m'
 
 LATEX_RERUN_NEEDED='Please rerun LaTeX.'
+LATEX_RERUN_NEEDED_2='Rerun to get cross-references right.'
 BIBTEX_RERUN_NEEDED='Please (re)run Biber on the file:'
 
 run_showing() {
@@ -35,7 +36,9 @@ garbage() {
     echo "$1.lof"
     echo "$1.lot"
     echo "$1.toc"
-    echo "$1.synctex.gz"
+    echo "$1.nav"
+    echo "$1.snm"
+    # echo "$1.synctex.gz"
     echo "texput.log"
 }
 
@@ -112,6 +115,11 @@ main() {
 
         # another latex run if needed
         if echo "$OUT" | grep -q "$LATEX_RERUN_NEEDED"; then
+            OUT=$(gen_pdf "$F.tex")
+        fi
+
+        # another latex run if needed
+        if echo "$OUT" | grep -q "$LATEX_RERUN_NEEDED_2"; then
             OUT=$(gen_pdf "$F.tex")
         fi
     fi

@@ -27,14 +27,11 @@
 
 ;; ---- TINY ----
 ;; option for tiny installations
-(setq tiny (getenv "TINY"))
-(setq tiny t)
+(setq tiny (equal (getenv "TINY") "t"))
 
 ;; ---- MELPA and USE_PACKAGE ----
 (require 'package)
-(setq package-archives '(("melpa" . "https://melpa.org/packages/")
-                         ("org"   . "https://orgmode.org/elpa/")
-                         ("elpa"  . "https://elpa.gnu.org/packages/")))
+(add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/") t)
 (package-initialize)
 (unless package-archive-contents
   (package-refresh-contents))
@@ -78,7 +75,7 @@
 (global-set-key (kbd "<mouse-4>") 'scroll-down-line)
 (global-set-key (kbd "<mouse-5>") 'scroll-up-line)
 (setq-default tab-width 4)
-;;(setq-default show-trailing-whitespace nil)
+;;(setq-default show-trailing-whitespace 1)
 
 ;; ---- TITLE ----
 (defun xterm-title-update ()
@@ -189,7 +186,6 @@
   :config (global-git-gutter-mode 1))
 
 (unless tiny
-
   ;; ---- LSP ----
   (use-package lsp-mode)
   (use-package company-lsp)
@@ -245,11 +241,14 @@
   (use-package xonsh-mode)
   (use-package cmake-mode)
   (use-package ein)
-  (use-package js2-mode :mode "\\.js\\'"
+  (use-package js2-mode
     :custom-face
     (js2-external-variable ((t (:foreground "brightblack")))))
+  (use-package rjsx-mode  :mode
+    ("\\.js\\'"  . rjsx-mode)
+    ("\\.jsx\\'" . rjsx-mode))
   (use-package v-mode :mode "\\.v\\'")
-  (use-package octave :mode "\\.m\\'")
+  (use-package octave :mode ("\\.m\\'" . octave-mode))
   (use-package python :mode
     ("\\.py\\'"  . python-mode)
     ("\\.pyx\\'" . python-mode)))
@@ -287,6 +286,9 @@
     (writeroom-bottom-divider-width 0)
     (writeroom-extra-line-spacing nil)
     (writeroom-fringes-outside-margins nil))
+  (use-package which-key :config (which-key-mode))
+  (use-package visual-regexp)
+  (use-package visual-regexp-steroids)
   (use-package academic-phrases))
 
 ;; ---- MULTIPLE CURSERS ----
@@ -426,7 +428,11 @@ from: https://stackoverflow.com/a/998472/3825872"
     (TeX-PDF-mode t)
     (TeX-source-correlate-method 'synctex)
     (TeX-source-correlate-mode t)
-    (TeX-source-correlate-start-server t)))
+    (TeX-source-correlate-start-server t)
+    (TeX-command-list
+     '(("Quick" "pdflatexorgwraper -a %s" TeX-run-TeX nil
+        (latex-mode doctex-mode)
+        :help "Quick LaTeX compile")))))
 
 ;; ---- ORG ----
 (unless tiny
@@ -656,83 +662,8 @@ from: https://stackoverflow.com/a/998472/3825872"
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(TeX-command-list
-   '(("Quick" "pdflatexorgwraper -a %s" TeX-run-TeX nil
-      (latex-mode doctex-mode)
-      :help "Quick LaTeX compile")
-     ("TeX" "%(PDF)%(tex) %(file-line-error) %`%(extraopts) %S%(PDFout)%(mode)%' %t" TeX-run-TeX nil
-      (plain-tex-mode texinfo-mode ams-tex-mode)
-      :help "Run plain TeX")
-     ("LaTeX" "%`%l%(mode)%' %T" TeX-run-TeX nil
-      (latex-mode doctex-mode)
-      :help "Run LaTeX")
-     ("Makeinfo" "makeinfo %(extraopts) %t" TeX-run-compile nil
-      (texinfo-mode)
-      :help "Run Makeinfo with Info output")
-     ("Makeinfo HTML" "makeinfo %(extraopts) --html %t" TeX-run-compile nil
-      (texinfo-mode)
-      :help "Run Makeinfo with HTML output")
-     ("AmSTeX" "amstex %(PDFout) %`%(extraopts) %S%(mode)%' %t" TeX-run-TeX nil
-      (ams-tex-mode)
-      :help "Run AMSTeX")
-     ("ConTeXt" "%(cntxcom) --once --texutil %(extraopts) %(execopts)%t" TeX-run-TeX nil
-      (context-mode)
-      :help "Run ConTeXt once")
-     ("ConTeXt Full" "%(cntxcom) %(extraopts) %(execopts)%t" TeX-run-TeX nil
-      (context-mode)
-      :help "Run ConTeXt until completion")
-     ("BibTeX" "bibtex %s" TeX-run-BibTeX nil
-      (plain-tex-mode latex-mode doctex-mode context-mode texinfo-mode ams-tex-mode)
-      :help "Run BibTeX")
-     ("Biber" "biber %s" TeX-run-Biber nil
-      (plain-tex-mode latex-mode doctex-mode texinfo-mode ams-tex-mode)
-      :help "Run Biber")
-     ("View" "%V" TeX-run-discard-or-function t t :help "Run Viewer")
-     ("Print" "%p" TeX-run-command t t :help "Print the file")
-     ("Queue" "%q" TeX-run-background nil t :help "View the printer queue" :visible TeX-queue-command)
-     ("File" "%(o?)dvips %d -o %f " TeX-run-dvips t
-      (plain-tex-mode latex-mode doctex-mode texinfo-mode ams-tex-mode)
-      :help "Generate PostScript file")
-     ("Dvips" "%(o?)dvips %d -o %f " TeX-run-dvips nil
-      (plain-tex-mode latex-mode doctex-mode texinfo-mode ams-tex-mode)
-      :help "Convert DVI file to PostScript")
-     ("Dvipdfmx" "dvipdfmx %d" TeX-run-dvipdfmx nil
-      (plain-tex-mode latex-mode doctex-mode texinfo-mode ams-tex-mode)
-      :help "Convert DVI file to PDF with dvipdfmx")
-     ("Ps2pdf" "ps2pdf %f" TeX-run-ps2pdf nil
-      (plain-tex-mode latex-mode doctex-mode texinfo-mode ams-tex-mode)
-      :help "Convert PostScript file to PDF")
-     ("Glossaries" "makeglossaries %s" TeX-run-command nil
-      (plain-tex-mode latex-mode doctex-mode texinfo-mode ams-tex-mode)
-      :help "Run makeglossaries to create glossary
-     file")
-     ("Index" "makeindex %s" TeX-run-index nil
-      (plain-tex-mode latex-mode doctex-mode texinfo-mode ams-tex-mode)
-      :help "Run makeindex to create index file")
-     ("upMendex" "upmendex %s" TeX-run-index t
-      (plain-tex-mode latex-mode doctex-mode texinfo-mode ams-tex-mode)
-      :help "Run upmendex to create index file")
-     ("Xindy" "texindy %s" TeX-run-command nil
-      (plain-tex-mode latex-mode doctex-mode texinfo-mode ams-tex-mode)
-      :help "Run xindy to create index file")
-     ("Check" "lacheck %s" TeX-run-compile nil
-      (latex-mode)
-      :help "Check LaTeX file for correctness")
-     ("ChkTeX" "chktex -v6 %s" TeX-run-compile nil
-      (latex-mode)
-      :help "Check LaTeX file for common mistakes")
-     ("Spell" "(TeX-ispell-document \"\")" TeX-run-function nil t :help "Spell-check the document")
-     ("Clean" "TeX-clean" TeX-run-function nil t :help "Delete generated intermediate files")
-     ("Clean All" "(TeX-clean t)" TeX-run-function nil t :help "Delete generated intermediate and output files")
-     ("Other" "" TeX-run-command t t :help "Run an arbitrary command")))
  '(package-selected-packages
-   '(lacarte ac-octave octave-mode v-mode vterm ranger org-ref ox-reveal ox-pandoc org-bullets auctex calfw-org calfw flyspell-correct-helm helm xclip origami multiple-cursors adaptive-wrap academic-phrases anzu writeroom-mode dumb-jump iedit rainbow-mode flycheck js2-mode ein cmake-mode xonsh-mode elvish-mode fish-mode dockerfile-mode solidity-mode arduino-mode haxe-mode glsl-mode yaml-mode protobuf-mode ttl-mode sparql-mode gnuplot-mode kotlin-mode julia-mode typescript-mode rust-mode go-mode csharp-mode vala-mode basic-mode web-mode lsp-dart lsp-java lsp-ui company-lsp lsp-mode git-gutter doom-modeline spacemacs-theme undo-tree use-package))
- '(vterm-shell "/usr/bin/fish")
- '(writeroom-border-width 50)
- '(writeroom-bottom-divider-width 0)
- '(writeroom-extra-line-spacing nil)
- '(writeroom-fringes-outside-margins nil)
- '(writeroom-fullscreen-effect 'maximized))
+   '(js-auto-beautify yaml-mode xonsh-mode xclip writeroom-mode which-key web-mode vterm visual-regexp-steroids vala-mode v-mode use-package undo-tree typescript-mode ttl-mode sparql-mode spacemacs-theme solidity-mode rust-mode rjsx-mode ranger rainbow-mode protobuf-mode ox-reveal ox-pandoc outshine origami org-ref org-bullets multiple-cursors lsp-ui lsp-java lsp-dart kotlin-mode julia-mode iedit haxe-mode go-mode gnuplot-mode glsl-mode git-gutter flyspell-correct-helm flycheck fish-mode elvish-mode ein dumb-jump doom-modeline dockerfile-mode csharp-mode company-lsp cmake-mode calfw-org calfw basic-mode auctex arduino-mode anzu adaptive-wrap academic-phrases ac-octave)))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.

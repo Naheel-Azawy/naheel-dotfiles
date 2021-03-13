@@ -40,7 +40,7 @@ eval "$(/usr/bin/gnome-keyring-daemon --start --components=pkcs11,secrets,ssh)"
 export SSH_AUTH_SOCK
 
 # enable the HUD menu
-# eval "$(hud env)"
+eval "$(hud env)"
 
 # autostart programs
 env SXHKD_SHELL=dash sxhkd & # keyboard daemon
@@ -55,7 +55,7 @@ picom &                      # compositor
 setwallpaper &               # wallpaper
 lang us &                    # set language to 'us' and runs xmodmap
 mount-private &              # mount encfs private directory
-# hud daemon &                 # hud menu daemon
+hud daemon &                 # hud menu daemon
 
 # start the window manager
 exec "$WINDOW_MANAGER" # defined in profile
