@@ -120,12 +120,11 @@ dots_link() {
     lnnn "$D/configs/arduino-cli.yaml"    "$H/.arduino15/arduino-cli.yaml"
     lnnn "$D/configs/stpv-config.sh"      "$H/.config/stpv/config.sh"
     lnnn "$D/configs/nanorc"              "$H/.nanorc"
+    lnnn "$D/configs/sxhkdrc"             "$H/.config/sxhkd/sxhkdrc"
 }
 
 # update dots configs
 dots_update() {
-    mkdir -p "$HOME/.config/sxhkd/"
-    ( cd "$D/scripts" && ./keybindingsgen.py -g )
     "$D/configs/onboard-gsettings.sh"
     dots_link
 }
@@ -445,18 +444,21 @@ pkg_install_from() {
                     }
                     dir=$(mktemp -d)
                     git clone --depth 1 "$link" "$dir" &&
-                        cd "$dir" && {
-                            if [ -f CMakeLists.txt ]; then
-                                mkdir -p build &&
-                                    cd build &&
-                                    cmake ..
-                            fi
-                            if [ -f autogen.sh ];  then ./autogen.sh; fi
-                            if [ -f ./configure ]; then ./configure;  fi
-                        } && sudo make &&
-                        sudo make install &&
-                        cd /tmp &&
-                        sudo rm -rf "$dir" || return 1
+                        cd "$dir" && if [ -f setup.py ]; then
+                            sudo pip3 install .
+                        else
+                            {
+                                if [ -f CMakeLists.txt ]; then
+                                    mkdir -p build &&
+                                        cd build &&
+                                        cmake ..
+                                fi
+                                if [ -f autogen.sh ]; then ./autogen.sh; fi
+                                if [ -f configure ]; then ./configure;  fi
+                            } && sudo make &&
+                                sudo make install
+                        fi
+                    cd /tmp && sudo rm -rf "$dir" || return 1
                 else
                     sudo rm "$(which "$pac")"
                 fi

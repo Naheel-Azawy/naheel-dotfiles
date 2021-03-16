@@ -10,6 +10,7 @@ export TERM="screen-256color"
 export EDITOR="edit"
 export VISUAL="$EDITOR"
 export TERMINAL="st"
+export FILE_MANAGER="lf"
 export BROWSER="browser"
 export READER="evince" # TODO: mk a script, add foliate
 export BIB="$HOME/Documents/LaTeX/refs.bib" # TODO: move to personal
@@ -36,6 +37,11 @@ export EU=2.71828182845904523537
 [ -f "$DOTFILES_DIR/configs/lficons.sh" ] &&
     . "$DOTFILES_DIR/configs/lficons.sh"
 export TINY=$(ndots istiny && echo t)
+
+try_export() {   [ -d "$2" ] && export "$1=$2";:;       }
+try_add_path() { [ -d "$1" ] && export PATH="$PATH:$1";:; }
+test -f "$DOTFILES_DIR/configs/more-paths.sh" &&
+    . "$DOTFILES_DIR/configs/more-paths.sh"
 
 # Workaround to not run those in Ubuntu
 if ! command -v apt >/dev/null; then

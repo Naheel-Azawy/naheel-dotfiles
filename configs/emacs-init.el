@@ -95,7 +95,7 @@
 ;; ---- FONT ----
 (set-face-attribute 'default nil
                     :family "Iosevka Fixed"
-                    :height 130)
+                    :height 150)
 (set-fontset-font "fontset-default"
                   'arabic
                   (font-spec :family "Kawkab Mono" :size 14)
@@ -188,7 +188,6 @@
 (unless tiny
   ;; ---- LSP ----
   (use-package lsp-mode)
-  (use-package company-lsp)
   (use-package lsp-ui)
   (use-package lsp-java :after lsp)
   (use-package lsp-dart)
@@ -249,9 +248,13 @@
     ("\\.jsx\\'" . rjsx-mode))
   (use-package v-mode :mode "\\.v\\'")
   (use-package octave :mode ("\\.m\\'" . octave-mode))
-  (use-package python :mode
+  (use-package python
+    :mode
     ("\\.py\\'"  . python-mode)
-    ("\\.pyx\\'" . python-mode)))
+    ("\\.pyx\\'" . python-mode)
+    :bind
+    ("M-<left>"  . python-indent-shift-left)
+    ("M-<right>" . python-indent-shift-right)))
 
 ;; ---- RUN ----
 (defun run-program ()

@@ -352,7 +352,7 @@ class Bar(BarBase):
                 out = ""
                 if title:
                     return "%{A:wmctl nice-kill:}%{A}  " + \
-                        "%{A:hud:}" + title + "%{A}"
+                        "%{A:menus hud:}" + title + "%{A}"
                 else:
                     return None
         except:
@@ -517,11 +517,11 @@ class Bar(BarBase):
 
     @item()
     def start(self):
-        return "%{A:launcher&:} START%{A}" if not self.a else None
+        return "%{A:menus&:} START%{A}" if not self.a else None
 
     @item()
     def power(self):
-        return "%{A:power&:}%{A}" if not self.a else None
+        return "%{A:menus power&:}%{A}" if not self.a else None
 
     @item()
     def systray(self):
