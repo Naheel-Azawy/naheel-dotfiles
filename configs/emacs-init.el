@@ -433,7 +433,7 @@ from: https://stackoverflow.com/a/998472/3825872"
     (TeX-source-correlate-mode t)
     (TeX-source-correlate-start-server t)
     (TeX-command-list
-     '(("Quick" "pdflatexorgwraper -a %s" TeX-run-TeX nil
+     '(("LaTeX" "pdflatexorgwraper -a %s" TeX-run-TeX nil
         (latex-mode doctex-mode)
         :help "Quick LaTeX compile")))))
 

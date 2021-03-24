@@ -398,8 +398,8 @@ map p $stpv "$f" | less -R
 map l $less "$f"
 
 # drag in/out
-map d &dragon $fx
-#map di &dragon -t
+map d &dragon -a -x $fx
+#map di &dragon -t -p -x
 
 # Nautilus...
 map n &nautilus .
