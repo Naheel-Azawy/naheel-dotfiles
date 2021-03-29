@@ -140,6 +140,16 @@ function plot
     command plot $argv & disown
 end
 
+function z
+    set tmp (mktemp)
+    fmz --cd $tmp
+    set res (tail -n 1 $tmp)
+    if test -d "$res"
+        cd $res
+    end
+    rm $tmp
+end
+
 abbr ث  'lang us; exit'
 abbr مس 'lang us; ls'
 abbr م  'lang us; ls'

@@ -1,0 +1,96 @@
+#!/bin/sh
+
+SELF="$0"
+OP_FILE=/tmp/fmz-op
+
+CD=''
+
+copy() {
+    f=$(realpath "$1")
+    printf '%s' "$f" | xclip -i -selection clipboard
+    {
+        echo "copy"
+        echo "$f"
+    } > "$OP_FILE"
+}
+
+move() {
+    f=$(realpath "$1")
+    printf '%s' "$f" | xclip -i -selection clipboard
+    {
+        echo "move"
+        echo "$f"
+    } > "$OP_FILE"
+}
+
+paste() {
+    load=$(cat "$OP_FILE")
+    mode=$(echo "$load" | sed -n '1p')
+    list=$(echo "$load" | sed '1d')
+    f=$(echo "$list" | head -n 1)
+
+    case "$mode" in
+        copy) cp "$f" .;;
+        move) mv "$f" .;;
+    esac
+}
+
+menu() {
+    res=$(echo 'Copy
+Move
+Paste' | dmenu -p "$1")
+    case "$res" in
+        Copy)  copy "$1" ;;
+        Move)  move "$1" ;;
+        Paste) paste     ;;
+    esac
+}
+
+list() {
+    echo ..
+    command ls -1 --group-directories-first
+}
+
+fuzzy() {
+    fzfp "$@" \
+        --bind "alt-x:execute('$SELF' --menu {} &)" \
+        --bind "ctrl-c:execute('$SELF' --copy {} &)" \
+        --bind "ctrl-x:execute('$SELF' --move {} &)" \
+        --bind "ctrl-v:execute('$SELF' --paste &)"
+}
+
+doit() {
+    res=$(list | fuzzy "$@")
+    if [ "$res" ]; then
+        if [ -f "$res" ]; then
+            open "$res"
+            doit -q "$res"
+        elif [ -d "$res" ]; then
+            cd "$res" && doit
+        fi
+    else
+        if [ -f "$CD" ]; then
+            pwd > "$CD"
+        else
+            pwd
+        fi
+    fi
+}
+
+main() {
+    case "$1" in
+        --cd)
+            CD="$2"
+            shift 2
+    esac
+    
+    case "$1" in
+        --menu)  shift; menu "$@" ;;
+        --copy)  shift; copy "$@" ;;
+        --move)  shift; move "$@" ;;
+        --paste) shift; paste     ;;
+        *)              doit
+    esac
+}
+
+main "$@"

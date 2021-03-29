@@ -64,22 +64,41 @@ class WM:
         })
 
     def lemon(self):
+        circles = True
         out = ""
-        for w in self.impl.workspaces:
-            if w.focused:
-                out += "%{F#000000 B#ffffff}"
-            elif w.visible:
-                out += "%{F#ffffff B#333333}"
-            elif w.urgent:
-                out += "%{F#ffffff B#900000}"
-            else:
-                out += "%{F#ffffff B-}"
-            onclick = f"{self.impl.workspace_cmd} '{w.name}' >/dev/null"
-            out += f"%{{A:{onclick}:}} "
-            out += w.name
-            #.encode(encoding="ascii",errors="backslashreplace").decode()
-            out += " %{A}"
-        out += "%{F- B-}" # reset the colors
+        # still not sure which to pick so I'm keeping both for now
+        if circles:
+            for w in self.impl.workspaces:
+                if w.focused:
+                    out += "%{F#ffffff}"
+                elif w.visible:
+                    out += "%{F#333333}"
+                elif w.urgent:
+                    out += "%{F#900000}"
+                else:
+                    out += "%{F#ffffff}"
+                onclick = f"{self.impl.workspace_cmd} '{w.name}' >/dev/null"
+                out += f"%{{A:{onclick}:}} "
+                circle = "⬤" if w.focused or w.visible or w.urgent else "◯"
+                out += circle
+                out += " %{A}"
+            out += "%{F-}" # reset the colors
+        else:
+            for w in self.impl.workspaces:
+                if w.focused:
+                    out += "%{F#000000 B#ffffff}"
+                elif w.visible:
+                    out += "%{F#ffffff B#333333}"
+                elif w.urgent:
+                    out += "%{F#ffffff B#900000}"
+                else:
+                    out += "%{F#ffffff B-}"
+                onclick = f"{self.impl.workspace_cmd} '{w.name}' >/dev/null"
+                out += f"%{{A:{onclick}:}} "
+                out += w.name
+                #.encode(encoding="ascii",errors="backslashreplace").decode()
+                out += " %{A}"
+            out += "%{F- B-}" # reset the colors
         return out
 
 class WMImpl:
@@ -295,7 +314,8 @@ class BarBase:
         self.render()
         coroutines = []
         # window manager
-        coroutines.append(self.wm.run())
+        if self.wm is not None:
+            coroutines.append(self.wm.run())
         # periodic items
         for item in self.items:
             if item("period") > 0:
@@ -321,11 +341,14 @@ class Bar(BarBase):
 
     @item()
     def workspaces(self):
-        return self.wm.lemon() if not self.a else None
+        if self.wm is None or self.a:
+            return None
+        else:
+            return self.wm.lemon()
 
     @item()
     def add(self):
-        if self.a or self.wm.title == "":
+        if self.wm is None or self.a or self.wm.title == "":
             return None
         names = list(map(lambda w: w.name, self.wm.impl.workspaces))
         for w in self.wm.nice_workspaces:
@@ -546,12 +569,20 @@ def lemonbar():
     except:
         geometry = ""
 
-    fonts = ["Iosevka Fixed",
-             # "Kawkab Mono:pixelsize=12",
-             "Source Han Sans CN",
-             "DejaVu Sans Mono",
-             "Font Awesome 5 Free Solid:pixelsize=19",
-             "Hack Nerd Font"]
+    # main font
+    fonts = []
+    f = os.getenv("FONT")
+    if f:
+        fonts.append(f)
+
+    # additional fonts
+    fonts += [
+        # "Kawkab Mono:pixelsize=12",
+        "Source Han Sans CN",
+        "DejaVu Sans Mono",
+        "Font Awesome 5 Free Solid:pixelsize=19",
+        "Hack Nerd Font"
+    ]
 
     tmp = ""
     for f in fonts:

@@ -1,10 +1,11 @@
-| Tag    | Name          | Git Link | Purpose                |
-|--------+---------------+----------+------------------------|
-| pacman | gnome-mines   | N.A.     | minesweeper            |
-| pacman | gnome-chess   | N.A.     | in case you like chess |
-| pacman | gnuchess      | N.A.     | the GNU chess engine   |
-| pacman | mgba-qt       | N.A.     | a gameboy emulator     |
-| pacman | mednafen      | N.A.     | another emulator       |
-| pacman | mupen64plus   | N.A.     | N64 emulator           |
-| pacman | ppsspp        | N.A.     | PSP emulator           |
-| aur    | microemulator | N.A.     | Java ME emulator       |
+| Tag    | Name          | Git Link | Purpose                            |
+|--------+---------------+----------+------------------------------------|
+| pacman | gnome-mines   | N.A.     | minesweeper                        |
+| pacman | gnome-chess   | N.A.     | in case you like chess             |
+| pacman | gnuchess      | N.A.     | the GNU chess engine               |
+| pacman | mgba-qt       | N.A.     | a gameboy emulator                 |
+| pacman | mednafen      | N.A.     | another emulator                   |
+| pacman | mupen64plus   | N.A.     | N64 emulator                       |
+| pacman | ppsspp        | N.A.     | PSP emulator                       |
+| aur    | microemulator | N.A.     | Java ME emulator                   |
+| aur    | 2048.c-git    | N.A.     | Console version of the game "2048" |

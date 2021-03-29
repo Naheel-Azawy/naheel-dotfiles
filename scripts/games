@@ -36,7 +36,8 @@ games = {
     "nudoku":          tui("nudoku"),
     "tetris":          tui("tetris"),
     "snake":           tui("snake"),
-    "nfs-mw":          pol("most wanted")
+    "nfs-mw":          pol("most wanted"),
+    "2048":            tui("2048")
 }
 
 if len(argv) < 2:

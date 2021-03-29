@@ -7,7 +7,7 @@ pgrep i3lock && {
 
 "$(dirname "$0")/lang" us
 
-[ "$FONT" ] || FONT='DejaVu Sans Mono'
+[ "$FONT" ] || FONT='sans-serif'
 COLOR='ffffffff'
 
 # using picom for blur and opacity
@@ -19,6 +19,10 @@ exec i3lock \
      --datestr '%Y-%m-%d' \
      --time-font "$FONT" \
      --date-font "$FONT" \
+     --layout-font "$FONT" \
+     --verif-font "$FONT" \
+     --wrong-font "$FONT" \
+     --greeter-font "$FONT" \
      --timesize 40 \
      --datesize 20 \
      --time-align 0 \

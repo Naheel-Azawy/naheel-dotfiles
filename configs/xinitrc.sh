@@ -5,6 +5,10 @@ usermodmap=$HOME/.Xmodmap
 sysresources=/etc/X11/xinit/.Xresources
 sysmodmap=/etc/X11/xinit/.Xmodmap
 
+# add env vars to xrdb
+[ "$FONT" ] &&
+    xrdb() { command xrdb -DFONT="$FONT" "$@"; }
+
 # merge in defaults and keymaps
 
 if [ -f $sysresources ]; then
