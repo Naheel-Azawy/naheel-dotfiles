@@ -3,10 +3,61 @@
 SELF="$0"
 OP_FILE=/tmp/fmz-op
 HIDDEN_FILE=/tmp/fmz-hidden
+SORT_FILE=/tmp/fmz-sort
 
 CD=
 ID= ; W= ; H=
-PV= ; PV_WIN=
+PV= ; PV_WIN= ; USE_STPV=
+
+bindings="ctrl-g:$cmd_refresh"
+bookmarks="$HOME"
+
+cmd_reload="reload('$SELF' --eval list)"
+cmd_open="accept-non-empty"
+cmd_updir="abort+execute(echo ..)"
+cmd_menu="execute('$SELF' --eval menu {})+$cmd_reload"
+cmd_copy="execute-silent('$SELF' --eval copy {} &)"
+cmd_move="execute-silent('$SELF' --eval move {} &)"
+cmd_paste="execute-silent('$SELF' --eval paste)+$cmd_reload"
+cmd_rename="execute('$SELF' --eval rename {})+$cmd_reload"
+cmd_delete="execute('$SELF' --eval delete {})+$cmd_reload"
+cmd_goto="abort+execute('$SELF' --eval goto {})"
+cmd_refresh="abort+execute(echo .)"
+cmd_tog_hidden="execute('$SELF' --eval tog_hidden)+$cmd_reload"
+
+bind() {
+    key="$1"
+    cmd="$2"
+    bindings="$bindings,$key:$cmd"
+}
+
+bookmark() {
+    [ -d "$1" ] && {
+        bookmarks="$bookmarks:$1"
+    }
+}
+
+bind right  "$cmd_open"
+bind left   "$cmd_updir"
+bind alt-x  "$cmd_menu"
+bind ctrl-c "$cmd_copy"
+bind ctrl-x "$cmd_move"
+bind ctrl-v "$cmd_paste"
+bind f2     "$cmd_rename"
+bind del    "$cmd_delete"
+bind ctrl-l "$cmd_goto"
+bind ctrl-r "$cmd_refresh"
+bind f5     "$cmd_refresh"
+bind ctrl-h "$cmd_tog_hidden"
+
+bookmark ~/Documents
+bookmark ~/Pictures
+bookmark ~/Videos
+bookmark ~/Music
+bookmark ~/Downloads
+bookmark ~/Projects
+
+# TODO: source rc script here later
 
 exists() {
     command -v "$1" >/dev/null
@@ -14,15 +65,42 @@ exists() {
 
 menu_interface() {
     if exists dmenu; then
-        dmenu -l 20 -i "$@"
-    else
+        # dmenu is the only properly functioning menu for now
+        list=$(cat)
+        count=$(echo "$list" | wc -l)
+        if [ "$count" -gt 3 ]; then
+            echo "$list" | dmenu -l "$count" -i "$@"
+        else
+            echo "$list" | dmenu -i "$@"
+        fi
+    elif false; then
+        # fails for unknown inputs.
+        # keeping in case a workaround is found later
         prompt=
-        [ "$1" = -p ] && prompt="$2 >" && shift 2
+        [ "$1" = -p ] && prompt="$2> " && shift 2
         if [ "$prompt" ]; then
-            fzf --prompt "$prompt" "$@"
+            fzf --reverse --prompt "$prompt" "$@"
         else
             fzf "$@"
         fi
+    else
+        if [ "$1" = -p ]; then
+            echo "$2:"
+            shift 2
+        fi
+        list=$(cat)
+        [ "$list" ] && {
+            list=$(echo "$list" | nl)
+            echo "$list" >/dev/tty
+        }
+        printf '> ' >/dev/tty
+        read -r inp </dev/tty
+        sel=$(echo "$list" |
+                  grep -i "$inp" |
+                  awk '{for (i=2; i<=NF; i++) print $i}')
+        [ "$sel" ] || sel="$inp"
+        echo "$sel"
+        # FIXME: output here is not captured
     fi
 }
 
@@ -35,17 +113,21 @@ menu() {
              echo 'Delete'
              echo 'New folder'
              echo 'New file'
-             echo 'Go to'
+             echo 'Sort normally'
+             echo 'Sort by time'
+             echo 'Sort by size'
          } | menu_interface -p "$1")
     case "$res" in
-        'Copy')       copy   "$1" ;;
-        'Move')       move   "$1" ;;
-        'Paste')      paste       ;;
-        'Rename')     rename "$1" ;;
-        'Delete')     delete "$1" ;;
-        'New folder') mkfolder    ;;
-        'New file')   mkfile      ;;
-        'Go to')      goto        ;;
+        'Copy')          copy   "$1" ;;
+        'Move')          move   "$1" ;;
+        'Paste')         paste       ;;
+        'Rename')        rename "$1" ;;
+        'Delete')        delete "$1" ;;
+        'New folder')    mkfolder    ;;
+        'New file')      mkfile      ;;
+        'Sort normally') lssort ''   ;;
+        'Sort by time')  lssort time ;;
+        'Sort by size')  lssort size ;;
     esac
 }
 
@@ -104,7 +186,8 @@ rename() {
 
 delete() {
     echo "$@"
-    ans=$(printf 'Trash\nDelete permanently\nCancel\n' | menu_interface)
+    ans=$(printf 'Trash\nDelete permanently\nCancel\n' |
+              menu_interface)
     case "$ans" in
         Trash)
             # move current file or selected files to trash folder
@@ -136,14 +219,7 @@ mkfile() {
 goto() {
     res=$({
              realpath .
-             echo Home
-             [ -d ~/Documents ] && echo Documents
-             [ -d ~/Pictures ] && echo Pictures
-             [ -d ~/Videos ] && echo Videos
-             [ -d ~/Music ] && echo Music
-             [ -d ~/Downloads ] && echo Downloads
-             [ -d ~/Projects ] && echo Projects
-
+             echo "$bookmarks" | tr ':' '\n'
              lsblk -rpo "name,type,fsavail,fssize,mountpoint,label" |
                  awk '
                    $6 != "" { $6 = $6" " };
@@ -154,8 +230,6 @@ goto() {
          } | menu_interface)
 
     case "$res" in
-        Home)
-            res="$HOME" ;;
         Partition*)
             res=$(echo "$res" | cut -d ' ' -f2) ;;
         *)
@@ -178,27 +252,28 @@ tog_hidden() {
     fi
 }
 
-list_base() {
-    # echo ..
-    command ls -1 --group-directories-first --color=always "$@"
-}
-
-list() {
-    if [ -f "$HIDDEN_FILE" ]; then
-        list_base -a
+lssort() {
+    if [ "$1" ]; then
+        echo "$1" > "$SORT_FILE"
     else
-        list_base
+        rm -f "$SORT_FILE"
     fi
 }
 
-list_exp() {
-    list_base | while read -r f; do
-        ic=''
-        if [ -d "$f" ]; then
-            ic=''
-        fi
-        echo "$ic $f"
-    done
+list() {
+    cmd="echo ..; "
+    cmd="$cmd command ls -1 --group-directories-first"
+    cmd="$cmd --group-directories-first"
+    cmd="$cmd --color=always"
+    if [ -f "$HIDDEN_FILE" ]; then
+        cmd="$cmd -A"
+    fi
+    if [ -f "$SORT_FILE" ]; then
+        sort=$(cat "$SORT_FILE")
+        [ "$sort" ] &&
+            cmd="$cmd --sort=$sort"
+    fi
+    eval "$cmd"
 }
 
 header() {
@@ -209,79 +284,64 @@ header() {
     GIT_PS1_SHOWUPSTREAM=auto
     git=$(__git_ps1 " (%s)") || true
     dev=$(findmnt -T . -no "source,avail,size,label" |
-              awk '$4!="" {$4=$4" "}; {printf "%s%s (%s/%s)", $4, $1, $2, $3}')
+              awk '$4 != "" {$4 = $4" "};
+                   {printf "%s%s (%s/%s)", $4, $1, $2, $3}')
     printf '\033[1m\033[34m%s\033[1m: \033[37m%s\033[1m\033[32m%s\033[0m\033[0m' \
            "$PWD" "$dev" "$git"
+}
+
+preview() {
+    f="$1"
+    if [ -d "$f" ]; then
+        ls --color=always --group-directories-first "$f"
+    else
+        cat "$f" 2>/dev/null ||
+            file "$f"
+    fi
 }
 
 # for fzf preview
 SHELL=bash
 exists dash && SHELL=dash
 fuzzy() {
-    if [ "$PV" ]; then
-        fzfp() {
-            fzf --reverse \
-                --preview-window "$PV_WIN" \
-                --preview "$PV" "$@"
-        }
+    if [ "$USE_STPV" ]; then
+        PV_CMD="'$SELF' --eval \"stpv {} $PV\""
     else
-        fzfp() {
-            pv="if [ -d {} ]; then"
-            pv="$pv ls --color=always --group-directories-first {}"
-            pv="$pv; else"
-            pv="$pv bat --color always --style plain --paging never {}"
-            pv="$pv 2>/dev/null || "
-            pv="$pv cat {}"
-            pv="$pv 2>/dev/null || "
-            pv="$pv file {}"
-            pv="$pv; fi"
-            fzf --reverse --preview "$pv" "$@"
-        }
+        PV_CMD="'$SELF' --eval \"preview {}\""
     fi
-
-    R="+reload('$SELF' --list)"
-    fzfp --ansi \
-        --header "$(header)" \
-        --bind "right:accept-non-empty" \
-        --bind "left:abort+execute(echo ..)" \
-        --bind "alt-x:execute-silent('$SELF' --menu {})$R" \
-        --bind "ctrl-c:execute-silent('$SELF' --copy {} &)" \
-        --bind "ctrl-x:execute-silent('$SELF' --move {} &)" \
-        --bind "ctrl-v:execute-silent('$SELF' --paste)$R" \
-        --bind "f2:execute-silent('$SELF' --rename {})$R" \
-        --bind "del:execute-silent('$SELF' --delete {})$R" \
-        --bind "ctrl-l:abort+execute('$SELF' --goto {})" \
-        --bind "ctrl-r:abort+execute(echo .)" \
-        --bind "ctrl-h:execute('$SELF' --tog-hidden)$R"
+    fzf --ansi --reverse --multi   \
+        --preview-window "$PV_WIN" \
+        --preview "$PV_CMD"        \
+        --header "$(header)"       \
+        --bind "$bindings"
 }
 
 update_term_size() {
     W=$(tput cols)
     H=$(tput lines)
-    if exists stpv; then
-        COLS=$(tput cols)
-        LINS=$(tput lines)
-        if [ "$W" -gt $((H*3)) ] || [ "$W" -gt 169 ]; then
-            PV_WIN='right:50%'
-            X=$((COLS / 2 + 2))
-            Y=1
-            W=$((((COLS - 1) / 2) - 2))
-            H=$((LINS - 2))
-        else
-            PV_WIN='down:50%'
-            X=1
-            Y=$((LINS / 2 + 2))
-            W=$((COLS - 2))
-            H=$((((LINS - 1) / 2) - 2))
-        fi
-        PV="stpv {} $W $H $X $Y $ID"
+    COLS=$(tput cols)
+    LINS=$(tput lines)
+    if [ "$W" -gt $((H*3)) ] || [ "$W" -gt 169 ]; then
+        PV_WIN='right:50%'
+        X=$((COLS / 2 + 2))
+        Y=1
+        W=$((((COLS - 1) / 2) - 2))
+        H=$((LINS - 2))
+    else
+        PV_WIN='down:50%'
+        X=1
+        Y=$((LINS / 2 + 2))
+        W=$((COLS - 2))
+        H=$((((LINS - 1) / 2) - 2))
     fi
+    PV="$W $H $X $Y $ID"
 }
 
 doit() {
     ID=$$
+    exists stpv && USE_STPV=1
     update_term_size
-    [ "$PV" ] &&
+    [ "$USE_STPV" ] &&
         stpvimg --listen $ID 2>/dev/null &
 
     res=init
@@ -297,7 +357,7 @@ doit() {
         update_term_size
     done
 
-    [ "$PV" ] &&
+    [ "$USE_STPV" ] &&
         stpvimg --end $ID
 
     if [ -f "$CD" ]; then
@@ -315,16 +375,8 @@ main() {
     esac
 
     case "$1" in
-        --menu)         shift; menu   "$@" ;;
-        --list)         shift; list        ;;
-        --copy)         shift; copy   "$@" ;;
-        --move)         shift; move   "$@" ;;
-        --paste)        shift; paste       ;;
-        --rename)       shift; rename "$@" ;;
-        --delete)       shift; delete "$@" ;;
-        --goto)         shift; goto        ;;
-        --tog-hidden)   shift; tog_hidden  ;;
-        *)                     doit
+        --eval) shift; eval "$@" ;;
+        *)             doit
     esac
 }
 
