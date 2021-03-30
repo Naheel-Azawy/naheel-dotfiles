@@ -2,8 +2,52 @@
 
 SELF="$0"
 OP_FILE=/tmp/fmz-op
+HIDDEN_FILE=/tmp/fmz-hidden
 
-CD=''
+CD=
+ID= ; W= ; H=
+PV= ; PV_WIN=
+
+exists() {
+    command -v "$1" >/dev/null
+}
+
+menu_interface() {
+    if exists dmenu; then
+        dmenu -l 20 -i "$@"
+    else
+        prompt=
+        [ "$1" = -p ] && prompt="$2 >" && shift 2
+        if [ "$prompt" ]; then
+            fzf --prompt "$prompt" "$@"
+        else
+            fzf "$@"
+        fi
+    fi
+}
+
+menu() {
+    res=$({
+             echo 'Copy'
+             echo 'Move'
+             echo 'Paste'
+             echo 'Rename'
+             echo 'Delete'
+             echo 'New folder'
+             echo 'New file'
+             echo 'Go to'
+         } | menu_interface -p "$1")
+    case "$res" in
+        'Copy')       copy   "$1" ;;
+        'Move')       move   "$1" ;;
+        'Paste')      paste       ;;
+        'Rename')     rename "$1" ;;
+        'Delete')     delete "$1" ;;
+        'New folder') mkfolder    ;;
+        'New file')   mkfile      ;;
+        'Go to')      goto        ;;
+    esac
+}
 
 copy() {
     f=$(realpath "$1")
@@ -29,51 +73,237 @@ paste() {
     list=$(echo "$load" | sed '1d')
     f=$(echo "$list" | head -n 1)
 
-    case "$mode" in
-        copy) cp "$f" .;;
-        move) mv "$f" .;;
+    if exists cp-p; then
+        srcf=$(mktemp)
+        echo "$list" > "$srcf"
+        case "$mode" in
+            copy)
+                cp-p --new-line --backup=numbered -a -F "$srcf" . ;;
+            move)
+                mv-p --new-line --backup=numbered -F "$srcf" . ;;
+        esac
+        rm -f "$srcf"
+    else
+        case "$mode" in
+            copy) cp "$f" .;;
+            move) mv "$f" .;;
+        esac
+    fi
+}
+
+rename() {
+    name=$(echo | menu_interface -p "Rename $1 to...")
+    [ "$name" ] && {
+        if [ -e "$name" ]; then
+            echo "$name already exists"
+        else
+            mv "$1" "$name"
+        fi
+    }
+}
+
+delete() {
+    echo "$@"
+    ans=$(printf 'Trash\nDelete permanently\nCancel\n' | menu_interface)
+    case "$ans" in
+        Trash)
+            # move current file or selected files to trash folder
+            # using trash-cli (https://github.com/andreafrancia/trash-cli)
+            gio trash "$@" || trash-put "$@" ;;
+        Delete*)
+            rm -rf "$@" ;;
     esac
 }
 
-menu() {
-    res=$(echo 'Copy
-Move
-Paste' | dmenu -p "$1")
+mkfolder() {
+    name=$(echo | menu_interface -p 'Folder name')
+    if [ -e "$name" ]; then
+       echo "$name already exists"
+    else
+        mkdir -p "$name"
+    fi
+}
+
+mkfile() {
+    name=$(echo | menu_interface -p 'File name')
+    if [ -e "$name" ]; then
+       echo "$name already exists"
+    else
+        touch "$name"
+    fi
+}
+
+goto() {
+    res=$({
+             realpath .
+             echo Home
+             [ -d ~/Documents ] && echo Documents
+             [ -d ~/Pictures ] && echo Pictures
+             [ -d ~/Videos ] && echo Videos
+             [ -d ~/Music ] && echo Music
+             [ -d ~/Downloads ] && echo Downloads
+             [ -d ~/Projects ] && echo Projects
+
+             lsblk -rpo "name,type,fsavail,fssize,mountpoint,label" |
+                 awk '
+                   $6 != "" { $6 = $6" " };
+                   ($2=="part"||$2=="lvm") && $5 != "" {
+                     printf "Partition %s#%s#%s#(%s/%s)\n", $5, $1, $6, $3, $4
+                   }' |
+                 tac | column -t -s'#'
+         } | menu_interface)
+
     case "$res" in
-        Copy)  copy "$1" ;;
-        Move)  move "$1" ;;
-        Paste) paste     ;;
+        Home)
+            res="$HOME" ;;
+        Partition*)
+            res=$(echo "$res" | cut -d ' ' -f2) ;;
+        *)
+            [ -d "$res" ] || res="$HOME/$res"
+            [ -d "$res" ] || res=''
     esac
+
+    if [ -d "$res" ]; then
+        echo "$res"
+    else
+        pwd # stay the same dir
+    fi
+}
+
+tog_hidden() {
+    if [ -f "$HIDDEN_FILE" ]; then
+        rm "$HIDDEN_FILE"
+    else
+        touch "$HIDDEN_FILE"
+    fi
+}
+
+list_base() {
+    # echo ..
+    command ls -1 --group-directories-first --color=always "$@"
 }
 
 list() {
-    echo ..
-    command ls -1 --group-directories-first
+    if [ -f "$HIDDEN_FILE" ]; then
+        list_base -a
+    else
+        list_base
+    fi
 }
 
+list_exp() {
+    list_base | while read -r f; do
+        ic=''
+        if [ -d "$f" ]; then
+            ic=''
+        fi
+        echo "$ic $f"
+    done
+}
+
+header() {
+    . /usr/share/git/completion/git-prompt.sh
+    GIT_PS1_SHOWDIRTYSTATE=auto
+    GIT_PS1_SHOWSTASHSTATE=auto
+    GIT_PS1_SHOWUNTRACKEDFILES=auto
+    GIT_PS1_SHOWUPSTREAM=auto
+    git=$(__git_ps1 " (%s)") || true
+    dev=$(findmnt -T . -no "source,avail,size,label" |
+              awk '$4!="" {$4=$4" "}; {printf "%s%s (%s/%s)", $4, $1, $2, $3}')
+    printf '\033[1m\033[34m%s\033[1m: \033[37m%s\033[1m\033[32m%s\033[0m\033[0m' \
+           "$PWD" "$dev" "$git"
+}
+
+# for fzf preview
+SHELL=bash
+exists dash && SHELL=dash
 fuzzy() {
-    fzfp "$@" \
-        --bind "alt-x:execute('$SELF' --menu {} &)" \
-        --bind "ctrl-c:execute('$SELF' --copy {} &)" \
-        --bind "ctrl-x:execute('$SELF' --move {} &)" \
-        --bind "ctrl-v:execute('$SELF' --paste &)"
+    if [ "$PV" ]; then
+        fzfp() {
+            fzf --reverse \
+                --preview-window "$PV_WIN" \
+                --preview "$PV" "$@"
+        }
+    else
+        fzfp() {
+            pv="if [ -d {} ]; then"
+            pv="$pv ls --color=always --group-directories-first {}"
+            pv="$pv; else"
+            pv="$pv bat --color always --style plain --paging never {}"
+            pv="$pv 2>/dev/null || "
+            pv="$pv cat {}"
+            pv="$pv 2>/dev/null || "
+            pv="$pv file {}"
+            pv="$pv; fi"
+            fzf --reverse --preview "$pv" "$@"
+        }
+    fi
+
+    R="+reload('$SELF' --list)"
+    fzfp --ansi \
+        --header "$(header)" \
+        --bind "right:accept-non-empty" \
+        --bind "left:abort+execute(echo ..)" \
+        --bind "alt-x:execute-silent('$SELF' --menu {})$R" \
+        --bind "ctrl-c:execute-silent('$SELF' --copy {} &)" \
+        --bind "ctrl-x:execute-silent('$SELF' --move {} &)" \
+        --bind "ctrl-v:execute-silent('$SELF' --paste)$R" \
+        --bind "f2:execute-silent('$SELF' --rename {})$R" \
+        --bind "del:execute-silent('$SELF' --delete {})$R" \
+        --bind "ctrl-l:abort+execute('$SELF' --goto {})" \
+        --bind "ctrl-r:abort+execute(echo .)" \
+        --bind "ctrl-h:execute('$SELF' --tog-hidden)$R"
+}
+
+update_term_size() {
+    W=$(tput cols)
+    H=$(tput lines)
+    if exists stpv; then
+        COLS=$(tput cols)
+        LINS=$(tput lines)
+        if [ "$W" -gt $((H*3)) ] || [ "$W" -gt 169 ]; then
+            PV_WIN='right:50%'
+            X=$((COLS / 2 + 2))
+            Y=1
+            W=$((((COLS - 1) / 2) - 2))
+            H=$((LINS - 2))
+        else
+            PV_WIN='down:50%'
+            X=1
+            Y=$((LINS / 2 + 2))
+            W=$((COLS - 2))
+            H=$((((LINS - 1) / 2) - 2))
+        fi
+        PV="stpv {} $W $H $X $Y $ID"
+    fi
 }
 
 doit() {
-    res=$(list | fuzzy "$@")
-    if [ "$res" ]; then
-        if [ -f "$res" ]; then
-            open "$res"
-            doit -q "$res"
-        elif [ -d "$res" ]; then
-            cd "$res" && doit
+    ID=$$
+    update_term_size
+    [ "$PV" ] &&
+        stpvimg --listen $ID 2>/dev/null &
+
+    res=init
+    while [ "$res" ]; do
+        res=$(list | fuzzy)
+        if [ "$res" ]; then
+            if [ -f "$res" ]; then
+                open "$res"
+            elif [ -d "$res" ]; then
+                cd "$res" || return 1
+            fi
         fi
+        update_term_size
+    done
+
+    [ "$PV" ] &&
+        stpvimg --end $ID
+
+    if [ -f "$CD" ]; then
+        pwd > "$CD"
     else
-        if [ -f "$CD" ]; then
-            pwd > "$CD"
-        else
-            pwd
-        fi
+        pwd
     fi
 }
 
@@ -83,13 +313,18 @@ main() {
             CD="$2"
             shift 2
     esac
-    
+
     case "$1" in
-        --menu)  shift; menu "$@" ;;
-        --copy)  shift; copy "$@" ;;
-        --move)  shift; move "$@" ;;
-        --paste) shift; paste     ;;
-        *)              doit
+        --menu)         shift; menu   "$@" ;;
+        --list)         shift; list        ;;
+        --copy)         shift; copy   "$@" ;;
+        --move)         shift; move   "$@" ;;
+        --paste)        shift; paste       ;;
+        --rename)       shift; rename "$@" ;;
+        --delete)       shift; delete "$@" ;;
+        --goto)         shift; goto        ;;
+        --tog-hidden)   shift; tog_hidden  ;;
+        *)                     doit
     esac
 }
 
