@@ -1,29 +1,42 @@
 #!/bin/sh
 
+NAME='fmz'
 SELF="$0"
-OP_FILE=/tmp/fmz-op
-HIDDEN_FILE=/tmp/fmz-hidden
-SORT_FILE=/tmp/fmz-sort
+ID=$$
+CFG_DIR="$HOME/.config"
+CFG_FILE="$CFG_DIR/${NAME}rc.sh"
+OP_FILE=/tmp/$NAME-op
+HIDDEN_FILE=/tmp/$NAME-hidden
+SORT_FILE=/tmp/$NAME-sort
+TMP_FILE="/tmp/$NAME-tmp-$ID"
+
+# global parameters
 
 CD=
-ID= ; W= ; H=
+W= ; H=
 PV= ; PV_WIN= ; USE_STPV=
 
 bindings="ctrl-g:$cmd_refresh"
 bookmarks="$HOME"
 
+# common commands
+
 cmd_reload="reload('$SELF' --eval list)"
 cmd_open="accept-non-empty"
 cmd_updir="abort+execute(echo ..)"
-cmd_menu="execute('$SELF' --eval menu {})+$cmd_reload"
-cmd_copy="execute-silent('$SELF' --eval copy {} &)"
-cmd_move="execute-silent('$SELF' --eval move {} &)"
+cmd_menu="execute(cp {+f} $TMP_FILE)+abort+execute(echo '\$ menu $TMP_FILE')"
+cmd_new="abort+execute(echo '\$ mknew')"
+cmd_copy="execute-silent('$SELF' --eval copy {+f})+clear-selection"
+cmd_move="execute-silent('$SELF' --eval move {+f})+clear-selection"
 cmd_paste="execute-silent('$SELF' --eval paste)+$cmd_reload"
-cmd_rename="execute('$SELF' --eval rename {})+$cmd_reload"
-cmd_delete="execute('$SELF' --eval delete {})+$cmd_reload"
-cmd_goto="abort+execute('$SELF' --eval goto {})"
+cmd_rename="execute(cp {+f} $TMP_FILE)+abort+execute(echo '\$ rename $TMP_FILE')"
+cmd_delete="execute('$SELF' --eval delete {+f})+$cmd_reload"
+cmd_goto="abort+execute('$SELF' --eval goto)"
 cmd_refresh="abort+execute(echo .)"
 cmd_tog_hidden="execute('$SELF' --eval tog_hidden)+$cmd_reload"
+cmd_kill="execute(kill $ID)"
+
+# config helpers
 
 bind() {
     key="$1"
@@ -37,9 +50,16 @@ bookmark() {
     }
 }
 
+# default config
+
+bind home   "first"
+bind end    "last"
+bind ctrl-a "select-all"
+bind ctrl-g "clear-selection"
 bind right  "$cmd_open"
 bind left   "$cmd_updir"
 bind alt-x  "$cmd_menu"
+bind ctrl-n "$cmd_new"
 bind ctrl-c "$cmd_copy"
 bind ctrl-x "$cmd_move"
 bind ctrl-v "$cmd_paste"
@@ -49,6 +69,7 @@ bind ctrl-l "$cmd_goto"
 bind ctrl-r "$cmd_refresh"
 bind f5     "$cmd_refresh"
 bind ctrl-h "$cmd_tog_hidden"
+bind ctrl-k "$cmd_kill"
 
 bookmark ~/Documents
 bookmark ~/Pictures
@@ -57,7 +78,10 @@ bookmark ~/Music
 bookmark ~/Downloads
 bookmark ~/Projects
 
-# TODO: source rc script here later
+# load config
+
+mkdir -p "$CFG_DIR"
+[ -f "$CFG_FILE" ] && . "$CFG_FILE"
 
 exists() {
     command -v "$1" >/dev/null
@@ -109,8 +133,9 @@ menu() {
              echo 'Copy'
              echo 'Move'
              echo 'Paste'
-             echo 'Rename'
              echo 'Delete'
+             echo 'Rename'
+             exists vidir && echo 'Rename all'
              echo 'New folder'
              echo 'New file'
              echo 'Sort normally'
@@ -118,42 +143,51 @@ menu() {
              echo 'Sort by size'
          } | menu_interface -p "$1")
     case "$res" in
-        'Copy')          copy   "$1" ;;
-        'Move')          move   "$1" ;;
-        'Paste')         paste       ;;
-        'Rename')        rename "$1" ;;
-        'Delete')        delete "$1" ;;
-        'New folder')    mkfolder    ;;
-        'New file')      mkfile      ;;
-        'Sort normally') lssort ''   ;;
-        'Sort by time')  lssort time ;;
-        'Sort by size')  lssort size ;;
+        'Copy')          copy      "$1" ;;
+        'Move')          move      "$1" ;;
+        'Paste')         paste          ;;
+        'Delete')        delete    "$1" ;;
+        'Rename')        rename    "$1" ;;
+        'Rename all')    renameall "$1" ;;
+        'New folder')    mkfolder       ;;
+        'New file')      mkfile         ;;
+        'Sort normally') lssort ''      ;;
+        'Sort by time')  lssort time    ;;
+        'Sort by size')  lssort size    ;;
+    esac
+}
+
+mknew() {
+    res=$(printf 'Folder\nFile' | menu_interface -p "$1")
+    case "$res" in
+        'Folder') mkfolder ;;
+        'File')   mkfile   ;;
     esac
 }
 
 copy() {
-    f=$(realpath "$1")
-    printf '%s' "$f" | xclip -i -selection clipboard
+    files=$(while read -r f; do realpath "$f"; done < "$1")
+    printf '%s' "$files" | xclip -i -selection clipboard
     {
         echo "copy"
-        echo "$f"
+        echo "$files"
     } > "$OP_FILE"
 }
 
 move() {
-    f=$(realpath "$1")
-    printf '%s' "$f" | xclip -i -selection clipboard
+    files=$(while read -r f; do realpath "$f"; done < "$1")
+    printf '%s' "$files" | xclip -i -selection clipboard
     {
         echo "move"
-        echo "$f"
+        echo "$files"
     } > "$OP_FILE"
 }
 
 paste() {
+    [ -f "$OP_FILE" ] || return
     load=$(cat "$OP_FILE")
     mode=$(echo "$load" | sed -n '1p')
     list=$(echo "$load" | sed '1d')
-    f=$(echo "$list" | head -n 1)
 
     if exists cp-p; then
         srcf=$(mktemp)
@@ -166,54 +200,93 @@ paste() {
         esac
         rm -f "$srcf"
     else
-        case "$mode" in
-            copy) cp "$f" .;;
-            move) mv "$f" .;;
-        esac
+        echo "$list" | while read -r f; do
+            case "$mode" in
+                copy) cp "$f" .;;
+                move) mv "$f" .;;
+            esac
+        done
     fi
-}
-
-rename() {
-    name=$(echo | menu_interface -p "Rename $1 to...")
-    [ "$name" ] && {
-        if [ -e "$name" ]; then
-            echo "$name already exists"
-        else
-            mv "$1" "$name"
-        fi
-    }
+    rm -f "$OP_FILE"
 }
 
 delete() {
-    echo "$@"
+    files=$(while read -r f; do realpath "$f"; done < "$1")
+    count=$(echo "$files" | wc -l)
+    if [ "$count" -gt 1 ]; then
+        prompt='Delete multiple files?'
+    else
+        prompt="Delete $files?"
+    fi
     ans=$(printf 'Trash\nDelete permanently\nCancel\n' |
-              menu_interface)
-    case "$ans" in
-        Trash)
-            # move current file or selected files to trash folder
-            # using trash-cli (https://github.com/andreafrancia/trash-cli)
-            gio trash "$@" || trash-put "$@" ;;
-        Delete*)
-            rm -rf "$@" ;;
-    esac
+              menu_interface -p "$prompt")
+
+    echo "$files" | while read -r f; do
+        case "$ans" in
+            Trash)
+                # move current file or selected files to trash folder
+                # using trash-cli (https://github.com/andreafrancia/trash-cli)
+                gio trash "$f" || trash-put "$f" ;;
+            Delete*)
+                rm -rf "$f" ;;
+        esac
+    done
+}
+
+rename() {
+    files=$(cat "$1")
+    count=$(echo "$files" | wc -l)
+
+    if [ "$count" = 1 ]; then
+        f="$files"
+        tmp=$(mktemp)
+        echo "$f" > "$tmp"
+        $EDITOR "$tmp"
+        name=$(cat "$tmp")
+        [ "$name" ] && {
+            if [ -e "$name" ]; then
+                echo "$name already exists"
+            else
+                mv "$f" "$name"
+            fi
+        }
+        rm -f "$tmp"
+    else
+        exists vidir &&
+            echo "$files" | vidir -
+    fi
+}
+
+renameall() {
+    export EDITOR='emacsclient -nw'
+    exists vidir &&
+        vidir .
 }
 
 mkfolder() {
-    name=$(echo | menu_interface -p 'Folder name')
+    tmp=$(mktemp)
+    echo "$f" > "$tmp"
+    $EDITOR "$tmp"
+    name=$(cat "$tmp")
     if [ -e "$name" ]; then
        echo "$name already exists"
     else
         mkdir -p "$name"
     fi
+    rm -f "$tmp"
 }
 
 mkfile() {
-    name=$(echo | menu_interface -p 'File name')
+    tmp=$(mktemp)
+    echo "$f" > "$tmp"
+    $EDITOR "$tmp"
+    name=$(cat "$tmp")
     if [ -e "$name" ]; then
        echo "$name already exists"
     else
         touch "$name"
     fi
+    rm -f "$tmp"
 }
 
 goto() {
@@ -304,12 +377,18 @@ preview() {
 SHELL=bash
 exists dash && SHELL=dash
 fuzzy() {
+    PV_CMD='ls -lhd {} &&'
     if [ "$USE_STPV" ]; then
-        PV_CMD="'$SELF' --eval \"stpv {} $PV\""
+        PV_CMD="$PV_CMD '$SELF' --eval \"stpv {} $PV\""
     else
-        PV_CMD="'$SELF' --eval \"preview {}\""
+        PV_CMD="$PV_CMD '$SELF' --eval \"preview {}\""
     fi
-    fzf --ansi --reverse --multi   \
+    fzf "$@"                       \
+        --ansi                     \
+        --reverse                  \
+        --multi                    \
+        --no-clear                 \
+        --marker '*'               \
         --preview-window "$PV_WIN" \
         --preview "$PV_CMD"        \
         --header "$(header)"       \
@@ -324,9 +403,9 @@ update_term_size() {
     if [ "$W" -gt $((H*3)) ] || [ "$W" -gt 169 ]; then
         PV_WIN='right:50%'
         X=$((COLS / 2 + 2))
-        Y=1
+        Y=2
         W=$((((COLS - 1) / 2) - 2))
-        H=$((LINS - 2))
+        H=$((LINS - 3))
     else
         PV_WIN='down:50%'
         X=1
@@ -338,27 +417,40 @@ update_term_size() {
 }
 
 doit() {
-    ID=$$
     exists stpv && USE_STPV=1
     update_term_size
     [ "$USE_STPV" ] &&
         stpvimg --listen $ID 2>/dev/null &
 
-    res=init
-    while [ "$res" ]; do
-        res=$(list | fuzzy)
-        if [ "$res" ]; then
+    res=.
+    q=
+    while :; do
+        res=$(list | fuzzy -q "$q")
+        if [ -e "$res" ]; then
+            q=
             if [ -f "$res" ]; then
                 open "$res"
+                q="$res"
             elif [ -d "$res" ]; then
                 cd "$res" || return 1
             fi
+        elif echo "$res" | grep -q '^\$'; then
+            # because fzf messes with stdin and out
+            # so, we can exit with a command to be executed
+            cmd=$(echo "$res" | sed 's/^\$ *//')
+            eval "$cmd"
+        else
+            break
         fi
         update_term_size
     done
 
+    tput rmcup
+
     [ "$USE_STPV" ] &&
         stpvimg --end $ID
+
+    rm -f "$TMP_FILE"
 
     if [ -f "$CD" ]; then
         pwd > "$CD"
