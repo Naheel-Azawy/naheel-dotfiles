@@ -48,6 +48,7 @@ cmd_goto="abort+execute('$SELF' --eval goto)"
 cmd_refresh="abort+execute(echo .)"
 cmd_tog_hidden="execute-silent('$SELF' --eval tog_hidden)+$cmd_reload"
 cmd_dnd="execute-silent(dragon -a -x {+})"
+cmd_shell="execute(cp {+f} $TMP_FILE)+abort+execute(echo '\$ start_shell $TMP_FILE')"
 cmd_help="abort+execute(echo '\$ show_help')"
 cmd_kill="execute(kill $ID)"
 
@@ -101,6 +102,9 @@ bind ctrl-l     "$cmd_goto"       'Go to'
 bind f5         "$cmd_refresh"    'Refresh'
 bind ctrl-h     "$cmd_tog_hidden" 'Show/hide hidden files'
 bind ctrl-d     "$cmd_dnd"        'Drag and drop'
+bind ctrl-s     "$cmd_shell"      'Start a shell here'
+bind alt-up     "preview-up"      'Scroll preview up'
+bind alt-down   "preview-down"    'Scroll preview down'
 bind f1         "$cmd_help"       'Show this help screen'
 
 bookmark ~/Documents
@@ -130,7 +134,12 @@ fzf_base() {
          --no-clear                 \
          --pointer=' '              \
          --marker='❱'               \
+         --bind change:first        \
          --color='marker:#ffffff'   \
+         --color='fg+:reverse'      \
+         --color='bg+:-1'           \
+         --color='hl:reverse'       \
+         --color='hl+:reverse'      \
          --color='gutter:-1'
 }
 
@@ -311,18 +320,20 @@ goto() {
          } | menu_interface --prompt 'Go to> ')
 
     case "$res" in
-        Partition*)
-            res=$(echo "$res" | cut -d ' ' -f2) ;;
-        *)
-            [ -d "$res" ] || res="$HOME/$res"
-            [ -d "$res" ] || res=''
+        Partition*) res=$(echo "$res" | cut -d ' ' -f2) ;;
+        *) [ -d "$res" ] || res="$PWD"
     esac
+    echo "$res"
+}
 
-    if [ -d "$res" ]; then
-        echo "$res"
-    else
-        pwd # stay the same dir
-    fi
+start_shell() {
+    FMZ_SHELL=$ID
+    id=$ID
+    fx=$(while read -r f; do realpath "$f"; done < "$1")
+    f=$(echo "$fx" | head -n1)
+    export FMZ_SHELL id fx f
+    tput rmcup
+    $SHELL
 }
 
 tog_hidden() {
@@ -344,7 +355,7 @@ lssort() {
 list() {
     cmd=
     # cmd="echo ..; "
-    cmd="$cmd command ls -1 --group-directories-first"
+    cmd="$cmd command ls -1"
     cmd="$cmd --group-directories-first"
     cmd="$cmd --color=always"
     if [ -f "$HIDDEN_FILE" ]; then
@@ -370,8 +381,9 @@ header() {
     dev=$(findmnt -T . -no "source,avail,size,label" |
               awk '$4 != "" {$4 = $4" "};
                    {printf "%s%s (%s/%s)", $4, $1, $2, $3}')
+    cwd=$(pwd | sed "s@$HOME@~@")
     printf '\033[1m\033[34m%s\033[1m: \033[37m%s\033[1m\033[32m%s\033[0m\033[0m' \
-           "$PWD" "$dev" "$git"
+           "$cwd" "$dev" "$git"
 }
 
 preview() {
@@ -421,6 +433,12 @@ update_term_size() {
 }
 
 doit() {
+    [ "$FMZ_SHELL" ] && {
+        echo "Already in a shell inside of $NAME."
+        echo "To force nested instances, clear FMZ_SHELL."
+        return 1
+    }
+
     exists stpv && USE_STPV=1
     update_term_size
     [ "$USE_STPV" ] &&
@@ -429,7 +447,7 @@ doit() {
     res=.
     q=
     while :; do
-        res=$(list | fuzzy -q "$q")
+        res=$(list | fuzzy -q "$q" | tail -n1)
         if [ -e "$res" ]; then
             q=
             if [ -f "$res" ]; then
@@ -439,7 +457,7 @@ doit() {
                     xdg-open "$res"
                 else
                     less -c "$res"
-                fi
+                fi 2>/dev/null
                 # q="$res"
             elif [ -d "$res" ]; then
                 cd "$res" || return 1
