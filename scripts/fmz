@@ -1,5 +1,17 @@
 #!/bin/sh
 
+# dep:
+# - core utils
+# - fzf
+#
+# opt dep:
+# - dragon: drag and drop,
+# - vidir: bulk rename
+# - stpv: better previews with images
+# - cp-p: better cp and mv
+# - xclip: copy to x clipboard
+# - gio or trash-cli: xdg trash support
+
 NAME='fmz'
 SELF="$0"
 ID=$$
@@ -17,6 +29,7 @@ W= ; H=
 PV= ; PV_WIN= ; USE_STPV=
 
 bindings="ctrl-g:$cmd_refresh"
+bindings_help=""
 bookmarks="$HOME"
 
 # common commands
@@ -30,10 +43,12 @@ cmd_copy="execute-silent('$SELF' --eval copy {+f})+clear-selection"
 cmd_move="execute-silent('$SELF' --eval move {+f})+clear-selection"
 cmd_paste="execute-silent('$SELF' --eval paste)+$cmd_reload"
 cmd_rename="execute(cp {+f} $TMP_FILE)+abort+execute(echo '\$ rename $TMP_FILE')"
-cmd_delete="execute('$SELF' --eval delete {+f})+$cmd_reload"
+cmd_delete="execute(cp {+f} $TMP_FILE)+abort+execute(echo '\$ delete $TMP_FILE')"
 cmd_goto="abort+execute('$SELF' --eval goto)"
 cmd_refresh="abort+execute(echo .)"
-cmd_tog_hidden="execute('$SELF' --eval tog_hidden)+$cmd_reload"
+cmd_tog_hidden="execute-silent('$SELF' --eval tog_hidden)+$cmd_reload"
+cmd_dnd="execute-silent(dragon -a -x {+})"
+cmd_help="abort+execute(echo '\$ show_help')"
 cmd_kill="execute(kill $ID)"
 
 # config helpers
@@ -41,7 +56,13 @@ cmd_kill="execute(kill $ID)"
 bind() {
     key="$1"
     cmd="$2"
+    doc="$3"
     bindings="$bindings,$key:$cmd"
+    if [ "$doc" ]; then
+        str=$(printf '%-20s: %s' "$key" "$doc")
+        bindings_help="$bindings_help$str
+"
+    fi
 }
 
 bookmark() {
@@ -50,26 +71,37 @@ bookmark() {
     }
 }
 
+show_help() {
+    {
+        echo 'Keyboard bindings'
+        echo '================='
+        echo "$bindings_help"
+    } | less --clear-screen
+}
+
 # default config
 
-bind home   "first"
-bind end    "last"
-bind ctrl-a "select-all"
-bind ctrl-g "clear-selection"
-bind right  "$cmd_open"
-bind left   "$cmd_updir"
-bind alt-x  "$cmd_menu"
-bind ctrl-n "$cmd_new"
-bind ctrl-c "$cmd_copy"
-bind ctrl-x "$cmd_move"
-bind ctrl-v "$cmd_paste"
-bind f2     "$cmd_rename"
-bind del    "$cmd_delete"
-bind ctrl-l "$cmd_goto"
-bind ctrl-r "$cmd_refresh"
-bind f5     "$cmd_refresh"
-bind ctrl-h "$cmd_tog_hidden"
-bind ctrl-k "$cmd_kill"
+bind ctrl-k     "$cmd_kill"
+bind home       "first"
+bind end        "last"
+bind right      "$cmd_open"       'Open selected item'
+bind left       "$cmd_updir"      'Go to parent directory'
+bind shift-up   "toggle+up"       'Mark and move selection up'
+bind shift-down "toggle+down"     'Mark and move selection down'
+bind ctrl-a     "select-all"      'Select all'
+bind ctrl-g     "clear-selection" 'Clear selection'
+bind alt-x      "$cmd_menu"       'Open menu'
+bind ctrl-n     "$cmd_new"        'New file or folder'
+bind ctrl-c     "$cmd_copy"       'Copy'
+bind ctrl-x     "$cmd_move"       'Cut'
+bind ctrl-v     "$cmd_paste"      'Paste'
+bind f2         "$cmd_rename"     'Rename'
+bind del        "$cmd_delete"     'Delete'
+bind ctrl-l     "$cmd_goto"       'Go to'
+bind f5         "$cmd_refresh"    'Refresh'
+bind ctrl-h     "$cmd_tog_hidden" 'Show/hide hidden files'
+bind ctrl-d     "$cmd_dnd"        'Drag and drop'
+bind f1         "$cmd_help"       'Show this help screen'
 
 bookmark ~/Documents
 bookmark ~/Pictures
@@ -87,48 +119,28 @@ exists() {
     command -v "$1" >/dev/null
 }
 
+# for fzf preview
+PV_SHELL=bash
+exists dash && PV_SHELL=dash
+
+fzf_base() {
+    SHELL="$PV_SHELL" fzf "$@"      \
+         --ansi                     \
+         --reverse                  \
+         --no-clear                 \
+         --pointer=' '              \
+         --marker='❱'               \
+         --color='marker:#ffffff'   \
+         --color='gutter:-1'
+}
+
+# dmenu replacement
 menu_interface() {
-    if exists dmenu; then
-        # dmenu is the only properly functioning menu for now
-        list=$(cat)
-        count=$(echo "$list" | wc -l)
-        if [ "$count" -gt 3 ]; then
-            echo "$list" | dmenu -l "$count" -i "$@"
-        else
-            echo "$list" | dmenu -i "$@"
-        fi
-    elif false; then
-        # fails for unknown inputs.
-        # keeping in case a workaround is found later
-        prompt=
-        [ "$1" = -p ] && prompt="$2> " && shift 2
-        if [ "$prompt" ]; then
-            fzf --reverse --prompt "$prompt" "$@"
-        else
-            fzf "$@"
-        fi
-    else
-        if [ "$1" = -p ]; then
-            echo "$2:"
-            shift 2
-        fi
-        list=$(cat)
-        [ "$list" ] && {
-            list=$(echo "$list" | nl)
-            echo "$list" >/dev/tty
-        }
-        printf '> ' >/dev/tty
-        read -r inp </dev/tty
-        sel=$(echo "$list" |
-                  grep -i "$inp" |
-                  awk '{for (i=2; i<=NF; i++) print $i}')
-        [ "$sel" ] || sel="$inp"
-        echo "$sel"
-        # FIXME: output here is not captured
-    fi
+    fzf_base --print-query "$@" | tail -n1
 }
 
 menu() {
+    f=$(head -n1 "$1")
     res=$({
              echo 'Copy'
              echo 'Move'
@@ -141,7 +153,8 @@ menu() {
              echo 'Sort normally'
              echo 'Sort by time'
              echo 'Sort by size'
-         } | menu_interface -p "$1")
+             echo 'Help'
+         } | menu_interface --prompt "$f> ")
     case "$res" in
         'Copy')          copy      "$1" ;;
         'Move')          move      "$1" ;;
@@ -154,20 +167,14 @@ menu() {
         'Sort normally') lssort ''      ;;
         'Sort by time')  lssort time    ;;
         'Sort by size')  lssort size    ;;
-    esac
-}
-
-mknew() {
-    res=$(printf 'Folder\nFile' | menu_interface -p "$1")
-    case "$res" in
-        'Folder') mkfolder ;;
-        'File')   mkfile   ;;
+        'Help')          show_help      ;;
     esac
 }
 
 copy() {
     files=$(while read -r f; do realpath "$f"; done < "$1")
-    printf '%s' "$files" | xclip -i -selection clipboard
+    exists xclip &&
+        printf '%s' "$files" | xclip -i -selection clipboard
     {
         echo "copy"
         echo "$files"
@@ -176,7 +183,8 @@ copy() {
 
 move() {
     files=$(while read -r f; do realpath "$f"; done < "$1")
-    printf '%s' "$files" | xclip -i -selection clipboard
+    exists xclip &&
+        printf '%s' "$files" | xclip -i -selection clipboard
     {
         echo "move"
         echo "$files"
@@ -202,8 +210,8 @@ paste() {
     else
         echo "$list" | while read -r f; do
             case "$mode" in
-                copy) cp "$f" .;;
-                move) mv "$f" .;;
+                copy) cp -ra "$f" .;;
+                move) mv     "$f" .;;
             esac
         done
     fi
@@ -216,10 +224,14 @@ delete() {
     if [ "$count" -gt 1 ]; then
         prompt='Delete multiple files?'
     else
-        prompt="Delete $files?"
+        f=$(basename "$files")
+        prompt="Delete $f?"
     fi
-    ans=$(printf 'Trash\nDelete permanently\nCancel\n' |
-              menu_interface -p "$prompt")
+    ans=$({
+             exists gio || exists trash-put && echo 'Trash'
+             echo 'Delete permanently'
+             echo 'Cancel'
+         } | menu_interface --prompt "$prompt> ")
 
     echo "$files" | while read -r f; do
         case "$ans" in
@@ -239,18 +251,16 @@ rename() {
 
     if [ "$count" = 1 ]; then
         f="$files"
-        tmp=$(mktemp)
-        echo "$f" > "$tmp"
-        $EDITOR "$tmp"
-        name=$(cat "$tmp")
+        name=$(echo | menu_interface \
+                          --query "$f" \
+                          --prompt "Rename $f to> ")
         [ "$name" ] && {
             if [ -e "$name" ]; then
                 echo "$name already exists"
-            else
+            elif [ "$name" ] && [ "$name" != "$f" ]; then
                 mv "$f" "$name"
             fi
         }
-        rm -f "$tmp"
     else
         exists vidir &&
             echo "$files" | vidir -
@@ -258,35 +268,33 @@ rename() {
 }
 
 renameall() {
-    export EDITOR='emacsclient -nw'
-    exists vidir &&
-        vidir .
+    exists vidir && vidir .
 }
 
 mkfolder() {
-    tmp=$(mktemp)
-    echo "$f" > "$tmp"
-    $EDITOR "$tmp"
-    name=$(cat "$tmp")
+    name=$(echo | menu_interface --prompt 'New folder name> ')
     if [ -e "$name" ]; then
        echo "$name already exists"
-    else
+    elif [ "$name" ]; then
         mkdir -p "$name"
     fi
-    rm -f "$tmp"
 }
 
 mkfile() {
-    tmp=$(mktemp)
-    echo "$f" > "$tmp"
-    $EDITOR "$tmp"
-    name=$(cat "$tmp")
+    name=$(echo | menu_interface --prompt 'New file name> ')
     if [ -e "$name" ]; then
        echo "$name already exists"
-    else
+    elif [ "$name" ]; then
         touch "$name"
     fi
-    rm -f "$tmp"
+}
+
+mknew() {
+    res=$(printf 'Folder\nFile' | menu_interface --prompt "New> ")
+    case "$res" in
+        'Folder') mkfolder ;;
+        'File')   mkfile   ;;
+    esac
 }
 
 goto() {
@@ -300,7 +308,7 @@ goto() {
                      printf "Partition %s#%s#%s#(%s/%s)\n", $5, $1, $6, $3, $4
                    }' |
                  tac | column -t -s'#'
-         } | menu_interface)
+         } | menu_interface --prompt 'Go to> ')
 
     case "$res" in
         Partition*)
@@ -334,7 +342,8 @@ lssort() {
 }
 
 list() {
-    cmd="echo ..; "
+    cmd=
+    # cmd="echo ..; "
     cmd="$cmd command ls -1 --group-directories-first"
     cmd="$cmd --group-directories-first"
     cmd="$cmd --color=always"
@@ -350,12 +359,14 @@ list() {
 }
 
 header() {
-    . /usr/share/git/completion/git-prompt.sh
-    GIT_PS1_SHOWDIRTYSTATE=auto
-    GIT_PS1_SHOWSTASHSTATE=auto
-    GIT_PS1_SHOWUNTRACKEDFILES=auto
-    GIT_PS1_SHOWUPSTREAM=auto
-    git=$(__git_ps1 " (%s)") || true
+    [ -f /usr/share/git/completion/git-prompt.sh ] && {
+        . /usr/share/git/completion/git-prompt.sh
+        GIT_PS1_SHOWDIRTYSTATE=auto
+        GIT_PS1_SHOWSTASHSTATE=auto
+        GIT_PS1_SHOWUNTRACKEDFILES=auto
+        GIT_PS1_SHOWUPSTREAM=auto
+        git=$(__git_ps1 " (%s)")
+    }
     dev=$(findmnt -T . -no "source,avail,size,label" |
               awk '$4 != "" {$4 = $4" "};
                    {printf "%s%s (%s/%s)", $4, $1, $2, $3}')
@@ -373,9 +384,6 @@ preview() {
     fi
 }
 
-# for fzf preview
-SHELL=bash
-exists dash && SHELL=dash
 fuzzy() {
     PV_CMD='ls -lhd {} &&'
     if [ "$USE_STPV" ]; then
@@ -383,16 +391,12 @@ fuzzy() {
     else
         PV_CMD="$PV_CMD '$SELF' --eval \"preview {}\""
     fi
-    fzf "$@"                       \
-        --ansi                     \
-        --reverse                  \
-        --multi                    \
-        --no-clear                 \
-        --marker '*'               \
-        --preview-window "$PV_WIN" \
-        --preview "$PV_CMD"        \
-        --header "$(header)"       \
-        --bind "$bindings"
+    fzf_base "$@"                       \
+             --multi                    \
+             --preview-window="$PV_WIN" \
+             --preview="$PV_CMD"        \
+             --header="$(header)"       \
+             --bind "$bindings"
 }
 
 update_term_size() {
@@ -429,8 +433,14 @@ doit() {
         if [ -e "$res" ]; then
             q=
             if [ -f "$res" ]; then
-                open "$res"
-                q="$res"
+                if exists open; then
+                    open "$res"
+                elif exists xdg-open; then
+                    xdg-open "$res"
+                else
+                    less -c "$res"
+                fi
+                # q="$res"
             elif [ -d "$res" ]; then
                 cd "$res" || return 1
             fi

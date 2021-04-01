@@ -1,0 +1,62 @@
+#!/bin/sh
+
+num=$(shuf -i 1-6 -n 1)
+percent=$(shuf -i 0-100 -n 1)
+binary=$(shuf -i 0-1 -n 1)
+choice=$(if [ "$binary" = 1 ]; then echo 'yes'; else echo 'no'; fi)
+
+case "$num" in
+    1) dice='
+╭─────────╮
+│         │
+│    ⬤    │
+│         │
+╰─────────╯
+' ;;
+
+    2) dice='
+╭─────────╮
+│  ⬤      │
+│         │
+│      ⬤  │
+╰─────────╯
+' ;;
+
+    3) dice='
+╭─────────╮
+│  ⬤      │
+│    ⬤    │
+│      ⬤  │
+╰─────────╯
+' ;;
+
+    4) dice='
+╭─────────╮
+│  ⬤   ⬤  │
+│         │
+│  ⬤   ⬤  │
+╰─────────╯
+' ;;
+
+    5) dice='
+╭─────────╮
+│  ⬤   ⬤  │
+│    ⬤    │
+│  ⬤   ⬤  │
+╰─────────╯
+' ;;
+
+    6) echo '
+╭─────────╮
+│  ⬤   ⬤  │
+│  ⬤   ⬤  │
+│  ⬤   ⬤  │
+╰─────────╯
+' ;;
+
+esac
+
+echo "$dice"
+echo "Random percentage: $percent%"
+echo "Random choice: $choice"
+read -r

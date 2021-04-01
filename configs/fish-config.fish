@@ -142,7 +142,7 @@ end
 
 function z
     set tmp (mktemp)
-    fmz --cd $tmp
+    fmz --cd $tmp $argv
     set res (tail -n 1 $tmp)
     if test -d "$res"
         cd $res
