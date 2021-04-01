@@ -105,6 +105,7 @@ bind ctrl-d     "$cmd_dnd"        'Drag and drop'
 bind ctrl-s     "$cmd_shell"      'Start a shell here'
 bind alt-up     "preview-up"      'Scroll preview up'
 bind alt-down   "preview-down"    'Scroll preview down'
+bind ctrl-q     "abort"           'Quit'
 bind f1         "$cmd_help"       'Show this help screen'
 
 bookmark ~/Documents
@@ -128,9 +129,9 @@ PV_SHELL=bash
 exists dash && PV_SHELL=dash
 
 fzf_base() {
-    SHELL="$PV_SHELL" fzf "$@"      \
+    SHELL="$PV_SHELL" fzf           \
          --ansi                     \
-         --reverse                  \
+         --layout=reverse           \
          --no-clear                 \
          --pointer=' '              \
          --marker='❱'               \
@@ -140,12 +141,17 @@ fzf_base() {
          --color='bg+:-1'           \
          --color='hl:reverse'       \
          --color='hl+:reverse'      \
-         --color='gutter:-1'
+         --color='gutter:-1'        \
+         --info=default             \
+         "$@"
 }
 
 # dmenu replacement
 menu_interface() {
-    fzf_base --print-query "$@" | tail -n1
+    fzf_base \
+        --print-query \
+        --info=hidden \
+        "$@" | tail -n1
 }
 
 menu() {
@@ -354,8 +360,7 @@ lssort() {
 
 list() {
     cmd=
-    # cmd="echo ..; "
-    cmd="$cmd command ls -1"
+    cmd="$cmd command ls -1 -N"
     cmd="$cmd --group-directories-first"
     cmd="$cmd --color=always"
     if [ -f "$HIDDEN_FILE" ]; then
@@ -367,6 +372,22 @@ list() {
             cmd="$cmd --sort=$sort"
     fi
     eval "$cmd"
+}
+
+remove_ansi() {
+    echo "$1" | sed -r "s/\x1B\[(([0-9]+)(;[0-9]+)*)?[m,K,H,f,J]//g"
+}
+
+list_icons() {
+    list | while read -r line; do
+        f=$(remove_ansi "$line")
+        if [ -d "$f" ]; then
+            ic=''
+        else
+            ic=''
+        fi
+        echo "$ic $line"
+    done
 }
 
 header() {
@@ -381,7 +402,18 @@ header() {
     dev=$(findmnt -T . -no "source,avail,size,label" |
               awk '$4 != "" {$4 = $4" "};
                    {printf "%s%s (%s/%s)", $4, $1, $2, $3}')
+    max_cwd_len=$(tput cols)
+    if [ "$PV_WIN" = 'right:50%' ]; then
+        max_cwd_len=$((max_cwd_len / 4))
+    else
+        max_cwd_len=$((max_cwd_len / 2))
+    fi
     cwd=$(pwd | sed "s@$HOME@~@")
+    cwd_len="${#cwd}"
+    [ "$cwd_len" -gt "$max_cwd_len" ] && {
+        cwd=$(echo "$cwd" | tail -c "$max_cwd_len")
+        cwd="...$cwd"
+    }
     printf '\033[1m\033[34m%s\033[1m: \033[37m%s\033[1m\033[32m%s\033[0m\033[0m' \
            "$cwd" "$dev" "$git"
 }
@@ -397,18 +429,22 @@ preview() {
 }
 
 fuzzy() {
-    PV_CMD='ls -lhd {} &&'
+    PV_CMD=
+    PV_CMD="$PV_CMD ls -lhd {} &&"
     if [ "$USE_STPV" ]; then
         PV_CMD="$PV_CMD '$SELF' --eval \"stpv {} $PV\""
     else
         PV_CMD="$PV_CMD '$SELF' --eval \"preview {}\""
     fi
-    fzf_base "$@"                       \
-             --multi                    \
-             --preview-window="$PV_WIN" \
-             --preview="$PV_CMD"        \
-             --header="$(header)"       \
-             --bind "$bindings"
+    fzf_base                       \
+        --multi                    \
+        --preview-window="$PV_WIN" \
+        --preview="$PV_CMD"        \
+        --layout=reverse           \
+        --bind "$bindings"         \
+        --header="$(header)"       \
+        --info=inline              \
+        "$@"
 }
 
 update_term_size() {
@@ -416,7 +452,7 @@ update_term_size() {
     H=$(tput lines)
     COLS=$(tput cols)
     LINS=$(tput lines)
-    if [ "$W" -gt $((H*3)) ] || [ "$W" -gt 169 ]; then
+    if [ "$W" -gt $((H * 2 + 10)) ]; then
         PV_WIN='right:50%'
         X=$((COLS / 2 + 2))
         Y=2
@@ -448,6 +484,8 @@ doit() {
     q=
     while :; do
         res=$(list | fuzzy -q "$q" | tail -n1)
+        [ "$USE_STPV" ] &&
+            stpvimg --clear $ID
         if [ -e "$res" ]; then
             q=
             if [ -f "$res" ]; then

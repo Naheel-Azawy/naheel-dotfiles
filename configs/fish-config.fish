@@ -144,7 +144,8 @@ function z
     set tmp (mktemp)
     fmz --cd $tmp $argv
     set res (tail -n 1 $tmp)
-    if test -d "$res"
+    if test -d "$res" && test "$res" != $PWD
+        echo cd $res
         cd $res
     end
     rm $tmp
