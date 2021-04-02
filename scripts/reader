@@ -1,0 +1,7 @@
+#!/bin/sh
+
+if echo "$1" | grep -q '.epub$'; then
+    exec foliate "$@"
+else
+    exec evince "$@"
+fi

@@ -6,16 +6,19 @@ export WINDOW_MANAGER='i3'
 #export WINDOW_MANAGER='sway'
 #export WINDOW_MANAGER='bspwm'
 #export WINDOW_MANAGER='gnome-session'
-export TERM="screen-256color"
-export EDITOR="edit"
+export TERM='screen-256color'
+export EDITOR='edit'
 export VISUAL="$EDITOR"
-export TERMINAL="st"
-export FILE_MANAGER="fmz"
-export BROWSER="browser"
-export READER="evince" # TODO: mk a script, add foliate
+export TERMINAL='theterm'
+export FILE_MANAGER='fmz'
+export BROWSER='browser'
+export READER='reader'
 export TUI_APPS='music-player:lf:vis:corona:alsamixer:lyrics:nano:dice:fmz'
-export BIB="$HOME/Documents/LaTeX/refs.bib" # TODO: move to personal
-export ORG_TODO="$HOME/Dropbox/orgmode/TODO.org" # TODO: move to personal
+
+# TODO: move to personal
+export BIB="$HOME/Documents/LaTeX/refs.bib"
+export ORG_TODO="$HOME/Dropbox/orgmode/TODO.org"
+export CLOUDCONVERT_API_KEY='bUGujVfvGQ6nkPZo5MvFoIz65C3spOZMtiD4Bz613XxnXsUIVDDwZILqOJZghP3D'
 
 export FONT_MONO='Iosevka Fixed'
 export FONT_SANS='Liberation Sans'
@@ -27,7 +30,6 @@ export QT_QPA_PLATFORMTHEME="qt5ct"
 export QT_AUTO_SCREEN_SCALE_FACTOR=0
 #export QT_STYLE_OVERRIDE=adwaita-dark
 export SHHH_JAVA_OPTIONS='-Dawt.useSystemAAFontSettings=on' # check bashrc
-export CLOUDCONVERT_API_KEY='bUGujVfvGQ6nkPZo5MvFoIz65C3spOZMtiD4Bz613XxnXsUIVDDwZILqOJZghP3D' # TODO: move to personal
 export NEWT_COLORS='root=,black'
 
 export PI=3.14159265358979323844
