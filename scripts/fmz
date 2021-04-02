@@ -259,8 +259,6 @@ archive_extract() {
     esac
 }
 
-# TODO: fix for multiple files
-
 mktar() {
     s='' && [ ! -w . ] && s='sudo'
     n="$1"
@@ -371,6 +369,7 @@ paste() {
         srcf=$(mktemp)
         echo "$list" > "$srcf"
         case "$mode" in
+            # TODO: handle progress
             copy)
                 cp-p --new-line --backup=numbered -a -F "$srcf" . ;;
             move)
@@ -472,8 +471,8 @@ mkarchive() {
     type=$(printf 'ZIP\nTAR' | menu_interface --prompt "Archive type> ")
     name=$(echo | menu_interface --prompt 'Archive name> ')
     case "$type" in
-        ZIP) mkzip "$name" "$files" ;;
-        TAR) mktar "$name" "$files" ;;
+        ZIP) echo "$files" | xargs "$SELF" --eval mkzip "$name" ;;
+        TAR) echo "$files" | xargs "$SELF" --eval mktar "$name" ;;
     esac
 }
 
@@ -680,14 +679,13 @@ doit() {
             elif [ -d "$res" ]; then
                 cd "$res" || return 1
 
-                [ "$archive_mnt" ] && {
-                    mnt_name=$(basename "$archive_mnt")
-                    [ -L "$PWD/$mnt_name" ] && {
-                        arc=$(echo "$archive_mnt" |
+                for mnt in "$PWD/"*-archive; do
+                    [ -L "$mnt" ] && {
+                        arc=$(echo "$mnt" |
                                   sed -En 's/(.+)\-archive/\1/p')
                         archive_umount "$arc"
                     }
-                }
+                done
             fi
 
         elif echo "$res" | grep -q '^\$'; then
