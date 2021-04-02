@@ -9,7 +9,6 @@
 | pacman     | npm                 | N.A.                                   | node.js pacage manager                                       |
 | pacman     | python-pip          | N.A.                                   | python's package manager                                     |
 | pacman     | python2-pip         | N.A.                                   | python2 pip                                                  |
-| go         | lf                  | github.com/gokcehan/lf                 | terminal file manager                                        |
 | pacman     | cronie              | N.A.                                   | manages scheduled tasks                                      |
 | pacman     | dosfstools          | N.A.                                   | allows your computer to access dos-like filesystems          |
 | pacman     | exfat-utils         | N.A.                                   | allows management of FAT drives                              |
@@ -43,6 +42,7 @@
 | git        | rn                  | https://github.com/Naheel-Azawy/runner | executes everything                                          |
 | git        | cp-p                | https://github.com/Naheel-Azawy/cp-p   | cp with progress                                             |
 | git        | stpv                | https://github.com/Naheel-Azawy/stpv   | files previewer in the terminal (used for LF and fzf mainly) |
+| git        | fmz                 | https://github.com/Naheel-Azawy/fmz    | terminal file manager                                        |
 | pacman     | chafa               | N.A.                                   | image to text                                                |
 | pacman     | colordiff           | N.A.                                   | a more colorful diff                                         |
 | pacman     | diff-so-fancy       | N.A.                                   | an even more colorful diff                                   |

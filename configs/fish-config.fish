@@ -123,9 +123,9 @@ function fmz
     set tmp (mktemp)
     command fmz --cd $tmp $argv
     set res (tail -n 1 $tmp)
-    if test -d "$res" && test "$res" != $PWD
+    if test -d "$res" && test "$res" != "$PWD"
         echo cd $res
-        cd $res
+        cd $res || return 1
     end
     rm $tmp
 end
