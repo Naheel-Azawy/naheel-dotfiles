@@ -11,6 +11,7 @@
 # - cp-p: better cp and mv
 # - xclip: copy to x clipboard
 # - gio or trash-cli: xdg trash support
+# - archivemount: browse archives
 
 NAME='fmz'
 SELF="$0"
@@ -80,6 +81,10 @@ show_help() {
     } | less --clear-screen
 }
 
+exists() {
+    command -v "$1" >/dev/null
+}
+
 # default config
 
 bind ctrl-k     "$cmd_kill"
@@ -101,10 +106,11 @@ bind del        "$cmd_delete"     'Delete'
 bind ctrl-l     "$cmd_goto"       'Go to'
 bind f5         "$cmd_refresh"    'Refresh'
 bind ctrl-h     "$cmd_tog_hidden" 'Show/hide hidden files'
-bind ctrl-d     "$cmd_dnd"        'Drag and drop'
 bind ctrl-s     "$cmd_shell"      'Start a shell here'
 bind alt-up     "preview-up"      'Scroll preview up'
 bind alt-down   "preview-down"    'Scroll preview down'
+exists dragon &&
+    bind ctrl-d "$cmd_dnd"        'Drag and drop'
 bind ctrl-q     "abort"           'Quit'
 bind f1         "$cmd_help"       'Show this help screen'
 
@@ -120,8 +126,153 @@ bookmark ~/Projects
 mkdir -p "$CFG_DIR"
 [ -f "$CFG_FILE" ] && . "$CFG_FILE"
 
-exists() {
-    command -v "$1" >/dev/null
+# archive utils
+
+isarchive() {
+    case "$1" in
+        *.tar.bz|*.tar.bz2|*.tbz|*.tbz2|*.tar.gz|*.tgz|*.tar.xz|*.txz|*.zip|*.apk|*.jar|*.rar|*.iso)
+            return 0;;
+        *)  return 1;;
+    esac
+}
+
+archive_getmnt() {
+    md5=$(echo "$1" | md5sum - | cut -d ' ' -f 1)
+    echo "/tmp/archivemount-wrapper/$md5"
+}
+
+archive_getln() {
+    echo "$1-archive"
+}
+
+# 0: mounted
+# 1: not mounted
+# 2: error, cleanup required
+archive_ismounted() {
+    q= && [ "$1" = '-q' ] && q=1 && shift
+    p=$(realpath "$1")
+    mntpath=$(archive_getmnt "$p")
+    linkpath=$(archive_getln "$p")
+    if [ -e "$mntpath" ]; then
+        if [ -d "$mntpath" ]; then
+            if mountpoint -q "$mntpath"; then
+                if [ -L "$linkpath" ]; then
+                    return 0
+                else
+                    return 2 # all good but not linked
+                fi
+            elif [ ! "$(ls -A "$mntpath")" ]; then
+                [ "$q" ] || echo "Error: '$mntpath' is not empty"
+                return 2
+            fi
+        else
+            [ "$q" ] || echo "Error: '$mntpath' is not a directory"
+            return 2
+        fi
+    else
+        if [ -L "$linkpath" ]; then
+            [ "$q" ] || echo "Error: '$p' is not mounted with dead link"
+            return 2
+        else
+            [ "$q" ] || echo "'$p' is not mounted"
+            return 1
+        fi
+    fi
+}
+
+archive_umount() {
+    q= && [ "$1" = '-q' ] && q=1 && shift
+    p=$(realpath "$1")
+    if [ "$q" ]; then
+        archive_ismounted -q "$p"
+    else
+        archive_ismounted "$p"
+    fi
+    case $? in
+        0|2) # mounted or needs cleanup
+            mntpath=$(archive_getmnt "$p")
+            linkpath=$(archive_getln "$p")
+            mountpoint -q "$mntpath" &&
+                fusermount -u "$mntpath"
+            [ -d "$mntpath" ] &&
+                rmdir "$mntpath"
+            [ -L "$linkpath" ] &&
+                rm "$linkpath"
+            rm -f "${mntpath}-origin"
+            ;;
+        *) return $?;;
+    esac
+}
+
+archive_mount() {
+    lf= && [ "$1" = '--lfid' ] && lf="$2" && shift 2
+    p=$(realpath "$1")
+    d=$(dirname "$p")
+    mntpath=$(archive_getmnt "$p")
+    linkpath=$(archive_getln "$p")
+    s='' && [ ! -w "$d" ] && s='sudo'
+
+    isarchive "$p" || {
+        echo "'$p' is not archive"
+        return 1
+    }
+
+    archive_umount -q "$p"
+
+    mkdir -p "$mntpath" &&
+        archivemount "$p" "$mntpath" &&
+        $s ln -s "$mntpath" "$linkpath" &&
+        echo "$p" > "${mntpath}-origin"
+
+    echo "$linkpath"
+}
+
+archive_umountall() {
+    for d in /tmp/archivemount-wrapper/*-origin; do
+        p=$(cat "$d")
+        if [ "$p" ]; then
+            echo "unmounting '$p'..."
+            archive_umount "$p"
+        fi
+    done
+}
+
+archive_extract() {
+    here= && [ "$1" = '--here' ] && here=1 && shift
+    p=$(realpath "$1")
+    s='' && [ ! -w . ] && s='sudo'
+    out="$p-extracted"
+    if [ ! "$here" ]; then
+        $s mkdir -p "$out" && cd "$out" || return 1
+    fi
+    # https://xkcd.com/1168/
+    case "$p" in
+        *.tar.bz|*.tar.bz2|*.tbz|*.tbz2) $s tar xjvf "$p" ;;
+        *.tar.gz|*.tgz)                  $s tar xzvf "$p" ;;
+        *.tar.xz|*.txz)                  $s tar xJvf "$p" ;;
+        *.zip)                           $s unzip "$p"    ;;
+        *.rar)                           $s unrar x "$p"  ;;
+        *.7z)                            $s 7z x "$p"     ;;
+        *)
+            echo "Error: unknown file format"
+            return 1;;
+    esac
+}
+
+# TODO: fix for multiple files
+
+mktar() {
+    s='' && [ ! -w . ] && s='sudo'
+    n="$1"
+    shift
+    $s tar czf "$n".tar.gz "$@"
+}
+
+mkzip() {
+    s='' && [ ! -w . ] && s='sudo'
+    n="$1"
+    shift
+    $s zip -j -r "$n".zip "$@"
 }
 
 # for fzf preview
@@ -168,21 +319,25 @@ menu() {
              echo 'Sort normally'
              echo 'Sort by time'
              echo 'Sort by size'
+             isarchive "$f" && echo 'Extract archive'
+             echo 'Create archive'
              echo 'Help'
          } | menu_interface --prompt "$f> ")
     case "$res" in
-        'Copy')          copy      "$1" ;;
-        'Move')          move      "$1" ;;
-        'Paste')         paste          ;;
-        'Delete')        delete    "$1" ;;
-        'Rename')        rename    "$1" ;;
-        'Rename all')    renameall "$1" ;;
-        'New folder')    mkfolder       ;;
-        'New file')      mkfile         ;;
-        'Sort normally') lssort ''      ;;
-        'Sort by time')  lssort time    ;;
-        'Sort by size')  lssort size    ;;
-        'Help')          show_help      ;;
+        'Copy')            copy            "$1" ;;
+        'Move')            move            "$1" ;;
+        'Paste')           paste                ;;
+        'Delete')          delete          "$1" ;;
+        'Rename')          rename          "$1" ;;
+        'Rename all')      renameall       "$1" ;;
+        'New folder')      mkfolder             ;;
+        'New file')        mkfile               ;;
+        'Sort normally')   lssort ''            ;;
+        'Sort by time')    lssort time          ;;
+        'Sort by size')    lssort size          ;;
+        'Extract archive') archive_extract "$f" ;;
+        'Create archive')  mkarchive       "$1" ;;
+        'Help')            show_help            ;;
     esac
 }
 
@@ -309,6 +464,16 @@ mknew() {
     case "$res" in
         'Folder') mkfolder ;;
         'File')   mkfile   ;;
+    esac
+}
+
+mkarchive() {
+    files=$(while read -r f; do realpath "$f"; done < "$1")
+    type=$(printf 'ZIP\nTAR' | menu_interface --prompt "Archive type> ")
+    name=$(echo | menu_interface --prompt 'Archive name> ')
+    case "$type" in
+        ZIP) mkzip "$name" "$files" ;;
+        TAR) mktar "$name" "$files" ;;
     esac
 }
 
@@ -469,6 +634,14 @@ update_term_size() {
 }
 
 doit() {
+    [ ! -t 0 ] && {
+        if exists theterm; then
+            exec theterm "$SELF"
+        else
+            exec "$TERMINAL" -e "$SELF"
+        fi
+    }
+
     [ "$FMZ_SHELL" ] && {
         echo "Already in a shell inside of $NAME."
         echo "To force nested instances, clear FMZ_SHELL."
@@ -480,16 +653,23 @@ doit() {
     [ "$USE_STPV" ] &&
         stpvimg --listen $ID 2>/dev/null &
 
+    archive_mnt=
     res=.
     q=
     while :; do
         res=$(list | fuzzy -q "$q" | tail -n1)
         [ "$USE_STPV" ] &&
             stpvimg --clear $ID
+
         if [ -e "$res" ]; then
             q=
             if [ -f "$res" ]; then
-                if exists open; then
+                if exists archivemount && isarchive "$res"; then
+                    archive_mnt=$(archive_mount "$res")
+                    [ -L "$archive_mnt" ] && {
+                        cd "$archive_mnt" || return 1
+                    }
+                elif exists open; then
                     open "$res"
                 elif exists xdg-open; then
                     xdg-open "$res"
@@ -499,12 +679,23 @@ doit() {
                 # q="$res"
             elif [ -d "$res" ]; then
                 cd "$res" || return 1
+
+                [ "$archive_mnt" ] && {
+                    mnt_name=$(basename "$archive_mnt")
+                    [ -L "$PWD/$mnt_name" ] && {
+                        arc=$(echo "$archive_mnt" |
+                                  sed -En 's/(.+)\-archive/\1/p')
+                        archive_umount "$arc"
+                    }
+                }
             fi
+
         elif echo "$res" | grep -q '^\$'; then
             # because fzf messes with stdin and out
             # so, we can exit with a command to be executed
             cmd=$(echo "$res" | sed 's/^\$ *//')
             eval "$cmd"
+
         else
             break
         fi

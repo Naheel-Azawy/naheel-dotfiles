@@ -18,23 +18,23 @@ isarchive() {
     esac
 }
 
-getmnt() {
+archive_getmnt() {
     md5=$(echo "$1" | md5sum - | cut -d ' ' -f 1)
     echo "/tmp/archivemount-wrapper/$md5"
 }
 
-getln() {
+archive_getln() {
     echo "$1-archive"
 }
 
 # 0: mounted
 # 1: not mounted
 # 2: error, cleanup required
-ismounted() {
+archive_ismounted() {
     q= && [ "$1" = '-q' ] && q=1 && shift
     p=$(realpath "$1")
-    mntpath=$(getmnt "$p")
-    linkpath=$(getln "$p")
+    mntpath=$(archive_getmnt "$p")
+    linkpath=$(archive_getln "$p")
     if [ -e "$mntpath" ]; then
         if [ -d "$mntpath" ]; then
             if mountpoint -q "$mntpath"; then
@@ -62,18 +62,18 @@ ismounted() {
     fi
 }
 
-umount() {
+archive_umount() {
     q= && [ "$1" = '-q' ] && q=1 && shift
     p=$(realpath "$1")
     if [ "$q" ]; then
-        ismounted -q "$p"
+        archive_ismounted -q "$p"
     else
-        ismounted "$p"
+        archive_ismounted "$p"
     fi
     case $? in
         0|2) # mounted or needs cleanup
-            mntpath=$(getmnt "$p")
-            linkpath=$(getln "$p")
+            mntpath=$(archive_getmnt "$p")
+            linkpath=$(archive_getln "$p")
             mountpoint -q "$mntpath" &&
                 fusermount -u "$mntpath"
             [ -d "$mntpath" ] &&
@@ -86,12 +86,12 @@ umount() {
     esac
 }
 
-mount() {
+archive_mount() {
     lf= && [ "$1" = '--lfid' ] && lf="$2" && shift 2
     p=$(realpath "$1")
     d=$(dirname "$p")
-    mntpath=$(getmnt "$p")
-    linkpath=$(getln "$p")
+    mntpath=$(archive_getmnt "$p")
+    linkpath=$(archive_getln "$p")
     s='' && [ ! -w "$d" ] && s='sudo'
 
     isarchive "$p" || {
@@ -99,7 +99,7 @@ mount() {
         return 1
     }
 
-    umount -q "$p"
+    archive_umount -q "$p"
 
     mkdir -p "$mntpath" &&
         archivemount "$p" "$mntpath" &&
@@ -109,17 +109,17 @@ mount() {
     echo "$linkpath"
 }
 
-umountall() {
+archive_umountall() {
     for d in /tmp/archivemount-wrapper/*-origin; do
         p=$(cat "$d")
         if [ "$p" ]; then
             echo "unmounting '$p'..."
-            umount "$p"
+            archive_umount "$p"
         fi
     done
 }
 
-extract() {
+archive_extract() {
     here= && [ "$1" = '--here' ] && here=1 && shift
     p=$(realpath "$1")
     s='' && [ ! -w . ] && s='sudo'
@@ -159,7 +159,7 @@ lfopen() {
     id="$1"
     f="$2"
     if isarchive "$f"; then
-        mnt=$(mount "$f")
+        mnt=$(archive_mount "$f")
         [ -L "$mnt" ] && {
             lf -remote "send $id reload"
             lf -remote "send $id cd '$mnt'"
@@ -174,8 +174,8 @@ lfoncd() {
     f="$2"
     if mountpoint -q "$f"; then
         arc=$(echo "$f" | sed -En 's/(.+)\-archive/\1/p')
-        if ismounted "$arc"; then
-            umount "$arc"
+        if archive_ismounted "$arc"; then
+            archive_umount "$arc"
             lf -remote "send $id reload"
             lf -remote "send $id select '$arc'"
         fi
@@ -197,16 +197,16 @@ help() {
 
 main() {
     case "$1" in
-        mount)     shift; mount     "$@" ;;
-        umount)    shift; umount    "$@" ;;
-        umountall) shift; umountall      ;;
-        ismounted) shift; ismounted "$@" ;;
-        isarchive) shift; isarchive "$@" ;;
-        extract)   shift; extract   "$@" ;;
-        zip)       shift; mkzip     "$@" ;;
-        tar)       shift; mktar     "$@" ;;
-        lfopen)    shift; lfopen    "$@" ;;
-        lfoncd)    shift; lfoncd    "$@" ;;
+        mount)     shift; archive_mount     "$@" ;;
+        umount)    shift; archive_umount    "$@" ;;
+        umountall) shift; archive_umountall      ;;
+        ismounted) shift; archive_ismounted "$@" ;;
+        isarchive) shift; isarchive         "$@" ;;
+        extract)   shift; archive_extract   "$@" ;;
+        zip)       shift; mkzip             "$@" ;;
+        tar)       shift; mktar             "$@" ;;
+        lfopen)    shift; lfopen            "$@" ;;
+        lfoncd)    shift; lfoncd            "$@" ;;
         *)
             help
             return 1;;

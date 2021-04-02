@@ -100,11 +100,11 @@ super+shift+ctrl+Return
 
 # Start file manager
 super+apostrophe
-	theterm lf
+	theterm $FILE_MANAGER
 
 # Start file manager with opposite split
 super+shift+apostrophe
-	i3-msg split t; theterm lf
+	i3-msg split t; theterm $FILE_MANAGER
 
 # Empty window
 super+e
@@ -303,7 +303,7 @@ XF86Calculator
 	calc-float
 
 XF86Explorer
-	theterm lf
+	theterm $FILE_MANAGER
 
 XF86WWW
 	browser
@@ -312,7 +312,7 @@ XF86ScreenSaver
 	lockscreen
 
 XF86MyComputer
-	theterm lf
+	theterm $FILE_MANAGER
 
 XF86Eject
 	dmenuumount
@@ -366,7 +366,7 @@ XF86Display
 	dmenudisplay
 
 XF86Documents
-	theterm lf "$HOME/Documents"
+	theterm $FILE_MANAGER "$HOME/Documents"
 
 XF86WLAN
 	sudo -A systemctl restart NetworkManager

@@ -10,9 +10,10 @@ export TERM="screen-256color"
 export EDITOR="edit"
 export VISUAL="$EDITOR"
 export TERMINAL="st"
-export FILE_MANAGER="lf"
+export FILE_MANAGER="fmz"
 export BROWSER="browser"
 export READER="evince" # TODO: mk a script, add foliate
+export TUI_APPS='music-player:lf:vis:corona:alsamixer:lyrics:nano:dice:fmz'
 export BIB="$HOME/Documents/LaTeX/refs.bib" # TODO: move to personal
 export ORG_TODO="$HOME/Dropbox/orgmode/TODO.org" # TODO: move to personal
 
