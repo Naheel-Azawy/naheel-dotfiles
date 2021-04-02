@@ -83,27 +83,6 @@ function open --description "Open file in default application"
     end
 end
 
-function lf
-    set fwd (mktemp) # last working directory temp file
-    set fid (mktemp) # lf id temp file
-    command lf -command '&printf $id > '"$fid"'' -last-dir-path=$fwd $argv
-    set id (cat $fid)
-    # end the image preview listener
-    stpvimg --end $id
-    # cd on exit
-    if test -f "$fwd"
-        set dir (cat $fwd)
-        rm -f $fwd
-        if test -d "$dir"
-            if test "$dir" != (pwd)
-                echo cd $dir
-                cd $dir
-            end
-        end
-    end
-    rm $fid
-end
-
 function ls
     command ls --color --group-directories-first $argv
 end
@@ -140,9 +119,9 @@ function plot
     command plot $argv & disown
 end
 
-function z
+function fmz
     set tmp (mktemp)
-    fmz --cd $tmp $argv
+    command fmz --cd $tmp $argv
     set res (tail -n 1 $tmp)
     if test -d "$res" && test "$res" != $PWD
         echo cd $res
@@ -155,7 +134,7 @@ abbr ث  'lang us; exit'
 abbr مس 'lang us; ls'
 abbr م  'lang us; ls'
 abbr ؤي 'lang us; cd'
-abbr ب  'lang us; lf'
+abbr ب  'lang us; fmz'
 
 alias please=sudo
 
@@ -195,7 +174,7 @@ abbr gitn  'git add -A && git commit -m "couple of things" && git push origin ma
 abbr nd    'ndots'
 abbr o     'open'
 abbr m     'tmux'
-abbr f     'lf'
+abbr f     'fmz'
 abbr s     'please'
 abbr cb    'clipboard'
 abbr py    'python3'

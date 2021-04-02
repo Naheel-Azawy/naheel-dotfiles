@@ -5,7 +5,7 @@
 # - fzf
 #
 # opt dep:
-# - dragon: drag and drop,
+# - dragon: drag and drop
 # - vidir: bulk rename
 # - stpv: better previews with images
 # - cp-p: better cp and mv
@@ -23,6 +23,9 @@ HIDDEN_FILE=/tmp/$NAME-hidden
 SORT_FILE=/tmp/$NAME-sort
 TMP_FILE="/tmp/$NAME-tmp-$ID"
 
+HACKY=
+[ "$HACKY" ] && LAST_FILE="/tmp/$NAME-last-$ID"
+
 # global parameters
 
 CD=
@@ -37,12 +40,14 @@ bookmarks="$HOME"
 
 cmd_reload="reload('$SELF' --eval list)"
 cmd_open="accept-non-empty"
+[ "$HACKY" ] &&
+    cmd_open="accept-non-empty+execute-silent(echo \"\$(realpath .)\" {n} >> $LAST_FILE)"
 cmd_updir="abort+execute(echo ..)"
 cmd_menu="execute(cp {+f} $TMP_FILE)+abort+execute(echo '\$ menu $TMP_FILE')"
 cmd_new="abort+execute(echo '\$ mknew')"
 cmd_copy="execute-silent('$SELF' --eval copy {+f})+clear-selection"
 cmd_move="execute-silent('$SELF' --eval move {+f})+clear-selection"
-cmd_paste="execute-silent('$SELF' --eval paste)+$cmd_reload"
+cmd_paste="abort+execute(echo '\$ paste')"
 cmd_rename="execute(cp {+f} $TMP_FILE)+abort+execute(echo '\$ rename $TMP_FILE')"
 cmd_delete="execute(cp {+f} $TMP_FILE)+abort+execute(echo '\$ delete $TMP_FILE')"
 cmd_goto="abort+execute('$SELF' --eval goto)"
@@ -50,6 +55,7 @@ cmd_refresh="abort+execute(echo .)"
 cmd_tog_hidden="execute-silent('$SELF' --eval tog_hidden)+$cmd_reload"
 cmd_dnd="execute-silent(dragon -a -x {+})"
 cmd_shell="execute(cp {+f} $TMP_FILE)+abort+execute(echo '\$ start_shell $TMP_FILE')"
+cmd_quit="abort"
 cmd_help="abort+execute(echo '\$ show_help')"
 cmd_kill="execute(kill $ID)"
 
@@ -90,6 +96,7 @@ exists() {
 bind ctrl-k     "$cmd_kill"
 bind home       "first"
 bind end        "last"
+bind enter      "$cmd_open"       'Open selected item'
 bind right      "$cmd_open"       'Open selected item'
 bind left       "$cmd_updir"      'Go to parent directory'
 bind shift-up   "toggle+up"       'Mark and move selection up'
@@ -111,7 +118,8 @@ bind alt-up     "preview-up"      'Scroll preview up'
 bind alt-down   "preview-down"    'Scroll preview down'
 exists dragon &&
     bind ctrl-d "$cmd_dnd"        'Drag and drop'
-bind ctrl-q     "abort"           'Quit'
+bind ctrl-q     "$cmd_quit"       'Quit'
+bind esc        "$cmd_quit"       'Quit'
 bind f1         "$cmd_help"       'Show this help screen'
 
 bookmark ~/Documents
@@ -368,12 +376,12 @@ paste() {
     if exists cp-p; then
         srcf=$(mktemp)
         echo "$list" > "$srcf"
+        tput rmcup
         case "$mode" in
-            # TODO: handle progress
             copy)
-                cp-p --new-line --backup=numbered -a -F "$srcf" . ;;
+                cp-p --backup=numbered -a -F "$srcf" . ;;
             move)
-                mv-p --new-line --backup=numbered -F "$srcf" . ;;
+                mv-p --backup=numbered -F "$srcf" . ;;
         esac
         rm -f "$srcf"
     else
@@ -446,6 +454,7 @@ mkfolder() {
        echo "$name already exists"
     elif [ "$name" ]; then
         mkdir -p "$name"
+        cd "$name" || return 1
     fi
 }
 
@@ -656,6 +665,18 @@ doit() {
     res=.
     q=
     while :; do
+        if [ "$HACKY" ] && [ -f "$LAST_FILE" ]; then
+            {
+                is_int () { test "$@" -eq "$@" 2> /dev/null; }
+                sleep .1
+                n=$(grep "^$(realpath .) " "$LAST_FILE" |
+                        tail -n1 | grep -o '[^ ]*$')
+                is_int "$n" && for i in $(seq "$n"); do
+                    xdotool key Down
+                done
+            } &
+        fi
+
         res=$(list | fuzzy -q "$q" | tail -n1)
         [ "$USE_STPV" ] &&
             stpvimg --clear $ID
@@ -706,6 +727,7 @@ doit() {
         stpvimg --end $ID
 
     rm -f "$TMP_FILE"
+    [ "$HACKY" ] && rm -f "$LAST_FILE"
 
     if [ -f "$CD" ]; then
         pwd > "$CD"
