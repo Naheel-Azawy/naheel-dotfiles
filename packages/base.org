@@ -8,6 +8,7 @@
 | pacman     | nodejs              | N.A.                                 | node.js is needed to run some programs ahead                 |
 | pacman     | npm                 | N.A.                                 | node.js pacage manager                                       |
 | pacman     | python-pip          | N.A.                                 | python's package manager                                     |
+| pacman     | python-wheel        | N.A.                                 | built-package format for Python                              |
 | pacman     | cronie              | N.A.                                 | manages scheduled tasks                                      |
 | pacman     | dosfstools          | N.A.                                 | allows your computer to access dos-like filesystems          |
 | pacman     | exfat-utils         | N.A.                                 | allows management of FAT drives                              |
