@@ -1,2 +1,25 @@
 #!/bin/sh
-watch -d grep -e Dirty: -e Writeback: /proc/meminfo
+
+# watch -d grep -e Dirty: -e Writeback: /proc/meminfo
+
+dirt() {
+    sed -En 's/Dirty:\s+(.+) kB/\1/p' /proc/meminfo
+}
+
+init=$(dirt)
+
+syncing=/tmp/sync-prog-$$
+touch "$syncing"
+{
+    sync
+    rm "$syncing"
+} &
+
+while [ -e "$syncing" ]; do
+    now=$(dirt)
+    per=$(echo "(($init - $now) / $init) * 100" | bc -l)
+    # echo "$per $now $init"
+    printf '%.2f%%\r' "$per"
+    sleep 1
+done
+echo
