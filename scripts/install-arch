@@ -1,5 +1,20 @@
 #!/bin/sh
 
+# Yet another Arch installer script
+# Before writing this, I knew about archfi
+# https://github.com/MatMoul/archfi
+# archfi is amazing. But it had more options than what I needed.
+# I just wanted something that takes as little input as possible
+# and only at the beginning and then deals with the installation
+# automatically.
+# The plan was to make this a general purpose installer but the
+# day I wrote it I found out about the official Arch installer
+# https://github.com/archlinux/archinstall
+# which will probably be superior to other installers soon.
+# So, I believe it would be a good idea to keep this installer
+# as a minimal installer. Some options might be added later, but
+# probably not too much.
+
 [ "$DEV" ]          || DEV=/dev/sdc
 [ "$MP" ]           || MP=/mnt/arch-install
 [ "$USERNAME" ]     || USERNAME=me
@@ -194,6 +209,7 @@ inchroot() {
     uncomment '%wheel ALL=(ALL) ALL' /etc/sudoers
 
     if [ "$INSTALL_DOTS" ]; then
+        # my dotfiles installer uses sudo a lot :)
         info 'Enabling no password sudo...'
         uncomment '%wheel ALL=(ALL) NOPASSWD: ALL' /etc/sudoers
         echo
@@ -326,6 +342,27 @@ main() {
         *)   return 0 ;;
     esac
     echo
+
+    # TODO: add auto partitioning as a default option
+    # installation types:
+    #
+    # - tiny: (disk < 8G and ram < 2G)
+    #   - no swap
+    #   - one part
+    #   - dots base
+    #
+    # - mini: (disk ~ 8G and ram >= 2G)
+    #   - no swap
+    #   - boot and root
+    #   - dots base base-gui
+    #
+    # - normal: (disk >> (8G + 2 * ram) and ram >= 2G)
+    #   - swap 200% of ram
+    #   - enable hibernation
+    #   - boot, root, and home
+    #   - dots base base-gui
+
+    # TODO: check DEV is mbr and not gpt and add an option to convert
 
     echo 'Partition your disk as follows:'
     echo "- ${DEV}1: boot"

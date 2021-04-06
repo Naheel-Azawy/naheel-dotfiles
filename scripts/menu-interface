@@ -1,5 +1,7 @@
 #!/bin/bash
 
+exec menus face "$@"
+
 [ -z "$MENU_INTERFACE" ] && MENU_INTERFACE='dmenu'
 
 case $MENU_INTERFACE in
