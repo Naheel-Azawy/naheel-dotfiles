@@ -1,0 +1,379 @@
+#!/bin/sh
+
+[ "$DEV" ]          || DEV=/dev/sdc
+[ "$MP" ]           || MP=/mnt/arch-install
+[ "$USERNAME" ]     || USERNAME=me
+[ "$PASSWORD" ]     || PASSWORD=123
+[ "$HOSTNAME" ]     || HOSTNAME=arch
+[ "$ZONE" ]         || ZONE=Asia/Qatar
+[ "$INSTALL_DOTS" ] || INSTALL_DOTS=
+[ "$LOCALES" ]      || LOCALES=en_US.UTF-8:ar_QA.UTF-8
+
+SELF=$(realpath "$0")
+NAME=$(basename "$SELF")
+
+C='\033[1m\033[34m' # blue
+E='\033[1m\033[31m' # red
+R='\033[0m'         # reset
+
+info() {
+    printf "${C}INFO:${R} %s\n" "$@"
+}
+
+err() {
+    printf "${E}ERROR:${R} %s\n" "$@" >&2
+}
+
+uncomment() {
+    line="$1"
+    file="$2"
+    sed -i "s/# *$line/$line/" "$file"
+}
+
+comment() {
+    line="$1"
+    file="$2"
+    sed -i "s/$line/#$line/" "$file"
+}
+
+vars() {
+    echo "export DEV=$DEV"
+    echo "export MP=$MP"
+    echo "export USERNAME=$USERNAME"
+    [ "$1" = --all ] && echo "export PASSWORD=$PASSWORD"
+    echo "export HOSTNAME=$HOSTNAME"
+    echo "export ZONE=$ZONE"
+    echo "export INSTALL_DOTS=$INSTALL_DOTS"
+}
+
+mkfss() {
+    # boot
+    info "Formatting ${DEV}1 as boot partition..."
+    if [ -e "${DEV}1" ]; then
+        yes | mkfs.ext4 "${DEV}1"
+    else
+        err "${DEV}1 not found"
+        return 1
+    fi || return 1
+    echo
+
+    # swap
+    info "Formatting ${DEV}2 as swap partition..."
+    if [ -e "${DEV}2" ]; then
+        yes | mkswap "${DEV}2"
+    else
+        err "${DEV}2 not found"
+        return 1
+    fi || return 1
+    echo
+
+    # root
+    info "Formatting ${DEV}3 as root partition..."
+    if [ -e "${DEV}3" ]; then
+        yes | mkfs.ext4 "${DEV}3"
+    else
+        err "${DEV}3 not found"
+        return 1
+    fi || return 1
+    echo
+
+    # home (optional)
+    if [ -e "${DEV}4" ]; then
+        info "Formatting ${DEV}4 as home partition..."
+        yes | mkfs.ext4 "${DEV}4"
+    fi || return 1
+    echo
+}
+
+mountall() {
+    info "Setting main mount point to $MP"
+    mkdir -p "$MP"
+    echo
+
+    # root
+    info "Mounting ${DEV}3 as root partition..."
+    if [ -e "${DEV}3" ]; then
+        mount "${DEV}3" "$MP" &&
+            mkdir -p "$MP/boot" &&
+            mkdir -p "$MP/home"
+    else
+        err "${DEV}3 not found"
+        return 1
+    fi || return 1
+    echo
+
+    # boot
+    info "Mounting ${DEV}1 as boot partition..."
+    if [ -e "${DEV}1" ]; then
+        mount "${DEV}1" "$MP/boot"
+    else
+        err "${DEV}1 not found"
+        return 1
+    fi || return 1
+    echo
+
+    # home (optional)
+    if [ -e "${DEV}4" ]; then
+        info "Mounting ${DEV}4 as home partition..."
+        mount "${DEV}4" "$MP/home"
+    echo
+    fi || return 1
+
+    # swap
+    info "Enabling ${DEV}2 as swap..."
+    if [ -e "${DEV}2" ]; then
+        swapon "${DEV}2"
+    else
+        err "${DEV}2 not found"
+        return 1
+    fi || return 1
+    echo
+}
+
+installarch() {
+    info "Installing Arch packages..."
+    pacstrap "$MP" \
+             base \
+             base-devel \
+             linux linux-firmware \
+             networkmanager \
+             grub
+    echo
+}
+
+fstabstuff() {
+    genfstab -U "$MP" >> "$MP/etc/fstab"
+}
+
+dochroot() {
+    cp "$SELF" "$MP/usr/bin/$NAME"
+    chmod +x "$MP/usr/bin/$NAME"
+    arch-chroot "$MP" sh -c "$(vars --all); '$NAME' --eval inchroot"
+}
+
+inchroot() {
+    info "Adding user $USERNAME and setting password..."
+    useradd -m -g wheel "$USERNAME" || return 1
+    printf '%s\n%s\n' "$PASSWORD" "$PASSWORD" |
+        passwd "$USERNAME" || return 1
+    echo
+
+    info 'Setting root password...'
+    printf '%s\n%s\n' "$PASSWORD" "$PASSWORD" |
+        passwd || return 1
+    echo
+
+    info "Setting hostname to $HOSTNAME..."
+    echo "$HOSTNAME" > /etc/hostname
+    echo
+
+    info "Setting timezone to $ZONE..."
+    ln -sf "/usr/share/zoneinfo/$ZONE" /etc/localtime
+    echo
+
+    info 'Setting locale...'
+    echo 'LANG=en-US.UTF-8' > /etc/locale.conf
+    echo "LC_ALL=en_US.UTF-8" >> /etc/environment
+    echo "$LOCALES" | tr ':' '\n' | while read -r l; do
+        uncomment "$l" /etc/locale.gen
+        info "Enabled $l"
+    done
+    locale-gen || return 1
+    echo
+
+    info 'Enabling network manager...'
+    systemctl enable NetworkManager
+    echo
+
+    info 'Installing GRUB...'
+    grub-install --target=i386-pc "$DEV" &&
+        grub-mkconfig -o /boot/grub/grub.cfg
+    echo
+
+    info 'Enabling wheel group in sudoers...'
+    uncomment '%wheel ALL=(ALL) ALL' /etc/sudoers
+
+    if [ "$INSTALL_DOTS" ]; then
+        info 'Enabling no password sudo...'
+        uncomment '%wheel ALL=(ALL) NOPASSWD: ALL' /etc/sudoers
+        echo
+
+        info 'Installing dots...'
+        curl https://raw.githubusercontent.com/Naheel-Azawy/naheel-dotfiles/master/install.sh > /tmp/nd.sh
+        yes yes | sudo -u "$USERNAME" sh /tmp/nd.sh base base-gui
+        echo
+
+        info 'Disabling no password sudo...'
+        comment '%wheel ALL=(ALL) NOPASSWD: ALL' /etc/sudoers
+        echo
+    fi
+
+    info 'Exitting shell...'
+    echo
+}
+
+unmountall() {
+    info "Syncing..."
+    sync
+    info "Unmounting all..."
+    umount -R "$MP"
+    swapoff "${DEV}2"
+    rmdir "$MP"
+}
+
+tui() {
+    export NEWT_COLORS='root=,black'
+
+    box() {
+        whiptail "$@" 10 50 3>&1 1>&2 2>&3
+    }
+
+    inputbox() {
+        whiptail --inputbox "$1" 10 50 "$2" 3>&1 1>&2 2>&3
+    }
+
+    passwordbox() {
+        whiptail --passwordbox "$1" 10 50 3>&1 1>&2 2>&3
+    }
+
+    menubox() {
+        eval "whiptail --menu '$1' 20 50 10 $2" \
+             3>&1 1>&2 2>&3
+    }
+
+    yesno() {
+        whiptail --yesno "$1" 7 50 3>&1 1>&2 2>&3
+    }
+
+    msgbox() {
+        whiptail --msgbox "$1" 7 50 3>&1 1>&2 2>&3
+    }
+
+    msgbox 'Welcome to Arch installer script'
+
+    DEV=
+    devs=$(lsblk -rpno name,type | tac |
+               awk '$2 == "disk" {printf "\"%s\" \"\" ", $1}')
+    while [ ! "$DEV" ]; do
+        DEV=$(menubox 'Select a device:' "$devs")
+    done
+
+    while :; do
+        MP=$(inputbox 'Mount point:' "$MP")
+        [ "$MP" ] && break
+    done
+
+    USERNAME=
+    while [ ! "$USERNAME" ]; do
+        USERNAME=$(inputbox 'Username:')
+    done
+
+    PASSWORD=
+    while :; do
+        pass1=$(passwordbox 'Password:')
+        pass2=$(passwordbox 'Re-enter password:')
+
+        if [ ! "$pass1" ]; then
+            msgbox 'Enter a non-empty password'
+        elif [ "$pass1" != "$pass2" ]; then
+            msgbox 'Passwords do not match. Try again...'
+        else
+            break
+        fi
+    done
+    PASSWORD="$pass1"
+
+    HOSTNAME=
+    while [ ! "$HOSTNAME" ]; do
+        HOSTNAME=$(inputbox 'Host name:')
+    done
+
+    zone_dir=
+    dirs=$(ls -l --color=never /usr/share/zoneinfo/)
+    dirs=$(echo "$dirs" | grep '^d' | awk '{printf "\"%s\" \"\" ", $NF}')
+    msg='Set timezone'
+    while [ ! "$zone_dir" ]; do
+        zone_dir=$(menubox "$msg" "$dirs")
+    done
+
+    ZONE=
+    zones=$(ls -1 --color=never "/usr/share/zoneinfo/$zone_dir")
+    zones=$(echo "$zones" | awk '{printf "\"%s\" \"\" ", $NF}')
+    while [ ! "$ZONE" ]; do
+        ZONE=$(menubox "$msg" "$zones")
+        ZONE="$zone_dir/$ZONE"
+    done
+
+    INSTALL_DOTS=$(yesno 'Install dotfiles?' && echo 1)
+}
+
+main() {
+    [ "$1" = --eval ] && {
+        shift
+        "$@"
+        return
+    }
+
+    tui
+    vars
+    echo
+
+    printf "${E}WARNING:${R} everything under %s will be erased\n" "$DEV"
+    printf 'Are you sure? (y/N) '
+    read -r ans
+    case "$ans" in
+        y|Y) ;;
+        *)   return 0 ;;
+    esac
+    echo
+
+    echo 'Partition your disk as follows:'
+    echo "- ${DEV}1: boot"
+    echo "- ${DEV}2: swap"
+    echo "- ${DEV}3: root"
+    echo "- ${DEV}4: home (optional)"
+    echo 'Press enter to proceed'
+    read -r
+    echo
+
+    cfdisk "$DEV" || return 1
+    echo
+
+    if [ -e "${DEV}" ] &&
+           [ -e "${DEV}1" ] &&
+           [ -e "${DEV}2" ] &&
+           [ -e "${DEV}3" ]; then
+        info 'Partitions seems to be ok'
+    else
+        err 'bad partitioning'
+        ls "${DEV}1"
+        ls "${DEV}2"
+        ls "${DEV}3"
+        return 1
+    fi
+    echo
+
+    info 'Installation will start now'
+    echo 'Press enter to proceed'
+    read -r
+    echo
+
+    start=$(date) &&
+        mkfss &&
+        mountall &&
+        installarch &&
+        fstabstuff &&
+        dochroot
+    status=$?
+
+    end=$(date)
+    printf '\033[1m\033[34mSTARTED AT\033[0m  %s\n' "$start"
+    printf '\033[1m\033[34mFINISHED AT\033[0m %s\n' "$end"
+
+    unmountall
+
+    [ $status = 0 ] || err 'Installation faild :('
+
+}
+
+main "$@"

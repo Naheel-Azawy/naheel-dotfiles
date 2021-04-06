@@ -1,15 +1,5 @@
 #!/bin/sh
 
-lfsend() {
-    if [ "$LFID" != '' ]; then
-        while read -r line; do
-            lf -remote "send $LFID echo Error: \'$line\'"
-        done
-    else
-        cat 1>&2
-    fi
-}
-
 openfile() {
     f="$1"
     # if directory
@@ -22,17 +12,15 @@ openfile() {
         opt=--ask
         [ "$DEF" ] && opt=--ask-default
         echo "$FORCEOPENER" |
-            mimeopen $opt "$f" >/dev/null 2>&1 | lfsend & disown
+            mimeopen $opt "$f" >/dev/null & disown
     else
         # file name
         case "$f" in
             *.html)
-                browser "$f" 2>&1 | lfsend &;;
-            *.drawio)
-                draw.io "$f" 2>&1 | lfsend &;;
+                browser "$f" &;;
             *.link)
                 url=$(cat "$f")
-                browser "$url" 2>&1 | lfsend &;;
+                browser "$url" &;;
             *.el.gz)
                 exec "$EDITOR" "$f";;
             *.pcapng|*.cap)
@@ -43,18 +31,8 @@ openfile() {
                     text/*|*/json|*empty|application/javascript|\
                         application/x-elc|application/csv)
                         exec "$EDITOR" "$f";;
-                    image/x-xcf)
-                        "$OPENER" "$f" 2>&1 | lfsend &;;
-                    image/*)
-                        if [ "$LFID" ]; then
-                            sxivv --lf "$LFID" "$f" >/dev/null 2>&1 | lfsend &
-                        else
-                            sxivv "$f" >/dev/null 2>&1 | lfsend &
-                        fi;;
-                    audio/*)
-                        music-play "$f";;
                     *)
-                        "$OPENER" "$f" 2>&1 | lfsend &;;
+                        "$OPENER" "$f" &;;
                 esac
         esac
     fi
@@ -85,11 +63,6 @@ search() {
 
 [ "$OPENER" = '' ] && OPENER=xdg-open
 FORCEOPENER=''
-
-[ "$1" = '--lfid' ] && {
-    LFID="$2"
-    shift 2
-}
 
 [ "$#" = 0 ] && {
     search
