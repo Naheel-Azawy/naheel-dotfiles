@@ -32,6 +32,7 @@ export QT_AUTO_SCREEN_SCALE_FACTOR=0
 #export QT_STYLE_OVERRIDE=adwaita-dark
 export SHHH_JAVA_OPTIONS='-Dawt.useSystemAAFontSettings=on' # check bashrc
 export NEWT_COLORS='root=,black'
+export CM_LAUNCHER=menu-interface # for clipmenu
 
 export PI=3.14159265358979323844
 export EU=2.71828182845904523537
