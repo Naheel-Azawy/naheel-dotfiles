@@ -1,5 +1,9 @@
 #!/bin/sh
 
+mynohup() {
+    nohup "$@" </dev/null >/dev/null 2>&1 &
+}
+
 openfile() {
     f="$1"
     # if directory
@@ -12,15 +16,15 @@ openfile() {
         opt=--ask
         [ "$DEF" ] && opt=--ask-default
         echo "$FORCEOPENER" |
-            mimeopen $opt "$f" >/dev/null & disown
+            mynohup mimeopen $opt "$f"
     else
         # file name
         case "$f" in
             *.html)
-                browser "$f" &;;
+                mynohup browser "$f";;
             *.link)
                 url=$(cat "$f")
-                browser "$url" &;;
+                mynohup browser "$url";;
             *.el.gz)
                 exec "$EDITOR" "$f";;
             *.pcapng|*.cap)
@@ -32,7 +36,7 @@ openfile() {
                         application/x-elc|application/csv)
                         exec "$EDITOR" "$f";;
                     *)
-                        "$OPENER" "$f" &;;
+                        mynohup "$OPENER" "$f";;
                 esac
         esac
     fi
