@@ -4,7 +4,7 @@ VIDEO_DIR="$HOME/Videos/YouTube"
 AUDIO_DIR="$HOME/Music/YouTube"
 PROG_FILE="/tmp/__ytdl_prog"
 
-DMENU="menu-interface -sb '#E00000' -sf white -nf white"
+DMENU="menus-face -sb '#E00000' -sf white -nf white"
 
 search() {
     Q=$(echo | eval "$DMENU -p 'Search YouTube'" | url-encode) &&

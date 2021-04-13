@@ -2,5 +2,5 @@
 
 U="$DOTFILES_DIR/stuff/unicode"
 [ ! -f "$U" ] && unicode-update
-V=$(menu-interface -i -l 20 < "$U" | awk -F' : ' '{print $1}')
+V=$(menus-face -i -l 20 < "$U" | awk -F' : ' '{print $1}')
 [ "$V" != '' ] && printf "$V" | clipboard

@@ -1,5 +1,7 @@
 #!/bin/sh
 
+# TODO: --ask is broken, code is ugly. Rewrite
+
 mynohup() {
     nohup "$@" </dev/null >/dev/null 2>&1 &
 }
@@ -43,14 +45,9 @@ openfile() {
 }
 
 pick() {
-    MENU='menu-interface -l 20'
-    [ "$1" = '--fzf' ] && {
-        MENU='fzfp --nopv'
-        shift
-    }
     echo | mimeopen --ask "$1" 2>/dev/null |
         sed -En 's/\s*(.+\)\s+.+)/\1/p' |
-        $MENU |
+        menus-face -l 20 |
         sed -En 's/(.+)\).+/\1/p'
 }
 

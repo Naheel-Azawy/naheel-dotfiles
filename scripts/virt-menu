@@ -7,7 +7,7 @@ list() {
     echo Manage
 }
 
-V=$(list | menu-interface)
+V=$(list | menus-face)
 
 [ "$V" ] && case "$V" in
     Manage) virtualbox;;

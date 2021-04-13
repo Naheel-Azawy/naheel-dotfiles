@@ -12,7 +12,6 @@
 | apt  | nodejs            | N.A.                                     | node.js is needed to run some programs ahead                 |
 | apt  | npm               | N.A.                                     | node.js pacage manager                                       |
 | apt  | python3-pip       | N.A.                                     | python's package manager                                     |
-| go   | lf                | github.com/gokcehan/lf                   | terminal file manager                                        |
 | apt  | tmux              | N.A.                                     | the terminal multiplexer                                     |
 | func | tpm               | N.A.                                     | tmux package manager                                         |
 | go   | fzf               | github.com/junegunn/fzf                  | fuzzy finder tool                                            |
@@ -33,3 +32,4 @@
 | pip  | trash-cli         | N.A.                                     | CLI XDG trash                                                |
 | apt  | strace            | N.A.                                     | trace system calls. Needed for cp-p                          |
 | apt  | gawk              | N.A.                                     | weird Ubuntu no gawk by default...                           |
+| git  | fmz               | https://github.com/Naheel-Azawy/fmz      | terminal file manager                                        |

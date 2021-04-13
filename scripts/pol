@@ -29,7 +29,7 @@ pol() {
 }
 
 menu() {
-    m=menu-interface
+    m=menus-face
     command -v $m >/dev/null || m=dmenu
     P=$({ list; echo Manage; } | $m -i -l 20)
     case "$P" in

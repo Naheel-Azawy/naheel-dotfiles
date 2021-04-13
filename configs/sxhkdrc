@@ -150,10 +150,6 @@ super+l
 super+x
 	menus power
 
-# Mount a drive
-super+m
-	dmenumount
-
 # Display options
 super+p
 	dmenudisplay
@@ -248,7 +244,7 @@ super+ctrl+j
 
 # Show shortcuts help screen
 super+F1
-	theterm 'keybindingsgen.py -d | less'
+	theterm 'menus keys -d | less'
 
 # Show the system monitor
 super+grave
@@ -313,9 +309,6 @@ XF86ScreenSaver
 
 XF86MyComputer
 	theterm $FILE_MANAGER
-
-XF86Eject
-	dmenuumount
 
 XF86HomePage
 	browser https://www.duckduckgo.com

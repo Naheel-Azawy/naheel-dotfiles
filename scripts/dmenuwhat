@@ -1,6 +1,6 @@
 #!/bin/sh
 
-DMENU='menu-interface -i'
+DMENU='menus-face -i'
 
 is_url() {
     [ "$(echo "$1" | sed -rn 's@.*(https?://.+\..+).*@\1@p')" != '' ]

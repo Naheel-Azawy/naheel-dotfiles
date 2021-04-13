@@ -1,5 +1,7 @@
 #!/bin/sh
 
+# TODO: update and/or migrate to fmz
+
 F="/tmp/automountdrives"
 
 waiting=$(mktemp)

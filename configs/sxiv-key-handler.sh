@@ -12,6 +12,8 @@
 # where C/M/S indicate Ctrl/Meta(Alt)/Shift modifier states and KEY is the X
 # keysym as listed in /usr/include/X11/keysymdef.h without the "XK_" prefix.
 
+# TODO: replace lf commands with fmz ones, CUA keys, cleanups
+
 LIST='Information
 Open with
 Copy
@@ -37,7 +39,7 @@ done
 
 choice="$1"
 [ "$1" = "C-x" ] && {
-    choice=$(echo "$LIST" | menu-interface -i -l 20)
+    choice=$(echo "$LIST" | menus-face -i -l 20)
 }
 
 case "$choice" in
@@ -85,7 +87,7 @@ case "$choice" in
             P="${#files[@]} files"
         fi
         R=$(printf "Trash\nDelete permanently\nCancel" |
-                menu-interface -p "Delete $P?" -i -sb red -nf red)
+                menus-face -p "Delete $P?" -i -sb red -nf red)
         case "$R" in
             Trash)   for f in "${files[@]}"; do gio trash "$f" || trash-put "$f"; done;;
             Delete*) for f in "${files[@]}"; do rm -f "$f";                       done;;

@@ -20,6 +20,7 @@
 # brew install pandoc-citeproc
 
 # IMPORTANT NOTE: This script is so messed up...
+# TODO: rewrite?
 
 # if current window directory has bib file
 CWD_BIB=$(theterm --xpwd)
@@ -27,7 +28,7 @@ CWD_BIB=$(find "$CWD_BIB" -maxdepth 1 -iname '*.bib' | head -n1)
 if [ -f "$CWD_BIB" ]; then
     ref=$(sed -En 's/\@.*\{(.+),.*/\1 #| /p;s/^\s*title\s*=\s*\{(.+)\},/\1}/p' "$CWD_BIB" | \
               tr -d '\n' | tr '}' '\n' | nl -s ' |#' | column -t -s'#' | \
-              menu-interface -i -l 20 | sed -En 's/.+\|\s*(.+)\s*\|.+/\1/p' | \
+              menus-face -i -l 20 | sed -En 's/.+\|\s*(.+)\s*\|.+/\1/p' | \
               xargs)
     xdotool type "$ref"
     exit
@@ -67,8 +68,8 @@ MENU=0
     DOTFILES_SCRIPTS="$HOME/.dotfiles/scripts"
 mkdir -p "$DOTFILES_SCRIPTS"
 
-# if menu-interface is not there then just use normal dmenu
-command -v menu-interface >/dev/null || function menu-interface {
+# if menus-face is not there then just use normal dmenu
+command -v menus-face >/dev/null || function menus-face {
         dmenu "$@"
     }
 
@@ -151,7 +152,7 @@ function finalize {
     if [ $(echo "$CB" | wc -c) -le 500 ]; then
         M="${M}${CB}"
     fi
-    TITLE=$(echo -en "$M" | menu-interface -i -l 20 -p 'Cite: ' | \
+    TITLE=$(echo -en "$M" | menus-face -i -l 20 -p 'Cite: ' | \
                 sed 's/\- *//g; s/[^0-9A-Za-z]/ /g; s/ \+/ /g') || exit 1
 }
 
@@ -166,7 +167,7 @@ function finalize {
 # bib or pdf
 [[ $MENU == 1 ]] && {
     OPT=$(echo -e 'Google Scholar\nGet PDF\nGet bibliography' |
-              menu-interface -i -p "${TITLE:0:20}")
+              menus-face -i -p "${TITLE:0:20}")
     case "$OPT" in
         'Google Scholar')
             URL=$(echo "$TITLE" | strings | tr ' ' '+')

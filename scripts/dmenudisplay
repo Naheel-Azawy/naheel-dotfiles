@@ -20,7 +20,7 @@ else
     sel=$( (echo Default &&
                 ls -1 "$D/" | grep -v default | awk -F'.' '{print $1}' &&
                 echo "$OPTS") |
-               menu-interface -i -l 30 -p 'Display options')
+               menus-face -i -l 30 -p 'Display options')
 fi
 
 case "$sel" in
@@ -35,7 +35,7 @@ case "$sel" in
     Temperature*)
         sel=$(echo "$sel" | awk '{print $2}')
         if [ "$sel" = Custom ]; then
-            sel=$(echo | menu-interface -i -l 20 -p 'Color temperature')
+            sel=$(echo | menus-face -i -l 20 -p 'Color temperature')
         fi
         [ "$sel" ] && xsct "$sel";;
     *)

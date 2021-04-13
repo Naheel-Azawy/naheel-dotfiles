@@ -11,7 +11,6 @@
 | pacman   | xterm                  | N.A.                                         | a simple terminal                                                |
 | suckless | st                     | git://git.suckless.org/st                    | THE simple terminal                                              |
 | git      | theterm                | https://github.com/Naheel-Azawy/theterm      | a wrapper to give the terminal super powers                      |
-| suckless | dmenu                  | https://git.suckless.org/dmenu               | runs commands and provides a UI for selection                    |
 | aur      | ttf-symbola            | N.A.                                         | unicode symbols and emojis                                       |
 | pacman   | ttf-liberation         | N.A.                                         | another pretty font                                              |
 | pacman   | ttf-dejavu             | N.A.                                         | the preferred monospace font                                     |

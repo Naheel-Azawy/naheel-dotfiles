@@ -16,7 +16,7 @@ nk1508530@qu.edu.qa
 ( ͡° ͜ʖ ͡°)
 ( ͡°( ͡° ͜ʖ( ͡° ͜ʖ ͡°)ʖ ͡°) ͡°)"
 
-R=$(echo "$WORDS" | menu-interface -i -l 15 -p 'Words')
+R=$(echo "$WORDS" | menus-face -i -l 15 -p 'Words')
 [ "$R" != '' ] && {
     sleep .1
     xdotool type "$R"
