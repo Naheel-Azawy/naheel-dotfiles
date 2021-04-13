@@ -176,6 +176,15 @@
 
 ;; ---- SPACES ----
 (setq-default indent-tabs-mode nil)
+(defun infer-indentation-style ()
+  "If our source file uses tabs, we use tabs, if spaces spaces,
+and if neither, we use the current 'indent-tabs-mode'
+https://www.emacswiki.org/emacs/NoTabs"
+  (interactive)
+  (let ((space-count (how-many "^  " (point-min) (point-max)))
+        (tab-count (how-many "^\t" (point-min) (point-max))))
+    (if (> space-count tab-count) (setq indent-tabs-mode nil))
+    (if (> tab-count space-count) (setq indent-tabs-mode t))))
 
 ;; ---- MODELINE ----
 (use-package doom-modeline
