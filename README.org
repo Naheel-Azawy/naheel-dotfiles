@@ -1,5 +1,5 @@
 * Naheel's Personal Dotfiles
-  A collection of toys glued together to buildup my setup on my main machine.
+  A collection of toys glued together to buildup my setup on my machines.
 
   Warning: This thing is not so stable and might explode at any moment.
 
@@ -9,13 +9,13 @@
    - emacs
    - fish
    - st
-   - lf
+   - [[https://github.com/Naheel-Azawy/fmz][fmz]]
    - tmux everywhere ([[https://github.com/Naheel-Azawy/theterm][theterm]])
    - i3
    - lemonbar
    - [[https://github.com/Naheel-Azawy/sxiv][sxiv]] (custom fork)
    - mpd and ncmpcpp
-   - chromium
+   - brave/chromium/firefox
    - bunch of other stuff
 
 ** Install
