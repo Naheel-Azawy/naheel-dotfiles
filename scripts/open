@@ -31,6 +31,8 @@ openfile() {
                 exec "$EDITOR" "$f";;
             *.pcapng|*.cap)
                 exec termshark "$f";;
+            *.drawio)
+                mynohup drawio "$f";;
             *)
                 # mime type
                 case $(file --mime-type "$(realpath """$f""")" -b) in

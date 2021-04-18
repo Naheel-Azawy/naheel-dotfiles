@@ -59,3 +59,4 @@
 | pacman   | w3m                            | N.A.                                   | terminal browser which can also view images                                                    |
 | pacman   | lynx                           | N.A.                                   | a terminal web browser                                                                         |
 | suckless | dmenu                          | https://git.suckless.org/dmenu         | runs commands and provides a UI for selection                                                  |
+| pacman   | units                          | N.A.                                   | units converter                                                                                               |

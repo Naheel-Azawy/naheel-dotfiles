@@ -255,7 +255,6 @@ https://www.emacswiki.org/emacs/NoTabs"
   (use-package rjsx-mode  :mode
     ("\\.js\\'"  . rjsx-mode)
     ("\\.jsx\\'" . rjsx-mode))
-  (use-package v-mode :mode "\\.v\\'")
   (use-package octave :mode ("\\.m\\'" . octave-mode))
   (use-package python
     :mode
@@ -667,6 +666,14 @@ from: https://stackoverflow.com/a/998472/3825872"
   (byte-compile-file (expand-file-name "lacarte.el" lisp-directory)))
 (require 'lacarte)
 (global-set-key [?\e ?\M-x] 'lacarte-execute-menu-command)
+
+;; --- VLANG ---
+(unless (file-exists-p (expand-file-name "vlang-mode.el" lisp-directory))
+  (url-copy-file "https://raw.githubusercontent.com/naheel-azawy/vlang-mode.el/master/vlang-mode.el"
+                 (expand-file-name "vlang-mode.el" lisp-directory)))
+(unless (file-exists-p (expand-file-name "vlang-mode.elc" lisp-directory))
+  (byte-compile-file (expand-file-name "vlang-mode.el" lisp-directory)))
+(require 'vlang-mode)
 
 ;;; emacs-init.el ends here
 (custom-set-variables

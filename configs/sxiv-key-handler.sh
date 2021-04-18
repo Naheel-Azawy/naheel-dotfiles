@@ -95,5 +95,5 @@ case "$choice" in
     "Play video" | "p")
         open "${files[@]}";;
     "Drag and drop" | "d")
-        dragon "${files[@]}";;
+        dragon -a -x "${files[@]}";;
 esac
