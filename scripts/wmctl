@@ -1,7 +1,0 @@
-#!/bin/python3
-
-from sys import argv
-from wmctl import run
-
-if __name__ == "__main__":
-    run(argv[1:])

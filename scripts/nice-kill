@@ -1,0 +1,4 @@
+#!/bin/sh
+
+theterm --kill-window ||
+    xdotool getactivewindow windowclose

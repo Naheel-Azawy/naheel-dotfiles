@@ -1,0 +1,88 @@
+#!/bin/sh
+
+dir_i3_resize() {
+    case "$1" in
+        left)  echo shrink width  ;;
+        right) echo grow width    ;;
+        up)    echo shrink height ;;
+        down)  echo grow height   ;;
+    esac
+}
+
+dir_bspwm() {
+    case "$1" in
+        left)  echo west  ;;
+        right) echo east  ;;
+        up)    echo north ;;
+        down)  echo south ;;
+    esac
+}
+
+dir_bspwm_resize() {
+    case "$1" in
+        left)  echo right -"$2" 0  ;;
+        right) echo right  "$2" 0  ;;
+        up)    echo bottom 0 -"$2" ;;
+        down)  echo bottom 0  "$2" ;;
+    esac
+}
+
+if xdotool getactivewindow getwindowname | grep -q emacs; then
+    case "$1" in
+        window_focus) emacsclient --no-wait --eval "(windmove-$2)" && exit ;;
+        window_close) emacsclient --no-wait --eval "(delete-window)" && exit ;;
+    esac
+fi
+
+case "$WINDOW_MANAGER" in
+    i3)
+        case "$1" in
+            fullscreen) exec i3-msg fullscreen toggle ;;
+            float) exec i3-msg floating toggle ;;
+            stick) exec i3-msg sticky toggle ;;
+            split) exec i3-msg split t ;;
+            float_focus) exec i3-msg focus mode_toggle ;;
+            container_focus_parent) exec i3-msg focus parent ;;
+            container_focus_child) exec i3-msg focus child ;;
+            window_close) exec i3-msg kill ;;
+            window_focus) exec i3-msg focus "$2" ;;
+            window_move) exec i3-msg move "$2" ;;
+            window_resize) exec i3-msg resize "$(dir_i3_resize "$2")" 10 px or 10 ppt ;;
+            window_resize_tiny) exec i3-msg resize "$(dir_i3_resize "$2")" 1 px or 1 ppt ;;
+            workspace) exec i3-msg workspace "$2" ;;
+            workspace_move) exec i3-msg move container to workspace "$2" ;;
+            workspace_move_go) exec i3-msg move container to workspace "$2"\; workspace "$2" ;;
+            workspace_next) exec i3-msg workspace next ;;
+            workspace_prev) exec i3-msg workspace prev ;;
+            workspace_monitor_next) exec i3-msg move workspace to output right ;;
+            restart) exec i3-msg restart ;;
+            end) exec i3-msg exit ;;
+        esac ;;
+
+    bspwm)
+        case "$1" in
+            fullscreen) exec bspc node -t ~fullscreen ;;
+            float) exec bspc node -t ~floating ;;
+            stick) exec bspc node -s sticky ;;
+            split) : ;;
+            float_focus) : ;;
+            container_focus_parent) : ;;
+            container_focus_child) : ;;
+            window_close) exec bspc node -c ;; # -k for kill
+            window_focus) exec bspc node -f "$(dir_bspwm "$2")" ;;
+            window_move) exec bspc node -s "$(dir_bspwm "$2")" ;;
+            window_resize) exec bspc node -z "$(dir_bspwm_resize "$2" 30)" ;;
+            window_resize_tiny) exec bspc node -z "$(dir_bspwm_resize "$2" 1)" ;;
+            workspace) exec bspc desktop -f "$2" ;;
+            workspace_move) exec bspc node -d "$2" ;;
+            workspace_move_go) bspc node -d "$2" && exec bspc desktop -f "$2" ;;
+            workspace_next) exec bspc desktop -f next ;;
+            workspace_prev) exec bspc desktop -f prev ;;
+            workspace_monitor_next) : ;;
+            restart) exec bspc wm -r ;;
+            end) exec bspc quit ;;
+        esac ;;
+
+    *)
+        echo "Unknown window manager '$WINDOW_MANAGER'" ;;
+esac

@@ -1,86 +1,86 @@
 # Close focused program
 super+q
-	wmctl nice-kill
+	wm-msg window_close
 
 # Close focused window keeping tmux sessions
 super+shift+q
-	i3-msg kill
+	wm-msg window_close
 
 # Ignore the tmux session (if is) and kill focused window
 super+control+q
-	theterm --tmux-ignore && i3-msg kill
+	theterm --tmux-ignore && wm-msg window_close
 
 # Enter fullscreen mode for the focused container
 super+f
-	i3-msg fullscreen toggle
+	wm-msg fullscreen
 
 # Toggle tiling / floating
 super+t
-	i3-msg floating toggle
+	wm-msg float
 
 # Toggle sticky window
 super+shift+t
-	i3-msg sticky toggle
+	wm-msg stick
 
 # Toggle split
 super+shift+slash
-	i3-msg split t
+	wm-msg split
 
 # Change focus between tiling / floating windows
 super+slash
-	i3-msg focus mode_toggle
+	wm-msg float_focus
 
 # Focus the parent container
 super+a
-	i3-msg focus parent
+	wm-msg container_focus_parent
 
 # Focus the child container
 super+shift+a
-	i3-msg focus child
+	wm-msg container_focus_child
 
 # Change focus
 super+{Left,Right,Up,Down}
-	i3-msg focus {left,right,up,down}
+	wm-msg window_focus {left,right,up,down}
 
 # Move focused window
 super+shift+{Left,Right,Up,Down}
-	i3-msg move {left,right,up,down}
+	wm-msg window_move {left,right,up,down}
 
 # Resize window
 super+ctrl+{Left,Right,Up,Down}
-	i3-msg resize {shrink width,grow width,shrink height,grow height} 10 px or 10 ppt
+	wm-msg window_resize {left,right,up,down}
 
 # Resize window (a little bit)
 super+shift+ctrl+{Left,Right,Up,Down}
-	i3-msg resize {shrink width,grow width,shrink height,grow height} 1 px or 1 ppt
+	wm-msg window_resize_tiny {left,right,up,down}
 
 # Switch to workspace
 super+{1-9,0}
-	i3-msg workspace {1-9,10}
+	wm-msg workspace {1-9,10}
 
 # Move focused container to workspace
 super+ctrl+{1-9,0}
-	i3-msg move container to workspace {1-9,10}
+	wm-msg workspace_move {1-9,10}
 
 # Move focused container to workspace and go there
 super+shift+{1-9,0}
-	w={1-9,10}; i3-msg move container to workspace $w\\; workspace $w
+	wm-msg workspace_move_go {1-9,10}
 
 # Move to next workspace
 super+Tab
-	i3-msg workspace next
+	wm-msg workspace_next
 
 # Move to previous workspace
 super+shift+Tab
-	i3-msg workspace prev
+	wm-msg workspace_prev
 
 # Move workspace to next monitor
 super+ctrl+p
-	i3-msg move workspace to output right
+	wm-msg workspace_monitor_next
 
 # Restart window manager
 super+shift+r
-	i3-msg restart; pkill -USR1 -x sxhkd
+	wm-msg restart; pkill -USR1 -x sxhkd
 
 # Start a terminal
 super+Return
@@ -88,7 +88,7 @@ super+Return
 
 # Start a terminal with opposite split
 super+shift+Return
-	i3-msg split t; theterm
+	wm-msg split; theterm
 
 # Start a terminal (without tmux)
 super+ctrl+Return
@@ -96,7 +96,7 @@ super+ctrl+Return
 
 # Start a terminal with opposite split (without tmux)
 super+shift+ctrl+Return
-	i3-msg split t; $TERMINAL bash
+	wm-msg split; $TERMINAL bash
 
 # Start file manager
 super+apostrophe
@@ -104,7 +104,7 @@ super+apostrophe
 
 # Start file manager with opposite split
 super+shift+apostrophe
-	i3-msg split t; theterm $FILE_MANAGER
+	wm-msg split; theterm $FILE_MANAGER
 
 # Empty window
 super+e
@@ -112,7 +112,7 @@ super+e
 
 # Empty window with opposite split
 super+shift+e
-	i3-msg split t; empty
+	wm-msg split; empty
 
 # Start the program launcher
 super+d
@@ -248,7 +248,7 @@ super+F1
 
 # Show the system monitor
 super+grave
-	i3-msg workspace \#; system-monitor -1
+	wm-msg workspace \#; system-monitor -1
 
 XF86AudioMute
 	audioctl mute
@@ -329,7 +329,7 @@ XF86Suspend
 	lockscreen
 
 XF86Close
-	wmctl nice-kill
+	wm-msg window_close
 
 XF86WebCam
 	camtoggle
