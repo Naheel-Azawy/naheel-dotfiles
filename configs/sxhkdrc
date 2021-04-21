@@ -373,3 +373,5 @@ super+semicolon
 super+shift+semicolon
 	calendar
 
+super+period
+	pkill highlight-point || highlight-pointer -r 10
