@@ -74,3 +74,4 @@
 | pacman   | sxhkd                  | N.A.                                         | keyboard bindings                                                |
 | pacman   | appmenu-gtk-module     | N.A.                                         | needed for the hud menu                                          |
 | git      | menus                  | https://github.com/Naheel-Azawy/menus        | just some menus                                                  |
+| suckless | dmenu                  | https://git.suckless.org/dmenu               | runs commands and provides a UI for selection                    |

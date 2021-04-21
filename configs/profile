@@ -13,7 +13,7 @@ export TERMINAL='theterm'
 export FILE_MANAGER='fmz'
 export BROWSER='browser'
 export READER='reader'
-export MENUS_INTERFACE='fzf'
+export MENUS_INTERFACE='dmenu'
 export TUI_APPS='music-player:lf:vis:corona:alsamixer:lyrics:nano:dice:fmz'
 
 # TODO: move to personal
