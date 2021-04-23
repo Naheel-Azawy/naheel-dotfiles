@@ -1,21 +1,26 @@
 #!/bin/sh
 
-bspc monitor      -d 1 2 3 4 5 6 7 8 9
-bspc monitor DP-1 -d 10 2>/dev/null
+xsetroot -cursor_name left_ptr
+
+bspc monitor -d 1 2 3 4 5 6 7 8 9
+# bspc monitor DP-1 -d 10 2>/dev/null
 
 bspc config border_width         2
 bspc config window_gap           0
 bspc config borderless_monocle   true
 bspc config gapless_monocle      true
 
+# borderless single window (auto monocle enabler)
+# https://github.com/baskerville/bspwm/issues/617
+bspc config single_monocle true
+bspc config borderless_monocle true
+
+# while bspc subscribe -c 1 node_focus; do
+#     bspc config border_width 0
+#     bspc config -n focused border_width 2
+# done
+
 # looks like regex doesn't work here. TODO: fix
 # bspc rule -a '.*__floatme__.*' state=floating
 # bspc rule -a '.*__stickme__.*' sticky=on
 # bspc rule -a 'dragon'          sticky=on
-
-# dynamic workspaces
-# https://gitlab.com/protesilaos/dotfiles/-/blob/v2.2.0/bspwm/.config/bspwm/bspwmrc
-
-# borderless single window (auto monocle enabler)
-# https://github.com/baskerville/bspwm/issues/617
-# for p in {single,borderless}_monocle; do bspc config "$p" true; done

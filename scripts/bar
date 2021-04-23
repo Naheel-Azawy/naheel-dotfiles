@@ -1,5 +1,10 @@
 #!/bin/python3
 
+# TODO: turn items to shell script functions
+# python opens a shell instance, source the items script,
+# and call them whenever needed.
+# this also can turn it into something that everyone can use.
+
 import sh
 import os
 import sys
@@ -64,7 +69,7 @@ class WM:
         })
 
     def lemon(self):
-        circles = True
+        circles = False
         out = ""
         # still not sure which to pick so I'm keeping both for now
         if circles:

@@ -374,4 +374,7 @@ super+shift+semicolon
 	calendar
 
 super+period
-	pkill highlight-point || highlight-pointer -r 10
+	pkill highlight-point || highlight-pointer -r 15 -c red
+
+super+shift+period
+	pkill highlight-point || highlight-pointer -r 20 -c red

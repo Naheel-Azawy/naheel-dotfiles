@@ -1,11 +1,20 @@
 #!/bin/sh
 
-dir_i3_resize() {
+i3_resize() {
     case "$1" in
-        left)  echo shrink width  ;;
-        right) echo grow width    ;;
-        up)    echo shrink height ;;
-        down)  echo grow height   ;;
+        left)  i3-msg resize shrink width  "$2" px or "$2" ppt ;;
+        right) i3-msg resize grow   width  "$2" px or "$2" ppt ;;
+        up)    i3-msg resize shrink height "$2" px or "$2" ppt ;;
+        down)  i3-msg resize grow   height "$2" px or "$2" ppt ;;
+    esac
+}
+
+bspwm_resize() {
+    case "$1" in
+        left)  bspc node -z left  "$2"   0  || bspc node -z right -"$2"  0  ;;
+        right) bspc node -z right "$2"   0  || bspc node -z left  -"$2"  0  ;;
+        up)    bspc node -z top     0 -"$2" || bspc node -z bottom   0 "$2" ;;
+        down)  bspc node -z bottom  0 -"$2" || bspc node -z top      0 "$2" ;;
     esac
 }
 
@@ -18,13 +27,26 @@ dir_bspwm() {
     esac
 }
 
-dir_bspwm_resize() {
+bspwm_move() {
     case "$1" in
-        left)  echo right -"$2" 0  ;;
-        right) echo right  "$2" 0  ;;
-        up)    echo bottom 0 -"$2" ;;
-        down)  echo bottom 0  "$2" ;;
+        left)  bspc node -v -20   0 || bspc node -s west  ;;
+        right) bspc node -v  20   0 || bspc node -s east  ;;
+        up)    bspc node -v   0 -20 || bspc node -s north ;;
+        down)  bspc node -v   0  20 || bspc node -s south ;;
     esac
+}
+
+bspwm_ws_check() {
+    # dynamic, i3-like behavior
+    # remove empty desktops
+    bspc query -D -d .!occupied --names |
+        xargs -d '\n' -I {} bspc desktop {} -r
+    # remove empty monitors
+    bspc query -M -m .!occupied --names |
+        xargs -d '\n' -I {} bspc monitor {} -r
+    # create if not there
+    bspc query -D -d "$1" >/dev/null ||
+        bspc monitor -a "$1"
 }
 
 if xdotool getactivewindow getwindowname | grep -q emacs; then
@@ -37,50 +59,50 @@ fi
 case "$WINDOW_MANAGER" in
     i3)
         case "$1" in
-            fullscreen) exec i3-msg fullscreen toggle ;;
-            float) exec i3-msg floating toggle ;;
-            stick) exec i3-msg sticky toggle ;;
-            split) exec i3-msg split t ;;
-            float_focus) exec i3-msg focus mode_toggle ;;
-            container_focus_parent) exec i3-msg focus parent ;;
-            container_focus_child) exec i3-msg focus child ;;
-            window_close) exec i3-msg kill ;;
-            window_focus) exec i3-msg focus "$2" ;;
-            window_move) exec i3-msg move "$2" ;;
-            window_resize) exec i3-msg resize "$(dir_i3_resize "$2")" 10 px or 10 ppt ;;
-            window_resize_tiny) exec i3-msg resize "$(dir_i3_resize "$2")" 1 px or 1 ppt ;;
-            workspace) exec i3-msg workspace "$2" ;;
-            workspace_move) exec i3-msg move container to workspace "$2" ;;
-            workspace_move_go) exec i3-msg move container to workspace "$2"\; workspace "$2" ;;
-            workspace_next) exec i3-msg workspace next ;;
-            workspace_prev) exec i3-msg workspace prev ;;
-            workspace_monitor_next) exec i3-msg move workspace to output right ;;
-            restart) exec i3-msg restart ;;
-            end) exec i3-msg exit ;;
+            fullscreen) i3-msg fullscreen toggle ;;
+            float) i3-msg floating toggle ;;
+            stick) i3-msg sticky toggle ;;
+            split) i3-msg split t ;;
+            float_focus) i3-msg focus mode_toggle ;;
+            container_focus_parent) i3-msg focus parent ;;
+            container_focus_child) i3-msg focus child ;;
+            window_close) i3-msg kill ;;
+            window_focus) i3-msg focus "$2" ;;
+            window_move) i3-msg move "$2" ;;
+            window_resize) i3_resize "$2" 10 ;;
+            window_resize_tiny) i3_resize "$2" 1 ;;
+            workspace) i3-msg workspace "$2" ;;
+            workspace_move) i3-msg move container to workspace "$2" ;;
+            workspace_move_go) i3-msg move container to workspace "$2"\; workspace "$2" ;;
+            workspace_next) i3-msg workspace next ;;
+            workspace_prev) i3-msg workspace prev ;;
+            workspace_monitor_next) i3-msg move workspace to output right ;;
+            restart) i3-msg restart ;;
+            end) i3-msg exit ;;
         esac ;;
 
     bspwm)
         case "$1" in
-            fullscreen) exec bspc node -t ~fullscreen ;;
-            float) exec bspc node -t ~floating ;;
-            stick) exec bspc node -s sticky ;;
+            fullscreen) bspc node -t ~fullscreen ;;
+            float) bspc node -t ~floating ;;
+            stick) bspc node -s sticky ;;
             split) : ;;
             float_focus) : ;;
-            container_focus_parent) : ;;
-            container_focus_child) : ;;
-            window_close) exec bspc node -c ;; # -k for kill
-            window_focus) exec bspc node -f "$(dir_bspwm "$2")" ;;
-            window_move) exec bspc node -s "$(dir_bspwm "$2")" ;;
-            window_resize) exec bspc node -z "$(dir_bspwm_resize "$2" 30)" ;;
-            window_resize_tiny) exec bspc node -z "$(dir_bspwm_resize "$2" 1)" ;;
-            workspace) exec bspc desktop -f "$2" ;;
-            workspace_move) exec bspc node -d "$2" ;;
-            workspace_move_go) bspc node -d "$2" && exec bspc desktop -f "$2" ;;
-            workspace_next) exec bspc desktop -f next ;;
-            workspace_prev) exec bspc desktop -f prev ;;
-            workspace_monitor_next) : ;;
-            restart) exec bspc wm -r ;;
-            end) exec bspc quit ;;
+            container_focus_parent) bspc node -f @parent ;;
+            container_focus_child) bspc node -f @first ;;
+            window_close) bspc node -c ;;
+            window_focus) bspc node -f "$(dir_bspwm "$2")" ;;
+            window_move) bspwm_move "$2" ;;
+            window_resize) bspwm_resize "$2" 30 ;;
+            window_resize_tiny) bspwm_resize "$2" 5 ;;
+            workspace) bspwm_ws_check "$2" && bspc desktop -f "$2" ;;
+            workspace_move) bspwm_ws_check "$2" && bspc node -d "$2" ;;
+            workspace_move_go) bspwm_ws_check "$2" && bspc node -d "$2" && bspc desktop -f "$2" ;;
+            workspace_next) bspc desktop -f next ;;
+            workspace_prev) bspc desktop -f prev ;;
+            workspace_monitor_next) bspc desktop -m next --follow ;;
+            restart) bspc wm -r ;;
+            end) bspc quit ;;
         esac ;;
 
     *)
