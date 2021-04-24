@@ -25,7 +25,7 @@ how_can_I_help_you_sir() {
             theterm "wikit-quick \"$Q\""
             ;;
         Dict*)
-            L=$(printf 'en\nar' | $DMENU -p 'To?')
+            L=$(printf 'en\nar\nen -b --play' | $DMENU -p 'To?')
             theterm "trans :$L \"$Q\" | less -R"
             ;;
         Duck*)

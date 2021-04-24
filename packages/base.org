@@ -25,6 +25,7 @@
 | pacman     | fzf                 | N.A.                                 | fuzzy finder tool                                            |
 | pacman     | highlight           | N.A.                                 | can highlight code output                                    |
 | pacman     | fish                | N.A.                                 | the friendly shell!                                          |
+| func       | blesh               | N.A.                                 | interactive bash                                             |
 | pacman     | emacs               | N.A.                                 | the best editor on this planet                               |
 | pacman     | nano                | N.A.                                 | the tiny text editor                                         |
 | pacman     | ispell              | N.A.                                 | spell checker                                                |
