@@ -13,8 +13,8 @@ test -f "$DOTFILES_DIR/configs/more-paths.sh" &&
 
 BLESH=~/.local/share/blesh/ble.sh
 
-[[ $- == *i* && -f "$BLESH" ]] && {
-    source "$BLESH" --noattach
+if [[ $- == *i* ]]; then
+    # [ -f "$BLESH" ] && source "$BLESH" --noattach
 
     stty -ixon
     shopt -s autocd
@@ -143,6 +143,7 @@ BLESH=~/.local/share/blesh/ble.sh
     }
 
     bash_greeting
-}
-
-[[ ${BLE_VERSION-} ]] && ble-attach
+    if [[ ${BLE_VERSION-} ]]; then
+        ble-attach
+    fi
+fi
