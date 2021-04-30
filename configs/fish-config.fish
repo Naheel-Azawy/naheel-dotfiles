@@ -200,9 +200,9 @@ abbr dsync 'rsync -rtu --delete --info=del,name,stats2'
 abbr cl    'calc'
 abbr awkp  'awk \'{print $1}\''
 abbr p     'theprayer'
-
 abbr ytdl  'youtube-dl --add-metadata -ic'
 abbr ytdla 'youtube-dl --add-metadata -xic --audio-format mp3'
+abbr blesh 'env USE_BLESH=1 bash'
 
 set -x TERM "screen-256color"
 set -x SHELL "/usr/bin/fish"

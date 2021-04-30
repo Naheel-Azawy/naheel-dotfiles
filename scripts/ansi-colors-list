@@ -1,10 +1,17 @@
-#!/bin/bash
-for x in {0..8}; do
-    for i in {30..37}; do
-        for a in {40..47}; do
-            echo -ne "\e[$x;$i;$a""m\\\e[$x;$i;$a""m\e[0;37;40m "
+#!/bin/sh
+
+xs=$(seq 0 8)
+is=$(seq 30 37)
+as=$(seq 40 47)
+
+for x in $xs; do
+    for i in $is; do
+        for a in $as; do
+            printf "\e[$x;$i;$a""m\\\e[$x;$i;$a""m\e[0;37;40m "
         done
         echo
     done
 done
-echo -e "\e[0m"
+printf "\e[0m\n"
+
+echo 'Reset: \e[0m'

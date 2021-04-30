@@ -16,7 +16,7 @@ exec i3lock \
      --clock \
      --indicator \
      --timestr '%H:%M' \
-     --datestr '%Y-%m-%d' \
+     --datestr '%Y.%m.%d' \
      --time-font "$FONT" \
      --date-font "$FONT" \
      --layout-font "$FONT" \

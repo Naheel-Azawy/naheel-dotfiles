@@ -1,0 +1,132 @@
+#!/bin/sh
+
+JAILS="$HOME/Jails"
+
+LINE='==================================='
+
+info() {
+    echo $LINE
+    printf '\033[1;34mINFO:\033[0m '
+    echo "$@"
+    echo $LINE
+}
+
+err() {
+    {
+        echo $LINE
+        printf '\033[1m\033[31mERROR:\033[0m '
+        echo "$@"
+        echo $LINE
+    } >&2
+}
+
+needed() {
+    echo $LINE
+    printf '\033[1;33mNEEDED:\033[0m '
+    echo "$@"
+    echo $LINE
+}
+
+mkjail() {
+    J="$JAILS/$1"
+    mkdir -p "$J"
+    echo "$J"
+}
+
+fire() {
+    name="$1"
+    shift
+    jail=$(mkjail "$name")
+    # TODO: --net=none
+    firejail \
+        --private-tmp \
+        --blacklist=/mnt \
+        --private="$jail" \
+        "$@"
+}
+
+list() {
+    env QUOTING_STYLE=literal \
+        ls -1 "$JAILS/playonlinux/.PlayOnLinux/shortcuts" |
+        while read -r name; do
+            echo "playinjail@$name"
+        done
+
+    # maybe https://appimage.github.io/feed.json
+    echo 'appjail@Unity3D@https://public-cdn.cloud.unity3d.com/hub/prod/UnityHub.AppImage'
+    echo 'appjail@Zoom@https://github.com/probonopd/Zoom.AppImage/releases/download/stable/Zoom-5.6.16775.0418.glibc2.17-x86_64.AppImage'
+}
+
+menu() {
+    m=menus-face
+    command -v $m >/dev/null || m=dmenu
+    P=$({
+           list | cut -d '@' -f2
+           echo 'Manage PlayOnLinux'
+       } | $m -i -l 20)
+    case "$P" in
+        'Manage PlayOnLinux')
+            playinjail ;;
+        '')
+            return 1;;
+        *)
+            run "$P";;
+    esac
+}
+
+winejail() {
+    : # TODO
+}
+
+playinjail() {
+    name="$1"
+    if [ "$name" ]; then
+        fire playonlinux playonlinux --run "$name"
+    else
+        fire playonlinux playonlinux
+    fi
+}
+
+appjail() {
+    IMGS_DIR="$JAILS/appimages"
+    mkdir -p "$IMGS_DIR"
+
+    name="$1"
+    url=$(list | grep -m1 "^appjail@$name@" | cut -d '@' -f3)
+    img=$(echo "$url" | awk -F/ '{print $NF}')
+    img="$IMGS_DIR/$img"
+
+    [ -f "$img" ] || {
+        info "Downloading $name AppImage from $url..."
+        cd "$IMGS_DIR" && wget "$url"
+    }
+    [ -x "$img" ] || chmod +x "$img"
+
+    fire "$name" --appimage --noprofile "$img"
+}
+
+run() {
+    name=$(list | cut -d '@' -f2 | grep -i "$1")
+    kind=$(list | grep "@$name" | cut -d '@' -f1)
+    "$kind" "$name"
+}
+
+main() {
+    # command -v dash >/dev/null && export SHELL=dash
+
+    if [ $# -gt 0 ]; then
+        cmd="$1"
+        shift
+        case "$cmd" in
+            list)       list | tr '@' ' ' ;;
+            winejail)   winejail   "$@" ;;
+            playinjail) playinjail "$@" ;;
+            appjail)    appjail    "$@" ;;
+            *)          run        "$@" ;;
+        esac
+    else
+        menu
+    fi
+}
+
+main "$@"

@@ -14,7 +14,8 @@ test -f "$DOTFILES_DIR/configs/more-paths.sh" &&
 BLESH=~/.local/share/blesh/ble.sh
 
 if [[ $- == *i* ]]; then
-    # [ -f "$BLESH" ] && source "$BLESH" --noattach
+    [[ "$USE_BLESH" && -f "$BLESH" ]] &&
+        source "$BLESH" --noattach
 
     stty -ixon
     shopt -s autocd
