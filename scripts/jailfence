@@ -4,6 +4,46 @@ JAILS="$HOME/Jails"
 
 LINE='==================================='
 
+WORD='
+[Desktop Entry]
+Name=Word
+Exec=jailfence word %F
+Icon=libreoffice-writer
+Terminal=false
+Type=Application
+Categories=Office;WordProcessor;X-Red-Hat-Base;X-MandrivaLinux-Office-Wordprocessors;
+MimeType=application/vnd.oasis.opendocument.text;application/vnd.oasis.opendocument.text-template;application/vnd.oasis.opendocument.text-web;application/vnd.oasis.opendocument.text-master;application/vnd.oasis.opendocument.text-master-template;application/vnd.sun.xml.writer;application/vnd.sun.xml.writer.template;application/vnd.sun.xml.writer.global;application/msword;application/vnd.ms-word;application/x-doc;application/x-hwp;application/rtf;text/rtf;application/vnd.wordperfect;application/wordperfect;application/vnd.lotus-wordpro;application/vnd.openxmlformats-officedocument.wordprocessingml.document;application/vnd.ms-word.document.macroEnabled.12;application/vnd.openxmlformats-officedocument.wordprocessingml.template;application/vnd.ms-word.template.macroEnabled.12;application/vnd.ms-works;application/vnd.stardivision.writer-global;application/x-extension-txt;application/x-t602;text/plain;application/vnd.oasis.opendocument.text-flat-xml;application/x-fictionbook+xml;application/macwriteii;application/x-aportisdoc;application/prs.plucker;application/vnd.palm;application/clarisworks;application/x-sony-bbeb;application/x-abiword;application/x-iwork-pages-sffpages;application/x-mswrite;application/x-starwriter;
+'
+
+POWERPOINT='
+[Desktop Entry]
+Name=PowerPoint
+Exec=jailfence powerpoint %F
+Icon=libreoffice-impress
+Terminal=false
+Type=Application
+Categories=Office;Presentation;X-Red-Hat-Base;X-MandrivaLinux-Office-Presentations;
+MimeType=application/vnd.oasis.opendocument.presentation;application/vnd.oasis.opendocument.presentation-template;application/vnd.sun.xml.impress;application/vnd.sun.xml.impress.template;application/mspowerpoint;application/vnd.ms-powerpoint;application/vnd.openxmlformats-officedocument.presentationml.presentation;application/vnd.ms-powerpoint.presentation.macroEnabled.12;application/vnd.openxmlformats-officedocument.presentationml.template;application/vnd.ms-powerpoint.template.macroEnabled.12;application/vnd.openxmlformats-officedocument.presentationml.slide;application/vnd.openxmlformats-officedocument.presentationml.slideshow;application/vnd.ms-powerpoint.slideshow.macroEnabled.12;application/vnd.oasis.opendocument.presentation-flat-xml;application/x-iwork-keynote-sffkey;
+'
+
+EXCEL='
+[Desktop Entry]
+Name=Excel
+Exec=jailfence excel %F
+Icon=libreoffice-calc
+Terminal=false
+Type=Application
+Categories=Office;Spreadsheet;X-Red-Hat-Base;X-MandrivaLinux-Office-Spreadsheets;
+MimeType=application/vnd.oasis.opendocument.spreadsheet;application/vnd.oasis.opendocument.spreadsheet-template;application/vnd.sun.xml.calc;application/vnd.sun.xml.calc.template;application/msexcel;application/vnd.ms-excel;application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;application/vnd.ms-excel.sheet.macroEnabled.12;application/vnd.openxmlformats-officedocument.spreadsheetml.template;application/vnd.ms-excel.template.macroEnabled.12;application/vnd.ms-excel.sheet.binary.macroEnabled.12;text/csv;application/x-dbf;text/spreadsheet;application/csv;application/excel;application/tab-separated-values;application/vnd.lotus-1-2-3;application/vnd.oasis.opendocument.chart;application/vnd.oasis.opendocument.chart-template;application/x-dbase;application/x-dos_ms_excel;application/x-excel;application/x-msexcel;application/x-ms-excel;application/x-quattropro;application/x-123;text/comma-separated-values;text/tab-separated-values;text/x-comma-separated-values;text/x-csv;application/vnd.oasis.opendocument.spreadsheet-flat-xml;application/vnd.ms-works;application/clarisworks;application/x-iwork-numbers-sffnumbers;application/x-starcalc;
+'
+
+office_desktops() {
+    echo "$WORD"       > /usr/share/applications/jail-word.desktop
+    echo "$POWERPOINT" > /usr/share/applications/jail-powerpoint.desktop
+    echo "$EXCEL"      > /usr/share/applications/jail-excel.desktop
+    update-desktop-database
+}
+
 info() {
     echo $LINE
     printf '\033[1;34mINFO:\033[0m '
@@ -55,6 +95,9 @@ list() {
     # maybe https://appimage.github.io/feed.json
     echo 'appjail@Unity3D@https://public-cdn.cloud.unity3d.com/hub/prod/UnityHub.AppImage'
     echo 'appjail@Zoom@https://github.com/probonopd/Zoom.AppImage/releases/download/stable/Zoom-5.6.16775.0418.glibc2.17-x86_64.AppImage'
+
+    # direct firejail
+    echo 'straight2jail@Steam@steam'
 }
 
 menu() {
@@ -80,10 +123,11 @@ winejail() {
 
 playinjail() {
     name="$1"
+    shift
     if [ "$name" ]; then
-        fire playonlinux playonlinux --run "$name"
+        fire playonlinux playonlinux --run "$name" "$@"
     else
-        fire playonlinux playonlinux
+        fire playonlinux playonlinux "$@"
     fi
 }
 
@@ -105,10 +149,43 @@ appjail() {
     fire "$name" --appimage --noprofile "$img"
 }
 
+straight2jail() {
+    name="$1"
+    shift
+    cmd=$(list | grep -m1 "^straight2jail@$name@" | cut -d '@' -f3)
+    # https://wiki.archlinux.org/title/Firejail#Graphical_applications_hang_on_start_with_AMDGPU
+    # case "$name" in
+    #     Steam) export DRI_PRIME=1 ;;
+    # esac
+    fire "$name" "$cmd"
+}
+
 run() {
     name=$(list | cut -d '@' -f2 | grep -i "$1")
     kind=$(list | grep "@$name" | cut -d '@' -f1)
-    "$kind" "$name"
+
+    f="$2"
+    if [ "$kind" = 'playinjail' ] && [ -f "$f" ]; then
+        jail=$(mkjail "playonlinux")
+        fname=$(basename "$f")
+        tmpf="$jail/tmpfile"
+        mkdir -p "$tmpf"
+        tmpf="$tmpf/$fname"
+
+        cp "$f" "$tmpf"
+        "$kind" "$name" "$HOME/tmpfile/$fname"
+
+        if ! cmp "$f" "$tmpf"; then
+            d=$(date '+%Y%m%d-%H%M%s')
+            mv "$f" "$f-$d.bak"
+            mv "$tmpf" "$f"
+            chmod -x "$f"
+        else
+            rm "$tmpf"
+        fi
+    else
+        "$kind" "$name"
+    fi
 }
 
 main() {
@@ -118,11 +195,9 @@ main() {
         cmd="$1"
         shift
         case "$cmd" in
-            list)       list | tr '@' ' ' ;;
-            winejail)   winejail   "$@" ;;
-            playinjail) playinjail "$@" ;;
-            appjail)    appjail    "$@" ;;
-            *)          run        "$@" ;;
+            list)   list | tr '@' ' '   ;;
+            office) office_desktops     ;;
+            *)      run     "$cmd" "$@" ;;
         esac
     else
         menu

@@ -25,7 +25,12 @@ case "$1" in
 
     -m)
         printf 'Enter password: '
-        read -r -s p
+        # https://unix.stackexchange.com/q/222974/183147
+        # https://stackoverflow.com/a/28393320/3825872
+        sttybak=$(stty -g)
+        stty -echo
+        read -r p
+        stty "$sttybak"
         printf '\nLoading...\n'
         mountpoint -q "$DEC" || {
             echo "$p" | encfs -S "$ENC" "$DEC"
