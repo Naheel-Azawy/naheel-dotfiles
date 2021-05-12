@@ -1,12 +1,10 @@
 #!/bin/sh
 
-BLUE='\e[1;34m'
-RED='\e[1;31m'
-YELLOW='\e[1;33m'
-GREEN='\e[1;32m'
-RESET='\e[0m'
-
-BIBTEX_RERUN_NEEDED='Please (re)run Biber on the file:'
+BLUE='\033[1;34m'
+RED='\033[1;31m'
+YELLOW='\033[1;33m'
+GREEN='\033[1;32m'
+RESET='\033[0m'
 
 run_showing() {
     printf "$GREEN\$$RESET %s\n" "$*" >&2
@@ -20,6 +18,11 @@ gen_pdf() {
 
 gen_bib() {
     run_showing biber "$@"
+}
+
+embed_fonts() {
+    run_showing gs -q -dNOPAUSE -dBATCH -dPDFSETTINGS=/prepress -sDEVICE=pdfwrite -sOutputFile="$1.embedded.pdf" "$1"
+    run_showing mv "$1.embedded.pdf" "$1"
 }
 
 garbage() {
@@ -68,14 +71,17 @@ cleanup() {
 }
 
 rerun_needed() {
-    msg="$1"
-    echo "$msg" | grep -iq 'rerun' ||
-        echo "$msg" | grep -iq '(re)run' ||
-        echo "$msg" | grep -iq 'again'
+    echo "$1" | grep -iq 'rerun ' ||
+        echo "$1" | grep -iq '(re)run' ||
+        echo "$1" | grep -iq 'again'
+}
+
+bibtex_needed() {
+    echo "$1" | grep -iq 'Please (re)run Biber on the file' ||
+        echo "$1" | grep -iq 'Please (re)run BibTeX on the file'
 }
 
 main() {
-    DOCX=;  [ "$1" = '-d' ] && DOCX=1  && shift
     ASCII=; [ "$1" = '-a' ] && ASCII=1 && shift
     [ -t 1 ] && [ -t 0 ] || ASCII=1
 
@@ -92,13 +98,6 @@ main() {
 
     garbage_show "$F"
 
-    if [ "$DOCX" ]; then
-        # TODO: move to personal
-        # or better download if not existing
-        pandoc --bibliography="$BIB" --filter pandoc-citeproc --csl "$HOME/Documents/LaTeX/ieee.csl" "$F.tex" -o "$F.docx"
-        return
-    fi
-
     # first latex run
     if OUT=$(gen_pdf "$F.tex"); then
 
@@ -111,7 +110,7 @@ main() {
                 OUT=$(gen_pdf "$F.tex")
 
                 # sometimes, the files get messy and a clean build is needed
-                if echo "$OUT" | grep -q "$BIBTEX_RERUN_NEEDED"; then
+                if bibtex_needed "$OUT"; then
                     cleanup "$F"
                     BIBOUT=$(gen_bib "$F") &&
                         OUT=$(gen_pdf "$F.tex")
@@ -123,6 +122,8 @@ main() {
         if rerun_needed "$OUT"; then
             OUT=$(gen_pdf "$F.tex")
         fi
+
+        # embed_fonts "$F.pdf"
     fi
 
     ERRS=$(echo "$OUT" |
