@@ -1,8 +1,5 @@
-Applied https://st.suckless.org/patches/font2
-Changed font and borders
----
 diff --git a/config.def.h b/config.def.h
-index 6f05dce..0e3a75a 100644
+index 6f05dce..ee31a2d 100644
 --- a/config.def.h
 +++ b/config.def.h
 @@ -5,8 +5,16 @@
@@ -25,13 +22,13 @@ index 6f05dce..0e3a75a 100644
  /*
   * What program is execed by st depends of these precedence rules:
 diff --git a/x.c b/x.c
-index 210f184..bb91d3f 100644
+index 7186040..345ddbc 100644
 --- a/x.c
 +++ b/x.c
 @@ -157,6 +157,8 @@ static void xhints(void);
  static int xloadcolor(int, const char *, Color *);
  static int xloadfont(Font *, FcPattern *);
- static void xloadfonts(char *, double);
+ static void xloadfonts(const char *, double);
 +static int xloadsparefont(FcPattern *, int);
 +static void xloadsparefonts(void);
  static void xunloadfont(Font *);
@@ -45,7 +42,7 @@ index 210f184..bb91d3f 100644
  	cresize(0, 0);
  	redraw();
  	xhints();
-@@ -1019,6 +1022,101 @@ xloadfonts(char *fontstr, double fontsize)
+@@ -1021,6 +1024,101 @@ xloadfonts(const char *fontstr, double fontsize)
  	FcPatternDestroy(pattern);
  }
  
@@ -147,7 +144,7 @@ index 210f184..bb91d3f 100644
  void
  xunloadfont(Font *f)
  {
-@@ -1116,6 +1214,9 @@ xinit(int cols, int rows)
+@@ -1118,6 +1216,9 @@ xinit(int cols, int rows)
  	usedfont = (opt_font == NULL)? font : opt_font;
  	xloadfonts(usedfont, 0);
  

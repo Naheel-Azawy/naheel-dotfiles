@@ -279,53 +279,6 @@ export PATH=\"\$PATH:\$DOTFILES_SCRIPTS\"
     echo 'DONE!!!'
 }
 
-# get github repo latest commit timestamp
-github_time() {
-    url=$(echo "$1" |
-              sed -En 's@^https://github.com/(.+)@https://api.github.com/repos/\1/commits/master@p')
-    [ "$url" ] || return 1
-    dt=$(curl -s "$url" |
-             sed -En 's/\s*"date":\s*"(.+)"\s*/\1/p' | head -n 1)
-    [ "$dt" ] || return 1
-    date --date "$dt" +%s
-}
-
-# check if a git-based package needs update
-pkg_git_needs_update() {
-    tag="$1"; pac="$2"; link="$3"
-    case "$tag" in
-        git|suckless)
-            bin=$(which "$pac" 2>/dev/null)
-            [ "$bin" ] || return 2
-
-            # timestamps to be compared
-            ts_bin= ; ts_github= ; ts_patch=
-
-            # last modified timestamp of the binary
-            ts_bin=$(date +%s -r "$bin")
-
-            # if suckless patch exist
-            patch="$D/configs/${link##*/}-patch.diff"
-            [ -f "$patch" ] && {
-                ts_patch=$(date +%s -r "$patch")
-                [ "$ts_patch" -gt "$ts_bin" ] &&
-                    echo "new patch for '$pac' exist" &&
-                    return 0
-            }
-
-            # if a github repo, check the rest api for
-            # latest commit timestamp
-            ts_github=$(github_time "$link")
-            [ "$ts_github" ] &&
-                [ "$ts_github" -gt "$ts_bin" ] &&
-                echo "new git commit for '$pac' exist" &&
-                return 0
-
-            return 1 ;;
-    esac
-    return 1
-}
-
 # install a package ($2) given its tag ($1)
 pkg_install_from() {
     if [ "$1" = '--test' ]; then
@@ -430,66 +383,35 @@ pkg_install_from() {
                 fi
             fi;;
 
-        git)
+        git_manual)
             if doit; then
                 pac="$1"
                 link="$2"
                 if [ "$install" ]; then
-                    cmd_exists "$pac" && {
-                        echo "$pac is already installed"
-                        if reason=$(pkg_git_needs_update "$tag" "$pac" "$link"); then
-                            echo "$pac needs to be updated"
-                        else
-                            return 0
-                        fi
-                    }
                     dir=$(mktemp -d)
                     git clone --depth 1 "$link" "$dir" &&
-                        cd "$dir" && if [ -f setup.py ]; then
-                            sudo pip3 install .
-                        else
-                            {
-                                if [ -f CMakeLists.txt ]; then
-                                    mkdir -p build &&
-                                        cd build &&
-                                        cmake ..
-                                fi
-                                if [ -f autogen.sh ]; then ./autogen.sh; fi
-                                if [ -f configure ]; then ./configure;  fi
-                            } && sudo make &&
-                                sudo make install
-                        fi
-                    cd /tmp && sudo rm -rf "$dir" || return 1
+                        cd "$dir" &&
+                        sudo make && sudo make install &&
+                        cd /tmp && sudo rm -rf "$dir" || return 1
                 else
-                    sudo rm "$(which "$pac")"
+                    bin=$(which "$pac")
+                    sudo rm "$bin"
                 fi
             fi;;
 
-        suckless)
+        git|suckless)
             if doit; then
                 pac="$1"
                 link="$2"
                 if [ "$install" ]; then
-                    cmd_exists "$pac" && {
-                        echo "$pac is already installed"
-                        if reason=$(pkg_git_needs_update "$tag" "$pac" "$link"); then
-                            echo "$pac needs to be updated"
-                        else
-                            return 0
-                        fi
-                    }
-                    name=${link##*/}
-                    patches="$D/configs/$name-patch.diff"
-                    dir=$(mktemp -d)
-                    git clone --depth 1 "$link" "$dir" &&
-                        cd "$dir" && {
-                            [ -f "$patches" ] && sudo patch -i "$patches"
-                            sudo make && sudo make install
-                        } &&
-                        cd /tmp &&
-                        sudo rm -rf "$dir" || return 1
+                    if [ "$tag" = suckless ]; then
+                        patch="$D/configs/$pac-patch.diff"
+                        sudo pacgit -S --patch "$patch" "$pac" "$link"
+                    else
+                        sudo pacgit -S "$pac" "$link"
+                    fi
                 else
-                    sudo rm "$(which "$pac")"
+                    sudo pacgit -R "$pac" "$link"
                 fi
             fi;;
 
@@ -497,10 +419,18 @@ pkg_install_from() {
             case "$1" in
                 blesh)
                     if doit; then
-                        cd /tmp &&
-                            git clone --recursive https://github.com/akinomyoga/ble.sh.git &&
-                            make -C ble.sh install PREFIX=~/.local
-                        rm -rf ble.sh.git
+                        if [ "$install" ]; then
+                            if [ -d "$HOME/.local/share/blesh" ]; then
+                                echo 'blesh is already installed'
+                            else
+                                cd /tmp &&
+                                    git clone --recursive https://github.com/akinomyoga/ble.sh.git &&
+                                    make -C ble.sh install PREFIX="$HOME/.local"
+                                rm -rf ble.sh
+                            fi
+                        else
+                            rm -rf "$HOME/.local/share/blesh"
+                        fi
                     fi;;
 
                 tpm)
@@ -591,14 +521,24 @@ pkg_load_tables() {
 
 # install list of packages
 pkg_install_pacs() {
+    if [ "$1" = '--uninstall' ]; then
+        uninstall=1
+        shift
+    else
+        uninstall=
+    fi
     pacs="$1"
     total=$(echo "$pacs" | wc -l)
     i=1
     echo "$pacs" | while read -r tag pac link des; do
         printf "($i/$total) ${C}INSTALLING${R} $pac ${C}FROM${R} %s, %s\n" "$tag" "$des"
-        pkg_install_from "$tag" "$pac" "$link" || {
-            err "Failed installing '$pac'"
-        }
+        if [ -n "$uninstall" ]; then
+            pkg_install_from --uninstall "$tag" "$pac" "$link" ||
+                err "Failed uninstalling '$pac'"
+        else
+            pkg_install_from "$tag" "$pac" "$link" ||
+                err "Failed installing '$pac'"
+        fi
         i=$((i+1))
         echo "-----------------------------"
     done
@@ -626,8 +566,8 @@ pkg_update_git_pacs() {
 
 # install a package from the packages tables
 pkg_install() {
-    if [ "$1" = -u ]; then # TODO
-        uninstall='--uninstall'
+    if [ "$1" = '--uninstall' ]; then
+        uninstall=1
         shift
     else
         uninstall=
@@ -646,7 +586,11 @@ pkg_install() {
                     pac="$3"
                     link="$4"
                     [ ! "$link" ] && link="$pac"
-                    pkg_install_from "$tag" "$pac" "$link";;
+                    if [ -n "$uninstall" ]; then
+                        pkg_install_from --uninstall "$tag" "$pac" "$link"
+                    else
+                        pkg_install_from "$tag" "$pac" "$link"
+                    fi;;
                 *)
                     err "Unknown installer '$2'"
                     exit 1
@@ -655,6 +599,10 @@ pkg_install() {
     esac
 
     if [ "$1" = dots ]; then
+        if [ -n "$uninstall" ]; then
+            err "Uninstalling dots is not implemented"
+            return 1
+        fi
         shift
         dots_install "$@"
         return
@@ -677,7 +625,11 @@ pkg_install() {
         info "Installing packages groups from $*"
     fi
 
-    pkg_install_pacs "$pacs"
+    if [ -n "$uninstall" ]; then
+        pkg_install_pacs --uninstall "$pacs"
+    else
+        pkg_install_pacs "$pacs"
+    fi
 }
 
 list_all() {
@@ -746,6 +698,7 @@ help() {
     echo "usage: $BIN COMMAND [OPTIONS]"
     echo 'Commands:'
     echo ' install   Install a (listed package), (package group), or "dots"'
+    echo ' uninstall Uninstall a listed package'
     echo ' update    Update repo, update configs, and link. Also, update git-based packages'
     echo ' config    Update configs and link'
     echo ' link      Link configs'
@@ -768,6 +721,8 @@ main() {
     case "$CMD" in
         install)
             pkg_install "$@";;
+        uninstall)
+            pkg_install --uninstall "$@";;
         update)
             update_repo &&
                 "$D/scripts/ndots" config &&

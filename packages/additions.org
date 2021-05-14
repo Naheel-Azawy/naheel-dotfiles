@@ -1,6 +1,9 @@
 | Tag      | Name                           | Git Link                               | Purpose                                                                                        |
 |----------+--------------------------------+----------------------------------------+------------------------------------------------------------------------------------------------|
 | func     | blackarch                      | N.A.                                   | hacking tools                                                                                  |
+| pacman   | nodejs                         | N.A.                                   | node.js is needed to run some programs ahead                                                   |
+| pacman   | npm                            | N.A.                                   | node.js pacage manager                                                                         |
+| npm      | shelljs                        | N.A.                                   | shell commands on js                                                                           |
 | pip      | youtube-dl                     | N.A.                                   | can download any YouTube video (or playlist or channel) when given the link                    |
 | pacman   | youtube-viewer                 | N.A.                                   | is a terminal interface for watching YouTube videos without a browser                          |
 | pacman   | libreoffice                    | N.A.                                   | because off course someone will send a file that is not a plain text...                        |
@@ -58,5 +61,4 @@
 | git      | rn                             | https://github.com/Naheel-Azawy/runner | executes everything                                                                            |
 | pacman   | w3m                            | N.A.                                   | terminal browser which can also view images                                                    |
 | pacman   | lynx                           | N.A.                                   | a terminal web browser                                                                         |
-| suckless | dmenu                          | https://git.suckless.org/dmenu         | runs commands and provides a UI for selection                                                  |
-| pacman   | units                          | N.A.                                   | units converter                                                                                               |
+| pacman   | units                          | N.A.                                   | units converter                                                                                |
