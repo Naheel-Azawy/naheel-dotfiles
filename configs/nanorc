@@ -46,7 +46,7 @@ set autoindent
 
 ## Constantly display the cursor position in the status bar.  Note that
 ## this overrides "quickblank".
-# set constantshow
+set constantshow
 
 ## Use cut-from-cursor-to-end-of-line by default.
 # set cutfromcursor
@@ -88,13 +88,13 @@ set autoindent
 # set matchbrackets "(<[{)>]}"
 
 ## Suppress title bar and show file name and editor state at the bottom.
-# set minibar
+set minibar
 
 ## Enable mouse support, if available for your system.  When enabled,
 ## mouse clicks can be used to place the cursor, set the mark (with a
 ## double click), and execute shortcuts.  The mouse will work in the X
 ## Window System, and on the console when gpm is running.
-# set mouse
+set mouse
 
 ## Switch on multiple file buffers (inserting a file will put it into
 ## a separate buffer).
@@ -104,7 +104,7 @@ set autoindent
 # set noconvert
 
 ## Don't display the helpful shortcut lists at the bottom of the screen.
-# set nohelp
+set nohelp
 
 ## Don't automatically add a newline when a file does not end with one.
 # set nonewlines
@@ -116,7 +116,7 @@ set autoindent
 # set operatingdir ""
 
 ## Remember the cursor position in each file for the next editing session.
-# set positionlog
+set positionlog
 
 ## Preserve the XON and XOFF keys (^Q and ^S).
 # set preserve
@@ -177,13 +177,13 @@ set autoindent
 ## (The old form of this option, 'set suspend', is deprecated.)
 
 ## Use this tab size instead of the default; it must be greater than 0.
-# set tabsize 8
+set tabsize 4
 
 ## Convert typed tabs to spaces.
-# set tabstospaces
+set tabstospaces
 
 ## Snip whitespace at the end of lines when justifying or hard-wrapping.
-# set trimblanks
+set trimblanks
 
 ## The two single-column characters used to display the first characters
 ## of tabs and spaces.  187 in ISO 8859-1 (0000BB in Unicode) and 183 in
@@ -204,7 +204,7 @@ set autoindent
 
 ## Let an unmodified Backspace or Delete erase the marked region (instead
 ## of a single character, and without affecting the cutbuffer).
-# set zap
+set zap
 
 ## Paint the interface elements of nano.  These are examples;
 ## by default there are no colors, except for errorcolor.
@@ -249,10 +249,10 @@ include "/usr/share/nano/*.nanorc"
 
 ## If <Tab> should always produce four spaces when editing a Python file,
 ## independent of the settings of 'tabsize' and 'tabstospaces':
-# extendsyntax python tabgives "    "
+extendsyntax python tabgives "    "
 
 ## If <Tab> should always produce an actual TAB when editing a Makefile:
-# extendsyntax makefile tabgives "	"
+extendsyntax makefile tabgives "	"
 
 
 ## === Key bindings ===
@@ -302,6 +302,7 @@ include "/usr/share/nano/*.nanorc"
 #bind ^E redo main
 #set multibuffer
 
+bind ^Space mark all
 bind ^c copy main
 bind ^x cut main
 bind ^v paste main
