@@ -53,7 +53,14 @@ class WM:
         self.nice_workspaces = list(map(lambda i: str(i), self.nice_workspaces))
 
     async def run(self):
-        await asyncio.to_thread(self.impl.run)
+        count = 0
+        while count < 10:
+            try:
+                await asyncio.to_thread(self.impl.run)
+                break
+            except Exception:
+                # in case the bar started before the window manager
+                await asyncio.sleep(1)
 
     def json(self):
         workspaces = {}
