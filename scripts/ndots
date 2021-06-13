@@ -108,7 +108,7 @@ dots_link() {
     lnnn "$D/configs/profile"             "$H/.xprofile"
     lnnn "$D/configs/xinitrc.sh"          "$H/.xinitrc"
     lnnn "$D/configs/Xresources"          "$H/.Xresources"
-    lnnn "$D/configs/Xmodmap"             "$H/.Xmodmap"
+    # lnnn "$D/configs/Xmodmap"             "$H/.Xmodmap"
     lnnn "$D/configs/tmux.conf"           "$H/.tmux.conf"
     lnnn "$D/configs/emacs-init.el"       "$H/.emacs"
     lnnn "$D/configs/nm-dmenu.ini"        "$H/.config/networkmanager-dmenu/config.ini"

@@ -154,9 +154,9 @@ straight2jail() {
     shift
     cmd=$(list | grep -m1 "^straight2jail@$name@" | cut -d '@' -f3)
     # https://wiki.archlinux.org/title/Firejail#Graphical_applications_hang_on_start_with_AMDGPU
-    case "$name" in
-        Steam) export DRI_PRIME=1 ;;
-    esac
+    # case "$name" in
+    #     Steam) export DRI_PRIME=1 ;;
+    # esac
     fire "$name" "$cmd"
 }
 

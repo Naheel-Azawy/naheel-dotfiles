@@ -27,7 +27,7 @@ except:
 background = '#ff000000'
 foreground = '#ffffff'
 
-default_items = "start workspaces add program | clock | systray lang pray weather temperature wifi battery power"
+default_items = "start workspaces add program | clock | systray pray weather temperature wifi battery power"
 
 port_file = "/tmp/.nbarport"
 

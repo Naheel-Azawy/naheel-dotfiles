@@ -4,7 +4,7 @@ LANGS=us,ar
 LANGS_E=us,ar,ru,fr,de,ir
 
 # grep "grp:.*toggle" /usr/share/X11/xkb/rules/base.lst
-KEYS=win_space_toggle
+KEYS=rctrl_rshift_toggle
 
 langget() {
     setxkbmap -query | sed -En 's/layout:\s*(.+)/\1/p' 2>/dev/null
@@ -18,7 +18,7 @@ langinit() {
 }
 
 langtog() {
-    : # TODO: ???
+    
 }
 
 main() {

@@ -119,12 +119,12 @@ super+d
 	menus
 
 # Switch language
-super+space
-	lang tog
+# super+space
+# 	lang tog
 
 # Switch language (extended)
-super+shift+space
-	lang tog -e
+# super+shift+space
+# 	lang tog -e
 
 # Toggle on-screen keyboard
 super+k
