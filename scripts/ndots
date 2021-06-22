@@ -544,26 +544,6 @@ pkg_install_pacs() {
     done
 }
 
-# update git-based packages
-pkg_update_git_pacs() {
-    info 'Checking for updates...'
-    pacs=$(pkg_load_tables all | while read -r tag pac link des; do
-               if reason=$(pkg_git_needs_update "$tag" "$pac" "$link"); then
-                   echo "$tag $pac $link $reason"
-               fi
-           done)
-    if [ "$pacs" ]; then
-        echo 'Packages need to be updated:'
-        echo "$pacs" | while read -r _ pac link reason; do
-            echo "$pac from $link, $reason"
-        done
-        echo
-        pkg_install_pacs "$pacs"
-    else
-        echo 'No updates found'
-    fi
-}
-
 # install a package from the packages tables
 pkg_install() {
     if [ "$1" = '--uninstall' ]; then
@@ -726,7 +706,7 @@ main() {
         update)
             update_repo &&
                 "$D/scripts/ndots" config &&
-                pkg_update_git_pacs;;
+                sudo pacgit -u;;
         config)
             dots_update &&
                 info "Dots configurations updated successfully";;
