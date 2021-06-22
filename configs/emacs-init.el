@@ -188,7 +188,9 @@ https://www.emacswiki.org/emacs/NoTabs"
 
 ;; ---- MODELINE ----
 (use-package doom-modeline
-  :init (doom-modeline-mode 1))
+  :init
+  (setq doom-modeline-icon nil)
+  (doom-modeline-mode 1))
 
 ;; ---- GIT ----
 (use-package git-gutter
