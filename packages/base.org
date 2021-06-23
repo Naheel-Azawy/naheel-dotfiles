@@ -51,3 +51,5 @@
 | pacman     | python-sh           | N.A.                                   | shell integration in python. Needed for many commands        |
 | pacman     | dash                | N.A.                                   | the light quick shell                                        |
 | pacman     | lsof                | N.A.                                   | list open files                                              |
+| pacman     | man                 | N.A.                                   | the manual                                                   |
+| pacman     | cmake               | N.A.                                   | needed to build some packages                                |
