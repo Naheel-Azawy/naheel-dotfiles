@@ -49,16 +49,48 @@ function fish_prompt --description 'Write out the prompt'
         set face (set_color brred)' :( '(set_color normal)
     end
     # git branch
-    set -l git_branch (git branch ^/dev/null | sed -n '/\* /s///p')
-    test "$git_branch" = 'master' && set git_branch ''
-    test "$git_branch" != '' && set git_branch " ($git_branch)"
+    set git_branch (git branch 2>/dev/null | tr '\n' ' ' | xargs)
+    test -n "$git_branch" && set git_branch " ($git_branch)"
+
     # only current directory
     set cwd (string replace -r '^'"$HOME"'($|/)' '~$1' $PWD | string split '/')[-1]
     test "$cwd" = '' && set cwd /
     echo -n -s -e $face $host (set_color $color_cwd) $cwd $git_branch (set_color normal) "$suffix "
 end
 
-function vterm_printf;
+function set_theme
+    set -U fish_color_normal            normal
+    set -U fish_color_command           white --bold
+    set -U fish_color_quote             999900
+    set -U fish_color_redirection       00afff
+    set -U fish_color_end               009900
+    set -U fish_color_error             ff0000
+    set -U fish_color_param             00afff
+    set -U fish_color_comment           990000
+    set -U fish_color_match             normal
+    set -U fish_color_selection         c0c0c0
+    set -U fish_color_search_match      ffff00
+    set -U fish_color_history_current   normal
+    set -U fish_color_operator          00a6b2
+    set -U fish_color_escape            00a6b2
+    set -U fish_color_cwd               green
+    set -U fish_color_cwd_root          red
+    set -U fish_color_valid_path        normal
+    set -U fish_color_autosuggestion    555
+    set -U fish_color_user              00ff00
+    set -U fish_color_host              normal
+    set -U fish_color_cancel            normal
+    set -U fish_pager_color_completion  normal
+    set -U fish_pager_color_description B3A06D yellow
+    set -U fish_pager_color_prefix      normal --bold --underline
+    set -U fish_pager_color_progress    brwhite --background=cyan
+end
+
+set -x TERM "screen-256color"
+set -x SHELL "/usr/bin/fish"
+set_theme
+
+function vterm_printf
     if [ -n "$TMUX" ]
         # tell tmux to pass the escape sequences through
         # (Source: http://permalink.gmane.org/gmane.comp.terminal-emulators.tmux.user/1324)
@@ -203,9 +235,6 @@ abbr p     'theprayer'
 abbr ytdl  'youtube-dl --add-metadata -ic'
 abbr ytdla 'youtube-dl --add-metadata -xic --audio-format mp3'
 abbr blesh 'env USE_BLESH=1 bash'
-
-set -x TERM "screen-256color"
-set -x SHELL "/usr/bin/fish"
 
 bind \cq exit
 
