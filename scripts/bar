@@ -467,7 +467,7 @@ class Bar(BarBase):
                 if self.a:
                     return f"s{v}%"
                 else:
-                    return f"%{{A:networkmanager_dmenu&:}} {v}%%{{A}}"
+                    return f"%{{A:networkmanager_dmenu&:}} {v}%%%{{A}}"
         except:
             pass
         return None
