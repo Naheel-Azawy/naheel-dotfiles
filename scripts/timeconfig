@@ -7,14 +7,14 @@ hwsync() {
     printf '%s [Y/n] ' "$msg"
     read -r ans
     case "$ans" in
-        Y|y) sudo hwclock --systohc ;;
+        Y|y) hwclock --systohc ;;
     esac
 }
 
 auto() {
     command -v ntpd >/dev/null || {
         echo 'Install NTP...'
-        sudo pacman -S ntp
+        pacman -S ntp
     }
     ntpd -qg
 }
@@ -29,11 +29,16 @@ tui() {
     echo "$date $time"
 }
 
-tui
-
 # To check the current zone defined for the system:
 # $ timedatectl status
 # To list available zones:
 # $ timedatectl list-timezones
 # To set your time zone:
 # $ sudo timedatectl set-timezone Zone/SubZone
+
+main() {
+    auto
+    hwsync
+}
+
+main "$@"

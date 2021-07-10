@@ -73,3 +73,4 @@
 | git      | menus                  | https://github.com/Naheel-Azawy/menus     | just some menus                                                  |
 | suckless | dmenu                  | https://git.suckless.org/dmenu            | runs commands and provides a UI for selection                    |
 | pacman   | xorg-xsetroot          | N.A.                                      | root window parameter setting utility for X                      |
+| pacman   | ntp                    | N.A.                                      | network time protocol                                            |
