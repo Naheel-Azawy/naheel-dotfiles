@@ -705,7 +705,11 @@ main() {
             pkg_install --uninstall "$@";;
         update)
             update_repo &&
+                "$D/scripts/ndots" config;;
+        update-all)
+            update_repo &&
                 "$D/scripts/ndots" config &&
+                sudo pacman -Syu &&
                 sudo pacgit -u;;
         config)
             dots_update &&
