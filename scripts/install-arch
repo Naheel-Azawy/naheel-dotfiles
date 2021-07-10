@@ -332,6 +332,11 @@ main() {
 
     check_root
 
+    command -v pacstrap >/dev/null || {
+        info 'Installing Arch install scripts'
+        pacman -S arch-install-scripts
+    }
+
     tui  || return 1
     vars || return 1
     echo
@@ -375,7 +380,7 @@ main() {
     read -r
     echo
 
-    cfdisk "$DEV" || return 1
+    cfdisk "$DEV"
     echo
 
     if [ -e "${DEV}" ] &&
