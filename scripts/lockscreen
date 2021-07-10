@@ -15,21 +15,21 @@ exec i3lock \
      -e -f -c 000000 \
      --clock \
      --indicator \
-     --timestr '%H:%M' \
-     --datestr '%Y.%m.%d' \
+     --time-str '%H:%M' \
+     --date-str '%Y.%m.%d' \
      --time-font "$FONT" \
      --date-font "$FONT" \
      --layout-font "$FONT" \
      --verif-font "$FONT" \
      --wrong-font "$FONT" \
      --greeter-font "$FONT" \
-     --timesize 40 \
-     --datesize 20 \
+     --time-size 40 \
+     --date-size 20 \
      --time-align 0 \
      --date-align 0 \
-     --timecolor "$COLOR" \
-     --datecolor "$COLOR" \
-     --ringcolor ffffffff \
+     --time-color "$COLOR" \
+     --date-color "$COLOR" \
+     --ring-color ffffffff \
      --pass-media-keys \
      --pass-screen-keys \
      --pass-power-keys \

@@ -86,6 +86,59 @@ function set_theme
     set -U fish_pager_color_progress    brwhite --background=cyan
 end
 
+#######################################################################
+# EXP VALSH WRAPPER
+#######################################################################
+
+set -g VALSH_PID ''
+
+function _valsh_start
+    if test -z "$VALSH_PID"
+        if test -f /tmp/valsh-pid
+            set -g VALSH_PID (cat /tmp/valsh-pid)
+        end
+        if test -z "$VALSH_PID" || ! kill -0 "$VALSH_PID" 2>/dev/null
+            valsh --daemon 2>/dev/null & disown
+            if ! test -f /tmp/valsh-fifo-in || ! test -f /tmp/valsh-fifo-out
+                sleep .5
+            end
+            set -g VALSH_PID $last_pid
+            echo $VALSH_PID >/tmp/valsh-pid
+        end
+    end
+end
+
+function _valsh_send
+    _valsh_start
+    echo $argv >/tmp/valsh-fifo-in
+    cat /tmp/valsh-fifo-out;
+end
+
+function typeof; _valsh_send typeof $argv; end
+function ptr;    _valsh_send ptr    $argv; end
+function bol;    _valsh_send bol    $argv; end
+function num;    _valsh_send num    $argv; end
+function str;    _valsh_send str    $argv; end
+function arr;    _valsh_send arr    $argv; end
+function obj;    _valsh_send obj    $argv; end
+
+function val
+    if test -t 1
+        _valsh_send val -t $argv
+    else
+        _valsh_send val $argv
+    end
+end
+
+function valsh_end
+    _valsh_start
+    kill "$VALSH_PID"
+    rm -f /tmp/valsh-*
+    set -g VALSH_PID ''
+end
+
+#######################################################################
+
 set -x TERM "screen-256color"
 set -x SHELL "/usr/bin/fish"
 set_theme

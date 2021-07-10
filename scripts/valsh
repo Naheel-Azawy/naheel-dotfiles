@@ -109,6 +109,11 @@ val() {
         return 1
     }
 
+    force_t=
+    [ "$1" = '-t' ] &&
+        force_t=1 &&
+        shift
+
     local_backup name kind val is_filter
     
     name="$1"
@@ -116,15 +121,16 @@ val() {
     kind=$(typeof "$name")
 
     if [ $# = 0 ]; then
-        if [ -t 1 ]; then
+        if [ -t 1 ] || [ -n "$force_t" ]; then
             if type_known "$kind"; then
                 val=$("$kind" "$name" json)
             else
                 val=$(varval "$name")
+                [ -n "$val" ] || return 1
                 val=$(printf '"%s"\n' "$val")
             fi
             if exists jq; then
-                println "$val" | jq
+                println "$val" | jq -C
             else
                 println "$val"
             fi
@@ -142,7 +148,7 @@ val() {
                 is_filter=t ;;
         esac
         if [ -n "$is_filter" ] && exists jq; then
-            val "$name" json | jq "$@"
+            val "$name" json | jq -C "$@"
         else
             "$kind" "$name" "$@"
         fi
@@ -728,11 +734,23 @@ obj() {
 }
 
 main() {
-    if [ "$1" = '--source' ]; then
-        echo "$0"
-    else
-        obj root_obj =
-    fi
+    case "$1" in
+        --source)
+            echo "$0" ;;
+        --daemon)
+            obj root_obj =
+            fifo_in=/tmp/valsh-fifo-in
+            fifo_out=/tmp/valsh-fifo-out
+            rm -f $fifo_in $fifo_out
+            mkfifo $fifo_in $fifo_out
+            tail -f $fifo_in | while read -r line; do
+                eval "$line" > $fifo_out
+            done
+            rm -f $fifo_in $fifo_out
+        ;;
+        *)
+            obj root_obj =
+    esac
 }
 
 main "$@"
