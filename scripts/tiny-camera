@@ -1,9 +1,14 @@
 #!/bin/sh
+
+# https://wiki.archlinux.org/title/Webcam_setup
+
 pkill -f /dev/video ||
-    mpv --no-osc \
-        --no-input-default-bindings \
-        --input-conf=/dev/null \
-        --geometry=-10-10 \
-        --autofit=15% \
+    mpv --no-osc                          \
+        --no-input-default-bindings       \
+        --input-conf=/dev/null            \
+        --geometry=-10-10                 \
+        --autofit=15%                     \
+        --profile=low-latency             \
+        --untimed                         \
         --title='__floatme__|__stickme__' \
-        /dev/video0
+        av://v4l2:/dev/video0
