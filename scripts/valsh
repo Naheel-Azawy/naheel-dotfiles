@@ -203,7 +203,7 @@ ptr() {
             name=$(varval "$ptr_name")
             val=$(varval "${ptr_name}_val")
             kind=$(typeof "$ptr_name")
-            printf '%s=%s\n' "${ptr_name}" "$name"
+            printf "%s='%s'\n" "${ptr_name}" "$name"
             printf '%s=%s\n' "${ptr_name}_val" "$val"
             printf '%s=%s\n' "${ptr_name}_type" "$kind" ;;
 
@@ -284,7 +284,7 @@ bol() {
             name=$(varval "$bol_name")
             val=$(varval "${bol_name}_val")
             kind=$(typeof "$bol_name")
-            printf '%s=%s\n' "${bol_name}" "$name"
+            printf "%s='%s'\n" "${bol_name}" "$name"
             printf '%s=%s\n' "${bol_name}_val" "$val"
             printf '%s=%s\n' "${bol_name}_type" "$kind" ;;
 
@@ -351,7 +351,7 @@ num() {
             name=$(varval "${num_name}")
             val=$(num "$num_name" val)
             kind=$(typeof "$num_name")
-            printf '%s=%s\n' "${num_name}" "$name"
+            printf "%s='%s'\n" "${num_name}" "$name"
             printf '%s=%s\n' "${num_name}_val" "$val"
             printf '%s=%s\n' "${num_name}_type" "$kind" ;;
 
@@ -424,7 +424,7 @@ str() {
             val=$(str "$str_name" val)
             val=$(escape_quote "$val")
             kind=$(typeof "$str_name")
-            printf '%s=%s\n' "${str_name}" "$name"
+            printf "%s='%s'\n" "${str_name}" "$name"
             printf "%s='%s'\n" "${str_name}_val" "$val"
             printf '%s=%s\n' "${str_name}_type" "$kind" ;;
 
