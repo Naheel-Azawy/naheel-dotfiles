@@ -11,11 +11,16 @@ try_add_path() { [ -d "$1" ] && export PATH="$PATH:$1";:; }
 test -f "$DOTFILES_DIR/configs/more-paths.sh" &&
     source "$DOTFILES_DIR/configs/more-paths.sh"
 
+USE_BLESH=1
 BLESH=~/.local/share/blesh/ble.sh
 
 if [[ $- == *i* ]]; then
     [[ "$USE_BLESH" && -f "$BLESH" ]] &&
         source "$BLESH" --noattach
+
+    command -v valsh >/dev/null && {
+        source "$(valsh --source)"
+    }
 
     stty -ixon
     shopt -s autocd
@@ -73,10 +78,8 @@ if [[ $- == *i* ]]; then
         esac
 
         local git_branch
-        git_branch=$(git branch 2>/dev/null |
-                         sed -n '/\* /s///p')
-        [ "$git_branch" = 'master' ] && git_branch=
-        [ "$git_branch" ] && git_branch=" ($git_branch)"
+        git_branch=$(git branch 2>/dev/null | tr '\n' ' ' | xargs)
+        [ -n "$git_branch" ] && git_branch=" ($git_branch)"
 
         PS1="$ps_face$color_cwd\W\e[0m$git_branch$suffix "
     }
