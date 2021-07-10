@@ -51,6 +51,13 @@ comment() {
     sed -i "s/$line/#$line/" "$file"
 }
 
+check_root() {
+    if [ "$(id -u)" != 0 ]; then
+        echo 'Root is needed'
+        exit 1
+    fi
+}
+
 vars() {
     echo "export DEV=$DEV"
     echo "export MP=$MP"
@@ -270,26 +277,22 @@ tui() {
     DEV=
     devs=$(lsblk -rpno name,type | tac |
                awk '$2 == "disk" {printf "\"%s\" \"\" ", $1}')
-    while [ ! "$DEV" ]; do
-        DEV=$(menubox 'Select a device:' "$devs")
-    done
+    DEV=$(menubox 'Select a device:' "$devs")
+    [ -z "$DEV" ] && return 1
 
-    while :; do
-        MP=$(inputbox 'Mount point:' "$MP")
-        [ "$MP" ] && break
-    done
+    MP=$(inputbox 'Mount point:' "$MP")
+    [ -z "$MP" ] && return 1
 
     USERNAME=
-    while [ ! "$USERNAME" ]; do
-        USERNAME=$(inputbox 'Username:')
-    done
+    USERNAME=$(inputbox 'Username:')
+    [ -z "$USERNAME" ] && return 1
 
     PASSWORD=
     while :; do
         pass1=$(passwordbox 'Password:')
         pass2=$(passwordbox 'Re-enter password:')
 
-        if [ ! "$pass1" ]; then
+        if [ -z "$pass1" ]; then
             msgbox 'Enter a non-empty password'
         elif [ "$pass1" != "$pass2" ]; then
             msgbox 'Passwords do not match. Try again...'
@@ -300,25 +303,22 @@ tui() {
     PASSWORD="$pass1"
 
     HOSTNAME=
-    while [ ! "$HOSTNAME" ]; do
-        HOSTNAME=$(inputbox 'Host name:')
-    done
+    HOSTNAME=$(inputbox 'Host name:')
+    [ -z "$HOSTNAME" ] && return 1
 
     zone_dir=
     dirs=$(ls -l --color=never /usr/share/zoneinfo/)
     dirs=$(echo "$dirs" | grep '^d' | awk '{printf "\"%s\" \"\" ", $NF}')
     msg='Set timezone'
-    while [ ! "$zone_dir" ]; do
-        zone_dir=$(menubox "$msg" "$dirs")
-    done
+    zone_dir=$(menubox "$msg" "$dirs")
+    [ -z "$zone_dir" ] && return 1
 
     ZONE=
     zones=$(ls -1 --color=never "/usr/share/zoneinfo/$zone_dir")
     zones=$(echo "$zones" | awk '{printf "\"%s\" \"\" ", $NF}')
-    while [ ! "$ZONE" ]; do
-        ZONE=$(menubox "$msg" "$zones")
-        ZONE="$zone_dir/$ZONE"
-    done
+    ZONE=$(menubox "$msg" "$zones")
+    ZONE="$zone_dir/$ZONE"
+    [ -z "$ZONE" ] && return 1
 
     INSTALL_DOTS=$(yesno 'Install dotfiles?' && echo 1)
 }
@@ -330,8 +330,10 @@ main() {
         return
     }
 
-    tui
-    vars
+    check_root
+
+    tui  || return 1
+    vars || return 1
     echo
 
     printf "${E}WARNING:${R} everything under %s will be erased\n" "$DEV"
