@@ -75,3 +75,6 @@
 | pacman   | xorg-xsetroot          | N.A.                                      | root window parameter setting utility for X                      |
 | pacman   | ntp                    | N.A.                                      | network time protocol                                            |
 | pacman   | perl-file-mimeinfo     | N.A.                                      | mimetype utils                                                   |
+| pacman   | network-manager-applet | N.A.                                      | handy nm gui applet                                              |
+| pacman   | openvpn                | N.A.                                      | the open vpn                                                     |
+| pacman   | networkmanager-openvpn | N.A.                                      | openvpn for nm                                                   |
