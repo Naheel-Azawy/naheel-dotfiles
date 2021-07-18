@@ -440,7 +440,7 @@ class Bar(BarBase):
             else:
                 out += ""
 
-            out += f" {percent}%"
+            out += f" {percent}%%"
 
             if percent <= 10 and not charging:
                 msg = "%{B#FF0000} "
