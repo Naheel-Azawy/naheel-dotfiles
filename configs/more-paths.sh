@@ -5,6 +5,7 @@
 
 try_add_path "$HOME/go/bin"
 try_add_path "$HOME/.cargo/bin"
+try_export JAVA_HOME /usr/lib/jvm/java-11-openjdk
 
 # ANDROID ###################################
 # TODO: move to personal

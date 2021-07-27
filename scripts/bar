@@ -485,13 +485,13 @@ class Bar(BarBase):
 
     @item(period=30)
     def pray(self):
-        out = os.popen("theprayer n 2>/dev/null").read().strip()
+        out = os.popen("prayer --mini 2>/dev/null").read().strip()
         if not out:
             return None
         if self.a:
             return f"p{out}"
         else:
-            cmd = "theterm -a '-c __floatme__ -g 25x8' 'theprayer && read -p \"\"'"
+            cmd = "theterm -a '-c __floatme__ -g 25x8' 'prayer && read -p \"\"'"
             return f"%{{A:{cmd}&:}}  {out}%{{A}}"
 
     @item(period=30 * 60)
