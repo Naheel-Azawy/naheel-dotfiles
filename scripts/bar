@@ -446,7 +446,7 @@ class Bar(BarBase):
                 msg = "%{B#FF0000} "
                 if percent <= 5:
                     msg += "SHUTTING DOWN "
-                    sh.systemctl("poweroff")
+                    # sh.systemctl("poweroff") # TODO: add countdown
                 elif percent <= 7:
                     msg += "WILL SHUTDOWN AT 5% "
                 elif percent <= 10:
