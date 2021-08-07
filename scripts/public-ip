@@ -1,2 +1,2 @@
 #!/bin/sh
-exec curl ipinfo.io/ip
+exec curl https://naheel.xyz/ip

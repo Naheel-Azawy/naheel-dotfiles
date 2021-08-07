@@ -18,7 +18,7 @@ if [ "$1" = '-d' ]; then
     sel='Default'
 else
     sel=$( (echo Default &&
-                ls -1 "$D/" | grep -v default | awk -F'.' '{print $1}' &&
+                ls -1 "$D/" | grep -v '^default' | awk -F'.' '{print $1}' &&
                 echo "$OPTS") |
                menus-face -i -l 30 -p 'Display options')
 fi

@@ -36,13 +36,13 @@ games = {
     "nudoku":          tui("nudoku"),
     "tetris":          tui("tetris"),
     "snake":           tui("snake"),
-    "nfs-mw":          pol("most wanted"),
+    #"nfs-mw":          pol("most wanted"),
     "2048":            tui("2048")
 }
 
 if len(argv) < 2:
     games_str = '\n'.join(games.keys())
-    game = sh.menu_interface(sh.echo(games_str), "-l", 20).strip()
+    game = sh.menus_face(sh.echo(games_str), "-l", 20).strip()
     if game in games:
         games[game]()
     else:

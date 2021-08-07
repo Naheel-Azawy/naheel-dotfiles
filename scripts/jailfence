@@ -123,7 +123,7 @@ winejail() {
 
 playinjail() {
     name="$1"
-    shift
+    [ $# != 0 ] && shift
     if [ "$name" ]; then
         fire playonlinux playonlinux --run "$name" "$@"
     else
