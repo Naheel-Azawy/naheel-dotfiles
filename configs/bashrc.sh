@@ -11,6 +11,8 @@ try_add_path() { [ -d "$1" ] && export PATH="$PATH:$1";:; }
 test -f "$DOTFILES_DIR/configs/more-paths.sh" &&
     source "$DOTFILES_DIR/configs/more-paths.sh"
 
+alias java='java "$SHHH_JAVA_OPTIONS"' # check profile
+
 #USE_BLESH=1
 BLESH=~/.local/share/blesh/ble.sh
 

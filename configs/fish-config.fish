@@ -215,6 +215,8 @@ function fmz
     rm $tmp
 end
 
+alias java='java "$SHHH_JAVA_OPTIONS"' # check profile
+
 abbr ث  'lang us; exit'
 abbr مس 'lang us; ls'
 abbr م  'lang us; ls'
