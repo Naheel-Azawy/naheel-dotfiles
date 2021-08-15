@@ -60,7 +60,7 @@ edit daemon &                # emacs daemon
 setwallpaper &               # wallpaper
 lang us &                    # set language to 'us' and runs xmodmap
 mount-private &              # mount encfs private directory
-menus hud daemon &           # hud menu daemon
+#menus hud daemon &           # hud menu daemon
 
 # start the window manager
 exec "$WINDOW_MANAGER" # defined in profile
