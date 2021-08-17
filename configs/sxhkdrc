@@ -364,6 +364,9 @@ XF86Documents
 XF86WLAN
 	sudo -A systemctl restart NetworkManager
 
+XF86Launch1
+	menus
+
 super+shift+v
 	/mnt/hdd1/Private/m-launcher.sh
 
