@@ -53,3 +53,5 @@
 | pacman     | lsof                | N.A.                                   | list open files                                              |
 | pacman     | man                 | N.A.                                   | the manual                                                   |
 | pacman     | cmake               | N.A.                                   | needed to build some packages                                |
+| pacman     | mlocate             | N.A.                                   | find files quickly                                           |
+| pacman     | rsync               | N.A.                                   | synchronize files                          |
