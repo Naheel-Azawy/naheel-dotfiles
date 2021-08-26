@@ -460,7 +460,7 @@ from: https://stackoverflow.com/a/998472/3825872"
   (use-package org
     :init
     (setq
-     org-agenda-files (list (getenv "ORG_TODO") "/home/naheel/Desktop/sched.org")
+     org-agenda-files (list (getenv "ORG_TODO"))
      org-log-done 'time
      org-image-actual-width 500
      org-export-in-background nil
@@ -691,7 +691,6 @@ from: https://stackoverflow.com/a/998472/3825872"
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(org-agenda-files '("/home/naheel/Desktop/sched.org"))
  '(package-selected-packages
    '(php-mode exwm lua-mode epresent js-auto-beautify yaml-mode xonsh-mode xclip writeroom-mode which-key web-mode vterm visual-regexp-steroids vala-mode v-mode use-package undo-tree typescript-mode ttl-mode sparql-mode spacemacs-theme solidity-mode rust-mode rjsx-mode ranger rainbow-mode protobuf-mode ox-reveal ox-pandoc outshine origami org-ref org-bullets multiple-cursors lsp-ui lsp-java lsp-dart kotlin-mode julia-mode iedit haxe-mode go-mode gnuplot-mode glsl-mode git-gutter flyspell-correct-helm flycheck fish-mode elvish-mode ein dumb-jump doom-modeline dockerfile-mode csharp-mode company-lsp cmake-mode calfw-org calfw basic-mode auctex anzu adaptive-wrap academic-phrases ac-octave)))
 (custom-set-faces

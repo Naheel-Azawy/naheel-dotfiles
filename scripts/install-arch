@@ -70,39 +70,39 @@ vars() {
 
 mkfss() {
     # boot
-    info "Formatting ${DEV}1 as boot partition..."
-    if [ -e "${DEV}1" ]; then
-        yes | mkfs.ext4 "${DEV}1"
+    info "Formatting ${DEVP}1 as boot partition..."
+    if [ -e "${DEVP}1" ]; then
+        yes | mkfs.ext4 "${DEVP}1"
     else
-        err "${DEV}1 not found"
+        err "${DEVP}1 not found"
         return 1
     fi || return 1
     echo
 
     # swap
-    info "Formatting ${DEV}2 as swap partition..."
-    if [ -e "${DEV}2" ]; then
-        yes | mkswap "${DEV}2"
+    info "Formatting ${DEVP}2 as swap partition..."
+    if [ -e "${DEVP}2" ]; then
+        yes | mkswap "${DEVP}2"
     else
-        err "${DEV}2 not found"
+        err "${DEVP}2 not found"
         return 1
     fi || return 1
     echo
 
     # root
-    info "Formatting ${DEV}3 as root partition..."
-    if [ -e "${DEV}3" ]; then
-        yes | mkfs.ext4 "${DEV}3"
+    info "Formatting ${DEVP}3 as root partition..."
+    if [ -e "${DEVP}3" ]; then
+        yes | mkfs.ext4 "${DEVP}3"
     else
-        err "${DEV}3 not found"
+        err "${DEVP}3 not found"
         return 1
     fi || return 1
     echo
 
     # home (optional)
-    if [ -e "${DEV}4" ]; then
-        info "Formatting ${DEV}4 as home partition..."
-        yes | mkfs.ext4 "${DEV}4"
+    if [ -e "${DEVP}4" ]; then
+        info "Formatting ${DEVP}4 as home partition..."
+        yes | mkfs.ext4 "${DEVP}4"
     fi || return 1
     echo
 }
@@ -113,40 +113,40 @@ mountall() {
     echo
 
     # root
-    info "Mounting ${DEV}3 as root partition..."
-    if [ -e "${DEV}3" ]; then
-        mount "${DEV}3" "$MP" &&
+    info "Mounting ${DEVP}3 as root partition..."
+    if [ -e "${DEVP}3" ]; then
+        mount "${DEVP}3" "$MP" &&
             mkdir -p "$MP/boot" &&
             mkdir -p "$MP/home"
     else
-        err "${DEV}3 not found"
+        err "${DEVP}3 not found"
         return 1
     fi || return 1
     echo
 
     # boot
-    info "Mounting ${DEV}1 as boot partition..."
-    if [ -e "${DEV}1" ]; then
-        mount "${DEV}1" "$MP/boot"
+    info "Mounting ${DEVP}1 as boot partition..."
+    if [ -e "${DEVP}1" ]; then
+        mount "${DEVP}1" "$MP/boot"
     else
-        err "${DEV}1 not found"
+        err "${DEVP}1 not found"
         return 1
     fi || return 1
     echo
 
     # home (optional)
-    if [ -e "${DEV}4" ]; then
-        info "Mounting ${DEV}4 as home partition..."
-        mount "${DEV}4" "$MP/home"
+    if [ -e "${DEVP}4" ]; then
+        info "Mounting ${DEVP}4 as home partition..."
+        mount "${DEVP}4" "$MP/home"
     echo
     fi || return 1
 
     # swap
-    info "Enabling ${DEV}2 as swap..."
-    if [ -e "${DEV}2" ]; then
-        swapon "${DEV}2"
+    info "Enabling ${DEVP}2 as swap..."
+    if [ -e "${DEVP}2" ]; then
+        swapon "${DEVP}2"
     else
-        err "${DEV}2 not found"
+        err "${DEVP}2 not found"
         return 1
     fi || return 1
     echo
@@ -240,7 +240,7 @@ unmountall() {
     sync
     info "Unmounting all..."
     umount -R "$MP"
-    swapoff "${DEV}2"
+    swapoff "${DEVP}2"
     rmdir "$MP"
 }
 
@@ -371,11 +371,17 @@ main() {
 
     # TODO: check DEV is mbr and not gpt and add an option to convert
 
+    if [ "$DEV" = /dev/mmcblk0 ]; then
+        DEVP=/dev/mmcblk0p
+    else
+        DEVP="$DEV"
+    fi
+
     echo 'Partition your disk as follows:'
-    echo "- ${DEV}1: boot"
-    echo "- ${DEV}2: swap"
-    echo "- ${DEV}3: root"
-    echo "- ${DEV}4: home (optional)"
+    echo "- ${DEVP}1: boot"
+    echo "- ${DEVP}2: swap"
+    echo "- ${DEVP}3: root"
+    echo "- ${DEVP}4: home (optional)"
     echo 'Press enter to proceed'
     read -r
     echo
@@ -383,16 +389,16 @@ main() {
     cfdisk "$DEV"
     echo
 
-    if [ -e "${DEV}" ] &&
-           [ -e "${DEV}1" ] &&
-           [ -e "${DEV}2" ] &&
-           [ -e "${DEV}3" ]; then
+    if [ -e "$DEV" ] &&
+           [ -e "${DEVP}1" ] &&
+           [ -e "${DEVP}2" ] &&
+           [ -e "${DEVP}3" ]; then
         info 'Partitions seems to be ok'
     else
         err 'bad partitioning'
-        ls "${DEV}1"
-        ls "${DEV}2"
-        ls "${DEV}3"
+        ls "${DEVP}1"
+        ls "${DEVP}2"
+        ls "${DEVP}3"
         return 1
     fi
     echo
