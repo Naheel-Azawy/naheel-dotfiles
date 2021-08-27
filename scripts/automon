@@ -1,0 +1,72 @@
+#!/bin/sh
+
+preset() {
+    sum="$1"
+    case "$sum" in
+        'd99210e67f59e6834d5ff3049f8e77db')
+            echo 'preset: home desk vertical'
+            xrandr --output LVDS-1 --primary --mode 1366x768 --pos 900x832 --rotate normal --output VGA-1 --mode 1600x900 --pos 0x0 --rotate left --output HDMI-1 --off --output DP-1 --off --output HDMI-2 --off --output HDMI-3 --off --output DP-2 --off --output DP-3 --off ;;
+
+        *)
+            return 1
+    esac
+}
+
+handle() {
+    [ -n "$mode" ] || mode=extend
+
+    randr=$(xrandr --verbose)
+    sum=$(echo "$randr" | grep -A 8 EDID | md5sum | cut -d ' ' -f1)
+
+    preset "$sum" && return
+
+    primary=$(echo "$randr" |
+                  awk '/^[A-Za-z0-9\-]+ connected primary/ {print echo $1}' |
+                  head -n1)
+    outputs=$(echo "$randr" |
+                  awk '/^[A-Za-z0-9\-]+ (dis)?connected/ {print echo $1" "$2}' |
+                  grep -v "$primary")
+
+    cmd="xrandr --output $primary --primary --auto"
+    prev="$primary"
+
+    IFS='
+'
+    for out in $outputs; do
+        con=$(echo "$out" | cut -d ' ' -f2)
+        out=$(echo "$out" | cut -d ' ' -f1)
+
+        if [ "$con" = connected ]; then
+            case "$mode" in
+                extend)
+                    cmd="$cmd --output $out --auto --right-of $prev" ;;
+
+                mirror)
+                    cmd="$cmd --output $out --auto --pos 0x0" ;;
+
+                *)
+                    cmd="$cmd --output $out --off" ;;
+            esac
+            prev="$out"
+        else
+            cmd="$cmd --output $out --off"
+        fi
+    done
+
+    echo "$cmd"
+    eval "$cmd"
+}
+
+main() {
+    mode="$1"
+    udevadm monitor | while read -r line; do
+        if echo "$line" | grep -Eq 'UDEV.+\(drm\)'; then
+            date
+            echo "$line"
+            handle "$mode"
+            echo
+        fi
+    done
+}
+
+main "$@"
