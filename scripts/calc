@@ -161,14 +161,21 @@ run_oct() {
         echo 'Octave is not installed!' >&2
         return 1
     }
-    OH='
-pkg load communications signal control symbolic;
+    OH="
+packages = {'communications', 'signal', 'control', 'symbolic'};
+for i = 1:size(packages, 2)
+    p = packages{i};
+    try
+        pkg('load', p);
+    catch e
+    end
+end
 format long;
-PS1(">> ");
-'
-    OCTAVE="octave-cli -q --persist --eval '$OH'"
-    [ $# = 0 ] && (eval "$OCTAVE"; exit)
-    echo "$@" | eval "$OCTAVE" | sed 's/ans =\s*//g'
+PS1('>> ');
+"
+    octnow() { octave-cli -q --persist --eval "$OH"; }
+    [ $# = 0 ] && (octnow; exit)
+    echo "$@" | octnow | sed 's/ans =\s*//g'
 }
 
 run_test() {

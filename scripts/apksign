@@ -3,4 +3,4 @@ APK="$1"
 shift
 KEY=~/.android/debug.keystore
 [ -f "$1" ] && KEY="$1" && shift
-/usr/lib/jvm/java-11-openjdk/bin/jarsigner -verbose -sigalg SHA1withRSA -digestalg SHA1 -keystore "$KEY" "$APK" androiddebugkey -storepass android "$@"
+/usr/lib/jvm/java-16-openjdk/bin/jarsigner -verbose -sigalg SHA1withRSA -digestalg SHA1 -keystore "$KEY" "$APK" androiddebugkey -storepass android "$@"

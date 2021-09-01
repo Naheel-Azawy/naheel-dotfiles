@@ -1,0 +1,6 @@
+#!/bin/sh
+
+# https://www.thinkwiki.org/wiki/How_to_configure_the_TrackPoint
+
+echo 255 > /sys/devices/platform/i8042/serio1/sensitivity
+echo 255 > /sys/devices/platform/i8042/serio1/speed
