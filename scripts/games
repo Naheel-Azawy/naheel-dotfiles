@@ -15,7 +15,7 @@ gbc = lambda name:    sh.mgba_qt.bake(f"{dir_gb}/{name}")
 n64 = lambda name:    sh.mupen64plus.bake(f"{dir_n64}/{name}")
 psx = lambda name:    sh.mednafen.bake(f"{dir_psx}/{name}")
 win = lambda d, name: sh.winejail.bake(f"win-games-{d}", f"{dir_win}/{d}", name)
-pol = lambda name:    sh.pol.bake(name)
+pol = lambda name:    sh.jailfence.playinjail.bake(name)
 tui = lambda name:    sh.theterm.bake(name)
 
 games = {
@@ -36,7 +36,7 @@ games = {
     "nudoku":          tui("nudoku"),
     "tetris":          tui("tetris"),
     "snake":           tui("snake"),
-    #"nfs-mw":          pol("most wanted"),
+    "nfs-mw":          pol("most wanted"),
     "2048":            tui("2048")
 }
 
