@@ -33,6 +33,8 @@ openfile() {
                 exec termshark "$f";;
             *.drawio)
                 mynohup drawio "$f";;
+            *.stl)
+                mynohup cura "$f";;
             *)
                 # mime type
                 case $(file --mime-type "$(realpath """$f""")" -b) in

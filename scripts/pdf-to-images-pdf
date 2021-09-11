@@ -1,0 +1,11 @@
+#!/bin/sh
+
+inpdf="$1"
+outpdf="$2"
+
+tmp=".tmp_pdf_$$"
+
+mkdir "$tmp"
+pdftoppm "$inpdf" "$tmp/i" -jpeg
+convert "$tmp"/i-*.jpg "$outpdf"
+rm -rf "$tmp"

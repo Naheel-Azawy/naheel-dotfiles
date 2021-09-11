@@ -1,7 +1,7 @@
 #!/bin/sh
 synclient \
-    VertScrollDelta=-55 \
-    HorizScrollDelta=-55 \
+    VertScrollDelta=-500 \
+    HorizScrollDelta=-500 \
     TapButton1=1 \
     TapButton2=3 \
     TapButton3=2 \
