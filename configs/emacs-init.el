@@ -318,6 +318,16 @@ https://www.emacswiki.org/emacs/NoTabs"
   (use-package visual-regexp-steroids)
   (use-package academic-phrases))
 
+(defun now ()
+  "Insert string for today's date and time."
+  (interactive)
+  (insert (format-time-string "<%Y-%m-%d %H:%M>")))
+
+(defun today ()
+  "Insert string for today's date."
+  (interactive)
+  (insert (format-time-string "<%Y-%m-%d>")))
+
 ;; ---- MULTIPLE CURSERS ----
 (use-package multiple-cursors
   :init (require 'multiple-cursors)

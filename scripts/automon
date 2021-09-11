@@ -18,7 +18,7 @@ handle() {
     randr=$(xrandr --verbose)
     sum=$(echo "$randr" | grep -A 8 EDID | md5sum | cut -d ' ' -f1)
 
-    #preset "$sum" && return
+    preset "$sum" && return
 
     primary=$(echo "$randr" |
                   awk '/^[A-Za-z0-9\-]+ connected primary/ {print echo $1}' |
@@ -61,6 +61,7 @@ main() {
     mode="$1"
     [ "$2" = --now ] && {
         handle "$mode"
+        setwallpaper
         return
     }
     udevadm monitor | while read -r line; do
@@ -68,6 +69,7 @@ main() {
             date
             echo "$line"
             handle "$mode"
+            setwallpaper
             echo
         fi
     done
