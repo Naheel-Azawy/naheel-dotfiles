@@ -63,7 +63,7 @@
 | aur      | mpd-notification       | N.A.                                      | mpd notifications                                                |
 | pacman   | onboard                | N.A.                                      | on-screen keyboard                                               |
 | git      | theprayer              | https://github.com/Naheel-Azawy/theprayer | CLI prayer time                                                  |
-| aur      | gotop                  | N.A.                                      | a nice system monitor                                            |
+| git      | btop                   | https://github.com/aristocratos/btop      | a nice system monitor                                            |
 | git      | dragon                 | https://github.com/mwh/dragon             | drag and drop                                                    |
 | pacman   | acpilight              | N.A.                                      | brightness control                                               |
 | pacman   | udisks2                | N.A.                                      | nice disks management                                            |

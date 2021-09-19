@@ -1,6 +1,6 @@
 #!/bin/sh
 
-TOP=gotop
+TOP=btop
 
 [ "$1" = -1 ] && G=$(pgrep $TOP) && exit 1
 theterm "exec $TOP"
