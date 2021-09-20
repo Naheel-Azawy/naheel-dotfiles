@@ -1,2 +1,2 @@
 #!/bin/sh
-exec edit --eval '(cfw:open-org-calendar)'
+exec edit t --eval '(cfw:open-org-calendar)'

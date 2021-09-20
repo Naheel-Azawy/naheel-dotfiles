@@ -6,6 +6,8 @@
 
 BINPATH=$(realpath "$0")
 
+export TERM='screen-256color'
+
 daemon() { emacsclient -e 0 >/dev/null || emacs --daemon "$@"; }
 die()    { exec emacsclient -e '(kill-emacs)'; }
 client() { daemon; exec emacsclient "$@"; }
