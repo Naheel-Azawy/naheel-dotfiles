@@ -24,7 +24,7 @@ try:
 except:
     use_arabic = False
 
-background = '#ff000000'
+background = '#99000000'
 foreground = '#ffffff'
 
 default_items = "start workspaces add program | clock | systray pray weather temperature wifi battery power"
@@ -373,9 +373,10 @@ class Bar(BarBase):
     def program(self):
         try:
             title = sh.xdotool("getactivewindow", "getwindowname").strip()
-            max_title = 55
+            # not accurate, depends on the resolution and font size, but too lazy
+            max_title = 50 - len(self.wm.impl.workspaces) * 3
             if len(title) > max_title:
-                title = title[:max_title] + "..."
+                title = title[:max_title].strip() + "…"
             if use_arabic:
                 title = bidi.algorithm.get_display(
                     arabic_reshaper.reshape(title))

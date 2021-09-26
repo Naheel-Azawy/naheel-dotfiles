@@ -56,7 +56,7 @@ setup-xinput &               # mouse setup
 xbanish &                    # hides the cursor while typing
 syndaemon -i 0.5 -t -K -R &  # disable touchpad while typing
 edit daemon &                # emacs daemon
-#picom &                      # compositor
+picom &                      # compositor
 setwallpaper &               # wallpaper
 lang us &                    # set language to 'us' and runs xmodmap
 mount-private &              # mount encfs private directory

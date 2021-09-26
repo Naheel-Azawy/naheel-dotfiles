@@ -1,0 +1,62 @@
+#!/bin/sh
+
+dev=/dev/ttyUSB0
+xlen=100
+ymin=0
+ymax=6
+
+plot() {
+    w=$(tput cols)
+    h=$(tput lines)
+
+    feedgnuplot                   \
+        --stream --xlen $xlen     \
+        --ymin $ymin --ymax $ymax \
+        --lines --unset grid      \
+        --terminal "dumb $w,$h"
+}
+
+sin() {
+    x=0
+    while :; do
+        echo "($ymax/2) * s(0.25*$x) + ($ymax/2)" | bc -l
+        x=$((x + 1))
+        sleep 0.1
+    done
+}
+
+square() {
+    x=0
+    while :; do
+        y=$((x % (xlen / 4)))
+        if [ $y -gt $((xlen / 8)) ]; then
+            echo $((ymax - 1))
+        else
+            echo $((ymin + 1))
+        fi
+        sleep 0.1
+        x=$((x + 1))
+    done
+}
+
+rand() {
+    sum=$(head -c 4 /dev/urandom | cksum | cut -d ' ' -f1)
+    echo $((sum % (ymax / 3)))
+}
+
+noise() {
+    while read -r x; do
+        r=$(rand)
+        echo "$x + $r" | bc -l
+    done
+}
+
+main() {
+    #stty -F $dev speed 115200
+    plot < $dev
+}
+
+#main "$@"
+
+#sin | plot
+square | noise | plot
