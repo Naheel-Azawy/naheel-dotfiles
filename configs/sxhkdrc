@@ -74,6 +74,10 @@ super+Tab
 super+shift+Tab
 	wm-msg workspace_prev
 
+# Move to a new workspace
+super+plus
+    wm-msg workspace_new
+
 # Move workspace to next monitor
 super+ctrl+p
 	wm-msg workspace_monitor_next

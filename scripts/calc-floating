@@ -1,2 +1,2 @@
 #!/bin/sh
-theterm -s ignored-calc -a '-c __floatme__ -g 45x35-40+70' calc
+theterm -s ignored-calc -a '-c __floatme__ -g 45x30-40+70' calc
