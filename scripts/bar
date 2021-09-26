@@ -76,7 +76,7 @@ class WM:
         })
 
     def lemon(self):
-        circles = False
+        circles = True
         out = ""
         # still not sure which to pick so I'm keeping both for now
         if circles:

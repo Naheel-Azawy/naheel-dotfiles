@@ -49,6 +49,16 @@ bspwm_ws_check() {
         bspc monitor -a "$1"
 }
 
+i3_ws_new() {
+    workspaces=$(i3-msg -t get_workspaces | jq -r '.[].name')
+    new=$(seq 10 | grep -v "$workspaces" | head -n1)
+    i3-msg workspace "$new"
+}
+
+bspwm_ws_new() {
+    : # TODO
+}
+
 if xdotool getactivewindow getwindowname | grep -q emacs; then
     case "$1" in
         window_focus) emacsclient --no-wait --eval "(windmove-$2)" && exit ;;
@@ -59,50 +69,52 @@ fi
 case "$WINDOW_MANAGER" in
     i3)
         case "$1" in
-            fullscreen) i3-msg fullscreen toggle ;;
-            float) i3-msg floating toggle ;;
-            stick) i3-msg sticky toggle ;;
-            split) i3-msg split t ;;
-            float_focus) i3-msg focus mode_toggle ;;
+            fullscreen)             i3-msg fullscreen toggle ;;
+            float)                  i3-msg floating toggle ;;
+            stick)                  i3-msg sticky toggle ;;
+            split)                  i3-msg split t ;;
+            float_focus)            i3-msg focus mode_toggle ;;
             container_focus_parent) i3-msg focus parent ;;
-            container_focus_child) i3-msg focus child ;;
-            window_close) i3-msg kill ;;
-            window_focus) i3-msg focus "$2" ;;
-            window_move) i3-msg move "$2" ;;
-            window_resize) i3_resize "$2" 10 ;;
-            window_resize_tiny) i3_resize "$2" 1 ;;
-            workspace) i3-msg workspace "$2" ;;
-            workspace_move) i3-msg move container to workspace "$2" ;;
-            workspace_move_go) i3-msg move container to workspace "$2"\; workspace "$2" ;;
-            workspace_next) i3-msg workspace next ;;
-            workspace_prev) i3-msg workspace prev ;;
+            container_focus_child)  i3-msg focus child ;;
+            window_close)           i3-msg kill ;;
+            window_focus)           i3-msg focus "$2" ;;
+            window_move)            i3-msg move "$2" ;;
+            window_resize)          i3_resize "$2" 10 ;;
+            window_resize_tiny)     i3_resize "$2" 1 ;;
+            workspace)              i3-msg workspace "$2" ;;
+            workspace_move)         i3-msg move container to workspace "$2" ;;
+            workspace_move_go)      i3-msg move container to workspace "$2"\; workspace "$2" ;;
+            workspace_next)         i3-msg workspace next ;;
+            workspace_prev)         i3-msg workspace prev ;;
+            workspace_new)          i3_ws_new ;;
             workspace_monitor_next) i3-msg move workspace to output right ;;
-            restart) i3-msg restart ;;
-            end) i3-msg exit ;;
+            restart)                i3-msg restart ;;
+            end)                    i3-msg exit ;;
         esac ;;
 
     bspwm)
         case "$1" in
-            fullscreen) bspc node -t ~fullscreen ;;
-            float) bspc node -t ~floating ;;
-            stick) bspc node -s sticky ;;
-            split) : ;;
-            float_focus) : ;;
+            fullscreen)             bspc node -t ~fullscreen ;;
+            float)                  bspc node -t ~floating ;;
+            stick)                  bspc node -s sticky ;;
+            split)                  : ;;
+            float_focus)            : ;;
             container_focus_parent) bspc node -f @parent ;;
-            container_focus_child) bspc node -f @first ;;
-            window_close) bspc node -c ;;
-            window_focus) bspc node -f "$(dir_bspwm "$2")" ;;
-            window_move) bspwm_move "$2" ;;
-            window_resize) bspwm_resize "$2" 30 ;;
-            window_resize_tiny) bspwm_resize "$2" 5 ;;
-            workspace) bspwm_ws_check "$2" && bspc desktop -f "$2" ;;
-            workspace_move) bspwm_ws_check "$2" && bspc node -d "$2" ;;
-            workspace_move_go) bspwm_ws_check "$2" && bspc node -d "$2" && bspc desktop -f "$2" ;;
-            workspace_next) bspc desktop -f next ;;
-            workspace_prev) bspc desktop -f prev ;;
+            container_focus_child)  bspc node -f @first ;;
+            window_close)           bspc node -c ;;
+            window_focus)           bspc node -f "$(dir_bspwm "$2")" ;;
+            window_move)            bspwm_move "$2" ;;
+            window_resize)          bspwm_resize "$2" 30 ;;
+            window_resize_tiny)     bspwm_resize "$2" 5 ;;
+            workspace)              bspwm_ws_check "$2" && bspc desktop -f "$2" ;;
+            workspace_move)         bspwm_ws_check "$2" && bspc node -d "$2" ;;
+            workspace_move_go)      bspwm_ws_check "$2" && bspc node -d "$2" && bspc desktop -f "$2" ;;
+            workspace_next)         bspc desktop -f next ;;
+            workspace_prev)         bspc desktop -f prev ;;
+            workspace_new)          bspwm_ws_new ;;
             workspace_monitor_next) bspc desktop -m next --follow ;;
-            restart) bspc wm -r ;;
-            end) bspc quit ;;
+            restart)                bspc wm -r ;;
+            end)                    bspc quit ;;
         esac ;;
 
     *)
