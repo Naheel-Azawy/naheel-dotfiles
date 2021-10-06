@@ -18,6 +18,7 @@ import socket
 import signal
 
 try:
+    # sudo pip3 install python-bidi arabic-reshaper
     import bidi.algorithm
     import arabic_reshaper
     use_arabic = True
@@ -76,7 +77,7 @@ class WM:
         })
 
     def lemon(self):
-        circles = True
+        circles = False
         out = ""
         # still not sure which to pick so I'm keeping both for now
         if circles:

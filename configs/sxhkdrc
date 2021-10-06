@@ -75,7 +75,7 @@ super+shift+Tab
 	wm-msg workspace_prev
 
 # Move to a new workspace
-super+plus
+super+equal
     wm-msg workspace_new
 
 # Move workspace to next monitor
@@ -139,7 +139,7 @@ super+b
 	browser
 
 # Open calculator
-super+equal
+super+plus
 	calc-floating
 
 # Open tiny camera

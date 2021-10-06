@@ -1,7 +1,7 @@
 #!/bin/sh
 
 dev=/dev/ttyUSB0
-xlen=100
+xlen=200
 ymin=0
 ymax=6
 
@@ -56,7 +56,7 @@ main() {
     plot < $dev
 }
 
-#main "$@"
+main "$@"
 
 #sin | plot
-square | noise | plot
+#square | noise | plot
