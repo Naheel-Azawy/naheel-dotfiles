@@ -122,6 +122,7 @@ dots_link() {
     lnnn "$D/configs/stpv-config.sh"      "$H/.config/stpv/config.sh"
     lnnn "$D/configs/nanorc"              "$H/.nanorc"
     lnnn "$D/configs/sxhkdrc"             "$H/.config/sxhkd/sxhkdrc"
+    lnnn "$D/configs/fmzrc.sh"            "$H/.config/fmzrc.sh"
 }
 
 # update dots configs
