@@ -1,11 +1,19 @@
 #!/bin/sh
 
-inpdf="$1"
-outpdf="$2"
+for inpdf; do
+    echo "Processing file $inpdf..."
+    outpdf="$inpdf.images.pdf"
 
-tmp=".tmp_pdf_$$"
+    tmp=".tmp_pdf_$$"
+    mkdir "$tmp"
 
-mkdir "$tmp"
-pdftoppm "$inpdf" "$tmp/i" -jpeg
-convert "$tmp"/i-*.jpg "$outpdf"
-rm -rf "$tmp"
+    echo 'Generating images...'
+    pdftoppm "$inpdf" "$tmp/i" -jpeg
+
+    echo 'Merging to a PDF...'
+    convert "$tmp"/i-*.jpg "$outpdf"
+
+    echo "Created $outpdf"
+    rm -rf "$tmp"
+    echo
+done

@@ -1,0 +1,33 @@
+#!/bin/sh
+
+url="$1"
+[ -n "$url" ] || url=https://tickets.circuitlosail.com/
+
+init_html=/tmp/web-check-$$-init.html
+cur_html=/tmp/web-check-$$-cur.html
+
+curl $url > "$init_html"
+
+while :; do
+    echo
+    echo "Checking '$url'..."
+    date
+    curl $url > "$cur_html"
+    d=$(diff "$cur_html" "$init_html" | wc -l)
+    if [ "$d" != 0 ]; then
+        if [ "$d" -gt 50 ]; then
+            echo 'Changed!!!!!!!'
+            while :; do
+                espeak 'come here'
+            done
+        else
+            echo 'Changed but not much'
+        fi
+        curl $url > "$init_html"
+    else
+        echo 'No change'
+    fi
+    sleep 10
+done
+
+rm -f "$init_html" "$cur_html"

@@ -288,6 +288,15 @@ https://www.emacswiki.org/emacs/NoTabs"
   (setq cmd (concat "rn " (buffer-name) ))
   (shell-command cmd))
 (global-set-key [C-f5] 'run-program)
+(defun run-program-term ()
+  "Execute a source file in a new terminal."
+  (interactive)
+  (defvar cmd)
+  (setq cmd (concat "$TERMINAL -e \"rn '" (buffer-name)
+                    "'; echo press return to exit; read foo\" "
+                    ">/dev/null 2>/dev/null &"))
+  (shell-command cmd))
+(global-set-key [C-f6] 'run-program-term)
 
 ;; ---- TOYS ----
 (use-package iedit :bind ("C-x e" . iedit-mode))

@@ -1,15 +1,56 @@
 #!/bin/sh
 
-list() {
+VIRSH_URI=qemu:///system
+
+vbox_list() {
     vboxmanage list vms |
         grep -v '<inaccessible>' |
         sed -En 's/"(.+)" .+/\1/p'
-    echo Manage
 }
 
-V=$(list | menus-face -i)
+vbox_start() {
+    exec vboxmanage startvm "$1"
+}
 
-[ "$V" ] && case "$V" in
-    Manage) virtualbox;;
-    *) exec vboxmanage startvm "$V";;
-esac
+libvirt_list() {
+    virsh --connect $VIRSH_URI list --all |
+        tail -n+3 | grep . | awk '{print $2}'
+}
+
+libvirt_start() {
+    virsh --connect $VIRSH_URI start "$1"
+    exec virt-viewer --connect $VIRSH_URI "$1"
+}
+
+is_in() {
+    echo "$2" | grep -q "^$1\$"
+}
+
+main() {
+    vms_vbox=$(vbox_list)
+    vms_libvirt=$(libvirt_list)
+
+    choice=$({
+                echo "$vms_vbox"
+                echo "$vms_libvirt"
+                echo 'Manage vbox'
+                echo 'Manage libvirt'
+            } | menus-face -i)
+
+    [ "$choice" ] && case "$choice" in
+        'Manage vbox')    virtualbox   ;;
+        'Manage libvirt') virt-manager ;;
+        *)
+            if is_in "$choice" "$vms_libvirt"; then
+                notify-send "Starting $choice from libvirt"
+                libvirt_start "$choice"
+            elif is_in "$choice" "$vms_vbox"; then
+                notify-send "Starting $choice from vbox"
+                vbox_start "$choice"
+            else
+                notify-send "Unknown vm $choice"
+            fi ;;
+    esac
+}
+
+main "$@"

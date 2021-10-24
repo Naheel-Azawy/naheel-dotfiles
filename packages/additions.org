@@ -61,3 +61,4 @@
 | pacman | octave                         | N.A.                                   | matlab alternative                                                                             |
 | aur    | adwaita-qt                     | N.A.                                   | Adwaita GNOME theme for Qt5                                                                    |
 | pacman | qt5ct                          | N.A.                                   | QT5 configurations                                                                             |
+| pacman | geoip                          | N.A.                                   | geographical IP database                                                                       |
