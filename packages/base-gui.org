@@ -1,6 +1,7 @@
 | Tag      | Name                   | Git Link                                  | Purpose                                                          |
 |----------+------------------------+-------------------------------------------+------------------------------------------------------------------|
 | pacman   | i3-wm                  | N.A.                                      | the window manager                                               |
+| pacman   | bspwm                  | N.A.                                      | the window manager                                               |
 | pacman   | xorg-server            | N.A.                                      | graphical server                                                 |
 | pacman   | xorg-xdpyinfo          | N.A.                                      | retrieves screen information for some scripts                    |
 | pacman   | xorg-xinit             | N.A.                                      | starts the graphical server                                      |
@@ -34,6 +35,7 @@
 | pacman   | network-manager-applet | N.A.                                      | appears in the top right corner and manages the wi-fi connection |
 | pacman   | maim                   | N.A.                                      | can take quick screenshots at your request                       |
 | pacman   | xdotool                | N.A.                                      | provides window action utilities on the command line.            |
+| pacman   | xdo                    | N.A.                                      | provides window action utilities on the command line.            |
 | pacman   | xssstate               | N.A.                                      | times out the screen if locked                                   |
 | pacman   | lxappearance           | N.A.                                      | configures GTK with a simple GUI                                 |
 | pacman   | cups                   | N.A.                                      | in case you need to use a printer                                |
@@ -63,7 +65,7 @@
 | aur      | mpd-notification       | N.A.                                      | mpd notifications                                                |
 | pacman   | onboard                | N.A.                                      | on-screen keyboard                                               |
 | git      | theprayer              | https://github.com/Naheel-Azawy/theprayer | CLI prayer time                                                  |
-| git      | btop                   | https://github.com/aristocratos/btop      | a nice system monitor                                            |
+| aur      | btop-git               | N.A.                                      | a nice system monitor                                            |
 | git      | dragon                 | https://github.com/mwh/dragon             | drag and drop                                                    |
 | pacman   | acpilight              | N.A.                                      | brightness control                                               |
 | pacman   | udisks2                | N.A.                                      | nice disks management                                            |
