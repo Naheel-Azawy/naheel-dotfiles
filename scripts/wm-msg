@@ -49,10 +49,10 @@ bspwm_ws_check() {
 
 bspwm_ws_cleanup() {
     # remove empty desktops
-    cur=$(bspc query -D -d .focused --names)
-    bspc query -D -d .!occupied --names |
-        grep -v "$cur" |
-        xargs -d '\n' -I {} bspc desktop {} -r
+    # cur=$(bspc query -D -d .focused --names)
+    # bspc query -D -d .!occupied --names |
+    #     grep -v "$cur" |
+    #     xargs -d '\n' -I {} bspc desktop {} -r
 
     # remove empty monitors
     bspc query -M -m .!occupied --names |
@@ -138,8 +138,8 @@ case "$WINDOW_MANAGER" in
             workspace)              ws_scshot "$2"; bspwm_ws_check "$2" && bspc desktop -f "$2"; bspwm_ws_cleanup ;;
             workspace_move)         bspwm_ws_check "$2" && bspc node -d "$2"; bspwm_ws_cleanup ;;
             workspace_move_go)      ws_scshot "$2"; bspwm_ws_check "$2" && bspc node -d "$2" && bspc desktop -f "$2"; bspwm_ws_cleanup ;;
-            workspace_next)         ws_scshot cur; bspc desktop -f next ;;
-            workspace_prev)         ws_scshot cur; bspc desktop -f prev ;;
+            workspace_next)         ws_scshot cur; bspc desktop -f next.occupied ;;
+            workspace_prev)         ws_scshot cur; bspc desktop -f prev.occupied ;;
             workspace_new)          ws_scshot cur; bspwm_ws_new ;;
             workspace_monitor_next) bspc desktop -m next --follow ;;
             restart)                bspc wm -r ;;

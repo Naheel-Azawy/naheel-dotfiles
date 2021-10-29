@@ -104,7 +104,7 @@ super+shift+ctrl+Return
 
 # Start file manager
 super+apostrophe
-	theterm $FILE_MANAGER
+	theterm fish -c "$FILE_MANAGER"
 
 # Start file manager with opposite split
 super+shift+apostrophe

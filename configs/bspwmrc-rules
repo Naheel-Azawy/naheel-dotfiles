@@ -4,10 +4,21 @@ wid=$1
 class=$2
 instance=$3
 consequences=$4
+title=$(xdotool getwindowname "$wid")
 
 case "$class" in
+    Dragon)
+        echo 'sticky=on' ;;
+    Emacs)
+        echo 'state=tiled' ;;
+esac
+
+case "$title" in
     *__floatme__*)
         echo 'state=floating' ;;
-    *__stickme__*|dragon)
+esac
+
+case "$title" in
+    *__stickme__*)
         echo 'sticky=on' ;;
 esac
