@@ -1,16 +1,25 @@
 #!/bin/sh
 
 MAX_VOL=250
+NOTIF_ID=123
 
 vol_notif() {
     V="$1"
     [ "$V" ] || V=$(pamixer --get-volume)
-	if [ "$(pamixer --get-mute)" = "true" ] || [ "$V" = 0 ]; then
+	if [ "$(pamixer --get-mute)" = "true" ]; then
         V="Muted"
 	else
 		V="$V%"
     fi
-	dunstify -i none -r 123 "Volume: $V"
+    dunstify -i none -r $NOTIF_ID "Volume: $V"
+}
+
+mic_notif() {
+    if amixer sget Capture | grep -Eq 'Capture.+\[on\]'; then
+        dunstify -i none -r $NOTIF_ID "Microphone: ON"
+    else
+        dunstify -i none -r $NOTIF_ID "Microphone: OFF"
+    fi
 }
 
 vol() {
@@ -56,10 +65,10 @@ vol1() {
 
 V="$2"
 case "$1" in
-	"up")       vol up   "$V" ;;
-	"down")     vol down "$V" ;;
-	"mute")     vol t         ;;
-	"truemute") vol m         ;;
+	"up")       vol up   "$V"                                 ;;
+	"down")     vol down "$V"                                 ;;
+	"mute")     amixer -q set Master toggle;  vol_notif       ;;
+	"mutemic")  amixer -q set Capture toggle; mic_notif       ;;
 	"stop")     mpc -q stop       || cmus-remote --stop       ;;
 	"pause")    mpc -q toggle     || cmus-remote --pause      ;;
 	"forward")  mpc -q seek +"$V" || cmus-remote --seek +"$V" ;;
@@ -68,4 +77,4 @@ case "$1" in
 	"prev")     mpc -q prev       || cmus-remote --prev       ;;
 	"replay")   mpc seek 0%       || cmus-remote --seek 0     ;;
     "gui")      pavucontrol ;;
-esac 2>/dev/null
+esac

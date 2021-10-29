@@ -257,6 +257,9 @@ super+grave
 XF86AudioMute
 	audioctl mute
 
+XF86AudioMicMute
+	audioctl mutemic
+
 XF86AudioLowerVolume
 	audioctl down 5
 

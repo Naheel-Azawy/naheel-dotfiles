@@ -24,3 +24,6 @@ bspc config borderless_monocle true
 # bspc rule -a '.*__floatme__.*' state=floating
 # bspc rule -a '.*__stickme__.*' sticky=on
 # bspc rule -a 'dragon'          sticky=on
+
+this=$(realpath "$1")
+bspc config external_rules_command "${this}-rules"

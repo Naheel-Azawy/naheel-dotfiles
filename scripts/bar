@@ -79,6 +79,7 @@ class WM:
     def lemon(self):
         circles = False
         out = ""
+        # self.impl.workspaces.sort(key=lambda w: w.name)
         # still not sure which to pick so I'm keeping both for now
         if circles:
             for w in self.impl.workspaces:

@@ -3,6 +3,7 @@
 | pacman | net-tools    | N.A.     | some handy networking tools                    |
 | pacman | traceroute   | N.A.     | trace the route to the host                    |
 | pacman | tcpdump      | N.A.     | dump network traffic                           |
+| pacman | nmap         | N.A.     | nmap                                           |
 | pacman | wireshark-qt | N.A.     | interactively dump and analyze network traffic |
 | aur    | termshark    | N.A.     | wireshark in the terminal                      |
 

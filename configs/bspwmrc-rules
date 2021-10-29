@@ -1,0 +1,13 @@
+#!/bin/sh
+
+wid=$1
+class=$2
+instance=$3
+consequences=$4
+
+case "$class" in
+    *__floatme__*)
+        echo 'state=floating' ;;
+    *__stickme__*|dragon)
+        echo 'sticky=on' ;;
+esac

@@ -1,5 +1,8 @@
 #!/bin/sh
 
+# send window manager messages using i3-msg or bspc
+# emacs window movement included
+
 i3_resize() {
     case "$1" in
         left)  i3-msg resize shrink width  "$2" px or "$2" ppt ;;
@@ -38,15 +41,30 @@ bspwm_move() {
 
 bspwm_ws_check() {
     # dynamic, i3-like behavior
+    target="$1"
+    # create if not there
+    bspc query -D -d "$target" 2>/dev/null ||
+        bspc monitor -a "$target"
+}
+
+bspwm_ws_cleanup() {
     # remove empty desktops
+    cur=$(bspc query -D -d .focused --names)
     bspc query -D -d .!occupied --names |
+        grep -v "$cur" |
         xargs -d '\n' -I {} bspc desktop {} -r
+
     # remove empty monitors
     bspc query -M -m .!occupied --names |
         xargs -d '\n' -I {} bspc monitor {} -r
-    # create if not there
-    bspc query -D -d "$1" >/dev/null ||
-        bspc monitor -a "$1"
+
+    # re-order desktops names
+    # max=$({
+    #          bspc query -D -d .occupied --names
+    #          echo "$target"
+    #      } | sort -n | tail -n1)
+    # names=$(seq -s ' ' "$max")
+    # eval "bspc monitor -d $names"
 }
 
 i3_ws_new() {
@@ -56,7 +74,14 @@ i3_ws_new() {
 }
 
 bspwm_ws_new() {
-    : # TODO
+    max=$(bspc query -D -d .occupied --names |
+              sort -n | tail -n1)
+    new=$((max + 1))
+    [ "$new" -le 10 ] && {
+        bspwm_ws_check "$new"
+        bspc desktop -f "$new"
+        bspwm_ws_cleanup
+    }
 }
 
 ws_scshot() {
@@ -110,9 +135,9 @@ case "$WINDOW_MANAGER" in
             window_move)            bspwm_move "$2" ;;
             window_resize)          bspwm_resize "$2" 30 ;;
             window_resize_tiny)     bspwm_resize "$2" 5 ;;
-            workspace)              ws_scshot "$2"; bspwm_ws_check "$2" && bspc desktop -f "$2" ;;
-            workspace_move)         bspwm_ws_check "$2" && bspc node -d "$2" ;;
-            workspace_move_go)      ws_scshot "$2"; bspwm_ws_check "$2" && bspc node -d "$2" && bspc desktop -f "$2" ;;
+            workspace)              ws_scshot "$2"; bspwm_ws_check "$2" && bspc desktop -f "$2"; bspwm_ws_cleanup ;;
+            workspace_move)         bspwm_ws_check "$2" && bspc node -d "$2"; bspwm_ws_cleanup ;;
+            workspace_move_go)      ws_scshot "$2"; bspwm_ws_check "$2" && bspc node -d "$2" && bspc desktop -f "$2"; bspwm_ws_cleanup ;;
             workspace_next)         ws_scshot cur; bspc desktop -f next ;;
             workspace_prev)         ws_scshot cur; bspc desktop -f prev ;;
             workspace_new)          ws_scshot cur; bspwm_ws_new ;;
