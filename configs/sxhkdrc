@@ -252,7 +252,7 @@ super+F1
 
 # Show the system monitor
 super+grave
-	wm-msg workspace \#; system-monitor -1
+	wm-msg workspace 10; system-monitor -1
 
 XF86AudioMute
 	audioctl mute
