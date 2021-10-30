@@ -40,7 +40,9 @@ WINDOW_MANAGER = os.getenv("WINDOW_MANAGER")
 class WM:
     def __init__(self, callback):
         wm = WINDOW_MANAGER
-        if wm == "i3":
+        if False:
+            self.impl = LSD(callback)
+        elif wm == "i3":
             self.impl = I3WM(callback)
         elif wm == "bspwm":
             self.impl = BSPWM(callback)
@@ -129,6 +131,14 @@ class Workspace:
         self.focused = False
         self.urgent  = False
 
+    def __str__(self):
+        return json.dumps({
+            "name": self.name,
+            "visible": self.visible,
+            "focused": self.focused,
+            "urgent": self.urgent
+        })
+
 class I3WM(WMImpl):
     def __init__(self, callback):
         self.callback = callback
@@ -202,6 +212,44 @@ class BSPWM(WMImpl):
         code = popen.wait()
         if code != 0:
             raise Exception(f"bspc exited with code {code}")
+
+# https://github.com/phillbush/lsd
+class LSD:
+    def __init__(self, callback):
+        self.callback = callback
+        self.workspaces = []
+        self.workspace_cmd = "bspc desktop -f" # TODO: use focus?
+
+    async def run(self):
+        try:
+            await asyncio.to_thread(self.loop)
+        except Exception:
+            raise Exception(f"lsd thread failed")
+
+    def run(self):
+        popen = subprocess.Popen(["lsd", "-w"],
+                                 stdout=subprocess.PIPE,
+                                 universal_newlines=True)
+        for line in iter(popen.stdout.readline, ""):
+            ws = []
+            items = line.rstrip().split("\t")
+            for item in items:
+                item = item.split(":")
+                state = item[0][0]
+                nodes = int(item[0][1:])
+                if nodes > 0 or state == "*":
+                    w = Workspace()
+                    w.name    = item[1]
+                    w.visible = False # TODO: handle with lsd?
+                    w.focused = state == "*"
+                    w.urgent  = state == "-"
+                    ws.append(w)
+            self.workspaces = ws
+            self.callback(self)
+        popen.stdout.close()
+        code = popen.wait()
+        if code != 0:
+            raise Exception(f"lsd exited with code {code}")
 
 class XTitle:
     def __init__(self, callback):
