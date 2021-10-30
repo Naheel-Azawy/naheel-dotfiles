@@ -203,6 +203,27 @@ class BSPWM(WMImpl):
         if code != 0:
             raise Exception(f"bspc exited with code {code}")
 
+class XTitle:
+    def __init__(self, callback):
+        self.callback = callback
+
+    async def run(self):
+        try:
+            await asyncio.to_thread(self.loop)
+        except Exception:
+            raise Exception(f"xtitle thread failed")
+
+    def loop(self):
+        popen = subprocess.Popen(["xtitle", "-s"],
+                                 stdout=subprocess.PIPE,
+                                 universal_newlines=True)
+        for line in iter(popen.stdout.readline, ""):
+            self.callback(line.strip())
+        popen.stdout.close()
+        code = popen.wait()
+        if code != 0:
+            raise Exception(f"xtitle exited with code {code}")
+
 def item(period=0):
     """A decorator to simplify defining periodic functions"""
     def decorate(func):
@@ -221,6 +242,7 @@ class BarBase:
         self.server = None
         self.a = use_ascii
         self.wm = WM(self.run_wm_items)
+        self.xtitle = XTitle(self.run_xtitle_items)
 
         if items is None:
             self.items_str = default_items
@@ -302,6 +324,11 @@ class BarBase:
         self.run_item(self.add)
         self.render()
 
+    def run_xtitle_items(self, title):
+        self.wm.title = title
+        self.run_item(self.program)
+        self.render()
+
     async def handle_connection(self, reader, writer):
         data = b""
         while True:
@@ -330,6 +357,9 @@ class BarBase:
         # window manager
         if self.wm is not None:
             coroutines.append(self.wm.run())
+        # xtitle
+        if self.xtitle is not None:
+            coroutines.append(self.xtitle.run())
         # periodic items
         for item in self.items:
             if item("period") > 0:
@@ -373,30 +403,25 @@ class Bar(BarBase):
 
     @item()
     def program(self):
-        try:
-            title = sh.xdotool("getactivewindow", "getwindowname").strip()
-            # not accurate, depends on the resolution and font size, but too lazy
-            max_title = 50 - len(self.wm.impl.workspaces) * 3
-            if len(title) > max_title:
-                title = title[:max_title].strip() + "…"
-            if use_arabic:
-                title = bidi.algorithm.get_display(
-                    arabic_reshaper.reshape(title))
-            if self.wm is not None:
-                self.wm.title = title
-            if self.a:
-                return title
-            else:
-                out = ""
-                if title:
-                    return "%{A:nice-kill:}%{A}  " + \
-                        "%{A:menus hud:}" + title + "%{A}"
-                else:
-                    return None
-        except:
-            if self.wm is not None:
-                self.wm.title = ""
+        if self.wm is None or self.wm.title is None:
             return None
+        # not accurate, depends on the resolution and font size, but too lazy
+        max_title = 50 - len(self.wm.impl.workspaces) * 3
+        title = self.wm.title
+        if len(title) > max_title:
+            title = title[:max_title].strip() + "…"
+        if use_arabic:
+            title = bidi.algorithm.get_display(
+                arabic_reshaper.reshape(title))
+        if self.a:
+            return title
+        else:
+            out = ""
+            if title:
+                return "%{A:nice-kill:}%{A}  " + \
+                    "%{A:menus hud:}" + title + "%{A}"
+            else:
+                return None
 
     @item(period=1)
     def clock(self):
@@ -404,7 +429,8 @@ class Bar(BarBase):
         if self.a:
             return t
         else:
-            cmd = "theterm -a '-c __floatme__ -g 70x35' 'cal -y && read -p \"\"'"
+            # cmd = "theterm -a '-c __floatme__ -g 70x35' 'cal -y && read -p \"\"'"
+            cmd = "gsimplecal"
             return f"%{{A:{cmd}&:}}{t}%{{A}}"
 
     @item(period=3)

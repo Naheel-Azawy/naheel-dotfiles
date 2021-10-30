@@ -81,3 +81,4 @@
 | pacman   | openvpn                | N.A.                                      | the open vpn                                                     |
 | pacman   | networkmanager-openvpn | N.A.                                      | openvpn for nm                                                   |
 | aur      | networkmanager-dmenu   | N.A.                                      | manage nm from dmenu                                             |
+| pacman   | gsimplecal             | N.A.                                      | simple calender                                                  |

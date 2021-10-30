@@ -22,3 +22,13 @@ case "$title" in
     *__stickme__*)
         echo 'sticky=on' ;;
 esac
+
+case "$class" in
+    *__floatme__*)
+        echo 'state=floating' ;;
+esac
+
+case "$class" in
+    *__stickme__*)
+        echo 'sticky=on' ;;
+esac

@@ -85,7 +85,13 @@ bspwm_ws_new() {
 }
 
 ws_scshot() {
-    : # maim --hidecursor "$HOME/ws/$1.png"
+    # TODO: build a gui
+    if false; then
+        wsdir="$HOME/.cache/wm-ws"
+        mkdir -p "$wsdir"
+        ws=$(bspc query -D -d .focused --names)
+        maim --hidecursor "$wsdir/$ws.png"
+    fi
 }
 
 if xdotool getactivewindow getwindowname | grep -q emacs; then
@@ -110,12 +116,12 @@ case "$WINDOW_MANAGER" in
             window_move)            i3-msg move "$2" ;;
             window_resize)          i3_resize "$2" 10 ;;
             window_resize_tiny)     i3_resize "$2" 1 ;;
-            workspace)              ws_scshot "$2"; i3-msg workspace "$2" ;;
+            workspace)              ws_scshot; i3-msg workspace "$2" ;;
             workspace_move)         i3-msg move container to workspace "$2" ;;
-            workspace_move_go)      ws_scshot "$2"; i3-msg move container to workspace "$2"\; workspace "$2" ;;
-            workspace_next)         ws_scshot cur; i3-msg workspace next ;;
-            workspace_prev)         ws_scshot cur; i3-msg workspace prev ;;
-            workspace_new)          ws_scshot cur; i3_ws_new ;;
+            workspace_move_go)      ws_scshot; i3-msg move container to workspace "$2"\; workspace "$2" ;;
+            workspace_next)         ws_scshot; i3-msg workspace next ;;
+            workspace_prev)         ws_scshot; i3-msg workspace prev ;;
+            workspace_new)          ws_scshot; i3_ws_new ;;
             workspace_monitor_next) i3-msg move workspace to output right ;;
             restart)                i3-msg restart ;;
             end)                    i3-msg exit ;;
@@ -135,12 +141,12 @@ case "$WINDOW_MANAGER" in
             window_move)            bspwm_move "$2" ;;
             window_resize)          bspwm_resize "$2" 30 ;;
             window_resize_tiny)     bspwm_resize "$2" 5 ;;
-            workspace)              ws_scshot "$2"; bspwm_ws_check "$2" && bspc desktop -f "$2"; bspwm_ws_cleanup ;;
+            workspace)              ws_scshot; bspwm_ws_check "$2" && bspc desktop -f "$2"; bspwm_ws_cleanup ;;
             workspace_move)         bspwm_ws_check "$2" && bspc node -d "$2"; bspwm_ws_cleanup ;;
-            workspace_move_go)      ws_scshot "$2"; bspwm_ws_check "$2" && bspc node -d "$2" && bspc desktop -f "$2"; bspwm_ws_cleanup ;;
-            workspace_next)         ws_scshot cur; bspc desktop -f next.occupied ;;
-            workspace_prev)         ws_scshot cur; bspc desktop -f prev.occupied ;;
-            workspace_new)          ws_scshot cur; bspwm_ws_new ;;
+            workspace_move_go)      ws_scshot; bspwm_ws_check "$2" && bspc node -d "$2" && bspc desktop -f "$2"; bspwm_ws_cleanup ;;
+            workspace_next)         ws_scshot; bspc desktop -f next.occupied ;;
+            workspace_prev)         ws_scshot; bspc desktop -f prev.occupied ;;
+            workspace_new)          ws_scshot; bspwm_ws_new ;;
             workspace_monitor_next) bspc desktop -m next --follow ;;
             restart)                bspc wm -r ;;
             end)                    bspc quit ;;
