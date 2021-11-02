@@ -522,10 +522,10 @@ class Bar(BarBase):
             if percent <= 10 and not charging:
                 msg = "%{B#FF0000} "
                 if percent <= 5:
-                    msg += "SHUTTING DOWN "
+                    msg += "HELP "
                     # sh.systemctl("poweroff") # TODO: add countdown
                 elif percent <= 7:
-                    msg += "WILL SHUTDOWN AT 5% "
+                    msg += "EXTREMELY LOW "
                 elif percent <= 10:
                     msg += "LOW BATTERY "
                 out = msg + out + " %{B-}"

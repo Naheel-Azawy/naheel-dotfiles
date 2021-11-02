@@ -11,7 +11,7 @@
    - st
    - [[https://github.com/Naheel-Azawy/fmz][fmz]]
    - tmux everywhere ([[https://github.com/Naheel-Azawy/theterm][theterm]])
-   - i3
+   - bspwm
    - lemonbar
    - [[https://github.com/Naheel-Azawy/sxiv][sxiv]] (custom fork)
    - mpd and ncmpcpp
