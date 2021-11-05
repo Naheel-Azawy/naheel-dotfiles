@@ -467,7 +467,7 @@ class Bar(BarBase):
             out = ""
             if title:
                 return "%{A:nice-kill:}%{A}  " + \
-                    "%{A:menus hud:}" + title + "%{A}"
+                    "%{A:wm-msg program-menu:}" + title + "%{A}"
             else:
                 return None
 

@@ -94,6 +94,28 @@ ws_scshot() {
     fi
 }
 
+program_menu() {
+    title=$(xdotool getactivewindow getwindowname)
+    choice=$({
+                echo "$title"
+                echo 'Close'
+                echo 'Toggle fullscreen'
+                echo 'Toggle float'
+                echo 'Toggle stick'
+            } | menus-face -l 5)
+    case "$choice" in
+        "$title")                                   ;;
+        'Close')             exec "$0" window_close ;;
+        'Toggle fullscreen') exec "$0" fullscreen   ;;
+        'Toggle float')      exec "$0" float        ;;
+        'Toggle stick')      exec "$0" stick        ;;
+    esac
+}
+
+case "$1" in
+    program-menu) program_menu ;;
+esac
+
 if xdotool getactivewindow getwindowname | grep -q emacs; then
     case "$1" in
         window_focus) emacsclient --no-wait --eval "(windmove-$2)" && exit ;;
