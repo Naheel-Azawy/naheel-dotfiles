@@ -1,3 +1,3 @@
 #!/bin/sh
 
-exec browser --app=https://web.telegram.org/k/
+exec browser --app=https://web.telegram.org/z/
