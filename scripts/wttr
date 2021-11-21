@@ -1,0 +1,10 @@
+#!/bin/sh
+
+f=~/.cache/weatherreport
+case "$1" in
+    u*)
+        curl -s wttr.in?n > "$f"
+        bar update weather ;;
+esac
+
+less -RF "$f"

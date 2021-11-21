@@ -1,8 +1,0 @@
-#!/bin/sh
-### This is only if your location isn't automatically detected, otherwise you can leave it blank.
-#location="Doha"
-[ "$location" != "" ] && location="~${location// /+}"
-res=$(curl -s wttr.in/$location?n)
-[ "$res" = '' ] && exit
-echo "$res" > ~/.cache/weatherreport
-bar update weather
