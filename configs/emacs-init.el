@@ -212,7 +212,14 @@ https://www.emacswiki.org/emacs/NoTabs"
   (let ((space-count (how-many "^  " (point-min) (point-max)))
         (tab-count (how-many "^\t" (point-min) (point-max))))
     (if (> space-count tab-count) (setq indent-tabs-mode nil))
-    (if (> tab-count space-count) (setq indent-tabs-mode t))))
+    (if (> tab-count space-count) (setq indent-tabs-mode 'only)))
+  (defvaralias 'c-basic-offset 'tab-width))
+
+(defun tabs-indentation-style ()
+  "Use tabs only"
+  (interactive)
+  (setq indent-tabs-mode 'only)
+  (defvaralias 'c-basic-offset 'tab-width))
 
 ;; ---- MODELINE ----
 (use-package doom-modeline
@@ -288,6 +295,7 @@ https://www.emacswiki.org/emacs/NoTabs"
     ("\\.js\\'"  . rjsx-mode)
     ("\\.jsx\\'" . rjsx-mode))
   (use-package octave :mode ("\\.m\\'" . octave-mode))
+  (use-package ess)
   (use-package python
     :mode
     ("\\.py\\'"  . python-mode)
@@ -550,6 +558,8 @@ from: https://stackoverflow.com/a/998472/3825872"
        (gnuplot    . t)
        (perl       . t)
        (ditaa      . t)
+       (sql        . t)
+       (sqlite     . t)
        (shell      . t)))
 
     ;; -- RUNNERS --
@@ -746,7 +756,7 @@ from: https://stackoverflow.com/a/998472/3825872"
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(package-selected-packages
-   '(zig-mode web-beautify csv-mode php-mode exwm lua-mode epresent js-auto-beautify yaml-mode xonsh-mode xclip writeroom-mode which-key web-mode vterm visual-regexp-steroids vala-mode v-mode use-package undo-tree typescript-mode ttl-mode sparql-mode spacemacs-theme solidity-mode rust-mode rjsx-mode ranger rainbow-mode protobuf-mode ox-reveal ox-pandoc outshine origami org-ref org-bullets multiple-cursors lsp-ui lsp-java lsp-dart kotlin-mode julia-mode iedit haxe-mode go-mode gnuplot-mode glsl-mode git-gutter flyspell-correct-helm flycheck fish-mode elvish-mode ein dumb-jump doom-modeline dockerfile-mode csharp-mode company-lsp cmake-mode calfw-org calfw basic-mode auctex anzu adaptive-wrap academic-phrases ac-octave)))
+   '(ess smart-tabs-mode zig-mode web-beautify csv-mode php-mode exwm lua-mode epresent js-auto-beautify yaml-mode xonsh-mode xclip writeroom-mode which-key web-mode vterm visual-regexp-steroids vala-mode v-mode use-package undo-tree typescript-mode ttl-mode sparql-mode spacemacs-theme solidity-mode rust-mode rjsx-mode ranger rainbow-mode protobuf-mode ox-reveal ox-pandoc outshine origami org-ref org-bullets multiple-cursors lsp-ui lsp-java lsp-dart kotlin-mode julia-mode iedit haxe-mode go-mode gnuplot-mode glsl-mode git-gutter flyspell-correct-helm flycheck fish-mode elvish-mode ein dumb-jump doom-modeline dockerfile-mode csharp-mode company-lsp cmake-mode calfw-org calfw basic-mode auctex anzu adaptive-wrap academic-phrases ac-octave)))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.

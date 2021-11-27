@@ -1,0 +1,11 @@
+#!/bin/sh
+
+toggle-systray
+
+blueman-applet &
+nm-applet &
+kdeconnect-indicator &
+maestral_qt &
+
+sleep 5
+toggle-systray

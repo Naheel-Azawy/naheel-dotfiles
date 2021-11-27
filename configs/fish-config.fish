@@ -49,7 +49,7 @@ function fish_prompt --description 'Write out the prompt'
         set face (set_color brred)' :( '(set_color normal)
     end
     # git branch
-    set git_branch (git branch 2>/dev/null | tr '\n' ' ' | xargs)
+    set git_branch (git branch --show-current 2>/dev/null)
     test -n "$git_branch" && set git_branch " ($git_branch)"
 
     # only current directory

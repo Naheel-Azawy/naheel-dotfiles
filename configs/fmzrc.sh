@@ -39,3 +39,18 @@ lopdf() {
         libreoffice --headless --convert-to pdf "$file"
     done
 }
+
+add_fun chmodmenu 'Chmod'
+chmodmenu() {
+    tput rmcup
+    m=$({
+           echo +x
+           echo -x
+           echo 644
+           echo 755
+       } | menu_interface)
+    [ -n "$m" ] || return
+    echo "$fx" | while read -r file; do
+        chmod "$m" "$file"
+    done
+}

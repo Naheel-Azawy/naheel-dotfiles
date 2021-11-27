@@ -1,0 +1,28 @@
+#!/bin/sh
+
+menu() {
+    fzf --reverse --height=10 "$@"
+}
+
+run() {
+    printf '\033[1;32m>>>\033[0m %s\n' "$*" >&2
+    "$@"
+}
+
+s=$(systemctl list-unit-files --type=service |
+        menu --header-lines=1 |
+        cut -d ' ' -f1)
+
+run systemctl status --no-pager "$s"
+echo
+
+cmd=$({
+         echo status
+         echo restart
+         echo start
+         echo stop
+         echo enable
+         echo disable
+     } | menu --prompt="command> ")
+
+run systemctl "$cmd" "$s"
