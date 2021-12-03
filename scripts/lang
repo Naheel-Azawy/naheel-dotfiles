@@ -11,7 +11,8 @@ langget() {
 }
 
 langinit() {
-    langs=$LANGS
+    langs="$1"
+    [ -n "$langs" ] || langs=$LANGS
     [ "$1" = '-e' ] && langs=$LANGS_E
     setxkbmap -layout $langs -option grp:$KEYS
     [ -f ~/.Xmodmap ] && xmodmap ~/.Xmodmap
@@ -23,9 +24,10 @@ langtog() {
 
 main() {
     case "$1" in
-        init)  shift; langinit "$@" ;;
-        'tog') shift; langtog       ;;
-        '')           langget       ;;
+        us)    langinit us; langinit ;;
+        init)  shift; langinit "$@"  ;;
+        'tog') shift; langtog        ;;
+        '')           langget        ;;
     esac
 }
 

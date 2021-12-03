@@ -5,13 +5,13 @@ pgrep i3lock && {
     exit 0
 }
 
-"$(dirname "$0")/lang" us
+"$(dirname "$0")/lang" us &
 
 [ "$FONT" ] || FONT='sans-serif'
 COLOR='ffffffff'
 
 # using picom for blur and opacity
-exec i3lock \
+i3lock \
      -e -f -c 000000 \
      --clock \
      --indicator \

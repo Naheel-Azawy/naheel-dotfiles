@@ -561,6 +561,9 @@ from: https://stackoverflow.com/a/998472/3825872"
        (sql        . t)
        (sqlite     . t)
        (shell      . t)))
+    (defun my-org-confirm-babel-evaluate (lang body)
+      (not (member lang '("sql" "sqlite"))))
+    (setq org-confirm-babel-evaluate 'my-org-confirm-babel-evaluate)
 
     ;; -- RUNNERS --
     (delete '("\\.pdf\\'" . default) org-file-apps)
