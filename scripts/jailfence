@@ -1,6 +1,8 @@
 #!/bin/sh
 
 JAILS="$HOME/Jails"
+POL_PATH=/mnt/hdd1/Public/Games/windows/playonlinux
+[ -d "$POL_PATH" ] || POL_PATH="$JAILS/playonlinux"
 
 LINE='==================================='
 
@@ -68,7 +70,11 @@ needed() {
 }
 
 mkjail() {
-    J="$JAILS/$1"
+    if [ "$1" = 'playonlinux' ]; then
+        J="$POL_PATH"
+    else
+        J="$JAILS/$1"
+    fi
     mkdir -p "$J"
     echo "$J"
 }
@@ -87,7 +93,7 @@ fire() {
 
 list() {
     env QUOTING_STYLE=literal \
-        ls -1 "$JAILS/playonlinux/.PlayOnLinux/shortcuts" |
+        ls -1 "$POL_PATH/.PlayOnLinux/shortcuts" |
         while read -r name; do
             echo "playinjail@$name"
         done

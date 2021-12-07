@@ -9,21 +9,24 @@ dir     = "/mnt/hdd1/Public/Games"
 dir_gb  = f"{dir}/gameboy"
 dir_n64 = f"{dir}/n64"
 dir_psx = f"{dir}/psx"
+dir_ps2 = f"{dir}/ps2"
+dir_psp = f"{dir}/psp"
 dir_win = f"{dir}/windows"
 
 gbc = lambda name:    sh.mgba_qt.bake(f"{dir_gb}/{name}")
 n64 = lambda name:    sh.mupen64plus.bake(f"{dir_n64}/{name}")
 psx = lambda name:    sh.mednafen.bake(f"{dir_psx}/{name}")
+ps2 = lambda name:    sh.PCSX2.bake(f"{dir_ps2}/{name}", fullscreen=True, nogui=True)
+psp = lambda name:    sh.PPSSPPSDL.bake(f"{dir_psp}/{name}")
 win = lambda d, name: sh.winejail.bake(f"win-games-{d}", f"{dir_win}/{d}", name)
-pol = lambda name:    sh.jailfence.playinjail.bake(name)
-tui = lambda name:    sh.theterm.bake(name)
+pol = lambda name:    sh.jailfence.bake(name)
+tui = lambda name:    sh.theterm.bake(name + "; read")
 
 games = {
     "supermario":      gbc("Super Mario Bros. Deluxe (USA, Europe).gbc"),
-    "supermario64":    n64("Super Mario 64 (U) [!].z64"),
     "mariokart":       gbc("Mario Kart Super Circuit (U) [!].gba"),
     "donkykong":       gbc("1521 - Classic Nes - Donkey Kong (U)(Hyperion).gba"),
-    "megaman5":        gbc("Mega Man 5 (U) [S][!].gb"),
+    "megaman-x8":      ps2("Mega Man X8 (1).7z-extracted/Mega Man X8.iso"),
     "megaman-x5":      psx("megaman_x5/Megaman X5.cue"),
     "pacman":          gbc("Ms. Pac-Man - Special Color Edition (USA).gbc"),
     "pokemon-crystal": gbc("Pokemon - Crystal Version (USA, Europe).gbc"),
@@ -31,13 +34,18 @@ games = {
     "pinball":         win("solitaire_xp", "Pinball/PINBALL.EXE"),
     "tekken3":         psx("Tekken 3/Tekken 3.cue"),
     "pepsiman":        psx("pepsiman/Pepsiman (Japan).cue"),
+    "gnome-mines":     sh.gnome_mines.bake(),
     "gnome-chess":     sh.gnome_chess.bake(),
     "invaders":        tui("invaders"),
     "nudoku":          tui("nudoku"),
     "tetris":          tui("tetris"),
     "snake":           tui("snake"),
-    "nfs-mw":          pol("most wanted"),
-    "2048":            tui("2048")
+    "nfs-most-wanted": pol("most wanted"),
+    "gta-vice-city":   pol("vice city"),
+    "2048":            tui("2048"),
+    "ghost-rider":     psp("Ghost Rider.7z-extracted/Ghost Rider.iso"),
+    "ac-bloodlines":   psp("Assassin's Creed - Bloodlines.7z-extracted/Assassin's Creed - Bloodlines.iso"),
+    "steam":           sh.jailfence.steam.bake()
 }
 
 if len(argv) < 2:
