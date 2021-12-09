@@ -85,7 +85,7 @@
   (setq frame-title-format
 		(concat (buffer-name) " - " invocation-name)))
 ;; (add-hook 'window-configuration-change-hook 'xterm-title-update)
-(add-hook 'window-configuration-change-hook 'frame-title-update)
+;; (add-hook 'window-configuration-change-hook 'frame-title-update)
 
 ;; ---- SCROLL ----
 (setq scroll-step 1

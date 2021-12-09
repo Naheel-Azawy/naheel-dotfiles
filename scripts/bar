@@ -587,11 +587,7 @@ class Bar(BarBase):
             r = re.compile(r'\x1B(?:[@-Z\\-_]|\[[0-?]*[ -/]*[@-~])')
             out = r.sub("", out).strip()
             try:
-                temp = re.split("\s+", out)[1] # extract the temperature
-            except:
-                return None
-            try:
-                temp = re.search(".+\((\d+)\)", temp).group(1)
+                temp = re.search(".+\((\d+)\)", out).group(1)
             except:
                 pass
             out = f"{temp}°C"

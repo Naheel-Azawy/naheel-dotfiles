@@ -45,7 +45,8 @@ games = {
     "2048":            tui("2048"),
     "ghost-rider":     psp("Ghost Rider.7z-extracted/Ghost Rider.iso"),
     "ac-bloodlines":   psp("Assassin's Creed - Bloodlines.7z-extracted/Assassin's Creed - Bloodlines.iso"),
-    "steam":           sh.jailfence.steam.bake()
+    "steam":           sh.jailfence.steam.bake(),
+    "playonlinux":     pol("pol")
 }
 
 if len(argv) < 2:

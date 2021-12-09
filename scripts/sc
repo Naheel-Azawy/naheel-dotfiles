@@ -17,12 +17,13 @@ run systemctl status --no-pager "$s"
 echo
 
 cmd=$({
-         echo status
-         echo restart
          echo start
+         echo restart
          echo stop
          echo enable
          echo disable
+         echo status
      } | menu --prompt="command> ")
 
-run systemctl "$cmd" "$s"
+[ -n "$cmd" ] &&
+    run systemctl "$cmd" "$s"
