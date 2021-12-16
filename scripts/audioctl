@@ -7,11 +7,10 @@ vol_notif() {
     V="$1"
     [ "$V" ] || V=$(pamixer --get-volume)
 	if [ "$(pamixer --get-mute)" = "true" ]; then
-        V="Muted"
+        dunstify -i none -r $NOTIF_ID "Volume: Muted"
 	else
-		V="$V%"
+        dunstify -i none -r $NOTIF_ID -h int:value:"$V" "Volume: $V%"
     fi
-    dunstify -i none -r $NOTIF_ID "Volume: $V"
 }
 
 mic_notif() {
