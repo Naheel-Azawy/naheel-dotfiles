@@ -19,7 +19,7 @@
 | aur      | ttf-font-awesome       | N.A.                                      | used for the icons in the top bar                                |
 | aur      | nerd-fonts-hack        | N.A.                                      | more symbolic fonts                                              |
 | pacman   | arandr                 | N.A.                                      | UI for screen adjustment                                         |
-| pacman   | picom                  | N.A.                                      | for transparency and removing screen-tearing                     |
+| aur      | picom-git              | N.A.                                      | for transparency and removing screen-tearing                     |
 | pacman   | dunst                  | N.A.                                      | suckless notification system                                     |
 | pacman   | feh                    | N.A.                                      | a minimal image viewer (used to set wallpaper)                   |
 | pacman   | imlib2                 | N.A.                                      | images library. Needed for sxiv                                  |

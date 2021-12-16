@@ -47,20 +47,20 @@ export SSH_AUTH_SOCK
 eval "$(menus hud env)"
 
 # autostart programs
-env SXHKD_SHELL=dash sxhkd & # keyboard daemon
-lang init &                  # set the keyboard layouts
-bar lemon &                  # top bar
-dunst &                      # notifications daemon
-clipmenud &                  # clipboard manager daemon
-setup-xinput &               # mouse setup
-xbanish &                    # hides the cursor while typing
-syndaemon -i 0.5 -t -K -R &  # disable touchpad while typing
-edit daemon &                # emacs daemon
-#picom &                      # compositor
-setwallpaper &               # wallpaper
-lang us &                    # set language to 'us' and runs xmodmap
-mount-private &              # mount encfs private directory
-#menus hud daemon &           # hud menu daemon
+env SXHKD_SHELL=dash sxhkd &    # keyboard daemon
+lang init &                     # set the keyboard layouts
+bar lemon &                     # top bar
+dunst &                         # notifications daemon
+clipmenud &                     # clipboard manager daemon
+setup-xinput &                  # mouse setup
+xbanish &                       # hides the cursor while typing
+syndaemon -i 0.5 -t -K -R &     # disable touchpad while typing
+edit daemon &                   # emacs daemon
+picom --experimental-backends & # compositor
+setwallpaper &                  # wallpaper
+lang us &                       # set language to 'us' and runs xmodmap
+mount-private &                 # mount encfs private directory
+#menus hud daemon &              # hud menu daemon
 
 # start the window manager
 exec "$WINDOW_MANAGER" # defined in profile

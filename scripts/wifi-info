@@ -1,7 +1,9 @@
 #!/bin/sh
-for W in /etc/NetworkManager/system-connections/*; do
-    echo "$W"
-    echo '-------------------------'
-    cat "$W"
-    echo
+for w in /etc/NetworkManager/system-connections/*; do
+    info=$(grep -E 'ssid=|psk=' "$w")
+    if [ -n "$info" ]; then
+        echo ">>> $w"
+        echo "$info"
+        echo
+    fi
 done
