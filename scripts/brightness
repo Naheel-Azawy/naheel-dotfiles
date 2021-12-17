@@ -7,4 +7,4 @@ fi
 
 xbacklight "$@"
 V=$(xbacklight -get)
-dunstify -i none -r 123 -h int:value:"$V" "Brightness: $V"
+dunstify -i none -r 123 -h int:value:"$V" "Brightness: $V%"

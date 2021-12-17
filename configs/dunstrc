@@ -31,7 +31,7 @@
     origin = top-center
 
     # Offset from the origin
-    offset = 0x30
+    offset = 0x35
 
     # Scale factor. It is auto-detected if value is 0.
     scale = 0
@@ -157,7 +157,7 @@
     #   %n  progress value if set without any extra characters
     #   %%  Literal %
     # Markup is allowed
-    format = "%s\n%b"
+    format = "<b>%s</b>\n%b"
 
     # Alignment of message text.
     # Possible values are "left", "center" and "right".

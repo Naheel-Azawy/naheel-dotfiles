@@ -28,6 +28,7 @@ Rotate 180
 Flip horizontally
 Flip vertically
 Set as wallpaper
+Set as temporary wallpaper
 Drag and drop'
 
 # put files in an array
@@ -68,6 +69,8 @@ case "$choice" in
         lf -remote "$S";;
     "Set as wallpaper" | "w")
         setwallpaper "${files[-1]}";;
+    "Set as temporary wallpaper")
+        feh --bg-fill "${files[-1]}";;
     "Duplicate" | "2")
         sxiv "${files[@]}" &;;
     "Rotate 270" | "C-comma")
