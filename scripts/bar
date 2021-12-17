@@ -16,6 +16,21 @@ import asyncio
 import subprocess
 import socket
 import signal
+import importlib
+
+def import_path(path):
+    # https://stackoverflow.com/a/56090741/3825872
+    module_name = os.path.basename(path).replace('-', '_')
+    spec = importlib.util.spec_from_loader(
+        module_name,
+        importlib.machinery.SourceFileLoader(module_name, path)
+    )
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    sys.modules[module_name] = module
+    return module
+
+wsw = import_path("wsw")
 
 try:
     # sudo pip3 install python-bidi arabic-reshaper
@@ -36,21 +51,12 @@ argv = sys.argv
 HOME = os.getenv("HOME")
 WINDOW_MANAGER = os.getenv("WINDOW_MANAGER")
 
-# example: WM(lambda wm: print(wm.json())).run()
+# example: WM(lambda s: print(s)).run()
 class WM:
     def __init__(self, callback):
         wm = WINDOW_MANAGER
-        if False:
-            self.impl = LSD(callback)
-        elif wm == "i3":
-            self.impl = I3WM(callback)
-        elif wm == "bspwm":
-            self.impl = BSPWM(callback)
-        else:
-            raise Exception(f"Unknown window manager {wm}")
-
+        self.impl = wsw.init(output="lemonbar", onchange=callback)
         self.title = None # to be set by bar.program()
-
         # names to be picked for new workspaces
         self.nice_workspaces = list(range(1, 10)) + [0]
         self.nice_workspaces = list(map(lambda i: str(i), self.nice_workspaces))
@@ -64,192 +70,6 @@ class WM:
             except Exception:
                 # in case the bar started before the window manager
                 await asyncio.sleep(1)
-
-    def json(self):
-        workspaces = {}
-        for w in self.impl.workspaces:
-            workspaces[w.name] = {
-                "visible": w.visible,
-                "focused": w.focused,
-                "urgent":  w.urgent
-            }
-        return json.dumps({
-            "title": self.title,
-            "workspaces": workspaces
-        })
-
-    def lemon(self):
-        circles = False
-        out = ""
-        # self.impl.workspaces.sort(key=lambda w: w.name)
-        # still not sure which to pick so I'm keeping both for now
-        if circles:
-            for w in self.impl.workspaces:
-                if w.focused:
-                    out += "%{F#ffffff}"
-                elif w.visible:
-                    out += "%{F#333333}"
-                elif w.urgent:
-                    out += "%{F#900000}"
-                else:
-                    out += "%{F#ffffff}"
-                onclick = f"{self.impl.workspace_cmd} '{w.name}' >/dev/null"
-                out += f"%{{A:{onclick}:}} "
-                circle = "⬤" if w.focused or w.visible or w.urgent else "◯"
-                out += circle
-                out += " %{A}"
-            out += "%{F-}" # reset the colors
-        else:
-            for w in self.impl.workspaces:
-                if w.focused:
-                    out += "%{F#000000 B#ffffff}"
-                elif w.visible:
-                    out += "%{F#ffffff B#333333}"
-                elif w.urgent:
-                    out += "%{F#ffffff B#900000}"
-                else:
-                    out += "%{F#ffffff B-}"
-                onclick = f"{self.impl.workspace_cmd} '{w.name}' >/dev/null"
-                out += f"%{{A:{onclick}:}} "
-                out += w.name
-                #.encode(encoding="ascii",errors="backslashreplace").decode()
-                out += " %{A}"
-            out += "%{F- B-}" # reset the colors
-        return out
-
-class WMImpl:
-    def __init__(self):
-        raise Exception("Unimplemented")
-
-    def run(self):
-        raise Exception("Unimplemented")
-
-class Workspace:
-    def __init__(self):
-        self.name    = ""
-        self.visible = False
-        self.focused = False
-        self.urgent  = False
-
-    def __str__(self):
-        return json.dumps({
-            "name": self.name,
-            "visible": self.visible,
-            "focused": self.focused,
-            "urgent": self.urgent
-        })
-
-class I3WM(WMImpl):
-    def __init__(self, callback):
-        self.callback = callback
-        self.workspaces = []
-        self.workspace_cmd = "i3-msg workspace"
-
-    def update(self):
-        j = json.loads(os.popen(
-            "i3-msg -t get_workspaces").read())
-        workspaces = []
-        for item in j:
-            w = Workspace()
-            w.name    = item["name"]
-            w.visible = item["visible"]
-            w.focused = item["focused"]
-            w.urgent  = item["urgent"]
-            workspaces.append(w)
-        self.workspaces = workspaces
-
-    def run(self):
-        self.update()
-        self.callback(self)
-        popen = subprocess.Popen(["i3-msg", "-t", "subscribe", "-m",
-                                  '[ "workspace", "window" ]'],
-                                 stdout=subprocess.PIPE,
-                                 universal_newlines=True)
-        for line in iter(popen.stdout.readline, ""):
-            msg = json.loads(line)
-            # workspace events
-            try:
-                workspace_event = msg["current"]["type"] == "workspace"
-                if workspace_event:
-                    self.update()
-            except KeyError:
-                workspace_event = False
-            self.callback(self)
-        popen.stdout.close()
-        code = popen.wait()
-        if code != 0:
-            raise Exception(f"i3-msg exited with code {code}")
-
-class BSPWM(WMImpl):
-    def __init__(self, callback):
-        self.callback = callback
-        self.workspaces = []
-        self.workspace_cmd = "bspc desktop -f"
-
-    def run(self):
-        popen = subprocess.Popen(["bspc", "subscribe", "report"],
-                                 stdout=subprocess.PIPE,
-                                 universal_newlines=True)
-        for line in iter(popen.stdout.readline, ""):
-            # check man bspc, REPORT FORMAT
-            workspaces = []
-            focused_monitor = False
-            for item in line.split(":"):
-                if item[0] == "W":
-                    item = item[1:]
-                if item[0] in ["M", "m"]:
-                    focused_monitor = item[0] == "M"
-                elif item[0] in ["O","o","F","U","u"]:
-                    w = Workspace()
-                    w.name    = item[1:]
-                    w.visible = item[0] in ["O", "F"]
-                    w.focused = w.visible and focused_monitor
-                    w.urgent  = item[0] in ["U", "u"]
-                    workspaces.append(w)
-            self.workspaces = workspaces
-            self.callback(self)
-        popen.stdout.close()
-        code = popen.wait()
-        if code != 0:
-            raise Exception(f"bspc exited with code {code}")
-
-# https://github.com/phillbush/lsd
-class LSD:
-    def __init__(self, callback):
-        self.callback = callback
-        self.workspaces = []
-        self.workspace_cmd = "bspc desktop -f" # TODO: use focus?
-
-    async def run(self):
-        try:
-            await asyncio.to_thread(self.loop)
-        except Exception:
-            raise Exception(f"lsd thread failed")
-
-    def run(self):
-        popen = subprocess.Popen(["lsd", "-w"],
-                                 stdout=subprocess.PIPE,
-                                 universal_newlines=True)
-        for line in iter(popen.stdout.readline, ""):
-            ws = []
-            items = line.rstrip().split("\t")
-            for item in items:
-                item = item.split(":")
-                state = item[0][0]
-                nodes = int(item[0][1:])
-                if nodes > 0 or state == "*":
-                    w = Workspace()
-                    w.name    = item[1]
-                    w.visible = False # TODO: handle with lsd?
-                    w.focused = state == "*"
-                    w.urgent  = state == "-"
-                    ws.append(w)
-            self.workspaces = ws
-            self.callback(self)
-        popen.stdout.close()
-        code = popen.wait()
-        if code != 0:
-            raise Exception(f"lsd exited with code {code}")
 
 class XTitle:
     def __init__(self, callback):
@@ -288,6 +108,7 @@ def item(period=0):
 class BarBase:
     def __init__(self, use_ascii=False, items=None):
         self.server = None
+        self.ws_str = None # to be set from wsw
         self.a = use_ascii
         self.wm = WM(self.run_wm_items)
         self.xtitle = XTitle(self.run_xtitle_items)
@@ -366,7 +187,8 @@ class BarBase:
                 break
             await asyncio.sleep(period)
 
-    def run_wm_items(self, wm):
+    def run_wm_items(self, ws_str):
+        self.ws_str = ws_str
         self.run_item(self.workspaces)
         self.run_item(self.program)
         self.run_item(self.add)
@@ -436,7 +258,7 @@ class Bar(BarBase):
         if self.wm is None or self.a:
             return None
         else:
-            return self.wm.lemon()
+            return self.ws_str
 
     @item()
     def add(self):
@@ -454,8 +276,10 @@ class Bar(BarBase):
         if self.wm is None or self.wm.title is None:
             return None
         # not accurate, depends on the resolution and font size, but too lazy
-        # max_title = 50 - len(self.wm.impl.workspaces) * 3
-        max_title = 80 - len(self.wm.impl.workspaces) * 3
+        if "workspaces" in self.items_str:
+            max_title = 50 - len(self.wm.impl.workspaces) * 3
+        else:
+            max_title = 80
         title = self.wm.title
         if len(title) > max_title:
             title = title[:max_title].strip() + "…"

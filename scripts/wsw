@@ -1,0 +1,260 @@
+#!/bin/python3
+
+# workspace watcher
+
+import sh
+import os
+import sys
+import subprocess
+import json
+
+WINDOW_MANAGER = os.getenv("WINDOW_MANAGER")
+NOTIF_ID = 123
+
+class WMImpl:
+    prev_s = None
+    def __init__(self):
+        raise Exception("Unimplemented")
+    def run(self):
+        raise Exception("Unimplemented")
+
+class Workspace:
+    def __init__(self):
+        self.name    = ""
+        self.visible = False
+        self.focused = False
+        self.urgent  = False
+
+    def __str__(self):
+        return json.dumps({
+            "name": self.name,
+            "visible": self.visible,
+            "focused": self.focused,
+            "urgent": self.urgent
+        })
+
+class I3WM(WMImpl):
+    def __init__(self, callback):
+        self.callback = callback
+        self.workspaces = []
+        self.workspace_cmd = "i3-msg workspace"
+
+    def update(self):
+        j = json.loads(os.popen(
+            "i3-msg -t get_workspaces").read())
+        workspaces = []
+        for item in j:
+            w = Workspace()
+            w.name    = item["name"]
+            w.visible = item["visible"]
+            w.focused = item["focused"]
+            w.urgent  = item["urgent"]
+            workspaces.append(w)
+        self.workspaces = workspaces
+
+    def run(self):
+        self.update()
+        self.callback(self)
+        popen = subprocess.Popen(["i3-msg", "-t", "subscribe", "-m",
+                                  '[ "workspace", "window" ]'],
+                                 stdout=subprocess.PIPE,
+                                 universal_newlines=True)
+        for line in iter(popen.stdout.readline, ""):
+            msg = json.loads(line)
+            # workspace events
+            try:
+                workspace_event = msg["current"]["type"] == "workspace"
+                if workspace_event:
+                    self.update()
+            except KeyError:
+                workspace_event = False
+            self.callback(self)
+        popen.stdout.close()
+        code = popen.wait()
+        if code != 0:
+            raise Exception(f"i3-msg exited with code {code}")
+
+class BSPWM(WMImpl):
+    def __init__(self, callback):
+        self.callback = callback
+        self.workspaces = []
+        self.workspace_cmd = "bspc desktop -f"
+
+    def run(self):
+        popen = subprocess.Popen(["bspc", "subscribe", "report"],
+                                 stdout=subprocess.PIPE,
+                                 universal_newlines=True)
+        for line in iter(popen.stdout.readline, ""):
+            # check man bspc, REPORT FORMAT
+            workspaces = []
+            focused_monitor = False
+            for item in line.split(":"):
+                if item[0] == "W":
+                    item = item[1:]
+                if item[0] in ["M", "m"]:
+                    focused_monitor = item[0] == "M"
+                elif item[0] in ["O","o","F","U","u"]:
+                    w = Workspace()
+                    w.name    = item[1:]
+                    w.visible = item[0] in ["O", "F"]
+                    w.focused = w.visible and focused_monitor
+                    w.urgent  = item[0] in ["U", "u"]
+                    workspaces.append(w)
+            self.workspaces = workspaces
+            self.callback(self)
+        popen.stdout.close()
+        code = popen.wait()
+        if code != 0:
+            raise Exception(f"bspc exited with code {code}")
+
+# https://github.com/phillbush/lsd
+class LSD(WMImpl):
+    def __init__(self, callback):
+        self.callback = callback
+        self.workspaces = []
+        self.workspace_cmd = "bspc desktop -f" # TODO: use focus?
+
+    def run(self):
+        popen = subprocess.Popen(["lsd", "-w"],
+                                 stdout=subprocess.PIPE,
+                                 universal_newlines=True)
+        for line in iter(popen.stdout.readline, ""):
+            ws = []
+            items = line.rstrip().split("\t")
+            for item in items:
+                item = item.split(":")
+                state = item[0][0]
+                nodes = int(item[0][1:])
+                if nodes > 0 or state == "*":
+                    w = Workspace()
+                    w.name    = item[1]
+                    w.visible = False # TODO: handle with lsd?
+                    w.focused = state == "*"
+                    w.urgent  = state == "-"
+                    ws.append(w)
+            self.workspaces = ws
+            self.callback(self)
+        popen.stdout.close()
+        code = popen.wait()
+        if code != 0:
+            raise Exception(f"lsd exited with code {code}")
+
+def callback_json(wm, onchange):
+    obj = {}
+    for ws in wm.workspaces:
+        obj[ws.name] = {
+            "visible": ws.visible,
+            "focused": ws.focused,
+            "urgent":  ws.urgent
+        }
+    s = json.dumps(obj)
+
+    if s != wm.prev_s:
+        onchange(s)
+        wm.prev_s = s
+
+def callback_ascii(wm, onchange):
+    s = ""
+    for ws in wm.workspaces:
+        if ws.focused:
+            s += f'|{ws.name}| '
+        elif ws.urgent:
+            s += f'!{ws.name}! '
+        elif ws.visible:
+            s += f'_{ws.name}_ '
+        else:
+            s += f'{ws.name} '
+
+    if s != wm.prev_s:
+        onchange(s)
+        wm.prev_s = s
+
+def callback_lemonbar(wm, onchange):
+    s = ""
+    for ws in wm.workspaces:
+        if ws.focused:
+            s += "%{F#000000 B#ffffff}"
+        elif ws.visible:
+            s += "%{F#ffffff B#333333}"
+        elif ws.urgent:
+            s += "%{F#ffffff B#900000}"
+        else:
+            s += "%{F#ffffff B-}"
+        onclick = f"{wm.workspace_cmd} '{ws.name}' >/dev/null"
+        s += f"%{{A:{onclick}:}} "
+        s += ws.name
+        #.encode(encoding="ascii",errors="backslashreplace").decode()
+        s += " %{A}"
+    s += "%{F- B-}" # reset the colors
+
+    if s != wm.prev_s:
+        onchange(s)
+        wm.prev_s = s
+
+def callback_lemonbar_circles(wm, onchange):
+    s = ""
+    for ws in wm.workspaces:
+        if ws.focused:
+            s += "%{F#ffffff}"
+        elif ws.visible:
+            s += "%{F#333333}"
+        elif ws.urgent:
+            s += "%{F#900000}"
+        else:
+            s += "%{F#ffffff}"
+        onclick = f"{wm.workspace_cmd} '{ws.name}' >/dev/null"
+        s += f"%{{A:{onclick}:}} "
+        circle = "⬤" if ws.focused or ws.visible or ws.urgent else "◯"
+        s += circle
+        s += " %{A}"
+    s += "%{F-}" # reset the colors
+
+    if s != wm.prev_s:
+        onchange(s)
+        wm.prev_s = s
+
+def callback_dunst(wm, onchange):
+    u = "normal"
+    s = ""
+    for ws in wm.workspaces:
+        if ws.focused:
+            s += '<span background="white" foreground="black">' + \
+                f'<b> {ws.name} </b></span>'
+        elif ws.urgent:
+            s += '<span background="red" foreground="white">' + \
+                f' {ws.name} </span>'
+            u = "critical"
+        elif ws.visible:
+            s += '<span background="gray" foreground="black">' + \
+                f' {ws.name} </span>'
+        else:
+            s += f' {ws.name} '
+    if s != wm.prev_s:
+        sh.dunstify("Workspaces:", s, r=NOTIF_ID, urgency=u)
+        wm.prev_s = s
+
+callbacks = {
+    "json":             callback_json,
+    "ascii":            callback_ascii,
+    "lemonbar":         callback_lemonbar,
+    "lemonbar_circles": callback_lemonbar_circles,
+    "dunst":            callback_dunst
+}
+
+def init(output="json", onchange=lambda s: print(s), use_lsd=False):
+    callback = lambda ws: callbacks[output](ws, onchange)
+    if use_lsd:
+        w = LSD(callback)
+    elif WINDOW_MANAGER == "i3":
+        w = I3WM(callback)
+    elif WINDOW_MANAGER == "bspwm":
+        w = BSPWM(callback)
+    else:
+        raise Exception(f"Unknown window manager {wm}")
+    return w
+
+if __name__ == "__main__":
+    o = "ascii"
+    if len(sys.argv) == 2:
+        o = sys.argv[1]
+    init(output=o).run()
