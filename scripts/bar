@@ -30,7 +30,8 @@ def import_path(path):
     sys.modules[module_name] = module
     return module
 
-wsw = import_path("wsw")
+here = os.path.dirname(os.path.realpath(__file__))
+wsw = import_path(here + "/wsw")
 
 try:
     # sudo pip3 install python-bidi arabic-reshaper
@@ -43,7 +44,7 @@ except:
 background = '#99000000'
 foreground = '#ffffff'
 
-default_items = "start add program | clock | systray pray weather temperature wifi battery power"
+default_items = "start program | clock | systray pray weather temperature wifi battery power"
 
 port_file = "/tmp/.nbarport"
 
