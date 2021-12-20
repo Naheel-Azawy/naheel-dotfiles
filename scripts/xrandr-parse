@@ -1,0 +1,47 @@
+#!/bin/python3
+
+import sh
+import re
+import json
+from dataclasses import dataclass
+
+def parse():
+    outputs = []
+    edid_started = False
+
+    for line in sh.xrandr(verbose=True, _iter=True):
+        if edid_started:
+            m = re.search("^\s+([0-9a-f]+)\s*$", line)
+            if m:
+                outputs[-1]["edid"] += m.group(1)
+            else:
+                edid_started = False
+
+        m = re.search("\s+EDID:\s*", line)
+        if m:
+            edid_started = True
+            outputs[-1]["edid"] = ""
+
+        m = re.search("(.+) (dis)?(connected) ?(.+)", line)
+        if m:
+            name = m.group(1)
+            connected = m.group(2) is None
+            others = m.group(4)
+            primary = "primary" in others
+            geometry = re.search(".* ([0-9]+)x([0-9]+)\+([0-9]+)\+([0-9]+) .*", others)
+            if geometry:
+                geometry = {
+                    "w": geometry.group(1), "h": geometry.group(2),
+                    "x": geometry.group(3), "y": geometry.group(4)
+                }
+            outputs.append({
+                "name":      name,
+                "connected": connected,
+                "primary":   primary,
+                "geometry":  geometry,
+                "edid":      None
+            })
+    return outputs
+
+if __name__ == "__main__":
+    print(json.dumps(parse()))

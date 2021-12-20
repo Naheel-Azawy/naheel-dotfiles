@@ -13,6 +13,7 @@ import re
 import time
 import datetime
 import asyncio
+import threading
 import subprocess
 import socket
 import signal
@@ -20,6 +21,7 @@ import importlib
 
 def import_path(path):
     # https://stackoverflow.com/a/56090741/3825872
+    path = os.path.dirname(os.path.realpath(__file__)) + "/" + path
     module_name = os.path.basename(path).replace('-', '_')
     spec = importlib.util.spec_from_loader(
         module_name,
@@ -30,8 +32,8 @@ def import_path(path):
     sys.modules[module_name] = module
     return module
 
-here = os.path.dirname(os.path.realpath(__file__))
-wsw = import_path(here + "/wsw")
+wsw    = import_path("wsw")
+xrandr = import_path("xrandr-parse")
 
 try:
     # sudo pip3 install python-bidi arabic-reshaper
@@ -107,10 +109,11 @@ def item(period=0):
     return decorate
 
 class BarBase:
-    def __init__(self, use_ascii=False, items=None):
+    def __init__(self, use_ascii=False, items=None, out=sys.stdout):
         self.server = None
         self.ws_str = None # to be set from wsw
         self.a = use_ascii
+        self.out = out
         self.wm = WM(self.run_wm_items)
         self.xtitle = XTitle(self.run_xtitle_items)
 
@@ -166,9 +169,9 @@ class BarBase:
                 out += "  ".join(items_out)
             out += " "
 
-        print(out)
+        self.out.write(out + "\n")
         try:
-            sys.stdout.flush()
+            self.out.flush()
         except BrokenPipeError:
             exit(1)
 
@@ -310,9 +313,9 @@ class Bar(BarBase):
     @item(period=3)
     def battery(self):
         try:
-            acpi = sh.acpi("-b").strip()
+            acpi = sh.grep(sh.acpi("-b"), v="unavailable").split("\n")[0]
             percent = int(acpi.split(", ")[1].replace("%", ""))
-            charging = "Discharging" not in acpi
+            charging = "Charging" in acpi
         except:
             return None
 
@@ -508,11 +511,71 @@ def lemonbar():
     fonts = tmp
 
     os.system(f"""python3 '{bin}' -p |
-    lemonbar {geometry} -p {fonts} -B '{background}' -F '{foreground}' -a 30 |
+    lemonbar {geometry} {fonts} -B '{background}' -F '{foreground}' -a 30 |
     sh""")
 
+async def lemonbar2():
+    # cleaner version but for some reason is too slow in stdin pipe
+
+    # main font
+    fonts = []
+    f = os.getenv("FONT")
+    if f:
+        fonts += ["-f", f]
+
+    # additional fonts
+    fonts += [
+        # "-f", "Kawkab Mono:pixelsize=12",
+        "-f", "Source Han Sans CN",
+        "-f", "DejaVu Sans Mono",
+        "-f", "Font Awesome 5 Free Solid:pixelsize=19",
+        "-f", "Hack Nerd Font"
+    ]
+
+    # lemonbar process
+    lemonp = subprocess.Popen(["lemonbar",
+                               "-B", background,
+                               "-F", foreground,
+                               "-a", "30"] + fonts,
+                              stdin=subprocess.PIPE,
+                              stdout=subprocess.PIPE,
+                              universal_newlines=True)
+
+    bar = Bar(items=None, out=lemonp.stdin)
+    signal.signal(signal.SIGINT, lambda signal, frame: bar.stop())
+    threading.Thread(target=lambda: asyncio.run(bar.run())).start()
+
+    for line in iter(lemonp.stdout.readline, ""):
+        print(">>>>>>>>>>", line.strip())
+    lemonp.stdout.close()
+    code = lemonp.wait()
+    if code != 0:
+        raise Exception(f"lemonbar exited with code {code}")
+
+async def lemonbar3():
+    pfds = os.pipe()
+    pid = os.fork()
+    if pid:
+        os.close(pfds[0])
+        print("parent", os.getpid(), pid)
+
+        os.write(pfds[1], b"hiiiiii\n")
+        os.write(pfds[1], b"hello\n")
+        
+        os.close(pfds[1])
+
+        pid, status = os.waitpid(-1, 0)
+        print("Child exited: pid %d returned %d"%(pid,status))
+    else:
+        print("child", os.getpid())
+        os.dup2(pfds[0], 0)
+        os.execv("/bin/nl", ["nl"])
+ 
 async def main():
-    if len(argv) >= 2 and argv[1] == "lemon":
+    if len(argv) >= 2 and argv[1] == "foobar":
+        print("foobaaar")
+        await lemonbar2()
+    elif len(argv) >= 2 and argv[1] == "lemon":
         lemonbar()
     elif len(argv) >= 3 and argv[1] == "update":
         item = argv[2].encode()
