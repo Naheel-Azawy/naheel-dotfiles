@@ -57,11 +57,21 @@ handle() {
     eval "$cmd"
 }
 
-main() {
+post() {
+    # TODO: cleanup
+    setwallpaper
+    setup-xinput
+    command -v bar >/dev/null && {
+        killall lemonbar 2>/dev/null
+        bar lemon
+    } &
+}
+
+run() {
     mode="$1"
     [ "$2" = --now ] && {
         handle "$mode"
-        setwallpaper
+        post
         return
     }
     udevadm monitor | while read -r line; do
@@ -69,10 +79,19 @@ main() {
             date
             echo "$line"
             handle "$mode"
-            setwallpaper
+            post
             echo
         fi
     done
+}
+
+main() {
+    if [ "$1" = '-q' ]; then
+        shift
+        run "$@" >/dev/null 2>/dev/null
+    else
+        run "$@"
+    fi
 }
 
 main "$@"

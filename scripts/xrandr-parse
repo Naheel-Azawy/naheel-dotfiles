@@ -22,7 +22,7 @@ def parse():
             edid_started = True
             outputs[-1]["edid"] = ""
 
-        m = re.search("(.+) (dis)?(connected) ?(.+)", line)
+        m = re.search("(.+) (dis)?(connected)(.+)", line)
         if m:
             name = m.group(1)
             connected = m.group(2) is None

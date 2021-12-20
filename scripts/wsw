@@ -225,7 +225,7 @@ def callback_dunst(wm, onchange):
                 f' {ws.name} </span>'
             u = "critical"
         elif ws.visible:
-            s += '<span background="gray" foreground="black">' + \
+            s += '<span background="gray" foreground="white">' + \
                 f' {ws.name} </span>'
         else:
             s += f' {ws.name} '

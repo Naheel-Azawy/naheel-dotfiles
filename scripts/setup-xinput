@@ -1,4 +1,12 @@
 #!/bin/sh
+
+usermodmap=$HOME/.Xmodmap
+if [ -f "$usermodmap" ]; then
+    xmodmap "$usermodmap"
+fi
+
+xset r rate 230 50
+
 synclient \
     VertScrollDelta=-500 \
     HorizScrollDelta=-500 \

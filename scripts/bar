@@ -173,7 +173,7 @@ class BarBase:
         try:
             self.out.flush()
         except BrokenPipeError:
-            exit(1)
+            exit(0)
 
     def run_item(self, item):
         if item in self.items:
@@ -481,49 +481,12 @@ class Bar(BarBase):
         return os.uname()[1]
 
 def lemonbar():
-    bin = os.path.abspath(__file__)
+    monitors = [o for o in xrandr.parse() if o["connected"] and o["geometry"]]
 
-    try: # try to get the x geometry from xrandr
-        match = re.search(r"connected primary \d+x\d+(\+\d+)\+\d+ ",
-                          sh.xrandr("-q").strip())
-        geometry = f"-g {match.group(1)}+0"
-    except:
-        geometry = ""
-
-    # main font
-    fonts = []
-    f = os.getenv("FONT")
-    if f:
-        fonts.append(f)
-
-    # additional fonts
-    fonts += [
-        # "Kawkab Mono:pixelsize=12",
-        "Source Han Sans CN",
-        "DejaVu Sans Mono",
-        "Font Awesome 5 Free Solid:pixelsize=19",
-        "Hack Nerd Font"
-    ]
-
-    tmp = ""
-    for f in fonts:
-        tmp += f"-f '{f}' "
-    fonts = tmp
-
-    os.system(f"""python3 '{bin}' -p |
-    lemonbar {geometry} {fonts} -B '{background}' -F '{foreground}' -a 30 |
-    sh""")
-
-async def lemonbar2():
-    # cleaner version but for some reason is too slow in stdin pipe
-
-    # main font
     fonts = []
     f = os.getenv("FONT")
     if f:
         fonts += ["-f", f]
-
-    # additional fonts
     fonts += [
         # "-f", "Kawkab Mono:pixelsize=12",
         "-f", "Source Han Sans CN",
@@ -532,49 +495,35 @@ async def lemonbar2():
         "-f", "Hack Nerd Font"
     ]
 
-    # lemonbar process
-    lemonp = subprocess.Popen(["lemonbar",
-                               "-B", background,
-                               "-F", foreground,
-                               "-a", "30"] + fonts,
-                              stdin=subprocess.PIPE,
-                              stdout=subprocess.PIPE,
-                              universal_newlines=True)
+    args = ["lemonbar", "-B", background, "-F", foreground,
+            "-a", "30"] + fonts
 
-    bar = Bar(items=None, out=lemonp.stdin)
-    signal.signal(signal.SIGINT, lambda signal, frame: bar.stop())
-    threading.Thread(target=lambda: asyncio.run(bar.run())).start()
+    lemons = []
+    for mon in monitors:
+        g = mon["geometry"]
+        lemonp = subprocess.Popen(args + ["-g", f"{g['w']}x+{g['x']}+{g['y']}"],
+                                  stdin=subprocess.PIPE,
+                                  stdout=subprocess.PIPE,
+                                  universal_newlines=True)
+        lemons.append(lemonp)
 
-    for line in iter(lemonp.stdout.readline, ""):
-        print(">>>>>>>>>>", line.strip())
-    lemonp.stdout.close()
-    code = lemonp.wait()
-    if code != 0:
-        raise Exception(f"lemonbar exited with code {code}")
+        bar = Bar(items=None, out=lemonp.stdin)
+        signal.signal(signal.SIGINT, lambda signal, frame: bar.stop())
 
-async def lemonbar3():
-    pfds = os.pipe()
-    pid = os.fork()
-    if pid:
-        os.close(pfds[0])
-        print("parent", os.getpid(), pid)
+        def lemon_output_handler():
+            for line in iter(lemonp.stdout.readline, ""):
+                os.system(line.strip())
+            lemonp.stdout.close()
 
-        os.write(pfds[1], b"hiiiiii\n")
-        os.write(pfds[1], b"hello\n")
-        
-        os.close(pfds[1])
+        threading.Thread(target=lambda: asyncio.run(bar.run())).start()
+        threading.Thread(target=lemon_output_handler).start()
 
-        pid, status = os.waitpid(-1, 0)
-        print("Child exited: pid %d returned %d"%(pid,status))
-    else:
-        print("child", os.getpid())
-        os.dup2(pfds[0], 0)
-        os.execv("/bin/nl", ["nl"])
- 
+    for l in lemons:
+        l.wait()
+
 async def main():
     if len(argv) >= 2 and argv[1] == "foobar":
-        print("foobaaar")
-        await lemonbar2()
+        print([o for o in xrandr.parse() if o["connected"]])
     elif len(argv) >= 2 and argv[1] == "lemon":
         lemonbar()
     elif len(argv) >= 3 and argv[1] == "update":

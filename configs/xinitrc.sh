@@ -1,7 +1,6 @@
 #!/bin/sh
 
 userresources=$HOME/.Xresources
-usermodmap=$HOME/.Xmodmap
 sysresources=/etc/X11/xinit/.Xresources
 sysmodmap=/etc/X11/xinit/.Xmodmap
 
@@ -23,10 +22,6 @@ if [ -f "$userresources" ]; then
     xrdb -merge "$userresources"
 fi
 
-if [ -f "$usermodmap" ]; then
-    xmodmap "$usermodmap"
-fi
-
 # start some nice programs
 
 if [ -d /etc/X11/xinit/xinitrc.d ] ; then
@@ -35,9 +30,6 @@ if [ -d /etc/X11/xinit/xinitrc.d ] ; then
  done
  unset f
 fi
-
-# set the keyboard repeat delay and rate
-xset r rate 230 50
 
 # start the system keyring
 eval "$(/usr/bin/gnome-keyring-daemon --start --components=pkcs11,secrets,ssh)"
@@ -53,12 +45,13 @@ bar lemon &                     # top bar
 wsw dunst &                     # workspaces notifications
 dunst &                         # notifications daemon
 clipmenud &                     # clipboard manager daemon
-setup-xinput &                  # mouse setup
+setup-xinput &                  # mouse and keyboard setup
 xbanish &                       # hides the cursor while typing
 syndaemon -i 0.5 -t -K -R &     # disable touchpad while typing
 edit daemon &                   # emacs daemon
 picom --experimental-backends & # compositor
 setwallpaper &                  # wallpaper
+automon &                       # automatic monitor config
 lang us &                       # set language to 'us' and runs xmodmap
 mount-private &                 # mount encfs private directory
 #menus hud daemon &              # hud menu daemon
