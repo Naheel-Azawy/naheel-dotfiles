@@ -53,7 +53,7 @@ picom --experimental-backends & # compositor
 setwallpaper &                  # wallpaper
 automon &                       # automatic monitor config
 lang us &                       # set language to 'us' and runs xmodmap
-fmz --mount-monitor             # automatically mount drives
+fmz --mount-monitor &           # automatically mount drives
 mount-private &                 # mount encfs private directory
 #menus hud daemon &              # hud menu daemon
 
