@@ -16,8 +16,6 @@ synclient \
     MinSpeed=1.5 \
     MaxSpeed=7 \
     AccelFactor=0.1 \
-    FingerHigh=1 \
-    FingerLow=1 \
     HorizTwoFingerScroll=1 \
     VertTwoFingerScroll=1 \
     PalmDetect=1
