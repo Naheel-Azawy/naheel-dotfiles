@@ -2,6 +2,20 @@
 
 # https://wiki.archlinux.org/title/Webcam_setup
 
+last=$(command ls -1 /dev/video* |
+           tail -n1 |
+           sed -rn 's@/dev/video([0-9]+)@\1@p')
+
+if [ "$last" = 1 ]; then
+    dev=/dev/video1
+else
+    dev=$(seq 0 2 "$last" | tac |
+              xargs printf '/dev/video%s\n' |
+              menus-face -l $(((last / 2) + 1)))
+fi
+
+[ -e "$dev" ] || exit 1
+
 pkill -f /dev/video ||
     mpv --no-osc                          \
         --no-input-default-bindings       \
@@ -11,4 +25,4 @@ pkill -f /dev/video ||
         --profile=low-latency             \
         --untimed                         \
         --title='__floatme__|__stickme__' \
-        av://v4l2:/dev/video0
+        av://v4l2:"$dev"
