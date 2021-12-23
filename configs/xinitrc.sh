@@ -42,7 +42,7 @@ eval "$(menus hud env)"
 env SXHKD_SHELL=dash sxhkd &    # keyboard daemon
 lang init &                     # set the keyboard layouts
 bar lemon &                     # top bar
-wsw dunst &                     # workspaces notifications
+wttr daemon &                   # weather update
 dunst &                         # notifications daemon
 clipmenud &                     # clipboard manager daemon
 setup-xinput &                  # mouse and keyboard setup

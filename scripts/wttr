@@ -1,10 +1,22 @@
 #!/bin/sh
 
 f=~/.cache/weatherreport
+
+update() {
+    curl -s wttr.in?n > "$f"
+    bar update weather
+}
+
+daemon() {
+    while :; do
+        update
+        sleep 30m
+    done
+}
+
 case "$1" in
-    u*)
-        curl -s wttr.in?n > "$f"
-        bar update weather ;;
+    u|update) update ;;
+    d|daemon) daemon ;;
 esac
 
 less -RF "$f"
