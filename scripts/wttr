@@ -19,4 +19,4 @@ case "$1" in
     d|daemon) daemon ;;
 esac
 
-less -RF "$f"
+less --mouse -RF "$f"

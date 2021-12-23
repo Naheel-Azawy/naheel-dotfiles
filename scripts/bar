@@ -416,7 +416,11 @@ class Bar(BarBase):
             r = re.compile(r'\x1B(?:[@-Z\\-_]|\[[0-?]*[ -/]*[@-~])')
             out = r.sub("", out).strip()
             try:
-                temp = re.search(".+\((\d+)\)", out).group(1)
+                temp = re.search(".+ (.+) °C.*", out).group(1)
+            except:
+                return None
+            try:
+                temp = re.search(".+\((\d+)\)", temp).group(1)
             except:
                 pass
             out = f"{temp}°C"
@@ -424,7 +428,7 @@ class Bar(BarBase):
             if self.a:
                 return f"w{out}"
             else:
-                cmd = f"theterm -a '-c __floatme__ -g 63x18' 'less -R {fpath}'"
+                cmd = f"theterm -a '-c __floatme__ -g 63x18' 'less --mouse -R {fpath}'"
                 return f"%{{A:{cmd}&:}}  {out}%{{A}}"
 
         return None

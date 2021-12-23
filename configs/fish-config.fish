@@ -215,6 +215,10 @@ function fmz
     rm $tmp
 end
 
+function unansi
+    sed 's/\x1b\[[0-9;]*m//g'
+end
+
 alias java='java "$SHHH_JAVA_OPTIONS"' # check profile
 
 abbr ث  'lang us; exit'
