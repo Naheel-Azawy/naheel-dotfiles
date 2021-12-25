@@ -411,7 +411,10 @@ class Bar(BarBase):
             return None
 
         with open(fpath, "rb") as f:
-            out = f.read().decode(errors="ignore").split("\n")[3] # third line
+            try:
+                out = f.read().decode(errors="ignore").split("\n")[3] # third line
+            except:
+                return None
             # remove colors https://stackoverflow.com/a/14693789/3825872
             r = re.compile(r'\x1B(?:[@-Z\\-_]|\[[0-?]*[ -/]*[@-~])')
             out = r.sub("", out).strip()

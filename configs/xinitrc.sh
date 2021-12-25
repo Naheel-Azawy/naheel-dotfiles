@@ -38,24 +38,38 @@ export SSH_AUTH_SOCK
 # enable the HUD menu
 eval "$(menus hud env)"
 
+# logs dir
+logdir="/tmp/xinitlogs-$USER"
+mkdir -p "$logdir"
+rm -r "$logdir"/*
+
+autostart() {
+    d=$(date)
+    echo "$d: STDOUT OF" "$@" > "$logdir/$1"
+    echo "$d: STDERR OF" "$@" > "$logdir/$1-err"
+    "$@" >> "$logdir/$1" 2>> "$logdir/$1-err" &
+}
+
+export SXHKD_SHELL=dash
+
 # autostart programs
-env SXHKD_SHELL=dash sxhkd &    # keyboard daemon
-lang init &                     # set the keyboard layouts
-bar lemon &                     # top bar
-wttr daemon &                   # weather update
-dunst &                         # notifications daemon
-clipmenud &                     # clipboard manager daemon
-setup-xinput &                  # mouse and keyboard setup
-xbanish &                       # hides the cursor while typing
-syndaemon -i 0.5 -t -K -R &     # disable touchpad while typing
-edit daemon &                   # emacs daemon
-picom --experimental-backends & # compositor
-setwallpaper &                  # wallpaper
-automon &                       # automatic monitor config
-lang us &                       # set language to 'us' and runs xmodmap
-fmz --mount-monitor &           # automatically mount drives
-mount-private &                 # mount encfs private directory
-#menus hud daemon &              # hud menu daemon
+autostart sxhkd                         # keyboard daemon
+autostart lang init                     # set the keyboard layouts
+autostart bar lemon                     # top bar
+autostart wttr daemon                   # weather update
+autostart dunst                         # notifications daemon
+autostart clipmenud                     # clipboard manager daemon
+autostart setup-xinput                  # mouse and keyboard setup
+autostart xbanish                       # hides the cursor while typing
+autostart syndaemon -i 0.5 -t -K -R     # disable touchpad while typing
+autostart edit daemon                   # emacs daemon
+autostart picom --experimental-backends # compositor
+autostart setwallpaper                  # wallpaper
+autostart automon                       # automatic monitor config
+autostart lang us                       # set language to 'us' and runs xmodmap
+autostart fmz --mount-monitor           # automatically mount drives
+autostart mount-private                 # mount encfs private directory
+#autostart menus hud daemon              # hud menu daemon
 
 # start the window manager
 exec "$WINDOW_MANAGER" # defined in profile

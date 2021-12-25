@@ -8,6 +8,7 @@ update() {
 }
 
 daemon() {
+    sleep 1m
     while :; do
         update
         sleep 30m

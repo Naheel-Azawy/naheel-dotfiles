@@ -108,7 +108,7 @@ super+apostrophe
 
 # Start file manager with opposite split
 super+shift+apostrophe
-	wm-msg split; theterm $FILE_MANAGER
+	wm-msg split; theterm fish -c $FILE_MANAGER
 
 # Empty window
 super+e
