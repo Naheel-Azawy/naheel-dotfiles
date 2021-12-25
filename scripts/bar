@@ -18,6 +18,8 @@ import subprocess
 import socket
 import signal
 import importlib
+import importlib.util
+import importlib.machinery
 
 def import_path(path):
     # https://stackoverflow.com/a/56090741/3825872

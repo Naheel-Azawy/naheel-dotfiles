@@ -1,5 +1,13 @@
 #!/bin/sh
 
+COMMON='trackpoint_parameters.service
+docker.service
+bluetooth.service
+libvirtd.service
+ufw.service
+nginx.service
+openvpn-server@server.service'
+
 menu() {
     fzf --reverse --height=10 "$@"
 }
@@ -9,9 +17,12 @@ run() {
     "$@"
 }
 
-s=$(systemctl list-unit-files --type=service |
-        menu --header-lines=1 |
-        cut -d ' ' -f1)
+s=$({
+       echo "$COMMON"
+       systemctl list-unit-files --type=service | grep -v "$COMMON"
+   } | menu --header-lines=1 | cut -d ' ' -f1)
+
+[ -n "$s" ] || exit 1
 
 run systemctl status --no-pager "$s"
 echo

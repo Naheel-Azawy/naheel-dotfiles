@@ -219,7 +219,7 @@ def callback_dunst(wm, onchange):
     for ws in wm.workspaces:
         if ws.focused:
             s += '<span background="white" foreground="black">' + \
-                f'<b> {ws.name} </b></span>'
+                f' {ws.name} </span>'
         elif ws.urgent:
             s += '<span background="red" foreground="white">' + \
                 f' {ws.name} </span>'
