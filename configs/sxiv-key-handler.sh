@@ -22,6 +22,7 @@ Move to trash
 Delete
 Copy file name
 Copy image
+Rotate auto
 Rotate 270
 Rotate 90
 Rotate 180
@@ -73,6 +74,8 @@ case "$choice" in
         feh --bg-fill "${files[-1]}";;
     "Duplicate" | "2")
         sxiv "${files[@]}" &;;
+    "Rotate auto")
+        for f in "${files[@]}"; do convert "$f" -auto-orient "$f"; done;;
     "Rotate 270" | "C-comma")
         for f in "${files[@]}"; do convert "$f" -rotate 270 "$f"; done;;
     "Rotate 90" | "C-period")

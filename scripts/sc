@@ -20,7 +20,7 @@ run() {
 s=$({
        echo "$COMMON"
        systemctl list-unit-files --type=service | grep -v "$COMMON"
-   } | menu --header-lines=1 | cut -d ' ' -f1)
+   } | menu --header-lines=0 | cut -d ' ' -f1)
 
 [ -n "$s" ] || exit 1
 
