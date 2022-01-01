@@ -180,7 +180,11 @@ super+r
 
 # Youtube stuff
 super+y
-	dmenuyoutube
+	youtube-menu
+
+# Youtube running items
+super+shift+y
+	youtube-menu -r
 
 # Help (based on copied term)
 super+h

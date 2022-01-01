@@ -1,5 +1,6 @@
 # TODO: move to personal
 
+bookmark ~/Documents/events/2021_12_01_Work_Research_QU_smartgrid_security
 bookmark ~/Documents/QU/3.5-TA/0-fall-2021
 bookmark ~/Documents/events
 bookmark ~/.dotfiles

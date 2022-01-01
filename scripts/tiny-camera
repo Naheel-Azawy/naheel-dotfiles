@@ -7,7 +7,7 @@ last=$(command ls -1 /dev/video* |
            sed -rn 's@/dev/video([0-9]+)@\1@p')
 
 if [ "$last" = 1 ]; then
-    dev=/dev/video1
+    dev=/dev/video0
 else
     dev=$(seq 0 2 "$last" | tac |
               xargs printf '/dev/video%s\n' |

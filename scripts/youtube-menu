@@ -1,0 +1,169 @@
+#!/bin/sh
+
+set -m # enable job control
+
+VIDEO_DIR="$HOME/Downloads/YouTube"
+AUDIO_DIR="$HOME/Downloads/YouTube/Audio"
+PROG_DIR="/tmp/__ytdl_prog_dir"
+BROWSERS='chromium
+firefox
+brave'
+
+menu() {
+    menus-face -sb '#E00000' -sf white -nf white "$@"
+}
+
+running_menu() {
+    files=$(find "$PROG_DIR" -type f -exec basename '{}' \; |
+         grep -v ' @@PID$')
+    count=$(echo "$files" | wc -l)
+    if [ ! "$files" ]; then
+        notify-send "No files downloading"
+        return 1
+    else
+        f=$(echo "$files" | menu -l "$count")
+        [ "$f" ] && {
+            res=$(printf 'Progress\nCancel\n' |
+                      menu -p "$f" -l 2)
+
+            case "$res" in
+                Progress)
+                    if [ -t 1 ]; then
+                        tail -f "$PROG_DIR/$f"
+                    else
+                        "$TERMINAL" -e tail -f "$PROG_DIR/$f"
+                    fi ;;
+                Cancel)
+                    pid=$(cat "$PROG_DIR/$f @@PID")
+                    kill "$pid" ;;
+                *)
+                    return 1
+            esac
+        }
+    fi
+}
+
+search() {
+    q=$(echo | menu -p 'Search YouTube')
+    [ "$q" ] && {
+        q=$(echo "$q" | url-encode)
+        browser "https://www.youtube.com/results?search_query=$q"
+    }
+}
+
+browser_id() {
+    echo "$BROWSERS" | while read -r b; do
+        id=$(xdotool search --onlyvisible --class "$b")
+        [ "$id" ] && {
+            echo "$id"
+            break
+        }
+    done
+}
+
+browser_url() {
+    win_brw="$1"
+    win_cur=$(xdotool getactivewindow)
+    [ "$win_brw" ] || return 1
+    sleep 0.5 # To give the user a chance to release the keyboard
+    win_brw=$(echo "$win_brw" | awk '{print $1}')
+    xdotool windowfocus "$win_brw"
+    xdotool key ctrl+l
+    xdotool key ctrl+c
+    xdotool key Tab
+    xdotool windowfocus "$win_cur"
+    url=$(xclip -o -selection clipboard)
+    echo "$url"
+}
+
+ytdl() {
+    now=$(date)
+    title="$now - $1"
+    shift
+    youtube-dl --add-metadata -ic "$@" \
+               >>"$PROG_DIR/$title"    \
+               2>>"$PROG_DIR/$title" &
+    echo $! > "$PROG_DIR/$title @@PID"
+    fg
+    rm "$PROG_DIR/$title"
+    rm "$PROG_DIR/$title @@PID"
+}
+
+main() {
+    mkdir -p "$VIDEO_DIR" "$AUDIO_DIR" "$PROG_DIR"
+
+    [ "$1" = '-r' ] && {
+        running_menu
+        return
+    }
+
+    win_brw=$(browser_id)
+    url=$(browser_url "$win_brw")
+
+    echo "$url" | grep -q '^https://www.youtube.com' || {
+        search
+        return
+    }
+
+    downloadable=
+    items=
+    if echo "$url" | grep -q '/watch'; then
+        items='Download\nDownload audio\n'
+        downloadable=1
+    fi
+    if echo "$url" | grep -q 'list='; then
+        items="${items}Download playlist\nDownload audio playlist\n"
+        downloadable=1
+    fi
+
+    [ -n "$downloadable" ] || {
+        search
+        return
+    }
+
+    items="${items}Copy url\nWatch in YouTube viewer"
+    items=$(echo "$items" | sed 's/\\n/\n/g')
+    items_len=$(echo "$items" | wc -l)
+
+    title=$(xprop -id "$win_brw"                                      |
+                sed -rn 's/_NET_WM_NAME\(UTF8_STRING\) = "(.*)"/\1/p' |
+                sed 's/ - YouTube.*//g'                               |
+                cut -c -50                                            |
+                fribidi --nopad)
+
+    download=
+    # shellcheck disable=SC2059
+    res=$(echo "$items" | menu -l "$items_len" -p "$title") || return 1
+    echo "$res" | grep -q Download && download=1
+    [ -n "$download" ] && notify-send "Downloading $title..."
+
+    case "$res" in
+        'Download')
+            cd "$VIDEO_DIR" &&
+                ytdl "$title" --no-playlist "$url" ;;
+
+        'Download playlist')
+            cd "$VIDEO_DIR" &&
+                ytdl "$title" "$url" ;;
+
+        'Download audio')
+            cd "$AUDIO_DIR" &&
+                ytdl "$title" --no-playlist -x --audio-format mp3 "$url" ;;
+
+        'Download audio playlist')
+            cd "$AUDIO_DIR" &&
+                ytdl "$title" -x --audio-format mp3 "$url" ;;
+
+        Copy*)
+            printf '%s' "$url" | xclip -i -selection clipboard ;;
+
+        Watch*)
+            url=$(echo "$url" | sed 's/https:/ytdl:/')
+            mpv "$url";;
+    esac
+
+    [ -n "$download" ] &&
+        notify-send "YouTube download for $title completed"
+}
+
+main "$@"
