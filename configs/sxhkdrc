@@ -122,14 +122,6 @@ super+shift+e
 super+d
 	menus
 
-# Switch language
-# super+space
-# 	lang tog
-
-# Switch language (extended)
-# super+shift+space
-# 	lang tog -e
-
 # Toggle on-screen keyboard
 super+k
 	pkill onboard || onboard
@@ -156,11 +148,11 @@ super+x
 
 # Display options
 super+p
-	dmenudisplay
+	display-menu
 
 # Reset display options
 super+shift+p
-	dmenudisplay -d
+	display-menu -d
 
 # Clipboard manager
 super+c
@@ -322,7 +314,7 @@ XF86MyComputer
 	theterm $FILE_MANAGER
 
 XF86HomePage
-	browser https://www.duckduckgo.com
+	browser
 
 XF86Reload
 	restart
@@ -367,7 +359,7 @@ XF86AudioMedia
 	cmus-tmux-st
 
 XF86Display
-	dmenudisplay
+	display-menu
 
 XF86Documents
 	theterm $FILE_MANAGER "$HOME/Documents"
