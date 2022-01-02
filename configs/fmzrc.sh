@@ -55,3 +55,12 @@ chmodmenu() {
         chmod "$m" "$file"
     done
 }
+
+bind alt-c fun orglink
+add_fun orglink 'Copy org-mode link'
+orglink() {
+    echo "$fx" | while read -r file; do
+        bn=$(basename "$file")
+        echo "[[$file][$bn]]"
+    done | clipboard
+}

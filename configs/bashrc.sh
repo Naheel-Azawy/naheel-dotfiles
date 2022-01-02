@@ -80,10 +80,10 @@ if [[ $- == *i* ]]; then
         esac
 
         local git_branch
-        git_branch=$(git branch 2>/dev/null | tr '\n' ' ' | xargs)
+        git_branch=$(git branch --show-current 2>/dev/null)
         [ -n "$git_branch" ] && git_branch=" ($git_branch)"
 
-        PS1="$ps_face$color_cwd\W\e[0m$git_branch$suffix "
+        PS1="$ps_face$color_cwd\W$git_branch\e[0m$suffix "
     }
     PROMPT_COMMAND=bash_prompt
 

@@ -17,5 +17,9 @@ case "$1" in
             mpc next
         };;
     *)
-        exec ncmpcpp "$@";;
+        if command -v bicon.bin >/dev/null; then
+            exec bicon.bin ncmpcpp "$@"
+        else
+            exec ncmpcpp "$@"
+        fi
 esac

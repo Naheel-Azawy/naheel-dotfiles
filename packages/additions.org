@@ -25,6 +25,7 @@
 | pacman | mpg123                         | N.A.                                   | needed for wine                                                                                |
 | pacman | lib32-mpg123                   | N.A.                                   | needed for wine                                                                                |
 | pacman | lib32-gnutls                   | N.A.                                   | needed for wine                                                                                |
+| aur    | ttf-amiri                      | N.A.                                   | Arabic font                                                                                    |
 | pacman | adobe-source-han-sans-cn-fonts | N.A.                                   | Chinese font                                                                                   |
 | pacman | opendesktop-fonts              | N.A.                                   | Japanese font                                                                                  |
 | aur    | transset-df                    | N.A.                                   | used to change the window opacity                                                              |
