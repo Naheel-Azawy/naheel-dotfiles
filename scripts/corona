@@ -1,6 +1,10 @@
 #!/bin/sh
-F=~/.cache/corona
-D='+%Y%m%d'
-[ ! -f $F ] || [ $(date $D) != $(date $D -r $F) ] &&
-    curl 'https://corona-stats.online?source=2' > $F
-less -R $F
+
+dir=~/.cache/corona-dir
+f=$(date "+$dir/$1%Y%m%d")
+mkdir -p "$dir"
+[ -f "$f" ] || {
+    rm -f "$dir/$1"*
+    curl "https://corona-stats.online/$1?source=2" > "$f"
+}
+less -R "$f"

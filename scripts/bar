@@ -45,7 +45,7 @@ try:
 except:
     use_arabic = False
 
-background = '#99000000'
+background = '#dd000000'
 foreground = '#ffffff'
 
 default_items = "start workspaces add program | clock | systray pray weather temperature wifi battery power"
