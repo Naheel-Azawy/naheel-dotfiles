@@ -153,7 +153,9 @@ rm_desktops() {
 run() {
     year="$1"
     cmd="$2"
-    f="$3"
+    f=$(realpath -s "$3")
+
+    cd || return 1
 
     case "$year" in
         2007)
@@ -198,7 +200,7 @@ run() {
         rf=$(realpath "$f")
         sum=$(echo "$rf" | cksum | cut -d ' ' -f1)
         tmp_name="$sum $(basename "$rf")"
-        mkdir "$jail_path/tmpdocs/"
+        mkdir -p "$jail_path/tmpdocs/"
         tmp_path="$jail_path/tmpdocs/$tmp_name"
         tmp_jail_path="$HOME/tmpdocs/$tmp_name"
         cp "$rf" "$tmp_path"

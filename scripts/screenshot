@@ -48,4 +48,8 @@ else
     CMD="$CMD '$F'"
 fi
 
+[ -z "$A" ] || killall picom
+
 eval "$CMD"
+
+[ -z "$A" ] || picom --experimental-backends -b ||:

@@ -1,9 +1,0 @@
-#!/bin/sh
-p="$1"
-#f=$(basename "$p")
-#d=$(dirname "$p")
-#cd "$d"
-#n=$(ls -1 | nl -v 0 | grep "$f" | awk '{print $1}')
-#mpv --vid=no --playlist-start="$n" "$PWD"
-
-mpv --vid=no "$p"
