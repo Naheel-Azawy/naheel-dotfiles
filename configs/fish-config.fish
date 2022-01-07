@@ -206,12 +206,7 @@ end
 
 function fmz
     set tmp (mktemp)
-    if command -v bicon.bin >/dev/null
-        command bicon.bin fmz --cd $tmp $argv
-        printf '\033[1A\r'
-    else
-        command fmz --cd $tmp $argv
-    end
+    command fmz --cd $tmp $argv
     set res (tail -n 1 $tmp)
     if test -d "$res" && test "$res" != "$PWD"
         echo cd $res

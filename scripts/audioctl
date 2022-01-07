@@ -3,21 +3,32 @@
 MAX_VOL=250
 NOTIF_ID=123
 
+notify() {
+    res=$(dunstify         \
+              -i none      \
+              -r $NOTIF_ID \
+              -A 'gui,GUI' \
+              "$@")
+    if [ "$res" = gui ]; then
+        pavucontrol
+    fi
+}
+
 vol_notif() {
     V="$1"
     [ "$V" ] || V=$(pamixer --get-volume)
 	if [ "$(pamixer --get-mute)" = "true" ]; then
-        dunstify -i none -r $NOTIF_ID "Volume: Muted"
+        notify "Volume: Muted"
 	else
-        dunstify -i none -r $NOTIF_ID -h int:value:"$V" "Volume: $V%"
+        notify -h int:value:"$V" "Volume: $V%"
     fi
 }
 
 mic_notif() {
     if amixer sget Capture | grep -Eq 'Capture.+\[on\]'; then
-        dunstify -i none -r $NOTIF_ID "Microphone: ON"
+        notify "Microphone: ON"
     else
-        dunstify -i none -r $NOTIF_ID "Microphone: OFF"
+        notify "Microphone: OFF"
     fi
 }
 
