@@ -5,7 +5,6 @@ NOTIF_ID=123
 
 notify() {
     res=$(dunstify         \
-              -i none      \
               -r $NOTIF_ID \
               -A 'gui,GUI' \
               "$@")

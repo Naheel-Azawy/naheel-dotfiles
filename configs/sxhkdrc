@@ -280,11 +280,17 @@ super+shift+XF86AudioRaiseVolume
 XF86AudioNext
 	audioctl next
 
-XF86AudioPlay
-	audioctl pause
-
 XF86AudioPrev
 	audioctl prev
+
+XF86AudioNext+shift
+	audioctl forward 10
+
+XF86AudioPrev+shift
+	audioctl back 10
+
+XF86AudioPlay
+	audioctl pause
 
 XF86AudioStop
 	audioctl stop

@@ -1,5 +1,7 @@
 #!/bin/sh
 
+NOTIF_ID=123
+
 # start the daemon
 mpd 2>/dev/null >/dev/null
 
@@ -10,7 +12,12 @@ pgrep mpd-notificatio >/dev/null || {
 }
 
 case "$1" in
-    --find)
+    notif)
+        mpc idleloop | while read -r _; do
+            s=$(mpc status | head -n1)
+            dunstify -r $NOTIF_ID Music "$s"
+        done ;;
+    find)
         song="$(mpc search any '' | fzf --reverse)"
         [ "$song" ] && {
             mpc insert "$song"
