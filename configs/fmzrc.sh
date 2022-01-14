@@ -5,12 +5,14 @@ bookmark ~/Documents/QU/3.5-TA/0-fall-2021
 bookmark ~/Documents/events
 bookmark ~/.dotfiles
 
-add_fun myless 'Less a file'
-bind ctrl-p fun myless
-myless() {
-    tput rmcup
-    less "$f"
-}
+# add_fun myless 'Less a file'
+# bind ctrl-p fun myless
+# myless() {
+#     tput rmcup
+#     less "$f"
+# }
+
+bind ctrl-p 'toggle-preview' 'Toggle preview'
 
 add_fun mystat 'File status'
 mystat() {

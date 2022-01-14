@@ -6,17 +6,21 @@ NOTIF_ID=123
 mpd 2>/dev/null >/dev/null
 
 # start the notification daemon
-pgrep mpd-notificatio >/dev/null || {
-    # https://stackoverflow.com/a/10408906
-    nohup mpd-notification </dev/null >/dev/null 2>&1 &
+# pgrep mpd-notificatio >/dev/null || {
+#     # https://stackoverflow.com/a/10408906
+#     nohup mpd-notification </dev/null >/dev/null 2>&1 &
+# }
+
+notif() {
+    mpc idleloop | while read -r _; do
+        s=$(mpc status | head -n1)
+        dunstify -r $NOTIF_ID Music "$s"
+    done
 }
 
 case "$1" in
     notif)
-        mpc idleloop | while read -r _; do
-            s=$(mpc status | head -n1)
-            dunstify -r $NOTIF_ID Music "$s"
-        done ;;
+        notif ;;
     find)
         song="$(mpc search any '' | fzf --reverse)"
         [ "$song" ] && {
@@ -24,6 +28,7 @@ case "$1" in
             mpc next
         };;
     *)
+        notif &
         if command -v bicon.bin >/dev/null; then
             exec bicon.bin ncmpcpp "$@"
         else

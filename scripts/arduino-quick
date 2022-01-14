@@ -1,5 +1,17 @@
 #!/bin/sh
 
+# https://bbs.archlinux.org/viewtopic.php?id=270617
+# After updating the system, about a month ago, /dev/ttyUSB0 for the CH340 device ceased to be created. Today I started to figure it out and found out that the brltty package is to blame, or rather the udev rule 90-brltty-device.rules in which 1A86:7523 is present.
+# 
+# cp /usr/lib/udev/rules.d/90-brltty-device.rules /etc/udev/rules.d/90-brltty-device.rules
+# and commenting /etc/udev/rules.d/90-brltty-device.rules
+# 
+# # Device: 1A86:7523
+# # Baum [NLS eReader Zoomax (20 cells)]
+# #ENV{PRODUCT}=="1a86/7523/*", ENV{BRLTTY_BRAILLE_DRIVER}="bm", GOTO="brltty_usb_run"
+# 
+# so that in the future the problem does not appear, you need to fix 90-brltty-device.rules at brltty
+
 echo 'COMPILING...'
 arduino-cli compile --fqbn arduino:avr:nano && {
     echo 'BUILD SUCCESS!'

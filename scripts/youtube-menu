@@ -15,17 +15,25 @@ menu() {
 
 running_menu() {
     files=$(find "$PROG_DIR" -type f -exec basename '{}' \; |
-         grep -v ' @@PID$')
+                grep -v ' @@PID$')
     count=$(echo "$files" | wc -l)
     if [ ! "$files" ]; then
         notify-send "No files downloading"
         return 1
     else
-        f=$(echo "$files" | menu -l "$count")
-        [ "$f" ] && {
-            res=$(printf 'Progress\nCancel\n' |
-                      menu -p "$f" -l 2)
+        f=$({
+               echo "$files" | while read -r file; do
+                   vcount=$(sed -rn 's/.*Downloading video ([0-9]+) of ([0-9]+)/\(\1\/\2\)/p' \
+                        "$PROG_DIR/$file" | tail -n1)
+                   percent=$(tail -n1 "$PROG_DIR/$file" |
+                                 sed -rn 's/.+ ([0-9\.]+)%.+/\1/p')
+                   printf '%s %.01f%% %s\n' "$vcount" "$percent" "$file"
+               done
+           } | menu -l "$count")
 
+        [ "$f" ] && {
+            res=$(printf 'Progress\nCancel\n' | menu)
+            f=$(echo "$f" | cut -d'%' -f2- | cut -c2-)
             case "$res" in
                 Progress)
                     if [ -t 1 ]; then
@@ -97,7 +105,7 @@ main() {
         return
     }
 
-    win_brw=$(browser_id)
+    win_brw=$(browser_id | tail -n 1)
     url=$(browser_url "$win_brw")
 
     echo "$url" | grep -q '^https://www.youtube.com' || {

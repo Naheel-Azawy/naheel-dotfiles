@@ -64,6 +64,11 @@ Categories=Office;Spreadsheet;X-Red-Hat-Base;X-MandrivaLinux-Office-Spreadsheets
 MimeType=application/vnd.oasis.opendocument.spreadsheet;application/vnd.oasis.opendocument.spreadsheet-template;application/vnd.sun.xml.calc;application/vnd.sun.xml.calc.template;application/msexcel;application/vnd.ms-excel;application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;application/vnd.ms-excel.sheet.macroEnabled.12;application/vnd.openxmlformats-officedocument.spreadsheetml.template;application/vnd.ms-excel.template.macroEnabled.12;application/vnd.ms-excel.sheet.binary.macroEnabled.12;text/csv;application/x-dbf;text/spreadsheet;application/csv;application/excel;application/tab-separated-values;application/vnd.lotus-1-2-3;application/vnd.oasis.opendocument.chart;application/vnd.oasis.opendocument.chart-template;application/x-dbase;application/x-dos_ms_excel;application/x-excel;application/x-msexcel;application/x-ms-excel;application/x-quattropro;application/x-123;text/comma-separated-values;text/tab-separated-values;text/x-comma-separated-values;text/x-csv;application/vnd.oasis.opendocument.spreadsheet-flat-xml;application/vnd.ms-works;application/clarisworks;application/x-iwork-numbers-sffnumbers;application/x-starcalc;"
 }
 
+# .config/mimeapps.list:
+# application/vnd.openxmlformats-officedocument.presentationml.presentation=jail-office-2007-powerpoint.desktop;jail-office-2010-powerpoint.desktop;libreoffice-impress.desktop;
+# application/vnd.openxmlformats-officedocument.wordprocessingml.document=jail-office-2007-word.desktop;jail-office-2010-word.desktop;libreoffice-writer.desktop;
+# application/vnd.openxmlformats-officedocument.spreadsheetml.sheet=jail-office-2007-excel.desktop;jail-office-2010-excel.desktop;libreoffice-calc.desktop;
+
 info() {
     printf '\033[1;34mINFO:\033[0m '
     echo "$@"
@@ -79,12 +84,12 @@ err() {
 
 year2version() {
     case "$1" in
+        2003) echo 11 ;;
         2007) echo 12 ;;
         2010) echo 14 ;;
         2013) echo 15 ;;
         2016) echo 16 ;;
-        *)
-            err "Unknown office version $1" ;;
+        *)   return 1 ;;
     esac
 }
 
@@ -94,6 +99,14 @@ jail() {
 
 install() {
     installer_path="$1"
+    if [ -f "$installer_path/setup.exe" ]; then
+        setup_exe=setup.exe
+    elif [ -f "$installer_path/SETUP.MSI" ]; then
+        setup_exe=SETUP.MSI
+    else
+        err "No setup file found under '$installer_path'"
+        return 1
+    fi
 
     [ -d "$jail_path" ] && {
         err "Jail directory already exist"
@@ -116,7 +129,7 @@ install() {
             jail sh -c "
               export WINEARCH=$win_arch
               winetricks $win_version $tricks
-              wine '$HOME/installer/setup.exe' 2>/dev/null
+              wine '$HOME/installer/$setup_exe' 2>/dev/null
               " &&
             info 'Cleaning...' &&
             rm -rf "$jail_path/installer" &&
@@ -150,6 +163,14 @@ rm_desktops() {
     info 'Deleted. Run update-desktop-database as root if needed'
 }
 
+installed_years() {
+    find ~/.local/share/     \
+         -maxdepth 1 -type d \
+         -name 'jail-office-*' |
+        cut -d - -f3-          |
+        sort -rn
+}
+
 run() {
     year="$1"
     cmd="$2"
@@ -158,6 +179,11 @@ run() {
     cd || return 1
 
     case "$year" in
+        2003)
+            win_arch=win32
+            win_version=winxp
+            tricks= ;; #'riched30 corefonts' ;;
+
         2007)
             win_arch=win32
             win_version=winxp
@@ -180,16 +206,23 @@ run() {
         desktops)    desktops;     return ;;
         rm-desktops) rm_desktops;  return ;;
 
-        w|doc|word)       app="WINWORD"  ;;
-        e|xls|excel)      app="EXCEL"    ;;
-        p|ppt|powerpoint) app="POWERPNT" ;;
+        start)            app=start    ;;
+        w|doc|word)       app=WINWORD  ;;
+        e|xls|excel)      app=EXCEL    ;;
+        p|ppt|powerpoint) app=POWERPNT ;;
         *)
             err "Unknown application '$1'"
             return 1
     esac
 
-    v=$(year2version "$year")
-    p="$HOME/.wine/drive_c/Program Files/Microsoft Office/Office$v/$app.EXE"
+    v=$(year2version "$year") ||
+        err "Unknown office version $1"
+
+    if [ "$app" = start ]; then
+        p=start
+    else
+        p="$HOME/.wine/drive_c/Program Files/Microsoft Office/Office$v/$app.EXE"
+    fi
 
     if [ ! -d "$jail_path" ]; then
         err "Office $year is not installed"
@@ -205,7 +238,18 @@ run() {
         tmp_jail_path="$HOME/tmpdocs/$tmp_name"
         cp "$rf" "$tmp_path"
 
-        jail --net=none wine "$p" "$tmp_jail_path"
+        win_path=$(echo "$tmp_jail_path" | sed 's@/@\\@g')
+        win_path="Z:\\$win_path"
+
+        # https://support.microsoft.com/en-us/office/command-line-switches-for-microsoft-office-products-079164cd-4ef5-4178-b235-441737deb3a6
+        case "$app" in
+            WINWORD)
+                jail --net=none wine "$p" /f "$win_path" ;;
+            EXCEL|POWERPNT)
+                jail --net=none wine "$p" "$win_path" ;;
+            start)
+                jail --net=none wine start "$win_path"
+        esac
 
         old_mod=$(stat -c %a "$f")
         old_size=$(stat -c %s "$f")
@@ -225,7 +269,7 @@ run() {
 main() {
     if [ $# = 0 ]; then
         res=$({
-                 for y in 2010 2007; do
+                 for y in $(installed_years); do
                      for a in word powerpoint excel; do
                          echo "$y $a"
                      done
@@ -233,7 +277,21 @@ main() {
              } | menus-face)
         [ -n "$res" ] && run $res
     else
-        run "$@"
+        if year2version "$1" >/dev/null; then
+            year="$1"
+            shift
+        else
+            year=$(installed_years | head -n 1)
+        fi
+
+        if [ -f "$1" ]; then
+            cmd=start
+            f="$1"
+        else
+            cmd="$1"
+            f="$2"
+        fi
+        run "$year" "$cmd" "$f"
     fi
 }
 
