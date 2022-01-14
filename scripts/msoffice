@@ -1,5 +1,15 @@
 #!/bin/sh
 
+# links:
+# https://support.microsoft.com/en-us/office/command-line-switches-for-microsoft-office-products-079164cd-4ef5-4178-b235-441737deb3a6
+# https://askubuntu.com/questions/879304/wine-2-0-says-it-supports-office-2013-how-do-i-actually-install-it/964712#964712
+# https://docs.microsoft.com/en-us/windows-server/administration/windows-commands/reg-add
+
+# .config/mimeapps.list:
+# application/vnd.openxmlformats-officedocument.presentationml.presentation=jail-office-2007-powerpoint.desktop;jail-office-2010-powerpoint.desktop;libreoffice-impress.desktop;
+# application/vnd.openxmlformats-officedocument.wordprocessingml.document=jail-office-2007-word.desktop;jail-office-2010-word.desktop;libreoffice-writer.desktop;
+# application/vnd.openxmlformats-officedocument.spreadsheetml.sheet=jail-office-2007-excel.desktop;jail-office-2010-excel.desktop;libreoffice-calc.desktop;
+
 SELF=$(realpath "$0")
 DESKTOPS="$HOME/.local/share/applications"
 JAIL_PREFIX="$HOME/.local/share/jail-office-"
@@ -13,6 +23,7 @@ jail_path=
 icons() {
     r= ; [ "$1" = --rm ] && r=1
     hi="$jail_path/.local/share/icons/hicolor"
+    [ -d "$hi" ] || return 1
     for p in WINWORD POWERPNT EXCEL; do
         ic=$(find "$hi/48x48/apps" \
                   -name "*$p*.png" | head -n1 | xargs basename)
@@ -64,11 +75,6 @@ Categories=Office;Spreadsheet;X-Red-Hat-Base;X-MandrivaLinux-Office-Spreadsheets
 MimeType=application/vnd.oasis.opendocument.spreadsheet;application/vnd.oasis.opendocument.spreadsheet-template;application/vnd.sun.xml.calc;application/vnd.sun.xml.calc.template;application/msexcel;application/vnd.ms-excel;application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;application/vnd.ms-excel.sheet.macroEnabled.12;application/vnd.openxmlformats-officedocument.spreadsheetml.template;application/vnd.ms-excel.template.macroEnabled.12;application/vnd.ms-excel.sheet.binary.macroEnabled.12;text/csv;application/x-dbf;text/spreadsheet;application/csv;application/excel;application/tab-separated-values;application/vnd.lotus-1-2-3;application/vnd.oasis.opendocument.chart;application/vnd.oasis.opendocument.chart-template;application/x-dbase;application/x-dos_ms_excel;application/x-excel;application/x-msexcel;application/x-ms-excel;application/x-quattropro;application/x-123;text/comma-separated-values;text/tab-separated-values;text/x-comma-separated-values;text/x-csv;application/vnd.oasis.opendocument.spreadsheet-flat-xml;application/vnd.ms-works;application/clarisworks;application/x-iwork-numbers-sffnumbers;application/x-starcalc;"
 }
 
-# .config/mimeapps.list:
-# application/vnd.openxmlformats-officedocument.presentationml.presentation=jail-office-2007-powerpoint.desktop;jail-office-2010-powerpoint.desktop;libreoffice-impress.desktop;
-# application/vnd.openxmlformats-officedocument.wordprocessingml.document=jail-office-2007-word.desktop;jail-office-2010-word.desktop;libreoffice-writer.desktop;
-# application/vnd.openxmlformats-officedocument.spreadsheetml.sheet=jail-office-2007-excel.desktop;jail-office-2010-excel.desktop;libreoffice-calc.desktop;
-
 info() {
     printf '\033[1;34mINFO:\033[0m '
     echo "$@"
@@ -80,6 +86,11 @@ err() {
         echo "$@"
     } >&2
     return 1
+}
+
+run() {
+    printf '\033[1;32m>>>\033[0m %s\n' "$*" >&2
+    "$@"
 }
 
 year2version() {
@@ -94,7 +105,7 @@ year2version() {
 }
 
 jail() {
-    firejail --private-tmp --blacklist=/mnt --private="$jail_path" "$@"
+    run firejail --private-tmp --blacklist=/mnt --private="$jail_path" "$@"
 }
 
 install() {
@@ -129,6 +140,7 @@ install() {
             jail sh -c "
               export WINEARCH=$win_arch
               winetricks $win_version $tricks
+              wine cmd /c 'reg add HKCU\Software\Wine\Direct3D /v MaxVersionGL /t REG_DWORD /d 0x30002 /f'
               wine '$HOME/installer/$setup_exe' 2>/dev/null
               " &&
             info 'Cleaning...' &&
@@ -142,8 +154,13 @@ install() {
 }
 
 uninstall() {
-    rm -rf "$jail_path"
-    rm_desktops
+    info "Uninstall office $year at '$jail_path'"
+    printf 'Are you sure? (y/N) '
+    read -r ans
+    [ "$ans" = y ] && {
+        rm -rf "$jail_path"
+        rm_desktops
+    }
 }
 
 desktops() {
@@ -171,10 +188,60 @@ installed_years() {
         sort -rn
 }
 
-run() {
-    year="$1"
-    cmd="$2"
-    f=$(realpath -s "$3")
+preferred_year() {
+    y=$(sed -rn 's#application/vnd\.openxmlformats-officedocument\..+\=jail-office-([0-9]+).+#\1#p' ~/.config/mimeapps.list | tail -n 1)
+    [ "$y" ] || y=$(installed_years | head -n 1)
+    echo "$y"
+}
+
+main() {
+    year=
+    cmd=
+    f=
+
+    if [ "$1" = '--help' ]; then
+        help
+    elif [ $# = 0 ]; then
+        res=$({
+                 for y in $(installed_years); do
+                     for a in word powerpoint excel; do
+                         echo "$y $a"
+                     done
+                 done
+             } | menus-face)
+        if [ -n "$res" ]; then
+            year=$(echo "$res" | cut -d ' ' -f1)
+            cmd=$(echo "$res" | cut -d ' ' -f2)
+        else
+            return 1
+        fi
+    else
+        if year2version "$1" >/dev/null; then
+            year="$1"
+            shift
+        else
+            year=$(preferred_year)
+        fi
+
+        if [ $# = 2 ]; then
+            cmd="$1"
+            f="$2"
+        elif [ $# = 1 ]; then
+            if [ -f "$f" ]; then
+                cmd=start
+                f="$1"
+            else
+                # TODO: create it
+                cmd="$1"
+            fi
+        else
+            help
+            exit 1
+        fi
+    fi
+
+    [ -n "$f" ] &&
+        f=$(realpath -s "$f")
 
     cd || return 1
 
@@ -182,7 +249,7 @@ run() {
         2003)
             win_arch=win32
             win_version=winxp
-            tricks= ;; #'riched30 corefonts' ;;
+            tricks= ;;
 
         2007)
             win_arch=win32
@@ -193,6 +260,11 @@ run() {
             win_arch=win32
             win_version=winxp
             tricks='riched30 corefonts' ;;
+
+        2013) # doesn't seems to be working
+            win_arch=win32
+            win_version=win7
+            tricks='vb6run msftedit riched20 riched30 richtx32 corefonts' ;;
 
         *)
             err "Unknown office version $year"
@@ -207,6 +279,8 @@ run() {
         rm-desktops) rm_desktops;  return ;;
 
         start)            app=start    ;;
+        tricks)           app=tricks   ;;
+        reg)              app=reg      ;;
         w|doc|word)       app=WINWORD  ;;
         e|xls|excel)      app=EXCEL    ;;
         p|ppt|powerpoint) app=POWERPNT ;;
@@ -229,7 +303,13 @@ run() {
         return 1
     fi
 
-    if [ -f "$f" ]; then
+    if [ "$app" = tricks ]; then
+        shift
+        jail winetricks "$@"
+    elif [ "$app" = reg ]; then
+        shift
+        jail wine regedit "$@"
+    elif [ -f "$f" ]; then
         rf=$(realpath "$f")
         sum=$(echo "$rf" | cksum | cut -d ' ' -f1)
         tmp_name="$sum $(basename "$rf")"
@@ -241,10 +321,9 @@ run() {
         win_path=$(echo "$tmp_jail_path" | sed 's@/@\\@g')
         win_path="Z:\\$win_path"
 
-        # https://support.microsoft.com/en-us/office/command-line-switches-for-microsoft-office-products-079164cd-4ef5-4178-b235-441737deb3a6
         case "$app" in
             WINWORD)
-                jail --net=none wine "$p" /f "$win_path" ;;
+                jail --net=none wine "$p" /t "$win_path" ;;
             EXCEL|POWERPNT)
                 jail --net=none wine "$p" "$win_path" ;;
             start)
@@ -266,33 +345,16 @@ run() {
     fi
 }
 
-main() {
-    if [ $# = 0 ]; then
-        res=$({
-                 for y in $(installed_years); do
-                     for a in word powerpoint excel; do
-                         echo "$y $a"
-                     done
-                 done
-             } | menus-face)
-        [ -n "$res" ] && run $res
-    else
-        if year2version "$1" >/dev/null; then
-            year="$1"
-            shift
-        else
-            year=$(installed_years | head -n 1)
-        fi
-
-        if [ -f "$1" ]; then
-            cmd=start
-            f="$1"
-        else
-            cmd="$1"
-            f="$2"
-        fi
-        run "$year" "$cmd" "$f"
-    fi
+help() {
+    self=$(basename "$0")
+    echo "usage: $self [year] [cmd] [file]"
+    echo 'examples:'
+    echo " \$ $self 2003 install /path/to/installer"
+    echo " \$ $self 2003 uninstall"
+    echo " \$ $self 2007 word hello.docx"
+    echo " \$ $self 2010 hello.xlsx"
+    echo " \$ $self hello.pptx"
+    echo " \$ $self w"
 }
 
 main "$@"
