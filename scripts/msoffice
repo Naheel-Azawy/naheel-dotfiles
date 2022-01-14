@@ -5,11 +5,6 @@
 # https://askubuntu.com/questions/879304/wine-2-0-says-it-supports-office-2013-how-do-i-actually-install-it/964712#964712
 # https://docs.microsoft.com/en-us/windows-server/administration/windows-commands/reg-add
 
-# .config/mimeapps.list:
-# application/vnd.openxmlformats-officedocument.presentationml.presentation=jail-office-2007-powerpoint.desktop;jail-office-2010-powerpoint.desktop;libreoffice-impress.desktop;
-# application/vnd.openxmlformats-officedocument.wordprocessingml.document=jail-office-2007-word.desktop;jail-office-2010-word.desktop;libreoffice-writer.desktop;
-# application/vnd.openxmlformats-officedocument.spreadsheetml.sheet=jail-office-2007-excel.desktop;jail-office-2010-excel.desktop;libreoffice-calc.desktop;
-
 SELF=$(realpath "$0")
 DESKTOPS="$HOME/.local/share/applications"
 JAIL_PREFIX="$HOME/.local/share/jail-office-"
@@ -73,6 +68,18 @@ Terminal=false
 Type=Application
 Categories=Office;Spreadsheet;X-Red-Hat-Base;X-MandrivaLinux-Office-Spreadsheets;
 MimeType=application/vnd.oasis.opendocument.spreadsheet;application/vnd.oasis.opendocument.spreadsheet-template;application/vnd.sun.xml.calc;application/vnd.sun.xml.calc.template;application/msexcel;application/vnd.ms-excel;application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;application/vnd.ms-excel.sheet.macroEnabled.12;application/vnd.openxmlformats-officedocument.spreadsheetml.template;application/vnd.ms-excel.template.macroEnabled.12;application/vnd.ms-excel.sheet.binary.macroEnabled.12;text/csv;application/x-dbf;text/spreadsheet;application/csv;application/excel;application/tab-separated-values;application/vnd.lotus-1-2-3;application/vnd.oasis.opendocument.chart;application/vnd.oasis.opendocument.chart-template;application/x-dbase;application/x-dos_ms_excel;application/x-excel;application/x-msexcel;application/x-ms-excel;application/x-quattropro;application/x-123;text/comma-separated-values;text/tab-separated-values;text/x-comma-separated-values;text/x-csv;application/vnd.oasis.opendocument.spreadsheet-flat-xml;application/vnd.ms-works;application/clarisworks;application/x-iwork-numbers-sffnumbers;application/x-starcalc;"
+}
+
+set_default() {
+    f=~/.config/mimeapps.list
+    info 'Deleting associations...'
+    sed -i '/vnd.openxmlformats-officedocument/d' "$f"
+    info "Setting associations to office $year..."
+    {
+        echo "application/vnd.openxmlformats-officedocument.presentationml.presentation=jail-office-$year-powerpoint.desktop;"
+        echo "application/vnd.openxmlformats-officedocument.wordprocessingml.document=jail-office-$year-word.desktop;"
+        echo "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet=jail-office-$year-excel.desktop;"
+    } >> "$f"
 }
 
 info() {
@@ -145,7 +152,8 @@ install() {
               " &&
             info 'Cleaning...' &&
             rm -rf "$jail_path/installer" &&
-            desktops; then
+            desktops &&
+            set_default; then
         info 'DONE!'
     else
         info 'Canceling...'
@@ -243,6 +251,7 @@ main() {
     [ -n "$f" ] &&
         f=$(realpath -s "$f")
 
+    owd="$PWD"
     cd || return 1
 
     case "$year" in
@@ -277,6 +286,8 @@ main() {
         uninstall)   uninstall;    return ;;
         desktops)    desktops;     return ;;
         rm-desktops) rm_desktops;  return ;;
+        set-default) set_default;  return ;;
+        path)  echo "$jail_path";  return ;;
 
         start)            app=start    ;;
         tricks)           app=tricks   ;;
@@ -310,6 +321,7 @@ main() {
         shift
         jail wine regedit "$@"
     elif [ -f "$f" ]; then
+        # copy file to jail
         rf=$(realpath "$f")
         sum=$(echo "$rf" | cksum | cut -d ' ' -f1)
         tmp_name="$sum $(basename "$rf")"
@@ -318,18 +330,22 @@ main() {
         tmp_jail_path="$HOME/tmpdocs/$tmp_name"
         cp "$rf" "$tmp_path"
 
+        # run office
         win_path=$(echo "$tmp_jail_path" | sed 's@/@\\@g')
         win_path="Z:\\$win_path"
-
         case "$app" in
             WINWORD)
                 jail --net=none wine "$p" /t "$win_path" ;;
             EXCEL|POWERPNT)
                 jail --net=none wine "$p" "$win_path" ;;
             start)
-                jail --net=none wine start "$win_path"
+                jail --net=none wine start "$win_path" ;;
+            *)
+                err "Unknown app '$app'"
+                return 1
         esac
 
+        # check if file was modified
         old_mod=$(stat -c %a "$f")
         old_size=$(stat -c %s "$f")
         new_size=$(stat -c %s "$tmp_path")
@@ -339,10 +355,37 @@ main() {
             cp "$f" "$bak_path" &&
                 mv "$tmp_path" "$rf" &&
                 chmod "$old_mod" "$rf"
+        else
+            rm "$tmp_path"
+        fi
+
+        # check if a pdf was generated
+        tmp_path_pdf="$(rm_ext "$tmp_path").pdf"
+        if [ -f "$tmp_path_pdf" ]; then
+            rf_pdf="$(rm_ext "$rf").pdf"
+            mv "$tmp_path_pdf" "$rf_pdf"
         fi
     else
+        # save current files list
+        ls_before=$(command ls -1 "$jail_path")
+
+        # run office
         jail --net=none wine "$p"
+
+        # move new files if needed
+        ls_after=$(command ls -1 "$jail_path")
+        new_files=$(echo "$ls_after" | grep -v "$ls_before")
+        if [ "$new_files" ]; then
+            info 'New files created:'
+            echo "$new_files"
+            echo "$new_files" | xargs -I '{}' chmod 644 "$jail_path/{}"
+            echo "$new_files" | xargs -I '{}' mv "$jail_path/{}" "$owd/"
+        fi
     fi
+}
+
+rm_ext() {
+    echo "$1" | rev | cut -d '.' -f2- | rev
 }
 
 help() {
@@ -355,6 +398,8 @@ help() {
     echo " \$ $self 2010 hello.xlsx"
     echo " \$ $self hello.pptx"
     echo " \$ $self w"
+    echo " \$ $self 2010 set-default"
+    echo " \$ $self 2007 path"
 }
 
 main "$@"
