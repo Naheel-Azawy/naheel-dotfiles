@@ -508,8 +508,13 @@ def lemonbar():
             "-a", "30"] + fonts
 
     lemons = []
+    prev_x = -1
     for mon in monitors:
         g = mon["geometry"]
+        if g["x"] == prev_x:
+            # TODO: don't take the first, take the one with bigger w
+            continue
+
         lemonp = subprocess.Popen(args + ["-g", f"{g['w']}x+{g['x']}+{g['y']}"],
                                   stdin=subprocess.PIPE,
                                   stdout=subprocess.PIPE,
@@ -526,6 +531,8 @@ def lemonbar():
 
         threading.Thread(target=lambda: asyncio.run(bar.run())).start()
         threading.Thread(target=lemon_output_handler).start()
+
+        prev_x = g["x"]
 
     for l in lemons:
         l.wait()

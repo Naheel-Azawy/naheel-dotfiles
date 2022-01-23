@@ -10,7 +10,8 @@ firefox
 brave'
 
 menu() {
-    menus-face -sb '#E00000' -sf white -nf white "$@"
+    # menus-face -sb '#E00000' -sf white -nf white "$@" # TODO: fix prompt with `('
+    dmenu -sb '#E00000' -sf white -nf white "$@"
 }
 
 running_menu() {

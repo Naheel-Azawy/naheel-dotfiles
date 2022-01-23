@@ -1,4 +1,5 @@
 #!/usr/bin/python3
+
 import os
 import gi
 gi.require_version('Gtk', '3.0')
@@ -18,13 +19,28 @@ trm.set_pty(pty)
 trm.set_cursor_shape(Vte.CursorShape.BLOCK) # BLOCK, IBEAM, UNDERLINE
 trm.set_cursor_blink_mode(Vte.CursorBlinkMode.OFF) # SYSTEM, ON, OFF
 trm.set_scrollback_lines(0)
+
+font = os.getenv("FONT_MONO")
+if font:
+    trm.set_font(Pango.FontDescription.from_string(font))
 trm.set_font_scale(1)
 
 win.connect('destroy', Gtk.main_quit)
 trm.connect('child-exited', Gtk.main_quit) # FIXME
 
-pty.spawn_async(None, cmd, None, GLib.SpawnFlags.DO_NOT_REAP_CHILD,
-                None, None, -1, None, lambda pty, task: None)
+# https://lazka.github.io/pgi-docs/#Vte-2.91/classes/Pty.html#Vte.Pty.spawn_async
+pty.spawn_async(
+    None,
+    cmd,
+    None,
+    GLib.SpawnFlags.DO_NOT_REAP_CHILD,
+    None,
+    None,
+    -1,
+    None,
+    lambda a, b, c: print(a, b, c),
+    None
+)
 
 win.add(trm)
 win.show_all()

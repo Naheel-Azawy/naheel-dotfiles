@@ -1,5 +1,7 @@
 #!/bin/sh
 
+export XDG_SESSION_TYPE=x11
+
 userresources=$HOME/.Xresources
 sysresources=/etc/X11/xinit/.Xresources
 sysmodmap=/etc/X11/xinit/.Xmodmap

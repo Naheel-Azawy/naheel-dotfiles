@@ -69,8 +69,9 @@ case "$CMD" in
     ocrmypdf)
         if [ -f "$1" ]; then
             SRC=$(realpath "$1")
-            DST=$(realpath "$2")
-            shift 2
+            #DST=$(realpath "$2")
+            DST="$SRC.ocr.pdf"
+            shift #2
             SRCN=$(basename "$SRC")
             DSTN=$(basename "$DST")
             TMP=$(mktemp -d)

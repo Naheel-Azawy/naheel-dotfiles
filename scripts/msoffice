@@ -1,10 +1,5 @@
 #!/bin/sh
 
-# links:
-# https://support.microsoft.com/en-us/office/command-line-switches-for-microsoft-office-products-079164cd-4ef5-4178-b235-441737deb3a6
-# https://askubuntu.com/questions/879304/wine-2-0-says-it-supports-office-2013-how-do-i-actually-install-it/964712#964712
-# https://docs.microsoft.com/en-us/windows-server/administration/windows-commands/reg-add
-
 SELF=$(realpath "$0")
 DESKTOPS="$HOME/.local/share/applications"
 JAIL_PREFIX="$HOME/.local/share/jail-office-"
@@ -73,12 +68,25 @@ MimeType=application/vnd.oasis.opendocument.spreadsheet;application/vnd.oasis.op
 set_default() {
     f=~/.config/mimeapps.list
     info 'Deleting associations...'
-    sed -i '/vnd.openxmlformats-officedocument/d' "$f"
+    {
+        echo "application\\/vnd.openxmlformats-officedocument.presentationml.presentation"
+        echo "application\\/msword"
+        echo "application\\/vnd.openxmlformats-officedocument.wordprocessingml.document"
+        echo "application\\/mspowerpoint"
+        echo "application\\/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+        echo "application\\/msexcel"
+    } | while read -r t; do
+        sed -i "/$t/d" "$f"
+    done
+
     info "Setting associations to office $year..."
     {
         echo "application/vnd.openxmlformats-officedocument.presentationml.presentation=jail-office-$year-powerpoint.desktop;"
+        echo "application/mspowerpoint=jail-office-$year-powerpoint.desktop;"
         echo "application/vnd.openxmlformats-officedocument.wordprocessingml.document=jail-office-$year-word.desktop;"
+        echo "application/msword=jail-office-$year-word.desktop;"
         echo "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet=jail-office-$year-excel.desktop;"
+        echo "application/msexcel=jail-office-$year-excel.desktop;"
     } >> "$f"
 }
 
@@ -107,6 +115,7 @@ year2version() {
         2010) echo 14 ;;
         2013) echo 15 ;;
         2016) echo 16 ;;
+        2019) echo 16 ;;
         *)   return 1 ;;
     esac
 }
@@ -137,6 +146,8 @@ install() {
     }
 
     info 'Installing...'
+
+    # https://docs.microsoft.com/en-us/windows-server/administration/windows-commands/reg-add
 
     trap : INT TERM
     if rm -rf "$jail_path" &&
@@ -239,7 +250,6 @@ main() {
                 cmd=start
                 f="$1"
             else
-                # TODO: create it
                 cmd="$1"
             fi
         else
@@ -270,10 +280,17 @@ main() {
             win_version=winxp
             tricks='riched30 corefonts' ;;
 
+        # https://askubuntu.com/questions/879304/wine-2-0-says-it-supports-office-2013-how-do-i-actually-install-it/964712#964712
         2013) # doesn't seems to be working
             win_arch=win32
             win_version=win7
             tricks='vb6run msftedit riched20 riched30 richtx32 corefonts' ;;
+
+        # https://ruados.github.io/articles/2021-05/office365-wine
+        2019) # untested yet
+            win_arch=win32
+            win_version=win10
+            tricks='corefonts msxml6 riched20 gdiplus' ;;
 
         *)
             err "Unknown office version $year"
@@ -320,66 +337,76 @@ main() {
     elif [ "$app" = reg ]; then
         shift
         jail wine regedit "$@"
-    elif [ -f "$f" ]; then
-        # copy file to jail
-        rf=$(realpath "$f")
-        sum=$(echo "$rf" | cksum | cut -d ' ' -f1)
-        tmp_name="$sum $(basename "$rf")"
-        mkdir -p "$jail_path/tmpdocs/"
-        tmp_path="$jail_path/tmpdocs/$tmp_name"
-        tmp_jail_path="$HOME/tmpdocs/$tmp_name"
-        cp "$rf" "$tmp_path"
-
-        # run office
-        win_path=$(echo "$tmp_jail_path" | sed 's@/@\\@g')
-        win_path="Z:\\$win_path"
-        case "$app" in
-            WINWORD)
-                jail --net=none wine "$p" /t "$win_path" ;;
-            EXCEL|POWERPNT)
-                jail --net=none wine "$p" "$win_path" ;;
-            start)
-                jail --net=none wine start "$win_path" ;;
-            *)
-                err "Unknown app '$app'"
-                return 1
-        esac
-
-        # check if file was modified
-        old_mod=$(stat -c %a "$f")
-        old_size=$(stat -c %s "$f")
-        new_size=$(stat -c %s "$tmp_path")
-        if [ "$old_size" != "$new_size" ]; then
-            now=$(date +%Y%m%d-%H:%M:%S)
-            bak_path="$f.$now.bak"
-            cp "$f" "$bak_path" &&
-                mv "$tmp_path" "$rf" &&
-                chmod "$old_mod" "$rf"
-        else
-            rm "$tmp_path"
-        fi
-
-        # check if a pdf was generated
-        tmp_path_pdf="$(rm_ext "$tmp_path").pdf"
-        if [ -f "$tmp_path_pdf" ]; then
-            rf_pdf="$(rm_ext "$rf").pdf"
-            mv "$tmp_path_pdf" "$rf_pdf"
-        fi
     else
+        if [ -f "$f" ]; then
+            # copy file to jail
+            rf=$(realpath "$f")
+            bn=$(basename "$f")
+            sum=$(echo "$rf" | cksum | cut -d ' ' -f1)
+            tmp_path="$jail_path/tmpdocs/$sum"
+            tmp_jail_path="$HOME/tmpdocs/$sum"
+
+            if [ -d "$tmp_path" ]; then
+                echo "File '$bn' already open"
+                notify-send "File '$bn' already open"
+                return 1
+            else
+                mkdir -p "$tmp_path"
+                cp "$rf" "$tmp_path/$bn"
+            fi
+        else
+            tmp_path="$jail_path"
+        fi
+
         # save current files list
-        ls_before=$(command ls -1 "$jail_path")
+        ls_before=$(command ls -1 "$tmp_path")
 
         # run office
-        jail --net=none wine "$p"
+        if [ -f "$f" ]; then
+            win_path=$(echo "$tmp_jail_path/$bn" | sed 's@/@\\@g')
+            win_path="Z:\\$win_path"
+
+            # https://support.microsoft.com/en-us/office/command-line-switches-for-microsoft-office-products-079164cd-4ef5-4178-b235-441737deb3a6
+            case "$app" in
+                WINWORD)
+                    jail --net=none wine "$p" /t "$win_path" ;;
+                EXCEL|POWERPNT)
+                    jail --net=none wine "$p" "$win_path" ;;
+                start)
+                    jail --net=none wine start "$win_path" ;;
+                *)
+                    err "Unknown app '$app'"
+                    return 1
+            esac
+
+            # check if file was modified
+            old_mod=$(stat -c %a "$f")
+            old_size=$(stat -c %s "$f")
+            new_size=$(stat -c %s "$tmp_path/$bn")
+            if [ "$old_size" != "$new_size" ]; then
+                now=$(date +%Y%m%d-%H:%M:%S)
+                bak_path="$f.$now.bak"
+                cp "$f" "$bak_path" &&
+                    mv "$tmp_path/$bn" "$rf" &&
+                    chmod "$old_mod" "$rf"
+            fi
+        else
+            jail --net=none wine "$p"
+        fi
 
         # move new files if needed
-        ls_after=$(command ls -1 "$jail_path")
+        ls_after=$(command ls -1 "$tmp_path")
         new_files=$(echo "$ls_after" | grep -v "$ls_before")
         if [ "$new_files" ]; then
             info 'New files created:'
             echo "$new_files"
-            echo "$new_files" | xargs -I '{}' chmod 644 "$jail_path/{}"
-            echo "$new_files" | xargs -I '{}' mv "$jail_path/{}" "$owd/"
+            echo "$new_files" | xargs -I '{}' chmod 644 "$tmp_path/{}"
+            echo "$new_files" | xargs -I '{}' mv "$tmp_path/{}" "$owd/"
+        fi
+
+        # cleanup
+        if [ -f "$f" ]; then
+            rm -r "$tmp_path"
         fi
     fi
 }

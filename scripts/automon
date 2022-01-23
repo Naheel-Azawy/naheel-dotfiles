@@ -42,6 +42,7 @@ handle() {
                     cmd="$cmd --output $out --auto --right-of $prev" ;;
 
                 mirror)
+                    # TODO: scale
                     cmd="$cmd --output $out --auto --pos 0x0" ;;
 
                 *)
