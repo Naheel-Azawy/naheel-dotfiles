@@ -1,22 +1,42 @@
 #!/bin/sh
 
 preset() {
+    # TODO: automate
     sum="$1"
     case "$sum" in
-        'd99210e67f59e6834d5ff3049f8e77db')
-            echo 'preset: home desk vertical'
-            xrandr --output LVDS-1 --mode 1366x768 --pos 900x832 --rotate normal --output VGA-1 --mode 1600x900 --pos 0x0 --rotate left --output HDMI-1 --off --output DP-1 --off --output HDMI-2 --off --output HDMI-3 --off --output DP-2 --off --output DP-3 --off ;;
+        'b27529ae25bc5931fcc0ff0f9fc2b9b8')
+            echo 'preset: home desk dock'
+            xrandr --output LVDS1    --off \
+                   --output VIRTUAL1 --off \
+                   --output VGA1     --off \
+                   --output DP1      --off \
+                   --output DP2      --off \
+                   --output DP3      --off \
+                   --output HDMI1    --off \
+                   --output HDMI2    --off \
+                   --output HDMI3    --off
+            xrandr --output DP3   --mode 1600x900 --pos 0x0    --rotate normal
+            xrandr --output VGA1  --mode 1366x768 --pos 1600x0 --rotate left
+            ;;
 
         *)
             return 1
     esac
 }
 
+sum() {
+    xrandr --verbose   |
+        grep -A 8 EDID |
+        md5sum         |
+        cut -d ' ' -f1
+}
+
 handle() {
     [ -n "$mode" ] || mode=extend
 
     randr=$(xrandr --verbose)
-    sum=$(echo "$randr" | grep -A 8 EDID | md5sum | cut -d ' ' -f1)
+    sum=$(sum)
+    echo "SUM = $sum"
 
     preset "$sum" && return
 
@@ -65,7 +85,7 @@ post() {
     command -v bar >/dev/null && {
         killall lemonbar 2>/dev/null
         bar lemon
-    } &
+    } >/dev/null 2>/dev/null &
 }
 
 run() {
@@ -87,7 +107,9 @@ run() {
 }
 
 main() {
-    if [ "$1" = '-q' ]; then
+    if [ "$1" = sum ]; then
+        sum
+    elif [ "$1" = '-q' ]; then
         shift
         run "$@" >/dev/null 2>/dev/null
     else

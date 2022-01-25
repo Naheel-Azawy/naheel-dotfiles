@@ -254,7 +254,7 @@ abbr nsh   'new-shell-script'
 
 abbr gita  'git add -A'
 abbr gitc  'git commit -m'
-abbr gitp  'git push origin master'
+abbr gitp  'git push origin'
 abbr gits  'git status'
 abbr gitd  'git diff'
 abbr gitl  'git log'
