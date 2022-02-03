@@ -51,6 +51,7 @@ foreground = '#ffffff'
 default_items = "start workspaces add program | clock | systray pray weather temperature wifi battery power"
 
 port_file = "/tmp/.nbarport"
+pid_file  = "/tmp/.nbarpid"
 
 argv = sys.argv
 HOME = os.getenv("HOME")
@@ -97,7 +98,7 @@ class XTitle:
         if code != 0:
             raise Exception(f"xtitle exited with code {code}")
 
-def item(period=0):
+def item(period=0, big=False):
     """A decorator to simplify defining periodic functions"""
     def decorate(func):
         def wrapper(*args, **kwargs):
@@ -105,19 +106,25 @@ def item(period=0):
                 return period
             elif "name" in args:
                 return func.__name__
+            elif "big" in args:
+                return big
             else:
                 return func(*args, **kwargs)
         return wrapper
     return decorate
 
 class BarBase:
-    def __init__(self, use_ascii=False, items=None, out=sys.stdout):
+    def __init__(self, use_ascii=False, items=None, outs=[sys.stdout], minis=[False]):
         self.server = None
         self.ws_str = None # to be set from wsw
         self.a = use_ascii
-        self.out = out
         self.wm = WM(self.run_wm_items)
         self.xtitle = XTitle(self.run_xtitle_items)
+
+        if len(minis) != len(outs):
+            minis = [False] * len(outs)
+        self.outs = outs
+        self.minis = minis
 
         if items is None:
             self.items_str = default_items
@@ -151,31 +158,34 @@ class BarBase:
             print(i("name"), i("period"))
 
     def render(self):
-        out = ""
-
-        if self.a:
-            items_out = []
-            for item in self.items:
-                content = self.last[item("name")]
-                if not content: continue
-                items_out.append(content)
-            out += " | ".join(items_out)
-        else:
-            for place in self.items_map:
-                out += f"%{{{place}}}"
+        for i in range(len(self.outs)):
+            o    = self.outs[i]
+            mini = self.minis[i]
+            out = ""
+            if self.a:
                 items_out = []
-                for item in self.items_map[place]:
+                for item in self.items:
                     content = self.last[item("name")]
                     if not content: continue
                     items_out.append(content)
-                out += "  ".join(items_out)
-            out += " "
+                out += " | ".join(items_out)
+            else:
+                for place in self.items_map:
+                    out += f"%{{{place}}}"
+                    items_out = []
+                    for item in self.items_map[place]:
+                        if not mini or (mini and not item("big")):
+                            content = self.last[item("name")]
+                            if not content: continue
+                            items_out.append(content)
+                    out += "  ".join(items_out)
+                out += " "
 
-        self.out.write(out + "\n")
-        try:
-            self.out.flush()
-        except BrokenPipeError:
-            exit(0)
+            o.write(out + "\n")
+            try:
+                o.flush()
+            except BrokenPipeError:
+                exit(0)
 
     def run_item(self, item):
         if item in self.items:
@@ -230,16 +240,20 @@ class BarBase:
         self.init()
         self.render()
         coroutines = []
+
         # window manager
         if self.wm is not None:
             coroutines.append(self.wm.run())
+
         # xtitle
         if self.xtitle is not None:
             coroutines.append(self.xtitle.run())
+
         # periodic items
         for item in self.items:
             if item("period") > 0:
                 coroutines.append(self.run_periodic_item(item))
+
         # server
         server = await asyncio.start_server(
             self.handle_connection, "localhost", 0)
@@ -259,14 +273,14 @@ class BarBase:
 
 class Bar(BarBase):
 
-    @item()
+    @item(big=True)
     def workspaces(self):
         if self.wm is None or self.a:
             return None
         else:
             return self.ws_str
 
-    @item()
+    @item(big=True)
     def add(self):
         if self.wm is None or self.a or self.wm.title == "":
             return None
@@ -302,7 +316,7 @@ class Bar(BarBase):
             else:
                 return None
 
-    @item(period=1)
+    @item(period=1, big=True)
     def clock(self):
         t = datetime.datetime.now().strftime("%a %Y.%m.%d %I:%M:%S %p")
         if self.a:
@@ -312,7 +326,7 @@ class Bar(BarBase):
             cmd = "gsimplecal"
             return f"%{{A:{cmd}&:}}{t}%{{A}}"
 
-    @item(period=3)
+    @item(period=3, big=True)
     def battery(self):
         try:
             acpi = sh.grep(sh.acpi("-b"), v="unavailable").split("\n")[0]
@@ -366,7 +380,7 @@ class Bar(BarBase):
 
             return out
 
-    @item(period=5)
+    @item(period=5, big=True)
     def wifi(self):
         try:
             with open("/proc/net/wireless") as f:
@@ -380,7 +394,7 @@ class Bar(BarBase):
             pass
         return None
 
-    @item()
+    @item(big=True)
     def lang(self):
         try:
             out = sh.lang().strip()
@@ -391,7 +405,7 @@ class Bar(BarBase):
         else:
             return f"%{{A:lang tog:}}{out}%{{A}}"
 
-    @item(period=30)
+    @item(period=30, big=True)
     def pray(self):
         out = os.popen("prayer --mini 2>/dev/null").read().strip()
         if not out:
@@ -402,7 +416,7 @@ class Bar(BarBase):
             cmd = "theterm -a '-c __floatme__ -g 25x8' 'prayer && read -p \"\"'"
             return f"%{{A:{cmd}&:}}  {out}%{{A}}"
 
-    @item(period=30 * 60)
+    @item(period=30 * 60, big=True)
     def weather(self):
         fpath = f"{HOME}/.cache/weatherreport"
         # try:
@@ -438,7 +452,7 @@ class Bar(BarBase):
 
         return None
 
-    @item(period=5)
+    @item(period=5, big=True)
     def temperature(self):
         try:
             o = json.loads(sh.sensors("coretemp-isa-0000", "-j").strip()) \
@@ -480,16 +494,29 @@ class Bar(BarBase):
     def systray(self):
         return "%{A:toggle-systray&:}%{A}" if not self.a else None
 
-    @item()
+    @item(big=True)
     def donno(self):
         return "%{A:theterm 'lolcowforune -p'&:}¯\_(ツ)_/¯%{A}" \
             if not self.a else None
 
-    @item()
+    @item(big=True)
     def host(self):
         return os.uname()[1]
 
+def lemon_kill():
+    if os.path.exists(pid_file):
+        with open(pid_file, "r") as f:
+            pid = int(f.read())
+            try:
+                sh.kill(pid)
+            except sh.ErrorReturnCode_1:
+                pass
+
 def lemonbar():
+    lemon_kill()
+    with open(pid_file, "w") as f:
+        f.write(str(os.getpid()))
+
     monitors = [o for o in xrandr.parse() if o["connected"] and o["geometry"]]
 
     fonts = []
@@ -504,44 +531,55 @@ def lemonbar():
         "-f", "Hack Nerd Font"
     ]
 
-    args = ["lemonbar", "-B", background, "-F", foreground,
-            "-a", "30"] + fonts
+    args = ["lemonbar", "-B", background, "-F", foreground, "-a", "30"] + fonts
 
-    lemons = []
-    prev_x = -1
+    # map x values to geometries
+    # useful when multiple monitors start at the same x
+    # the smallest w will be used in this case
+    x2g = {}
     for mon in monitors:
         g = mon["geometry"]
-        if g["x"] == prev_x:
-            # TODO: don't take the first, take the one with bigger w
-            continue
+        if g['x'] in x2g:
+            if x2g[g['x']] > g['w']:
+                x2g[g['x']] = g
+        else:
+            x2g[g['x']] = g
 
+    # start a lemonbar process for each geometry
+    lemons = []
+    lemons_stdin = []
+    minis = []
+    for g in x2g.values():
         lemonp = subprocess.Popen(args + ["-g", f"{g['w']}x+{g['x']}+{g['y']}"],
                                   stdin=subprocess.PIPE,
                                   stdout=subprocess.PIPE,
                                   universal_newlines=True)
         lemons.append(lemonp)
-
-        bar = Bar(items=None, out=lemonp.stdin)
-        signal.signal(signal.SIGINT, lambda signal, frame: bar.stop())
+        lemons_stdin.append(lemonp.stdin)
+        minis.append(g['w'] < g['h'])
 
         def lemon_output_handler():
             for line in iter(lemonp.stdout.readline, ""):
                 os.system(line.strip())
             lemonp.stdout.close()
 
-        threading.Thread(target=lambda: asyncio.run(bar.run())).start()
         threading.Thread(target=lemon_output_handler).start()
 
-        prev_x = g["x"]
+    # but a single thread providing inputs to lemonbars
+    bar = Bar(items=None, outs=lemons_stdin, minis=minis)
+    signal.signal(signal.SIGINT, lambda signal, frame: bar.stop())
+    threading.Thread(target=lambda: asyncio.run(bar.run())).start()
 
     for l in lemons:
         l.wait()
 
+    os.remove(pid_file)
+
 async def main():
-    if len(argv) >= 2 and argv[1] == "foobar":
-        print([o for o in xrandr.parse() if o["connected"]])
-    elif len(argv) >= 2 and argv[1] == "lemon":
+    if len(argv) == 1 or (len(argv) >= 2 and argv[1] == "lemon"):
         lemonbar()
+    elif len(argv) >= 2 and argv[1] == "kill":
+        lemon_kill()
     elif len(argv) >= 3 and argv[1] == "update":
         item = argv[2].encode()
         with open(port_file, "r") as f:
@@ -552,6 +590,8 @@ async def main():
                 writer.close()
             except:
                 print("Error finding socket port")
+    elif len(argv) >= 2 and argv[1] == "foobar":
+        print([o for o in xrandr.parse() if o["connected"]])
     else:
         a = False # ascii
         p = False # persistent

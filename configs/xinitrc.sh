@@ -1,6 +1,7 @@
 #!/bin/sh
 
 export XDG_SESSION_TYPE=x11
+export GDK_BACKEND=x11
 
 userresources=$HOME/.Xresources
 sysresources=/etc/X11/xinit/.Xresources
@@ -46,6 +47,8 @@ mkdir -p "$logdir"
 rm -r "$logdir"/*
 
 autostart() {
+    [ "$WINDOW_MANAGER" = 'gnome-session' ] &&
+        return
     d=$(date)
     echo "$d: STDOUT OF" "$@" > "$logdir/$1"
     echo "$d: STDERR OF" "$@" > "$logdir/$1-err"
@@ -55,9 +58,10 @@ autostart() {
 export SXHKD_SHELL=dash
 
 # autostart programs
+autostart thinkpadutils trackpoint      # set trackpoint speed
 autostart sxhkd                         # keyboard daemon
 autostart lang init                     # set the keyboard layouts
-autostart bar lemon                     # top bar
+autostart bar                           # top bar
 autostart wttr daemon                   # weather update
 autostart dunst                         # notifications daemon
 autostart clipmenud                     # clipboard manager daemon

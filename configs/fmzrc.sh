@@ -1,7 +1,7 @@
 # TODO: move to personal
 
 bookmark ~/Documents/events/2021_12_01_Work_Research_QU_smartgrid_security
-bookmark ~/Documents/QU/3.5-TA/0-fall-2021
+bookmark ~/Documents/QU/3.5-TA/1-spring-2022
 bookmark ~/Documents/events
 bookmark ~/.dotfiles
 
@@ -65,4 +65,9 @@ orglink() {
         bn=$(basename "$file")
         echo "[[$file][$bn]]"
     done | clipboard
+}
+
+add_fun wallpaper 'Set as wallpaper'
+wallpaper() {
+    feh --bg-fill "$f"
 }

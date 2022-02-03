@@ -16,7 +16,7 @@ dir_win = f"{dir}/windows"
 gbc = lambda name:    sh.mgba_qt.bake(f"{dir_gb}/{name}")
 n64 = lambda name:    sh.mupen64plus.bake(f"{dir_n64}/{name}")
 psx = lambda name:    sh.mednafen.bake(f"{dir_psx}/{name}")
-ps2 = lambda name:    sh.PCSX2.bake(f"{dir_ps2}/{name}", fullscreen=True, nogui=True)
+ps2 = lambda name:    sh.pcsx2.bake(f"{dir_ps2}/{name}", fullscreen=True, nogui=True)
 psp = lambda name:    sh.PPSSPPSDL.bake(f"{dir_psp}/{name}")
 win = lambda d, name: sh.winejail.bake(f"win-games-{d}", f"{dir_win}/{d}", name)
 pol = lambda name:    sh.jailfence.bake(name)

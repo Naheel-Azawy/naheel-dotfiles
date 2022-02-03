@@ -1,0 +1,3 @@
+#!/bin/sh
+
+exec ffmpeg -i "$1" -vcodec libx265 -crf 28 "$1.tiny.mp4"
