@@ -45,6 +45,92 @@ try:
 except:
     use_arabic = False
 
+themes = {
+    "awesome": {
+        "icons_font": "Font Awesome 5 Free Solid:pixelsize=19",
+        "icons": {
+            "exclamation": " ",
+            "plug":        " ",
+            "battery30":   "",
+            "battery50":   "",
+            "battery60":   "",
+            "battery90":   "",
+            "battery100":  "",
+            "wifi1":       "",
+            "wifi2":       "",
+            "wifi3":       "",
+            "wifi4":       "",
+            "prayer":      "",
+            "cloud":       "",
+            "temp90":      "",
+            "temp50":      "",
+            "temp40":      "",
+            "temp30":      "",
+            "power":       "",
+            "more":        "",
+            "plus":        "",
+            "close":       ""
+        }
+    },
+
+    "nerd": {
+        "icons_font": "Hack Nerd Font:pixelsize=19",
+        "icons": {
+            "exclamation": "",
+            "plug":        "ﮣ ",
+            "battery30":   "",
+            "battery50":   "",
+            "battery60":   "",
+            "battery90":   "",
+            "battery100":  "",
+            "wifi1":       "",
+            "wifi2":       "",
+            "wifi3":       "",
+            "wifi4":       "",
+            "prayer":      "",
+            "cloud":       "",
+            "temp90":      "",
+            "temp50":      "",
+            "temp40":      "",
+            "temp30":      "",
+            "power":       "",
+            "more":        "",
+            "plus":        "",
+            "close":       ""
+        }
+    },
+
+    "material": {
+        "icons_font": "Material Icons:pixelsize=21",
+        "icons": {
+            "exclamation": "\ue645",
+            "plug":        "\ue63c",
+            "battery30":   "\uebe0",
+            "battery50":   "\uebdd",
+            "battery60":   "\uebd4",
+            "battery90":   "\uebd2",
+            "battery100":  "\ue1a4",
+            "wifi1":       "\uebe4",
+            "wifi2":       "\uebd6",
+            "wifi3":       "\uebe1",
+            "wifi4":       "\ue1d8",
+            "prayer":      "\uf03d",
+            "cloud":       "\ue2bd",
+            "temp90":      "\uf076",
+            "temp50":      "\uf076",
+            "temp40":      "\uf076",
+            "temp30":      "\uf076",
+            "power":       "\ue8ac",
+            "more":        "\ue5cf",
+            "plus":        "\ue145",
+            "close":       "\ue5cd"
+        }
+    }
+}
+
+theme      = "material"
+icons_font = themes[theme]["icons_font"]
+icons      = themes[theme]["icons"]
 background = '#dd000000'
 foreground = '#ffffff'
 
@@ -288,7 +374,7 @@ class Bar(BarBase):
         for w in self.wm.nice_workspaces:
             if w not in names:
                 onclick = f"{self.wm.impl.workspace_cmd} '{w}' >/dev/null"
-                return f"%{{A:{onclick}:}}%{{A}}"
+                return f"%{{A:{onclick}:}}" + icons["plus"] + "%{A}"
         return None
 
     @item()
@@ -311,7 +397,7 @@ class Bar(BarBase):
         else:
             out = ""
             if title:
-                return "%{A:nice-kill:}%{A}  " + \
+                return "%{A:nice-kill:}" + icons["close"] + "%{A}  " + \
                     "%{A:wm-msg program-menu:}" + title + "%{A}"
             else:
                 return None
@@ -344,36 +430,30 @@ class Bar(BarBase):
 
             if charging:
                 r = '#FFFFFF' if percent >= 99 else '#FFD700'
-                out += " "
+                out += icons["plug"]
             elif percent <= 20:
                 if percent > 10:
                     r = '#FF0000'
                 else:
                     r = '#000000'
                 if percent <= 15:
-                    out += " "
+                    out += icons["exclamation"]
 
-            if percent < 50:
-                out += ""
+            if percent < 30:
+                out += icons["battery30"]
+            elif percent < 50:
+                out += icons["battery50"]
             elif percent < 60:
-                out += ""
-            elif percent < 90:
-                out += ""
+                out += icons["battery60"]
+            elif percent < 99:
+                out += icons["battery90"]
             else:
-                out += ""
+                out += icons["battery100"]
 
             out += f" {percent}%%"
 
             if percent <= 10 and not charging:
-                msg = "%{B#FF0000} "
-                if percent <= 5:
-                    msg += "HELP "
-                    # sh.systemctl("poweroff") # TODO: add countdown
-                elif percent <= 7:
-                    msg += "EXTREMELY LOW "
-                elif percent <= 10:
-                    msg += "LOW BATTERY "
-                out = msg + out + " %{B-}"
+                out = "%{B#FF0000} " + out + " %{B-}"
 
             cmd = "theterm -a '-c __floatme__ -g 75x3' 'watch -tn 1 acpi -i'"
             out = f"%{{F{r}}}%{{A:{cmd}&:}}{out}%{{A}}%{{F-}}"
@@ -389,7 +469,15 @@ class Bar(BarBase):
                 if self.a:
                     return f"s{v}%"
                 else:
-                    return f"%{{A:networkmanager_dmenu&:}} {v}%%%{{A}}"
+                    if v >= 90:
+                        ic = icons["wifi4"]
+                    elif v >= 60:
+                        ic = icons["wifi3"]
+                    elif v >= 40:
+                        ic = icons["wifi2"]
+                    else:
+                        ic = icons["wifi1"]
+                    return f"%{{A:networkmanager_dmenu&:}}{ic} {v}%%%{{A}}"
         except:
             pass
         return None
@@ -414,7 +502,8 @@ class Bar(BarBase):
             return f"p{out}"
         else:
             cmd = "theterm -a '-c __floatme__ -g 25x8' 'prayer && read -p \"\"'"
-            return f"%{{A:{cmd}&:}}  {out}%{{A}}"
+            return f"%{{A:{cmd}&:}} " + icons["prayer"] + \
+                f" {out}%{{A}}"
 
     @item(period=30 * 60, big=True)
     def weather(self):
@@ -448,7 +537,7 @@ class Bar(BarBase):
                 return f"w{out}"
             else:
                 cmd = f"theterm -a '-c __floatme__ -g 63x18' 'less --mouse -R {fpath}'"
-                return f"%{{A:{cmd}&:}}  {out}%{{A}}"
+                return f"%{{A:{cmd}&:}} " + icons["cloud"] + f" {out}%{{A}}"
 
         return None
 
@@ -471,14 +560,14 @@ class Bar(BarBase):
         else:
             out = ""
             if percent > 90:
-                out += "%{F#FF0000} "
+                out += "%{F#FF0000}" + icons["temp90"]
             elif percent > 50:
-                out += ""
+                out += icons["temp50"]
             elif percent > 40:
-                out += ""
+                out += icons["temp40"]
             else:
-                out += ""
-            out += f"%{{F-}} {int(t)}°C"
+                out += icons["temp30"]
+            out += f" {int(t)}°C %{{F-}}"
             cmd = "theterm -a '-c __floatme__ -g 65x19' 'watch -tn 1 sensors'"
             return f"%{{A:{cmd}&:}}{out}%{{A}}"
 
@@ -488,11 +577,13 @@ class Bar(BarBase):
 
     @item()
     def power(self):
-        return "%{A:menus power&:}%{A}" if not self.a else None
+        return "%{A:menus power&:}" + icons["power"] + \
+            "%{A}" if not self.a else None
 
     @item()
     def systray(self):
-        return "%{A:toggle-systray&:}%{A}" if not self.a else None
+        return "%{A:toggle-systray&:}" + icons["more"] + \
+            "%{A}" if not self.a else None
 
     @item(big=True)
     def donno(self):
@@ -524,11 +615,10 @@ def lemonbar():
     if f:
         fonts += ["-f", f]
     fonts += [
+        "-f", icons_font,
         # "-f", "Kawkab Mono:pixelsize=12",
         "-f", "Source Han Sans CN",
         "-f", "DejaVu Sans Mono",
-        "-f", "Font Awesome 5 Free Solid:pixelsize=19",
-        "-f", "Hack Nerd Font"
     ]
 
     args = ["lemonbar", "-B", background, "-F", foreground, "-a", "30"] + fonts
@@ -540,7 +630,7 @@ def lemonbar():
     for mon in monitors:
         g = mon["geometry"]
         if g['x'] in x2g:
-            if x2g[g['x']] > g['w']:
+            if x2g[g['x']]['w'] > g['w']:
                 x2g[g['x']] = g
         else:
             x2g[g['x']] = g
