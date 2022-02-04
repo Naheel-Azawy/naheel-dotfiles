@@ -47,6 +47,7 @@ except:
 
 themes = {
     "awesome": {
+        # https://fontawesome.com/v5.15/icons?d=gallery&p=2
         "icons_font": "Font Awesome 5 Free Solid:pixelsize=19",
         "icons": {
             "exclamation": " ",
@@ -74,6 +75,7 @@ themes = {
     },
 
     "nerd": {
+        # https://www.nerdfonts.com/cheat-sheet
         "icons_font": "Hack Nerd Font:pixelsize=19",
         "icons": {
             "exclamation": "",
@@ -101,6 +103,7 @@ themes = {
     },
 
     "material": {
+        # https://fonts.google.com/icons?selected=Material+Icons
         "icons_font": "Material Icons:pixelsize=21",
         "icons": {
             "exclamation": "\ue645",
@@ -443,7 +446,7 @@ class Bar(BarBase):
                 out += icons["battery30"]
             elif percent < 50:
                 out += icons["battery50"]
-            elif percent < 60:
+            elif percent < 70:
                 out += icons["battery60"]
             elif percent < 99:
                 out += icons["battery90"]

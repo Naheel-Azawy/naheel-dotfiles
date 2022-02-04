@@ -18,7 +18,6 @@ n64 = lambda name:    sh.mupen64plus.bake(f"{dir_n64}/{name}")
 psx = lambda name:    sh.mednafen.bake(f"{dir_psx}/{name}")
 ps2 = lambda name:    sh.pcsx2.bake(f"{dir_ps2}/{name}", fullscreen=True, nogui=True)
 psp = lambda name:    sh.PPSSPPSDL.bake(f"{dir_psp}/{name}")
-win = lambda d, name: sh.winejail.bake(f"win-games-{d}", f"{dir_win}/{d}", name)
 pol = lambda name:    sh.jailfence.bake(name)
 tui = lambda name:    sh.theterm.bake(name + "; read")
 
@@ -30,8 +29,8 @@ games = {
     "megaman-x5":      psx("megaman_x5/Megaman X5.cue"),
     "pacman":          gbc("Ms. Pac-Man - Special Color Edition (USA).gbc"),
     "pokemon-crystal": gbc("Pokemon - Crystal Version (USA, Europe).gbc"),
-    "spider":          win("solitaire_xp", "spider.exe"),
-    "pinball":         win("solitaire_xp", "Pinball/PINBALL.EXE"),
+    "spider":          pol("spider"),
+    "pinball":         pol("PINBALL"),
     "tekken3":         psx("Tekken 3/Tekken 3.cue"),
     "pepsiman":        psx("pepsiman/Pepsiman (Japan).cue"),
     "gnome-mines":     sh.gnome_mines.bake(),
