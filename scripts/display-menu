@@ -2,7 +2,9 @@
 
 D="$HOME/.screenlayout"
 
-OPTS='Default
+OPTS='Auto
+Mirror
+Extend
 Edit screen layout
 Invert colors
 Temperature: 6500  Default
@@ -14,23 +16,31 @@ Temperature: Custom'
 
 list() {
     echo "$OPTS"
-    find "$D" -type f -exec basename '{}' \; |
-        grep -v '^default' |
-        awk -F'.' '{print $1}'
+    # find "$D" -type f -exec basename '{}' \; |
+    #     grep -v '^default' |
+    #     awk -F'.' '{print $1}'
 }
 
 if [ "$1" = '-d' ]; then
-    sel='Default'
+    sel='Auto'
 else
-    sel=$(list | menus-face -i -l 20 -p 'Display options')
+    l=$(list)
+    l_len=$(echo "$l" | wc -l)
+    [ "$l_len" -gt 20 ] && l_len=20
+    sel=$(echo "$l" | menus-face -i -l "$l_len" -p 'Display options')
 fi
 
 case "$sel" in
     '') ;;
 
-    Default)
-        xsct 6500
-        sh "$D/default.sh" ;;
+    Auto)
+        automon auto ;;
+
+    Mirror)
+        automon mirror ;;
+
+    Extend)
+        automon extend ;;
 
     Edit*)
         arandr ;;

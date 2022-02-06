@@ -71,7 +71,7 @@ autostart syndaemon -i 0.5 -t -K -R     # disable touchpad while typing
 autostart edit daemon                   # emacs daemon
 autostart picom --experimental-backends # compositor
 autostart setwallpaper                  # wallpaper
-autostart automon                       # automatic monitor config
+autostart automon daemon                # automatic monitor config
 autostart lang us                       # set language to 'us' and runs xmodmap
 autostart fmz --mount-monitor           # automatically mount drives
 autostart mount-private                 # mount encfs private directory
