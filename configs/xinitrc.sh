@@ -65,7 +65,7 @@ autostart bar                           # top bar
 autostart wttr daemon                   # weather update
 autostart dunst                         # notifications daemon
 autostart clipmenud                     # clipboard manager daemon
-autostart setup-xinput                  # mouse and keyboard setup
+autostart setup-xinput daemon           # mouse and keyboard setup
 autostart xbanish                       # hides the cursor while typing
 autostart syndaemon -i 0.5 -t -K -R     # disable touchpad while typing
 autostart edit daemon                   # emacs daemon

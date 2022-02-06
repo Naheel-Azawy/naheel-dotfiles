@@ -1,11 +1,28 @@
 #!/bin/sh
 
-usermodmap=$HOME/.Xmodmap
-if [ -f "$usermodmap" ]; then
-    xmodmap "$usermodmap"
-fi
+handle() {
+    usermodmap=$HOME/.Xmodmap
+    if [ -f "$usermodmap" ]; then
+        xmodmap "$usermodmap"
+    fi
 
-xset r rate 230 50
+    xset r rate 230 50
+}
+
+main() {
+    handle
+    if [ "$1" = daemon ]; then
+        udevadm monitor | while read -r line; do
+            if echo "$line" | grep -Eq 'UDEV.+\(input\)'; then
+                date
+                echo "$line"
+                handle
+            fi
+        done
+    fi
+}
+
+main "$@"
 
 # synclient \
 #     VertScrollDelta=-500 \

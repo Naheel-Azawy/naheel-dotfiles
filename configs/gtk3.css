@@ -11,10 +11,10 @@ decoration {
     border-left-color: black;
 }
 
-/*headerbar {
+headerbar {
     background: black;
 }
 
 window, dialog, messagedialog, viewport, stack, header, toolbar, popover {
     background-color: black;
-}*/
+}
