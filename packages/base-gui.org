@@ -1,5 +1,6 @@
 | Tag      | Name                   | Git Link                                  | Purpose                                                          |
 |----------+------------------------+-------------------------------------------+------------------------------------------------------------------|
+| pacman   | i3-wm                  | N.A.                                      | the window manager                                               |
 | pacman   | bspwm                  | N.A.                                      | the window manager                                               |
 | pacman   | xorg-server            | N.A.                                      | graphical server                                                 |
 | pacman   | xorg-xdpyinfo          | N.A.                                      | retrieves screen information for some scripts                    |
