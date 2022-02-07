@@ -12,9 +12,16 @@ mpd 2>/dev/null >/dev/null
 # }
 
 notif() {
-    mpc idleloop | while read -r _; do
-        s=$(mpc status | head -n1)
-        dunstify -r $NOTIF_ID Music "$s"
+    mpc idleloop | while read -r e; do
+        [ "$e" = player ] || continue
+        s=$(mpc status -f '>>> %artist% - %title%')
+        sym=$(if echo "$s" | grep -q '\[playing\]'; then
+                  echo '▶'
+              else
+                  echo '⏸'
+              fi)
+        s=$(echo "$s" | sed -rn 's/>>> (.+)/\1/p')
+        dunstify -r $NOTIF_ID Music "$sym $s"
     done
 }
 
