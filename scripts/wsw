@@ -93,7 +93,7 @@ class BSPWM(WMImpl):
                     item = item[1:]
                 if item[0] in ["M", "m"]:
                     focused_monitor = item[0] == "M"
-                elif item[0] in ["O","o","F","U","u"]:
+                elif item[0] in ["O","o","F","U","u", "f"]:
                     w = Workspace()
                     w.name    = item[1:]
                     w.visible = item[0] in ["O", "F"]

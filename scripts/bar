@@ -371,14 +371,9 @@ class Bar(BarBase):
 
     @item(big=True)
     def add(self):
-        if self.wm is None or self.a or self.wm.title == "":
+        if self.a:
             return None
-        names = list(map(lambda w: w.name, self.wm.impl.workspaces))
-        for w in self.wm.nice_workspaces:
-            if w not in names:
-                onclick = f"{self.wm.impl.workspace_cmd} '{w}' >/dev/null"
-                return f"%{{A:{onclick}:}}" + icons["plus"] + "%{A}"
-        return None
+        return "%{A:wm-msg workspace_new:}" + icons["plus"] + "%{A}"
 
     @item()
     def program(self):
@@ -400,7 +395,8 @@ class Bar(BarBase):
         else:
             out = ""
             if title:
-                return "%{A:nice-kill:}" + icons["close"] + "%{A}  " + \
+                return "%{A:wm-msg window_nice_close:}" + \
+                    icons["close"] + "%{A}  " + \
                     "%{A:wm-msg program-menu:}" + title + "%{A}"
             else:
                 return None

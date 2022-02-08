@@ -1,6 +1,6 @@
 # Close focused program
 super+q
-	wm-msg window_close
+	wm-msg window_nice_close
 
 # Close focused window keeping tmux sessions
 super+shift+q

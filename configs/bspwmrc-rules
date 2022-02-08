@@ -32,3 +32,9 @@ case "$class" in
     *__stickme__*)
         echo 'sticky=on' ;;
 esac
+
+# https://github.com/baskerville/bspwm/issues/857#issuecomment-427670436
+if [ "$instance" = lemonbar ]; then
+    echo manage=off
+    xdo above -t "$(xdo id -N Bspwm -n root | sort | head -n 1)" "$wid"
+fi

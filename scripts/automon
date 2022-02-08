@@ -97,6 +97,7 @@ handle() {
             cmd="$cmd --output $out --off"
         fi
     done
+    IFS=' '
 
     [ "$cmd_preset" ]  && cmd="$cmd_preset"
     [ "$mode_preset" ] && mode="$mode_preset"
@@ -110,6 +111,7 @@ handle() {
 
     # post
     run_if_exists setwallpaper
+    run_if_exists wm-msg bspwm_ws_cleanup
     run_if_exists bar &
 }
 

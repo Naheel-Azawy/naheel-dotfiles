@@ -1,0 +1,2 @@
+def_key "ctrl-q"
+  quit

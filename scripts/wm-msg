@@ -1,7 +1,12 @@
 #!/bin/sh
 
-# send window manager messages using i3-msg or bspc
-# emacs window movement included
+# ==== helpers ====
+
+isnum() {
+    [ "$1" -eq "$1" ] 2>/dev/null
+}
+
+# ==== i3 ====
 
 i3_resize() {
     case "$1" in
@@ -11,6 +16,14 @@ i3_resize() {
         down)  i3-msg resize grow   height "$2" px or "$2" ppt ;;
     esac
 }
+
+i3_ws_new() {
+    workspaces=$(i3-msg -t get_workspaces | jq -r '.[].name')
+    new=$(seq 10 | grep -v "$workspaces" | head -n1)
+    i3-msg workspace "$new"
+}
+
+# ==== bspwm ====
 
 bspwm_resize() {
     case "$1" in
@@ -43,49 +56,56 @@ bspwm_ws_check() {
     # dynamic, i3-like behavior
     target="$1"
     # create if not there
-    bspc query -D -d "$target" 2>/dev/null ||
-        bspc monitor -a "$target"
+    bspc query -D -d "$target" >/dev/null 2>/dev/null ||
+        bspc monitor -a "$target" >/dev/null
 }
 
 bspwm_ws_cleanup() {
     # remove empty desktops
-    # cur=$(bspc query -D -d .focused --names)
-    # bspc query -D -d .!occupied --names |
-    #     grep -v "$cur" |
-    #     xargs -d '\n' -I {} bspc desktop {} -r
+    cur=$(bspc query -D -d .focused --names)
+    bspc query -D -d .!occupied --names |
+        grep -v "^$cur\$" |
+        xargs -d '\n' -I {} bspc desktop {} -r
 
-    # remove empty monitors
-    bspc query -M -m .!occupied --names |
-        xargs -d '\n' -I {} bspc monitor {} -r
+    # rename non-numeric desktops
+    bspc query -D --names | while read -r desk; do
+        if ! isnum "$desk"; then
+            n=$(bspwm_ws_new_name) || continue
+            bspc desktop "$desk" --rename "$n"
+        fi
+    done
 
     # re-order desktops names
-    # max=$({
-    #          bspc query -D -d .occupied --names
-    #          echo "$target"
-    #      } | sort -n | tail -n1)
-    # names=$(seq -s ' ' "$max")
-    # eval "bspc monitor -d $names"
+    bspc query -M --names | while read -r mon; do
+        names=$(bspc query -D -m "$mon" --names |
+                    sort -n | uniq | xargs)
+        eval "bspc monitor $mon -o $names"
+    done
 }
 
-i3_ws_new() {
-    workspaces=$(i3-msg -t get_workspaces | jq -r '.[].name')
-    new=$(seq 10 | grep -v "$workspaces" | head -n1)
-    i3-msg workspace "$new"
+bspwm_ws_new_name() {
+    for num in $(seq 1 10); do
+        if ! bspc query -D -d "$num" >/dev/null 2>/dev/null; then
+            echo "$num"
+            return 0
+        fi
+    done
+    return 1
 }
 
 bspwm_ws_new() {
-    max=$(bspc query -D -d .occupied --names |
-              sort -n | tail -n1)
-    new=$((max + 1))
-    [ "$new" -le 10 ] && {
-        bspwm_ws_check "$new"
-        bspc desktop -f "$new"
-        bspwm_ws_cleanup
-    }
+    cur=$(bspc query -D -d .focused --names)
+    bspc query -D -d "$cur.!occupied" >/dev/null && return 1
+    new=$(bspwm_ws_new_name) || return 1
+    bspwm_ws_check "$new"
+    bspc desktop -f "$new"
+    bspwm_ws_cleanup
 }
 
+# ==== utils ====
+
 ws_scshot() {
-    # TODO: build a gui
+    # TODO: build a gui?
     if false; then
         wsdir="$HOME/.cache/wm-ws"
         mkdir -p "$wsdir"
@@ -112,68 +132,100 @@ program_menu() {
     esac
 }
 
-case "$1" in
-    program-menu) program_menu ;;
-esac
+# ==== main ====
 
-if xdotool getactivewindow getwindowname | grep -q emacs; then
-    case "$1" in
-        window_focus) emacsclient --no-wait --eval "(windmove-$2)" && exit ;;
-        window_close) emacsclient --no-wait --eval "(delete-window)" && exit ;;
+main() {
+    cmd="$1"
+    arg="$2"
+
+    case "$cmd" in
+        program-menu)
+            program_menu
+            return ;;
+
+        bspwm_ws_cleanup)
+            [ "$WINDOW_MANAGER" = bspwm ] &&
+                bspwm_ws_cleanup
+            return ;;
     esac
-fi
 
-case "$WINDOW_MANAGER" in
-    i3)
-        case "$1" in
-            fullscreen)             i3-msg fullscreen toggle ;;
-            float)                  i3-msg floating toggle ;;
-            stick)                  i3-msg sticky toggle ;;
-            split)                  i3-msg split t ;;
-            float_focus)            i3-msg focus mode_toggle ;;
-            container_focus_parent) i3-msg focus parent ;;
-            container_focus_child)  i3-msg focus child ;;
-            window_close)           i3-msg kill ;;
-            window_focus)           i3-msg focus "$2" ;;
-            window_move)            i3-msg move "$2" ;;
-            window_resize)          i3_resize "$2" 10 ;;
-            window_resize_tiny)     i3_resize "$2" 1 ;;
-            workspace)              ws_scshot; i3-msg workspace "$2" ;;
-            workspace_move)         i3-msg move container to workspace "$2" ;;
-            workspace_move_go)      ws_scshot; i3-msg move container to workspace "$2"\; workspace "$2" ;;
-            workspace_next)         ws_scshot; i3-msg workspace next ;;
-            workspace_prev)         ws_scshot; i3-msg workspace prev ;;
-            workspace_new)          ws_scshot; i3_ws_new ;;
-            workspace_monitor_next) i3-msg move workspace to output right ;;
-            restart)                i3-msg restart ;;
-            end)                    i3-msg exit ;;
-        esac ;;
+    win=$(xdotool getactivewindow)
 
-    bspwm)
-        case "$1" in
-            fullscreen)             bspc node -t ~fullscreen ;;
-            float)                  bspc node -t ~floating ;;
-            stick)                  bspc node -s sticky ;;
-            split)                  : ;;
-            float_focus)            : ;;
-            container_focus_parent) bspc node -f @parent ;;
-            container_focus_child)  bspc node -f @first ;;
-            window_close)           bspc node -c ;;
-            window_focus)           bspc node -f "$(dir_bspwm "$2")" ;;
-            window_move)            bspwm_move "$2" ;;
-            window_resize)          bspwm_resize "$2" 30 ;;
-            window_resize_tiny)     bspwm_resize "$2" 5 ;;
-            workspace)              ws_scshot; bspwm_ws_check "$2" && bspc desktop -f "$2"; bspwm_ws_cleanup ;;
-            workspace_move)         bspwm_ws_check "$2" && bspc node -d "$2"; bspwm_ws_cleanup ;;
-            workspace_move_go)      ws_scshot; bspwm_ws_check "$2" && bspc node -d "$2" && bspc desktop -f "$2"; bspwm_ws_cleanup ;;
-            workspace_next)         ws_scshot; bspc desktop -f next.occupied ;;
-            workspace_prev)         ws_scshot; bspc desktop -f prev.occupied ;;
-            workspace_new)          ws_scshot; bspwm_ws_new ;;
-            workspace_monitor_next) bspc desktop -m next --follow ;;
-            restart)                bspc wm -r ;;
-            end)                    bspc quit ;;
-        esac ;;
+    # handle emacs windows
+    if xdotool getwindowname "$win" | grep -q emacs; then
+        case "$cmd" in
+            window_focus)
+                emacsclient --no-wait --eval "(windmove-$arg)" && return ;;
+            window_nice_close)
+                emacsclient --no-wait --eval "(delete-window)" && return ;;
+        esac
+    fi
 
-    *)
-        echo "Unknown window manager '$WINDOW_MANAGER'" ;;
-esac
+    # try sending ctrl-q to tmux for nice_close
+    [ "$cmd" = window_nice_close ] && {
+        title=$(xdotool getwindowname "$win")
+        tmux_session=$(echo "$title" |
+                           sed -rn 's/.+ - tmux ([0-9]+):[0-9]+/\1/p')
+        [ -n "$tmux_session" ] &&
+            tmux send-keys -t "$tmux_session" C-q && return
+    }
+    [ "$cmd" = window_nice_close ] && cmd=window_close
+
+    # send window manager messages using i3-msg or bspc
+    case "$WINDOW_MANAGER" in
+        i3)
+            case "$cmd" in
+                fullscreen)             i3-msg fullscreen toggle ;;
+                float)                  i3-msg floating toggle ;;
+                stick)                  i3-msg sticky toggle ;;
+                split)                  i3-msg split t ;;
+                float_focus)            i3-msg focus mode_toggle ;;
+                container_focus_parent) i3-msg focus parent ;;
+                container_focus_child)  i3-msg focus child ;;
+                window_close)           i3-msg kill ;;
+                window_focus)           i3-msg focus "$arg" ;;
+                window_move)            i3-msg move "$arg" ;;
+                window_resize)          i3_resize "$arg" 10 ;;
+                window_resize_tiny)     i3_resize "$arg" 1 ;;
+                workspace)              ws_scshot; i3-msg workspace "$arg" ;;
+                workspace_move)         i3-msg move container to workspace "$arg" ;;
+                workspace_move_go)      ws_scshot; i3-msg move container to workspace "$arg"\; workspace "$arg" ;;
+                workspace_next)         ws_scshot; i3-msg workspace next ;;
+                workspace_prev)         ws_scshot; i3-msg workspace prev ;;
+                workspace_new)          ws_scshot; i3_ws_new ;;
+                workspace_monitor_next) i3-msg move workspace to output right ;;
+                restart)                i3-msg restart ;;
+                end)                    i3-msg exit ;;
+            esac ;;
+
+        bspwm)
+            case "$cmd" in
+                fullscreen)             bspc node -t ~fullscreen ;;
+                float)                  bspc node -t ~floating ;;
+                stick)                  bspc node -s sticky ;;
+                split)                  : ;;
+                float_focus)            : ;;
+                container_focus_parent) bspc node -f @parent ;;
+                container_focus_child)  bspc node -f @first ;;
+                window_close)           bspc node -c ;;
+                window_focus)           bspc node -f "$(dir_bspwm "$arg")" ;;
+                window_move)            bspwm_move "$arg" ;;
+                window_resize)          bspwm_resize "$arg" 30 ;;
+                window_resize_tiny)     bspwm_resize "$arg" 5 ;;
+                workspace)              ws_scshot; bspwm_ws_check "$arg" && bspc desktop -f "$arg"; bspwm_ws_cleanup ;;
+                workspace_move)         bspwm_ws_check "$arg" && bspc node -d "$arg"; bspwm_ws_cleanup ;;
+                workspace_move_go)      ws_scshot; bspwm_ws_check "$arg" && bspc node -d "$arg" && bspc desktop -f "$arg"; bspwm_ws_cleanup ;;
+                workspace_next)         ws_scshot; bspc desktop -f next.occupied; bspwm_ws_cleanup ;;
+                workspace_prev)         ws_scshot; bspc desktop -f prev.occupied; bspwm_ws_cleanup ;;
+                workspace_new)          ws_scshot; bspwm_ws_new ;;
+                workspace_monitor_next) bspc desktop -m next --follow ;;
+                restart)                bspc wm -r ;;
+                end)                    bspc quit ;;
+            esac ;;
+
+        *)
+            echo "Unknown window manager '$WINDOW_MANAGER'" ;;
+    esac
+}
+
+main "$@"
