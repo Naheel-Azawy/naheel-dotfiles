@@ -12,6 +12,14 @@ bookmark ~/.dotfiles
 #     less "$f"
 # }
 
+add_fun du_file 'Disk usage'
+bind alt-d fun du_file
+du_file() {
+    tput rmcup
+    du -sh "$f"
+    read -r _
+}
+
 bind ctrl-p 'toggle-preview' 'Toggle preview'
 
 add_fun mystat 'File status'
@@ -33,6 +41,20 @@ kdesend() {
                sed -rn 's/\- (.+):.+/\1/p' |
                menu_interface)
     kdeconnect-cli -n "$name" --share "$f"
+}
+
+QRCP_PORT=35697
+
+add_fun qrcp_send 'Send via QRCP'
+qrcp_send() {
+    tput rmcup
+    qrcp -p "$QRCP_PORT" send "$f"
+}
+
+add_fun qrcp_receive 'Receive via QRCP'
+qrcp_receive() {
+    tput rmcup
+    qrcp -p "$QRCP_PORT" receive
 }
 
 add_fun lopdf 'Libreoffice to PDF'

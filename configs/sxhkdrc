@@ -26,6 +26,14 @@ super+shift+t
 super+shift+slash
 	wm-msg split
 
+# Equalize windows
+super+shift+comma
+	wm-msg equalize
+
+# Balance windows
+super+comma
+	wm-msg balance
+
 # Change focus between tiling / floating windows
 super+slash
 	wm-msg float_focus

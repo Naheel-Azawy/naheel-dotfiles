@@ -260,7 +260,7 @@ abbr gitd  'git diff'
 abbr gitl  'git log'
 abbr gito  'git checkout'
 abbr gitq  'git add -A && git commit -m "quick update" && git push origin'
-abbr gitn  'git add -A && git commit -m "couple of things" && git push origin'
+abbr gitn  'git clone'
 
 abbr nd    'ndots'
 abbr o     'open'
