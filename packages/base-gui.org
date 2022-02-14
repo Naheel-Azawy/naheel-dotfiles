@@ -1,6 +1,5 @@
 | Tag      | Name                   | Git Link                                  | Purpose                                                          |
 |----------+------------------------+-------------------------------------------+------------------------------------------------------------------|
-| pacman   | i3-wm                  | N.A.                                      | the window manager                                               |
 | pacman   | bspwm                  | N.A.                                      | the window manager                                               |
 | pacman   | xorg-server            | N.A.                                      | graphical server                                                 |
 | pacman   | xorg-xdpyinfo          | N.A.                                      | retrieves screen information for some scripts                    |
@@ -81,3 +80,4 @@
 | pacman   | networkmanager-openvpn | N.A.                                      | openvpn for nm                                                   |
 | aur      | networkmanager-dmenu   | N.A.                                      | manage nm from dmenu                                             |
 | pacman   | gsimplecal             | N.A.                                      | simple calender                                                  |
+| git      | bspdd                  | https://github.com/Naheel-Azawy/bspdd     | bspwm dynamic desktops                                           |

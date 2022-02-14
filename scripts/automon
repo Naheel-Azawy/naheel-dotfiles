@@ -111,7 +111,6 @@ handle() {
 
     # post
     run_if_exists setwallpaper
-    run_if_exists wm-msg bspwm_ws_cleanup
     run_if_exists bar &
 }
 

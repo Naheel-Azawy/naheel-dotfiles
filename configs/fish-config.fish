@@ -199,6 +199,9 @@ function wdiffstr
     test (count $argv) -gt 2; and set a $argv[3..-1]
     wdiff $a (echo -e $argv[1] | psub) (echo -e $argv[2] | psub)
 end
+function diffbin
+    diff (xxd $argv[1] | psub) (xxd $argv[2] | psub)
+end
 
 function plot
     command plot $argv & disown

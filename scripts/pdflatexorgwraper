@@ -12,7 +12,7 @@ run_showing() {
 }
 
 gen_pdf() {
-    run_showing xelatex -interaction=nonstopmode \
+    run_showing pdflatex -interaction=nonstopmode \
                 -synctex=1 --halt-on-error "$@"
 }
 
@@ -123,7 +123,7 @@ main() {
             OUT=$(gen_pdf "$F.tex")
         fi
 
-        # embed_fonts "$F.pdf"
+        embed_fonts "$F.pdf"
     fi
 
     ERRS=$(echo "$OUT" |

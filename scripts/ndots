@@ -270,6 +270,9 @@ export PATH=\"\$PATH:\$DOTFILES_SCRIPTS\"
     sudo cp -f "$D/scripts/ndots-complete.fish" \
          '/usr/share/fish/completions/ndots.fish'
 
+    info "Installing mpv configs"
+    git clone https://github.com/Naheel-Azawy/mpv-config "$H/.config/mpv"
+
     info "Starting Emacs daemon"
     emacs --daemon
 

@@ -57,6 +57,18 @@ qrcp_receive() {
     qrcp -p "$QRCP_PORT" receive
 }
 
+add_fun pdf_info 'PDF info'
+pdf_info() {
+    tput rmcup
+    echo "$fx" | while read -r file; do
+        ls -lh "$file"
+        pdfinfo "$file"
+        echo 'Fonts:'
+        pdffonts "$file"
+        echo
+    done | less
+}
+
 add_fun lopdf 'Libreoffice to PDF'
 lopdf() {
     tput rmcup

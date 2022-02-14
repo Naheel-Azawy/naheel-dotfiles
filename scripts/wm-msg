@@ -1,11 +1,5 @@
 #!/bin/sh
 
-# ==== helpers ====
-
-isnum() {
-    [ "$1" -eq "$1" ] 2>/dev/null
-}
-
 # ==== i3 ====
 
 i3_resize() {
@@ -50,56 +44,6 @@ bspwm_move() {
         up)    bspc node -v   0 -20 || bspc node -s north ;;
         down)  bspc node -v   0  20 || bspc node -s south ;;
     esac
-}
-
-bspwm_ws_check() {
-    # dynamic, i3-like behavior
-    target="$1"
-    # create if not there
-    bspc query -D -d "$target" >/dev/null 2>/dev/null ||
-        bspc monitor -a "$target" >/dev/null
-}
-
-bspwm_ws_cleanup() {
-    # remove empty desktops
-    cur=$(bspc query -D -d .focused --names)
-    bspc query -D -d .!occupied --names |
-        grep -v "^$cur\$" |
-        xargs -d '\n' -I {} bspc desktop {} -r
-
-    # rename non-numeric desktops
-    bspc query -D --names | while read -r desk; do
-        if ! isnum "$desk"; then
-            n=$(bspwm_ws_new_name) || continue
-            bspc desktop "$desk" --rename "$n"
-        fi
-    done
-
-    # re-order desktops names
-    bspc query -M --names | while read -r mon; do
-        names=$(bspc query -D -m "$mon" --names |
-                    sort -n | uniq | xargs)
-        eval "bspc monitor $mon -o $names"
-    done
-}
-
-bspwm_ws_new_name() {
-    for num in $(seq 1 10); do
-        if ! bspc query -D -d "$num" >/dev/null 2>/dev/null; then
-            echo "$num"
-            return 0
-        fi
-    done
-    return 1
-}
-
-bspwm_ws_new() {
-    cur=$(bspc query -D -d .focused --names)
-    bspc query -D -d "$cur.!occupied" >/dev/null && return 1
-    new=$(bspwm_ws_new_name) || return 1
-    bspwm_ws_check "$new"
-    bspc desktop -f "$new"
-    bspwm_ws_cleanup
 }
 
 bspwm_float_cycle() {
@@ -151,11 +95,6 @@ main() {
         program-menu)
             program_menu
             return ;;
-
-        bspwm_ws_cleanup)
-            [ "$WINDOW_MANAGER" = bspwm ] &&
-                bspwm_ws_cleanup
-            return ;;
     esac
 
     win=$(xdotool getactivewindow)
@@ -202,6 +141,7 @@ main() {
                 balance)                : ;;
                 equalize)               : ;;
                 split)                  i3-msg split t ;;
+                split2)                 i3-msg split t ;;
                 float_focus)            i3-msg focus mode_toggle ;;
                 container_focus_parent) i3-msg focus parent ;;
                 container_focus_child)  i3-msg focus child ;;
@@ -228,7 +168,8 @@ main() {
                 stick)                  bspc node -s sticky ;;
                 balance)                bspc node -B ;;
                 equalize)               bspc node -E ;;
-                split)                  bspc node -p ~east ;; # TODO: south as well
+                split)                  bspc node -p ~east ;;
+                split2)                 bspc node -p ~south ;;
                 float_focus)            bspwm_float_cycle ;;
                 container_focus_parent) bspc node -f @parent ;;
                 container_focus_child)  bspc node -f @first ;;
@@ -237,12 +178,12 @@ main() {
                 window_move)            bspwm_move "$arg" ;;
                 window_resize)          bspwm_resize "$arg" 30 ;;
                 window_resize_tiny)     bspwm_resize "$arg" 5 ;;
-                workspace)              ws_scshot; bspwm_ws_check "$arg" && bspc desktop -f "$arg"; bspwm_ws_cleanup ;;
-                workspace_move)         bspwm_ws_check "$arg" && bspc node -d "$arg"; bspwm_ws_cleanup ;;
-                workspace_move_go)      ws_scshot; bspwm_ws_check "$arg" && bspc node -d "$arg" && bspc desktop -f "$arg"; bspwm_ws_cleanup ;;
-                workspace_next)         ws_scshot; bspc desktop -f next.occupied; bspwm_ws_cleanup ;;
-                workspace_prev)         ws_scshot; bspc desktop -f prev.occupied; bspwm_ws_cleanup ;;
-                workspace_new)          ws_scshot; bspwm_ws_new ;;
+                workspace)              ws_scshot; bspdd "$arg" ;;
+                workspace_move)         bspdd node-move "$arg" ;;
+                workspace_move_go)      ws_scshot; bspdd node-move-go "$arg" ;;
+                workspace_next)         ws_scshot; bspdd next ;;
+                workspace_prev)         ws_scshot; bspdd prev ;;
+                workspace_new)          ws_scshot; bspdd new ;;
                 workspace_monitor_next) bspc desktop -m next --follow ;;
                 restart)                bspc wm -r ;;
                 end)                    bspc quit ;;

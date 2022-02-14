@@ -172,6 +172,9 @@ for i = 1:size(packages, 2)
 end
 format long;
 PS1('>> ');
+function units
+    system('units');
+end
 "
     octnow() { octave-cli -q --persist --eval "$OH"; }
     [ $# = 0 ] && (octnow; exit)

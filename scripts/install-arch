@@ -321,6 +321,8 @@ tui() {
     [ -z "$ZONE" ] && return 1
 
     INSTALL_DOTS=$(yesno 'Install dotfiles?' && echo 1)
+
+    return 0
 }
 
 main() {
