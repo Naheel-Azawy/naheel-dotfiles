@@ -69,19 +69,37 @@ ws_scshot() {
 
 program_menu() {
     title=$(xdotool getactivewindow getwindowname)
-    choice=$({
-                echo "$title"
-                echo 'Close'
-                echo 'Toggle fullscreen'
-                echo 'Toggle float'
-                echo 'Toggle stick'
-            } | menus-face -l 5)
+    items=$({
+               echo "$title"
+               echo 'Close'
+               echo 'Toggle fullscreen'
+               echo 'Toggle float'
+               echo 'Toggle stick'
+               echo 'Move to...'
+               # echo 'Move right'
+               # echo 'Move left'
+               # echo 'Move up'
+               # echo 'Move down'
+               echo 'Super down'
+               echo 'Super up'
+           })
+    items_len=$(echo "$items" | wc -l)
+    choice=$(echo "$items" | menus-face -l "$items_len")
+
     case "$choice" in
-        "$title")                                   ;;
-        'Close')             exec "$0" window_close ;;
-        'Toggle fullscreen') exec "$0" fullscreen   ;;
-        'Toggle float')      exec "$0" float        ;;
-        'Toggle stick')      exec "$0" stick        ;;
+        "$title")                              ;;
+        'Close')             main window_close ;;
+        'Toggle fullscreen') main fullscreen   ;;
+        'Toggle float')      main float        ;;
+        'Toggle stick')      main stick        ;;
+        'Super down')        xdotool keydown Super_L ;;
+        'Super up')          xdotool keyup   Super_L ;;
+        'Move to...')
+            ws=$(seq 1 10 | menus-face)
+            [ -n "$ws" ] && main workspace_move_go "$ws" ;;
+        'Move '*)
+            dir=$(echo "$choice" | cut -d ' ' -f2)
+            main window_move "$dir" ;;
     esac
 }
 
@@ -92,7 +110,7 @@ main() {
     arg="$2"
 
     case "$cmd" in
-        program-menu)
+        program-menu|menu)
             program_menu
             return ;;
     esac

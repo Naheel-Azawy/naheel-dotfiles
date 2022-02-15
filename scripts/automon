@@ -49,7 +49,97 @@ sum() {
 
 handle() {
     mode="$1"
-    [ -n "$mode" ] || mode=auto
+    [ -n "$mode" ] || mode=extend
+
+    randr=$(xrandr --verbose)
+
+    best_dim_of() {
+        # too hacky, TODO: find a better way?
+        echo "$randr"                             |
+            grep -A 9999 "^$1"                    |
+            sed -rn 's/  ([0-9]+x[0-9]+) .+/\1/p' |
+            head -n1
+    }
+
+    outs_con=$(echo "$randr" |
+                   sed -rn 's/^([A-Za-z0-9]+) connected .+/\1/p' |
+                   while read -r o; do
+                       printf '%s %s\n' "$(best_dim_of "$o")" "$o"
+                   done)
+    outs_dis=$(echo "$randr" |
+                   sed -rn 's/^([A-Za-z0-9]+) disconnected .+/\1/p')
+
+    out_first=$(echo "$outs_con" | head -n1 | cut -d ' ' -f2)
+    out_largest=$(echo "$outs_con" | sort -rn | head -n1 | cut -d ' ' -f2)
+
+    cmd="xrandr"
+
+    IFS='
+'
+
+    for out in $outs_dis; do
+        cmd="$cmd --output $out --off"
+    done
+
+    cmd_off=$cmd
+    for out in $outs_con; do
+        out=$(echo "$out" | cut -d ' ' -f2)
+        if [ "$out" = "$out_first" ]; then
+            cmd_off="$cmd_off --output $out --auto --primary"
+        else
+            cmd_off="$cmd_off --output $out --off"
+        fi
+    done
+
+    case "$mode" in
+        extend)
+            # the largest is the primary; align from left to right with normal rotation
+            prev_w=0
+            for out in $outs_con; do
+                dim=$(echo "$out" | cut -d ' ' -f1)
+                wid=$(echo "$out" | cut -d 'x' -f1)
+                out=$(echo "$out" | cut -d ' ' -f2)
+                cmd="$cmd --output $out --rotate normal --mode $dim --pos ${prev_w}x0"
+                prev_w=$wid
+                if [ "$out" = "$out_largest" ]; then
+                    cmd="$cmd --primary"
+                fi
+            done ;;
+
+        mirror)
+            # the first is the primary; all like the primary
+            out_target=$out_first
+            dim=$(echo "$outs_con" | sed -rn "s/^(.+) $out_target/\1/p")
+            for out in $outs_con; do
+                out=$(echo "$out" | cut -d ' ' -f2)
+                if [ "$out" = "$out_target" ]; then
+                    cmd="$cmd --output $out --rotate normal --mode $dim --pos 0x0 --primary"
+                else
+                    cmd="$cmd --output $out --same-as $out_target --scale-from $dim"
+                fi
+            done ;;
+
+        *)
+            echo "ERROR: unknown mode '$mode'"
+    esac
+
+    IFS=' '
+
+    run "$cmd" || {
+        run "$cmd_off"
+        run "$cmd"
+    }
+
+    notify "$mode"
+
+    # post
+    run_if_exists setwallpaper
+    run_if_exists bar &
+}
+
+handle_old() {
+    mode="$1"
+    [ -n "$mode" ] || mode=extend
 
     randr=$(xrandr --verbose)
     sum=$(sum)
@@ -58,20 +148,23 @@ handle() {
     [ "$mode" = auto ] &&
         preset "$sum"
 
-    primary=$(echo "$randr" |
-                  awk '/^[A-Za-z0-9\-]+ connected/ {print echo $1}' |
-                  head -n1)
+    # primary=$(echo "$randr" | # first
+    #               awk '/^[A-Za-z0-9\-]+ connected/ {print echo $1}' |
+    #               head -n1)
+    primary=$(echo "$randr" | # largest width
+                  sed -rn "s/(.+) connected.* ([0-9]+)x([0-9]+)\+.+/\2x\3 \1/p" |
+                  sort -rn | head -n1 | cut -d ' ' -f2)
+
     outputs=$(echo "$randr" |
-                  awk '/^[A-Za-z0-9\-]+ (dis)?connected/ {print echo $1" "$2}' |
-                  grep -v "$primary")
+                  awk '/^[A-Za-z0-9\-]+ (dis)?connected/ {print echo $1" "$2}')
 
     primary_dim=$(echo "$randr" |
                       sed -rn "s/$primary .+ ([0-9]+x[0-9]+)\+.+/\1/p")
 
-    cmd="xrandr --output $primary --primary --auto"
+    cmd="xrandr"
     cmd_off="$cmd"
 
-    prev="$primary"
+    prev=
     IFS='
 '
     for out in $outputs; do
@@ -81,17 +174,28 @@ handle() {
         cmd_off="$cmd_off --output $out --off"
 
         if [ "$con" = connected ]; then
-            case "$mode" in
-                extend|auto)
-                    cmd="$cmd --output $out --auto --right-of $prev" ;;
+            if [ "$out" = "$primary" ]; then
+                if [ -n "$prev" ]; then
+                    cmd="$cmd --output $out --primary --auto --rotate normal --right-of $prev"
+                else
+                    cmd="$cmd --output $out --primary --auto --rotate normal --pos 0x0"
+                fi
+            else
+                case "$mode" in
+                    extend|auto)
+                        if [ -n "$prev" ]; then
+                            cmd="$cmd --output $out --auto --rotate normal --right-of $prev"
+                        else
+                            cmd="$cmd --output $out --auto --rotate normal --pos 0x0"
+                        fi ;;
 
-                mirror)
-                    # TODO: scale
-                    cmd="$cmd --output $out --same-as $primary --scale-from $primary_dim" ;;
+                    mirror)
+                        cmd="$cmd --output $out --same-as $primary --scale-from $primary_dim" ;;
 
-                *)
-                    cmd="$cmd --output $out --off" ;;
-            esac
+                    *)
+                        cmd="$cmd --output $out --off" ;;
+                esac
+            fi
             prev="$out"
         else
             cmd="$cmd --output $out --off"
@@ -128,7 +232,6 @@ main() {
                     date
                     echo "$line"
                     handle
-                    echo
                 fi
             done ;;
 

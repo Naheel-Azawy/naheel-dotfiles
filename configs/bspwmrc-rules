@@ -14,7 +14,7 @@ case "$class" in
 esac
 
 case "$title" in
-    *__floatme__*)
+    *__floatme__*|'Python Turtle Graphics')
         echo 'state=floating' ;;
 esac
 
