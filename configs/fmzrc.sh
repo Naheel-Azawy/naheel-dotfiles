@@ -105,3 +105,36 @@ add_fun wallpaper 'Set as wallpaper'
 wallpaper() {
     feh --bg-fill "$f"
 }
+
+add_fun paste_backup 'Paste backup with rsync'
+paste_backup() {
+    [ -f "$OP_FILE" ] || return
+    load=$(cat "$OP_FILE")
+    mode=$(echo "$load" | sed -n '1p')
+    list=$(echo "$load" | sed '1d')
+
+    if [ "$mode" = copy ]; then
+        tput rmcup
+        echo "$list" | while read -r file; do
+            [ -d "$file" ] || {
+                echo "ERROR: '$file' is not a directory"
+                break
+            }
+            n=$(basename "$file")
+            mkdir ./"$n"
+            rsync -avx --delete \
+                  --info=progress2,del,name,stats2 \
+                  "$file/" ./"$n"
+        done
+        rm -f "$OP_FILE"
+    fi
+}
+
+
+add_fun adb_install 'ADB install'
+adb_install() {
+    tput rmcup
+    echo "$fx" | while read -r file; do
+        adb install "$file"
+    done
+}

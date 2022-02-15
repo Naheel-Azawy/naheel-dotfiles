@@ -298,6 +298,7 @@ abbr ytdl  'youtube-dl --add-metadata -ic'
 abbr ytdla 'youtube-dl --add-metadata -xic --audio-format mp3'
 abbr blesh 'env USE_BLESH=1 bash'
 abbr ports 'netstat -tulnp'
+abbr backup 'rsync -avx --delete --info=progress2,del,name,stats2'
 
 bind \cq exit
 
