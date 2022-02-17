@@ -11,6 +11,8 @@ case "$class" in
         echo 'sticky=on' ;;
     Emacs)
         echo 'state=tiled' ;;
+    Empty)
+        echo 'state=tiled' ;;
 esac
 
 case "$title" in

@@ -178,10 +178,6 @@ super+w
 super+u
 	dmenuunicode
 
-# Get the bibliography or PDF from the current window
-super+r
-	getbib
-
 # Youtube stuff
 super+y
 	youtube-menu
@@ -197,10 +193,6 @@ super+h
 # Network manager menu
 super+n
 	networkmanager_dmenu
-
-# Togggle opacity of current window
-super+o
-	toggle-opacity
 
 # Toggle notifications
 super+i
@@ -353,10 +345,10 @@ XF86Close
 	wm-msg window_close
 
 XF86WebCam
-	camtoggle
+	tiny-camera
 
 XF86Search
-	browser https://duckduckgo.com
+	browser https://naheel.xyz/searx
 
 XF86Shop
 	browser https://ebay.com
@@ -388,11 +380,20 @@ XF86WLAN
 XF86Launch1
 	menus
 
+XF86Tools
+	theterm music-player
+
+XF86Favorites
+	tiny-camera
+
+Cancel
+	wm-msg window_nice_close
+
 super+shift+v
 	/mnt/hdd1/Private/m-launcher.sh
 
 super+semicolon
-	edit "$HOME/Dropbox/orgmode/TODO.org"
+	edit "$HOME/Notes/TODO.org"
 
 super+shift+semicolon
 	calendar

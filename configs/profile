@@ -39,8 +39,28 @@ export CM_LAUNCHER=menus-face # for clipmenu
 export PI=3.14159265358979323844
 export EU=2.71828182845904523537
 
-[ -f ~/.dotfiles-exports ] &&
+[ -f ~/.dotfiles-exports ] && {
     . ~/.dotfiles-exports
+    PATH="$PATH:$DOTFILES_SCRIPTS/personal"
+    PATH="$PATH:$DOTFILES_SCRIPTS/to-seperate"
+    PATH="$PATH:$DOTFILES_SCRIPTS/to-seperate/lemonbar"
+    PATH="$PATH:$DOTFILES_SCRIPTS/to-seperate/calc-csv"
+    PATH="$PATH:$DOTFILES_SCRIPTS/old"
+    PATH="$PATH:$DOTFILES_SCRIPTS/tools"
+    PATH="$PATH:$DOTFILES_SCRIPTS/tools/nice-stuff"
+    PATH="$PATH:$DOTFILES_SCRIPTS/tools/android"
+    PATH="$PATH:$DOTFILES_SCRIPTS/tools/utils"
+    PATH="$PATH:$DOTFILES_SCRIPTS/tools/programming"
+    PATH="$PATH:$DOTFILES_SCRIPTS/tools/networking"
+    PATH="$PATH:$DOTFILES_SCRIPTS/tools/pdf"
+    PATH="$PATH:$DOTFILES_SCRIPTS/tools/media"
+    PATH="$PATH:$DOTFILES_SCRIPTS/tools/electronics"
+    PATH="$PATH:$DOTFILES_SCRIPTS/tools/sandboxing-wine"
+    PATH="$PATH:$DOTFILES_SCRIPTS/gui"
+    PATH="$PATH:$DOTFILES_SCRIPTS/gui-extra"
+    PATH="$PATH:$DOTFILES_SCRIPTS/tui"
+    export PATH # TODO: clean this mess asap!!!
+}
 export TINY=$(ndots istiny && echo t)
 
 try_export() {   [ -d "$2" ] && export "$1=$2";:;       }
