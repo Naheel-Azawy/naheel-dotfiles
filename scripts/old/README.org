@@ -1,3 +1,0 @@
-* ndots: old
-  Bunch of old scripts. Many are probably broken or very poorly written.
-  These will be cleaned, rewritten, or removed in the future.

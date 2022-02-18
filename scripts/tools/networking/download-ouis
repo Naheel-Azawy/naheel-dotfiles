@@ -1,2 +1,2 @@
 #!/bin/sh
-curl 'http://standards-oui.ieee.org/oui.txt' > /usr/share/hwdata/oui.txt
+curl -L 'http://standards-oui.ieee.org/oui/oui.txt' > /usr/share/hwdata/oui.txt

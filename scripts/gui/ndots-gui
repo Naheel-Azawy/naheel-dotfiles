@@ -286,7 +286,8 @@ lockscreen() {
         --pass-media-keys      \
         --pass-screen-keys     \
         --pass-power-keys      \
-        --pass-volume-keys
+        --pass-volume-keys     \
+        --ignore-empty-password
 }
 
 # ==== mini interfaces ====

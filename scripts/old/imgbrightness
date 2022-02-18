@@ -1,4 +1,0 @@
-#!/bin/sh
-convert "$1" -gravity center -colorspace hsb -resize 1x1 txt:- |
-    awk -F '[%$]' 'NR==2{gsub(",",""); printf "%.0f\n", $(NF-1)}'
-

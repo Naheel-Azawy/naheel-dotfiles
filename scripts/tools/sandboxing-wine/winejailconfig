@@ -1,3 +1,0 @@
-#!/bin/sh
-N="wine-$1"
-WINEARCH=win32 firejail-my "$N" wine winecfg

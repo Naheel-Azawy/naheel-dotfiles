@@ -19,7 +19,7 @@ plot() {
 sin() {
     x=0
     while :; do
-        echo "($ymax/2) * s(0.25*$x) + ($ymax/2)" | bc -l
+        echo "($ymax/2) * s(0.1*$x) + ($ymax/2)" | bc -l
         x=$((x + 1))
         sleep 0.1
     done
@@ -52,11 +52,15 @@ noise() {
 }
 
 main() {
-    #stty -F $dev speed 115200
-    plot < $dev
+    case "$1" in
+        sin)    sin    | noise | plot ;;
+        square) square | noise | plot ;;
+        '')
+            #stty -F $dev speed 115200
+            plot < $dev ;;
+        *)
+            return 1
+    esac
 }
 
 main "$@"
-
-#sin | plot
-#square | noise | plot

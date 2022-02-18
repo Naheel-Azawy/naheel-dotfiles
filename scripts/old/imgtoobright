@@ -1,3 +1,0 @@
-#!/bin/sh
-B=$(imgbrightness "$1")
-test "$B" -gt 60

@@ -1,6 +1,0 @@
-#!/bin/sh
-export WINEPREFIX="$HOME/Firejail/wine-$1/"
-mkdir -p "$WINEPREFIX"
-export WINEARCH="win32"
-shift
-exec winetricks "$@"

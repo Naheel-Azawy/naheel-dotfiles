@@ -1,2 +1,0 @@
-#!/bin/sh
-imgtoobright "$1" && convert "$1" -negate "$1" || exit 0

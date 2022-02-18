@@ -1,5 +1,0 @@
-#!/bin/sh
-rm -f ~/.config/menus/applications-merged/wine*
-rm -f ~/.local/share/desktop-directories/wine*
-rm -f -r ~/.local/share/applications/wine
-rm -f -r ~/.wine
