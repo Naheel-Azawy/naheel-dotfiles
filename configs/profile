@@ -2,38 +2,21 @@
 
 # Profile file. Runs on login.
 
-#export WINDOW_MANAGER='i3'
-#export WINDOW_MANAGER='sway'
-export WINDOW_MANAGER='bspwm'
-#export WINDOW_MANAGER='emacs'
-#export WINDOW_MANAGER='gnome-session'
 export TERM='screen-256color'
 export EDITOR='edit'
 export VISUAL="$EDITOR"
 export TERMINAL='theterm'
 export FILE_MANAGER='fmz'
-export BROWSER='browser'
-export READER='reader'
-export MENUS_INTERFACE='dmenu'
+export BROWSER='ndots-gui browser'
+export READER='ndots-gui reader'
 export TUI_APPS='music-player:lf:vis:corona:alsamixer:lyrics:nano:dice:fmz'
 
 # TODO: move to personal
-export BIB="$HOME/Documents/LaTeX/refs.bib"
 export ORG_TODO="$HOME/Dropbox/orgmode/TODO.org"
 export CLOUDCONVERT_API_KEY='bUGujVfvGQ6nkPZo5MvFoIz65C3spOZMtiD4Bz613XxnXsUIVDDwZILqOJZghP3D'
 
-export FONT_MONO='Iosevka Fixed'
-export FONT_SANS='Liberation Sans'
-export FONT="$FONT_MONO"
-export GTK_THEME="Adwaita:dark"
-export DESKTOP_SESSION=gnome
-export QT_QPA_PLATFORMTHEME="qt5ct"
-#export QT_DEVICE_PIXEL_RATIO=1
-export QT_AUTO_SCREEN_SCALE_FACTOR=0
-#export QT_STYLE_OVERRIDE=adwaita-dark
 export SHHH_JAVA_OPTIONS='-Dawt.useSystemAAFontSettings=on' # check bashrc
 export NEWT_COLORS='root=,black'
-export CM_LAUNCHER=menus-face # for clipmenu
 #export LESS="$LESS --mouse -K"
 
 export PI=3.14159265358979323844
@@ -41,25 +24,11 @@ export EU=2.71828182845904523537
 
 [ -f ~/.dotfiles-exports ] && {
     . ~/.dotfiles-exports
-    PATH="$PATH:$DOTFILES_SCRIPTS/personal"
-    PATH="$PATH:$DOTFILES_SCRIPTS/to-seperate"
-    PATH="$PATH:$DOTFILES_SCRIPTS/to-seperate/lemonbar"
-    PATH="$PATH:$DOTFILES_SCRIPTS/to-seperate/calc-csv"
-    PATH="$PATH:$DOTFILES_SCRIPTS/old"
-    PATH="$PATH:$DOTFILES_SCRIPTS/tools"
-    PATH="$PATH:$DOTFILES_SCRIPTS/tools/nice-stuff"
-    PATH="$PATH:$DOTFILES_SCRIPTS/tools/android"
-    PATH="$PATH:$DOTFILES_SCRIPTS/tools/utils"
-    PATH="$PATH:$DOTFILES_SCRIPTS/tools/programming"
-    PATH="$PATH:$DOTFILES_SCRIPTS/tools/networking"
-    PATH="$PATH:$DOTFILES_SCRIPTS/tools/pdf"
-    PATH="$PATH:$DOTFILES_SCRIPTS/tools/media"
-    PATH="$PATH:$DOTFILES_SCRIPTS/tools/electronics"
-    PATH="$PATH:$DOTFILES_SCRIPTS/tools/sandboxing-wine"
     PATH="$PATH:$DOTFILES_SCRIPTS/gui"
-    PATH="$PATH:$DOTFILES_SCRIPTS/gui-extra"
     PATH="$PATH:$DOTFILES_SCRIPTS/tui"
-    export PATH # TODO: clean this mess asap!!!
+    PATH="$PATH:$DOTFILES_SCRIPTS/tools"
+    PATH="$PATH:$DOTFILES_SCRIPTS/personal"
+    export PATH
 }
 export TINY=$(ndots istiny && echo t)
 

@@ -23,10 +23,10 @@ openfile() {
         # file name
         case "$f" in
             *.html)
-                mynohup browser "$f";;
+                mynohup ndots-gui browser "$f";;
             *.link)
                 url=$(cat "$f")
-                mynohup browser "$url";;
+                mynohup ndots-gui browser "$url";;
             *.el.gz)
                 exec "$EDITOR" "$f";;
             *.pcapng|*.cap)

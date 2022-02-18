@@ -7,6 +7,6 @@ TMP="$BASE/__tmp.pdf"
 rm -f "$TMP"
 ln -s "$1" "$TMP"
 
-browser --app="file://$BASE/viewer.html?file=__tmp.pdf" >/dev/null
+ndots-gui browser --app="file://$BASE/viewer.html?file=__tmp.pdf" >/dev/null
 #chromium --app="http://localhost:8888/web/viewer.html?file=__tmp.pdf" >/dev/null
 #surf "http://localhost:8888/web/viewer.html?file=__tmp.pdf" >/dev/null

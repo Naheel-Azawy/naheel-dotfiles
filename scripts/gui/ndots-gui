@@ -1,0 +1,408 @@
+#!/bin/sh
+
+HERE=$(realpath "$(dirname "$0")")
+NOTIF_ID=123
+
+# ==== utils ====
+
+C='\033[1m\033[34m' # blue
+E='\033[1m\033[31m' # red
+R='\033[0m'         # reset
+
+info() {
+    printf "${C}INFO:${R} %s\n" "$@"
+}
+
+err() {
+    printf "${E}ERROR:${R} %s\n" "$@" >&2
+}
+
+exists () {
+    command -v "$1" >/dev/null
+}
+
+# ==== audio ====
+
+MAX_VOL=250
+
+audio_notify() {
+    res=$(dunstify         \
+              -r $NOTIF_ID \
+              -A 'gui,GUI' \
+              "$@")
+    if [ "$res" = gui ]; then
+        pavucontrol
+    fi
+}
+
+audio_vol_notif() {
+    v="$1"
+    [ "$v" ] || v=$(pamixer --get-volume)
+	if [ "$(pamixer --get-mute)" = "true" ]; then
+        audio_notify "Volume: Muted"
+	else
+        audio_notify -h int:value:"$v" "Volume: $v%"
+    fi
+}
+
+audio_mic_notif() {
+    if amixer sget Capture | grep -Eq 'Capture.+\[on\]'; then
+        audio_notify "Microphone: ON"
+    else
+        audio_notify "Microphone: OFF"
+    fi
+}
+
+audio_vol() {
+    [ "$1" ] || return 1
+    lock='/tmp/__audioctl_vol_lock'
+    [ -f "$lock" ] && return
+    touch "$lock"
+    c="$1"
+    d="$2"; [ "$d" ] || d=5
+    case "$c" in
+        m) pamixer -m ;;
+        t) pamixer -t ;;
+        up|down)
+            [ "$c" = down ] && d="-$d"
+            v=$(pamixer --get-volume)
+            v=$((v+d))
+            if [ $v -le $MAX_VOL ]; then
+                v=$((v/5*5))
+            else
+                v=$MAX_VOL
+            fi
+            if [ $v -lt 0 ]; then
+                v=0
+            fi
+            pamixer --allow-boost --set-volume $v
+            ;;
+    esac
+    rm -f "$lock"
+	audio_vol_notif "$v"
+}
+
+audio() {
+    cmd="$1"
+    v="$2"
+    case "$cmd" in
+	    "up")       audio_vol up   "$v"                           ;;
+	    "down")     audio_vol down "$v"                           ;;
+	    "mute")     amixer -q set Master toggle;  audio_vol_notif ;;
+	    "mutemic")  amixer -q set Capture toggle; audio_mic_notif ;;
+	    "stop")     mpc -q stop       || cmus-remote --stop       ;;
+	    "pause")    mpc -q toggle     || cmus-remote --pause      ;;
+	    "forward")  mpc -q seek +"$v" || cmus-remote --seek +"$v" ;;
+	    "back")     mpc -q seek -"$v" || cmus-remote --seek -"$v" ;;
+	    "next")     mpc -q next       || cmus-remote --next       ;;
+	    "prev")     mpc -q prev       || cmus-remote --prev       ;;
+	    "replay")   mpc seek 0%       || cmus-remote --seek 0     ;;
+        "gui")      pavucontrol                                   ;;
+        *)          return 1
+    esac
+}
+
+# ==== brightness ====
+
+brightness() {
+    if [ $# = 0 ]; then
+        xbacklight -get
+        return
+    fi
+
+    xbacklight "$@"
+    V=$(xbacklight -get)
+    dunstify -i none -r $NOTIF_ID \
+             -h int:value:"$V"    \
+             "Brightness: $V%"
+}
+
+# ==== display ====
+
+display() {
+    if [ "$1" = '-d' ]; then
+        sel='Auto'
+    else
+        l=$({
+               # echo 'Auto'
+               echo 'Mirror'
+               echo 'Extend'
+               echo 'Edit screen layout'
+               echo 'Invert colors'
+               echo 'Temperature: 6500  Default'
+               echo 'Temperature: 5000  Warm'
+               echo 'Temperature: 9000  Cool'
+               echo 'Temperature: 2000  Extra Warm'
+               echo 'Temperature: 20000 Extra Cool'
+               echo 'Temperature: Custom'
+
+               # find "$HOME/.screenlayout" -type f -exec basename '{}' \; |
+               #     grep -v '^default' |
+               #     awk -F'.' '{print $1}'
+           })
+        l_len=$(echo "$l" | wc -l)
+        [ "$l_len" -gt 20 ] && l_len=20
+        sel=$(echo "$l" | menus-face -i -l "$l_len" -p 'Display options')
+    fi
+
+    case "$sel" in
+        '') ;;
+        Auto)   automon extend; wallpaper reset ;;
+        Mirror) automon mirror; wallpaper reset ;;
+        Extend) automon extend; wallpaper reset ;;
+        Edit*)  arandr;         wallpaper reset ;;
+        Invert*) xrandr-invert-colors ;;
+        Temperature*)
+            sel=$(echo "$sel" | awk '{print $2}')
+            if [ "$sel" = Custom ]; then
+                sel=$(echo | menus-face -p 'Color temperature')
+            fi
+            [ "$sel" ] && xsct "$sel" ;;
+
+        *)
+            sh "$D/${sel}.sh"; wallpaper reset ;;
+    esac
+}
+
+# ==== lang ====
+
+LANGS=us,ar
+LANGS_E=us,ar,ru,fr,de,ir
+
+lang_get() {
+    setxkbmap -query | sed -En 's/layout:\s*(.+)/\1/p' 2>/dev/null
+}
+
+lang_init() {
+    langs="$1"
+    [ -n "$langs" ] || langs=$LANGS
+    [ "$1" = '-e' ] && langs=$LANGS_E
+    # grep "grp:.*toggle" /usr/share/X11/xkb/rules/base.lst
+    setxkbmap -layout $langs -option grp:win_space_toggle
+    [ -f ~/.Xmodmap ] && xmodmap ~/.Xmodmap
+}
+
+lang() {
+    cmd="$1"
+    shift
+    case "$cmd" in
+        us)    lang_init us; lang_init ;;
+        init)  lang_init "$@"  ;;
+        'tog')                 ;; # TODO: ???
+        '')    lang_get        ;;
+    esac
+}
+
+# ==== mini utils ====
+
+notiftog() {
+    # https://wiki.archlinux.org/index.php/Dunst
+    dunstctl set-paused toggle
+    if [ "$(dunstctl is-paused)" = true ]; then
+        notify-send 'Notifications enabled'
+    fi
+}
+
+touchpadtog() {
+    # Toggle touchpad. Requires xf86-input-synaptics.
+    (synclient | grep 'TouchpadOff.*1' && synclient TouchpadOff=0)>/dev/null && echo "TouchPad reactivated." && exit
+    synclient TouchpadOff=1 && echo "TouchPad deactivated."
+}
+
+systraytog() {
+    killall trayer && return 0
+
+    eval "$(xdotool getmouselocation --shell)"
+    Y=$((Y+15))
+
+    trayer --edge top \
+	       --align left \
+	       --distance "$Y" \
+	       --margin "$X" \
+	       --widthtype request \
+	       --tint 0x000000 \
+	       --transparent true \
+	       --expand true \
+	       --SetDockType false \
+	       --alpha 0 &
+
+    # trayer doesn't set the location correctly
+    # for multi-monitor setup
+    sleep .1
+    xdotool getactivewindow windowmove "$X" "$Y"
+}
+
+wallpaper() {
+    f=~/.config/wall
+    [ -f "$f" ] ||
+        ln -s "$DOTFILES_DIR/configs/wall.png" "$f"
+    [ "$1" = get ] && realpath "$f" && return
+    [ "$1" ] && [ "$1" != reset ] && {
+        if [ -f "$1" ]; then
+            target=$(realpath "$1")
+            ln -sf "$target" "$f"
+            gsettings set org.gnome.desktop.background \
+                      picture-uri "file://$target"
+        else
+            err "'$1' is not a file"
+        fi
+    }
+    feh --bg-fill "$f"
+}
+
+# ==== lockscreen ====
+
+lockscreen() {
+    pgrep i3lock && {
+        echo Already locked
+        return 0
+    }
+
+    lang us &
+
+    [ "$FONT" ] || FONT='sans-serif'
+    COLOR='ffffffff'
+
+    # using picom for blur and opacity
+    i3lock                     \
+        -e -f -c 000000        \
+        --clock                \
+        --indicator            \
+        --time-str '%H:%M'     \
+        --date-str '%Y.%m.%d'  \
+        --time-font "$FONT"    \
+        --date-font "$FONT"    \
+        --layout-font "$FONT"  \
+        --verif-font "$FONT"   \
+        --wrong-font "$FONT"   \
+        --greeter-font "$FONT" \
+        --time-size 40         \
+        --date-size 20         \
+        --time-align 0         \
+        --date-align 0         \
+        --time-color "$COLOR"  \
+        --date-color "$COLOR"  \
+        --ring-color ffffffff  \
+        --pass-media-keys      \
+        --pass-screen-keys     \
+        --pass-power-keys      \
+        --pass-volume-keys
+}
+
+# ==== mini interfaces ====
+
+browser() {
+    x=$(xrandr | sed -rn 's/.+connected primary ([0-9]+)x([0-9]+).+/\1/p')
+    if [ "$x" -ge 1920 ]; then
+        scale=1.3
+    else
+        scale=1
+    fi
+
+    if exists brave; then
+        brave --force-device-scale-factor="$scale" "$@"
+    elif exists chromium; then
+        chromium --force-device-scale-factor="$scale" "$@"
+    elif exists firefox; then
+        firefox "$@"
+    else
+        notify-send -u critical 'No installed web browser was found'
+    fi
+}
+
+floating_calc() {
+    eval "$(xdotool getmouselocation --shell)"
+    theterm -s ignored-calc -a "-c __floatme__ -g 45x10+$X+$Y" calc
+}
+
+calendar() {
+    edit t --eval '(cfw:open-org-calendar)'
+}
+
+reader() {
+    if echo "$1" | grep -q '.epub$'; then
+        exec foliate "$@"
+    else
+        exec evince "$@"
+    fi
+}
+
+taskmanager() {
+    TOP=btop
+    [ "$1" = -1 ] && pgrep $TOP >/dev/null && return 1
+    theterm "exec $TOP"
+}
+
+# ==== music ====
+
+music_notif() {
+    mpc idleloop | while read -r e; do
+        [ "$e" = player ] || continue
+        s=$(mpc status -f '>>> %artist% - %title%')
+        sym=$(if echo "$s" | grep -q '\[playing\]'; then
+                  echo '▶'
+              else
+                  echo '⏸'
+              fi)
+        s=$(echo "$s" | sed -rn 's/>>> (.+)/\1/p')
+        dunstify -r $NOTIF_ID Music "$sym $s"
+    done
+}
+
+music() {
+    case "$1" in
+        notif)
+            music_notif ;;
+        find)
+            song=$(mpc search any '' | fzf --reverse)
+            [ "$song" ] && {
+                mpc insert "$song"
+                mpc next
+            };;
+        *)
+            mpd 2>/dev/null >/dev/null # start the daemon
+            music_notif &
+            ncmpcpp "$@"
+    esac
+}
+
+# ==== input ====
+
+input_handle() {
+    usermodmap=$HOME/.Xmodmap
+    if [ -f "$usermodmap" ]; then
+        xmodmap "$usermodmap"
+    fi
+    xset r rate 230 50
+}
+
+input() {
+    input_handle
+    if [ "$1" = daemon ]; then
+        udevadm monitor | while read -r line; do
+            if echo "$line" | grep -Eq 'UDEV.+\(input\)'; then
+                date
+                echo "$line"
+                input_handle
+            fi
+        done
+    fi
+}
+
+# ==== main ====
+
+main() {
+    cmd="$1"
+    shift
+    case "$cmd" in
+        audio|brightness|browser|floating_calc|calendar| \
+            display|lang|lockscreen|music|notiftog|reader| \
+            input|wallpaper|taskmanager|touchpadtog|systraytog)
+            "$cmd" "$@" ;;
+        wm)    exec "$HERE/wm-msg" "$@" ;;
+        empty) exec "$HERE/empty"       ;;
+        *)     return 1
+    esac
+}
+
+main "$@"

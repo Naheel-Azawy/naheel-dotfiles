@@ -1,2 +1,0 @@
-#!/bin/sh
-exec jq -s -R -r @uri

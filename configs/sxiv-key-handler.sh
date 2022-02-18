@@ -69,7 +69,7 @@ case "$choice" in
         S=$(printf 'save\nmove\n'; printf '%s\n' "${files[@]}")
         lf -remote "$S";;
     "Set as wallpaper" | "w")
-        setwallpaper "${files[-1]}";;
+        ndots-gui wallpaper "${files[-1]}";;
     "Set as temporary wallpaper")
         feh --bg-fill "${files[-1]}";;
     "Duplicate" | "2")

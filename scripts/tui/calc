@@ -205,6 +205,8 @@ run_test() {
 
 main() {
     case "$1" in
+        max) cut -f1 -d',' "$@" | sort -n | tail -1 ;;
+        min) cut -f1 -d',' "$@" | sort -n | head -1 ;;
         -c)     shift; run_c   "$@";;
         -cx|-x) shift; run_cx  "$@";;
         -cb|-b) shift; run_cb  "$@";;

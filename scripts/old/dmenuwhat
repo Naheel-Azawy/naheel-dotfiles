@@ -2,6 +2,10 @@
 
 DMENU='menus-face -i'
 
+url_encode() {
+    jq -s -R -r @uri
+}
+
 is_url() {
     [ "$(echo "$1" | sed -rn 's@.*(https?://.+\..+).*@\1@p')" != '' ]
 }
@@ -19,7 +23,7 @@ how_can_I_help_you_sir() {
 
     case "$C" in
         View*)
-            theterm "bash -c 'lynx -dump \"$Q\" | more && echo -e \"\nOpen in browser? (y/n)\" && read ans && test \"\$ans\" == y && browser \"$Q\" &>/dev/null'"
+            theterm "bash -c 'lynx -dump \"$Q\" | more && echo -e \"\nOpen in browser? (y/n)\" && read ans && test \"\$ans\" == y && ndots-gui browser \"$Q\" &>/dev/null'"
             ;;
         Wiki*)
             theterm "wikit-quick \"$Q\""
@@ -29,15 +33,15 @@ how_can_I_help_you_sir() {
             theterm "trans :$L \"$Q\" | less -R"
             ;;
         Duck*)
-            Q=$(echo "$Q" | url-encode)
-            $BROWSER "https://duckduckgo.com/?q=$Q&t=ffab&atb=v1-1"
+            Q=$(echo "$Q" | url_encode)
+            ndots-gui browser "https://duckduckgo.com/?q=$Q&t=ffab&atb=v1-1"
             ;;
         Man*)
             theterm "man \"$Q\""
             ;;
         Arch*)
-            Q=$(echo "$Q" | url-encode)
-            $BROWSER "https://wiki.archlinux.org/index.php?search=$Q"
+            Q=$(echo "$Q" | url_encode)
+            ndots-gui browser "https://wiki.archlinux.org/index.php?search=$Q"
             ;;
         Wait*)
             Q=$(echo | $DMENU -p "Which is?")

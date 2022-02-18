@@ -10,7 +10,6 @@ firefox
 brave'
 
 menu() {
-    # menus-face -sb '#E00000' -sf white -nf white "$@" # TODO: fix prompt with `('
     dmenu -sb '#E00000' -sf white -nf white "$@"
 }
 
@@ -52,11 +51,15 @@ running_menu() {
     fi
 }
 
+url_encode() {
+    jq -s -R -r @uri
+}
+
 search() {
     q=$(echo | menu -p 'Search YouTube')
     [ "$q" ] && {
-        q=$(echo "$q" | url-encode)
-        browser "https://www.youtube.com/results?search_query=$q"
+        q=$(echo "$q" | url_encode)
+        xdg-open "https://www.youtube.com/results?search_query=$q"
     }
 }
 

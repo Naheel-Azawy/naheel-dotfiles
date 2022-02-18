@@ -1,65 +1,66 @@
-| Tag    | Name                           | Git Link                               | Purpose                                                                                        |
-|--------+--------------------------------+----------------------------------------+------------------------------------------------------------------------------------------------|
-| func   | blackarch                      | N.A.                                   | hacking tools                                                                                  |
-| pacman | nodejs                         | N.A.                                   | node.js is needed to run some programs ahead                                                   |
-| pacman | npm                            | N.A.                                   | node.js pacage manager                                                                         |
-| npm    | shelljs                        | N.A.                                   | shell commands on js                                                                           |
-| pip    | youtube-dl                     | N.A.                                   | can download any YouTube video (or playlist or channel) when given the link                    |
-| pacman | youtube-viewer                 | N.A.                                   | is a terminal interface for watching YouTube videos without a browser                          |
-| pacman | libreoffice                    | N.A.                                   | because off course someone will send a file that is not a plain text...                        |
-| pacman | jdk-openjdk                    | N.A.                                   | Java development kit                                                                           |
-| pacman | firejail                       | N.A.                                   | keeps untrusted software in jail                                                               |
-| pacman | arch-install-scripts           | N.A.                                   | contains some helpful scripts to install or maintain arch                                      |
-| pacman | gimp                           | N.A.                                   | the gnu image manipulation program                                                             |
-| aur    | gimp-plugin-resynthesizer      | N.A.                                   | gimp resynthesizer                                                                             |
-| aur    | drawio-desktop-bin             | N.A.                                   | diagram builder                                                                                |
-| pacman | imagemagick                    | N.A.                                   | the magical image editor                                                                       |
-| pacman | virtualbox                     | N.A.                                   | the chosen virtual machine                                                                     |
-| pacman | virtualbox-host-modules-arch   | N.A.                                   | virtual-box kernel modules                                                                     |
-| pacman | nautilus                       | N.A.                                   | GNOME's file manager                                                                           |
-| pacman | wine                           | N.A.                                   | runs Windows programs. Always be careful while using non free software. Best fit with firejail |
-| pacman | wine-mono                      | N.A.                                   | needed by wine                                                                                 |
-| pacman | wine_gecko                     | N.A.                                   | needed by wine                                                                                 |
-| pacman | libwbclient                    | N.A.                                   | needed for wine                                                                                |
-| pacman | samba                          | N.A.                                   | needed for wine                                                                                |
-| pacman | mpg123                         | N.A.                                   | needed for wine                                                                                |
-| pacman | lib32-mpg123                   | N.A.                                   | needed for wine                                                                                |
-| pacman | lib32-gnutls                   | N.A.                                   | needed for wine                                                                                |
-| aur    | ttf-amiri                      | N.A.                                   | Arabic font                                                                                    |
-| pacman | adobe-source-han-sans-cn-fonts | N.A.                                   | Chinese font                                                                                   |
-| pacman | opendesktop-fonts              | N.A.                                   | Japanese font                                                                                  |
-| aur    | transset-df                    | N.A.                                   | used to change the window opacity                                                              |
-| pacman | translate-shell                | N.A.                                   | a command-line translator                                                                      |
-| pip    | numpy                          | N.A.                                   | some actual math in python                                                                     |
-| pip    | matplotlib                     | N.A.                                   | math plotting in python                                                                        |
-| aur    | python-pmw                     | N.A.                                   | needed for matplotlib                                                                          |
-| pacman | texlive-most                   | N.A.                                   | tex stuff                                                                                      |
-| pacman | texlive-langextra              | N.A.                                   | tex extra languages support                                                                    |
-| pacman | biber                          | N.A.                                   | tex biber                                                                                      |
-| aur    | screenkey                      | N.A.                                   | display the pressed keys on the screen. Useful for screen casting                              |
-| pacman | tree                           | N.A.                                   | list tree of directories                                                                       |
-| pacman | gnuplot                        | N.A.                                   | Gnu plotting program                                                                           |
-| pacman | iotop                          | N.A.                                   | top for disk io                                                                                |
-| pacman | sysstat                        | N.A.                                   | a collection of performance monitoring tools (iostat,isag,mpstat,pidstat,sadf,sar)             |
-| npm    | cloudconvert                   | N.A.                                   | usefull to convert ugly documents written in non-free softwares                                |
-| pacman | perl-file-mimeinfo             | N.A.                                   | file opener with mime type                                                                     |
-| git    | colorpicker                    | https://github.com/ym1234/colorpicker  | a simple color picker                                                                          |
-| pacman | lshw                           | N.A.                                   | list hardware devices                                                                          |
-| pacman | tesseract                      | N.A.                                   | OCR engine                                                                                     |
-| pacman | tesseract-data-eng             | N.A.                                   | English data for tesseract                                                                     |
-| pacman | tesseract-data-ara             | N.A.                                   | Arabic data for tesseract                                                                      |
-| aur    | xrandr-invert-colors           | N.A.                                   | inver screen colors                                                                            |
-| pacman | poppler                        | N.A.                                   | manipulates pdfs                                                                               |
-| pacman | fd                             | N.A.                                   | faster find                                                                                    |
-| pacman | ripgrep                        | N.A.                                   | faster grep                                                                                    |
-| npm    | qrcode                         | N.A.                                   | QR code generator                                                                              |
-| pacman | foliate                        | N.A.                                   | ebook reader                                                                                   |
-| pacman | arch-audit                     | N.A.                                   | audit your system                                                                              |
-| git    | rn                             | https://github.com/Naheel-Azawy/runner | executes everything                                                                            |
-| pacman | w3m                            | N.A.                                   | terminal browser which can also view images                                                    |
-| pacman | lynx                           | N.A.                                   | a terminal web browser                                                                         |
-| pacman | units                          | N.A.                                   | units converter                                                                                |
-| pacman | octave                         | N.A.                                   | matlab alternative                                                                             |
-| aur    | adwaita-qt                     | N.A.                                   | Adwaita GNOME theme for Qt5                                                                    |
-| pacman | qt5ct                          | N.A.                                   | QT5 configurations                                                                             |
-| pacman | geoip                          | N.A.                                   | geographical IP database                                                                       |
+| Tag    | Name                           | Git Link                                   | Purpose                                                                                        |
+|--------+--------------------------------+--------------------------------------------+------------------------------------------------------------------------------------------------|
+| func   | blackarch                      | N.A.                                       | hacking tools                                                                                  |
+| pacman | nodejs                         | N.A.                                       | node.js is needed to run some programs ahead                                                   |
+| pacman | npm                            | N.A.                                       | node.js pacage manager                                                                         |
+| npm    | shelljs                        | N.A.                                       | shell commands on js                                                                           |
+| pip    | youtube-dl                     | N.A.                                       | can download any YouTube video (or playlist or channel) when given the link                    |
+| pacman | youtube-viewer                 | N.A.                                       | is a terminal interface for watching YouTube videos without a browser                          |
+| pacman | libreoffice                    | N.A.                                       | because off course someone will send a file that is not a plain text...                        |
+| pacman | jdk-openjdk                    | N.A.                                       | Java development kit                                                                           |
+| pacman | firejail                       | N.A.                                       | keeps untrusted software in jail                                                               |
+| pacman | arch-install-scripts           | N.A.                                       | contains some helpful scripts to install or maintain arch                                      |
+| pacman | gimp                           | N.A.                                       | the gnu image manipulation program                                                             |
+| aur    | gimp-plugin-resynthesizer      | N.A.                                       | gimp resynthesizer                                                                             |
+| aur    | drawio-desktop-bin             | N.A.                                       | diagram builder                                                                                |
+| pacman | imagemagick                    | N.A.                                       | the magical image editor                                                                       |
+| pacman | virtualbox                     | N.A.                                       | the chosen virtual machine                                                                     |
+| pacman | virtualbox-host-modules-arch   | N.A.                                       | virtual-box kernel modules                                                                     |
+| pacman | nautilus                       | N.A.                                       | GNOME's file manager                                                                           |
+| pacman | wine                           | N.A.                                       | runs Windows programs. Always be careful while using non free software. Best fit with firejail |
+| pacman | wine-mono                      | N.A.                                       | needed by wine                                                                                 |
+| pacman | wine_gecko                     | N.A.                                       | needed by wine                                                                                 |
+| pacman | libwbclient                    | N.A.                                       | needed for wine                                                                                |
+| pacman | samba                          | N.A.                                       | needed for wine                                                                                |
+| pacman | mpg123                         | N.A.                                       | needed for wine                                                                                |
+| pacman | lib32-mpg123                   | N.A.                                       | needed for wine                                                                                |
+| pacman | lib32-gnutls                   | N.A.                                       | needed for wine                                                                                |
+| aur    | ttf-amiri                      | N.A.                                       | Arabic font                                                                                    |
+| pacman | adobe-source-han-sans-cn-fonts | N.A.                                       | Chinese font                                                                                   |
+| pacman | opendesktop-fonts              | N.A.                                       | Japanese font                                                                                  |
+| aur    | transset-df                    | N.A.                                       | used to change the window opacity                                                              |
+| pacman | translate-shell                | N.A.                                       | a command-line translator                                                                      |
+| pip    | numpy                          | N.A.                                       | some actual math in python                                                                     |
+| pip    | matplotlib                     | N.A.                                       | math plotting in python                                                                        |
+| aur    | python-pmw                     | N.A.                                       | needed for matplotlib                                                                          |
+| pacman | texlive-most                   | N.A.                                       | tex stuff                                                                                      |
+| pacman | texlive-langextra              | N.A.                                       | tex extra languages support                                                                    |
+| pacman | biber                          | N.A.                                       | tex biber                                                                                      |
+| aur    | screenkey                      | N.A.                                       | display the pressed keys on the screen. Useful for screen casting                              |
+| pacman | tree                           | N.A.                                       | list tree of directories                                                                       |
+| pacman | gnuplot                        | N.A.                                       | Gnu plotting program                                                                           |
+| pacman | iotop                          | N.A.                                       | top for disk io                                                                                |
+| pacman | sysstat                        | N.A.                                       | a collection of performance monitoring tools (iostat,isag,mpstat,pidstat,sadf,sar)             |
+| npm    | cloudconvert                   | N.A.                                       | usefull to convert ugly documents written in non-free softwares                                |
+| pacman | perl-file-mimeinfo             | N.A.                                       | file opener with mime type                                                                     |
+| git    | colorpicker                    | https://github.com/ym1234/colorpicker      | a simple color picker                                                                          |
+| pacman | lshw                           | N.A.                                       | list hardware devices                                                                          |
+| pacman | tesseract                      | N.A.                                       | OCR engine                                                                                     |
+| pacman | tesseract-data-eng             | N.A.                                       | English data for tesseract                                                                     |
+| pacman | tesseract-data-ara             | N.A.                                       | Arabic data for tesseract                                                                      |
+| aur    | xrandr-invert-colors           | N.A.                                       | inver screen colors                                                                            |
+| pacman | poppler                        | N.A.                                       | manipulates pdfs                                                                               |
+| pacman | fd                             | N.A.                                       | faster find                                                                                    |
+| pacman | ripgrep                        | N.A.                                       | faster grep                                                                                    |
+| npm    | qrcode                         | N.A.                                       | QR code generator                                                                              |
+| pacman | foliate                        | N.A.                                       | ebook reader                                                                                   |
+| pacman | arch-audit                     | N.A.                                       | audit your system                                                                              |
+| git    | rn                             | https://github.com/Naheel-Azawy/runner     | executes everything                                                                            |
+| pacman | w3m                            | N.A.                                       | terminal browser which can also view images                                                    |
+| pacman | lynx                           | N.A.                                       | a terminal web browser                                                                         |
+| pacman | units                          | N.A.                                       | units converter                                                                                |
+| pacman | octave                         | N.A.                                       | matlab alternative                                                                             |
+| aur    | adwaita-qt                     | N.A.                                       | Adwaita GNOME theme for Qt5                                                                    |
+| pacman | qt5ct                          | N.A.                                       | QT5 configurations                                                                             |
+| pacman | geoip                          | N.A.                                       | geographical IP database                                                                       |
+| git    | msoffice                       | https://github.com/Naheel-Azawy/officejail | ms office wrapper                                                                              |

@@ -1,7 +1,23 @@
 #!/bin/sh
 
+#export WINDOW_MANAGER='i3'
+export WINDOW_MANAGER='bspwm'
+#export WINDOW_MANAGER='emacs'
+#export WINDOW_MANAGER='gnome-session'
+
 export XDG_SESSION_TYPE=x11
 export GDK_BACKEND=x11
+
+export FONT_MONO='Iosevka Fixed'
+export FONT_SANS='Liberation Sans'
+export FONT="$FONT_MONO"
+export GTK_THEME="Adwaita:dark"
+export DESKTOP_SESSION=gnome
+export QT_QPA_PLATFORMTHEME="qt5ct"
+#export QT_DEVICE_PIXEL_RATIO=1
+export QT_AUTO_SCREEN_SCALE_FACTOR=0
+#export QT_STYLE_OVERRIDE=adwaita-dark
+export CM_LAUNCHER=menus-face # for clipmenu
 
 userresources=$HOME/.Xresources
 sysresources=/etc/X11/xinit/.Xresources
@@ -28,10 +44,10 @@ fi
 # start some nice programs
 
 if [ -d /etc/X11/xinit/xinitrc.d ] ; then
- for f in /etc/X11/xinit/xinitrc.d/?*.sh ; do
-  [ -x "$f" ] && . "$f"
- done
- unset f
+    for f in /etc/X11/xinit/xinitrc.d/?*.sh ; do
+        [ -x "$f" ] && . "$f"
+    done
+    unset f
 fi
 
 # start the system keyring
@@ -60,17 +76,17 @@ export SXHKD_SHELL=dash
 # autostart programs
 autostart thinkpadutils trackpoint      # set trackpoint speed
 autostart sxhkd                         # keyboard daemon
-autostart lang init                     # set the keyboard layouts
+autostart ndots-gui lang init           # set the keyboard layouts
 autostart bar                           # top bar
 autostart wttr daemon                   # weather update
 autostart dunst                         # notifications daemon
 autostart clipmenud                     # clipboard manager daemon
-autostart setup-xinput daemon           # mouse and keyboard setup
+autostart ndots-gui input daemon        # mouse and keyboard setup
 autostart xbanish                       # hides the cursor while typing
 autostart syndaemon -i 0.5 -t -K -R     # disable touchpad while typing
 autostart edit daemon                   # emacs daemon
 autostart picom --experimental-backends # compositor
-autostart setwallpaper                  # wallpaper
+autostart ndots-gui wallpaper reset     # wallpaper
 autostart automon daemon                # automatic monitor config
 autostart lang us                       # set language to 'us' and runs xmodmap
 autostart fmz --mount-monitor           # automatically mount drives

@@ -3,11 +3,11 @@ abbr() {
     ble-sabbrev "$1"="$2"
 }
 
-abbr ث  'lang us; exit'
-abbr مس 'lang us; ls'
-abbr م  'lang us; ls'
-abbr ؤي 'lang us; cd'
-abbr ب  'lang us; fmz'
+abbr ث  'exit'
+abbr مس 'ls'
+abbr م  'ls'
+abbr ؤي 'cd'
+abbr ب  'fmz'
 
 abbr bahs  'bash'
 abbr e     'exit'

@@ -1,0 +1,3 @@
+* ndots: gui
+  The building blocks used in the desktop graphical ui.
+  TODO: group gui stuff and cleanup to build a little de-like shell

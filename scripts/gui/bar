@@ -1,9 +1,12 @@
 #!/bin/python3
 
+# TODO: seperate?
 # TODO: turn items to shell script functions
 # python opens a shell instance, source the items script,
 # and call them whenever needed.
 # this also can turn it into something that everyone can use.
+
+# needed wsw and xrandr-parse
 
 import sh
 import os
@@ -481,17 +484,6 @@ class Bar(BarBase):
             pass
         return None
 
-    @item(big=True)
-    def lang(self):
-        try:
-            out = sh.lang().strip()
-        except:
-            return None
-        if self.a:
-            return out
-        else:
-            return f"%{{A:lang tog:}}{out}%{{A}}"
-
     @item(period=30, big=True)
     def pray(self):
         out = os.popen("prayer --mini 2>/dev/null").read().strip()
@@ -581,7 +573,7 @@ class Bar(BarBase):
 
     @item()
     def systray(self):
-        return "%{A:toggle-systray&:}" + icons["more"] + \
+        return "%{A:ndots-gui systraytog&:}" + icons["more"] + \
             "%{A}" if not self.a else None
 
     @item(big=True)

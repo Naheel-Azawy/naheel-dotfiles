@@ -1,6 +1,6 @@
 #!/bin/sh
 
-toggle-systray
+ndots-gui systraytog
 
 blueman-applet &
 nm-applet &
@@ -8,4 +8,4 @@ kdeconnect-indicator &
 maestral_qt &
 
 sleep 5
-toggle-systray
+ndots-gui systraytog

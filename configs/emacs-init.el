@@ -221,6 +221,12 @@ https://www.emacswiki.org/emacs/NoTabs"
   (setq indent-tabs-mode 'only)
   (defvaralias 'c-basic-offset 'tab-width))
 
+;; ---- ROOT ----
+(defun sudo-reopen ()
+  "Edit currently visited file as root."
+  (interactive)
+  (find-file (concat "/sudo::" buffer-file-name)))
+
 ;; ---- MODELINE ----
 (use-package doom-modeline
   :init
@@ -569,7 +575,7 @@ from: https://stackoverflow.com/a/998472/3825872"
     (delete '("\\.pdf\\'" . default) org-file-apps)
     (add-to-list 'org-file-apps '("\\.pdf\\'" . "evince %s"))
     (delete '("\\.html\\'" . default) org-file-apps)
-    (add-to-list 'org-file-apps '("\\.html\\'" . "browser %s"))
+    (add-to-list 'org-file-apps '("\\.html\\'" . "ndots-gui browser %s"))
 
     ;; -- TEMPO --
     (require 'org-tempo))

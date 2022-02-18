@@ -172,7 +172,7 @@ function finalize {
         'Google Scholar')
             URL=$(echo "$TITLE" | strings | tr ' ' '+')
             URL="https://scholar.google.com/scholar?hl=en&q=$URL"
-            browser "$URL"
+            ndots-gui browser "$URL"
             exit;;
         'Get PDF')
             {
@@ -240,7 +240,7 @@ gscholar() {
     }
 
     b() {
-        browser --headless \
+        ndots-gui browser --headless \
                 --disable-gpu \
                 --dump-dom "$@" 2>/dev/null |
             sed -En 's/.+<body>(.+)<\/body>.+/\1/p'

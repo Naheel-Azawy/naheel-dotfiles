@@ -1,7 +1,0 @@
-#!/bin/sh
-
-# https://wiki.archlinux.org/index.php/Dunst
-dunstctl set-paused toggle
-if [ "$(dunstctl is-paused)" = true ]; then
-    notify-send 'Notifications enabled'
-fi

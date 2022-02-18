@@ -13,10 +13,13 @@ case "$class" in
         echo 'state=tiled' ;;
     Empty)
         echo 'state=tiled' ;;
+    Pavucontrol|Arandr)
+        echo 'state=floating' ;;
 esac
 
 case "$title" in
-    *__floatme__*|'Python Turtle Graphics')
+    *__floatme__* | \
+        'Python Turtle Graphics')
         echo 'state=floating' ;;
 esac
 

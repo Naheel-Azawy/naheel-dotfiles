@@ -224,11 +224,11 @@ end
 
 alias java='java "$SHHH_JAVA_OPTIONS"' # check profile
 
-abbr ث  'lang us; exit'
-abbr مس 'lang us; ls'
-abbr م  'lang us; ls'
-abbr ؤي 'lang us; cd'
-abbr ب  'lang us; fmz'
+abbr ث  'exit'
+abbr مس 'ls'
+abbr م  'ls'
+abbr ؤي 'cd'
+abbr ب  'fmz'
 
 alias please=sudo
 

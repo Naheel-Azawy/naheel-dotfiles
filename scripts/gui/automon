@@ -1,6 +1,5 @@
 #!/bin/sh
 
-
 run() {
     printf '\033[1;32m$\033[0m %s\n' "$*" >&2
     eval "$*"
@@ -133,7 +132,7 @@ handle() {
     notify "$mode"
 
     # post
-    run_if_exists setwallpaper
+    run_if_exists ndots-gui wallpaper reset
     run_if_exists bar &
 }
 

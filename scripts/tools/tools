@@ -1,0 +1,23 @@
+#!/bin/sh
+
+HERE=$(realpath "$(dirname "$0")")
+
+dirs=$(find "$HERE" -maxdepth 1 -mindepth 1 -type d -exec realpath '{}' \;)
+
+IFS='
+'
+for p in $dirs; do
+    PATH="$PATH:$p"
+done
+IFS=' '
+
+case "$1" in
+    path)
+        echo "export PATH='$PATH'" ;;
+
+    tree|'')
+        cd "$HERE" && tree ;;
+
+    *)
+        "$@"
+esac

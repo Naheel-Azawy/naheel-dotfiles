@@ -1,44 +1,4 @@
 #!/bin/sh
 
-NOTIF_ID=123
-
-# start the daemon
-mpd 2>/dev/null >/dev/null
-
-# start the notification daemon
-# pgrep mpd-notificatio >/dev/null || {
-#     # https://stackoverflow.com/a/10408906
-#     nohup mpd-notification </dev/null >/dev/null 2>&1 &
-# }
-
-notif() {
-    mpc idleloop | while read -r e; do
-        [ "$e" = player ] || continue
-        s=$(mpc status -f '>>> %artist% - %title%')
-        sym=$(if echo "$s" | grep -q '\[playing\]'; then
-                  echo '▶'
-              else
-                  echo '⏸'
-              fi)
-        s=$(echo "$s" | sed -rn 's/>>> (.+)/\1/p')
-        dunstify -r $NOTIF_ID Music "$sym $s"
-    done
-}
-
-case "$1" in
-    notif)
-        notif ;;
-    find)
-        song="$(mpc search any '' | fzf --reverse)"
-        [ "$song" ] && {
-            mpc insert "$song"
-            mpc next
-        };;
-    *)
-        notif &
-        if false && command -v bicon.bin >/dev/null; then
-            exec bicon.bin ncmpcpp "$@"
-        else
-            exec ncmpcpp "$@"
-        fi
-esac
+# TODO: delete?
+exec ndots-gui music "$@"

@@ -1,4 +1,0 @@
-#!/bin/sh
-
-eval "$(xdotool getmouselocation --shell)"
-theterm -s ignored-calc -a "-c __floatme__ -g 45x10+$X+$Y" calc
