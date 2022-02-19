@@ -1,4 +1,5 @@
 #!/bin/sh
+
 APK="$1"
 shift
 KEY=~/.android/debug.keystore

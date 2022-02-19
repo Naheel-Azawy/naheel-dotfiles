@@ -1,4 +1,7 @@
 #!/bin/sh
-P=$1
-[ "$1" = "" ] && P=192.168.100
-for lastoctet in $(seq 254); do ping -c 1 $P.$lastoctet; done
+
+p=$1
+[ "$1" = "" ] && p=$(private-ip | cut -d '.' -f -3)
+for lastoctet in $(seq 254); do
+    ping -c 1 -w 5 "$p.$lastoctet"
+done

@@ -518,7 +518,7 @@ from: https://stackoverflow.com/a/998472/3825872"
     (TeX-source-correlate-mode t)
     (TeX-source-correlate-start-server t)
     (TeX-command-list
-     '(("LaTeX" "pdflatexorgwraper -a %s" TeX-run-TeX nil
+     '(("LaTeX" "latexwrapper -a %s" TeX-run-TeX nil
         (latex-mode doctex-mode)
         :help "Quick LaTeX compile")
        ("View" "%V" TeX-run-discard-or-function t t :help "Run Viewer")))))
@@ -533,7 +533,7 @@ from: https://stackoverflow.com/a/998472/3825872"
      org-image-actual-width 500
      org-export-in-background nil
 
-     org-latex-pdf-process '("pdflatexorgwraper %f")
+     org-latex-pdf-process '("latexwrapper %f")
 
      org-preview-latex-default-process 'dvipng
      org-format-latex-options (plist-put org-format-latex-options :scale 1.7)

@@ -1,4 +1,10 @@
 #!/bin/sh
+
 O=/usr/share/hwdata/oui.txt
-[ ! -f $O ] && sudo download-ouis
-grep -i "$(echo "$1" | sed 's/\://g' | cut -c1-6)" "$O" | tr "\t" "\n" | tail -n1
+[ -f $O ] || {
+    echo "Downloading $O... sudo:"
+    sudo download-ouis
+}
+
+half=$(echo "$1" | sed 's/\://g' | cut -c1-6)
+grep -i "$half" "$O" | tr "\t" "\n" | tail -n1
