@@ -12,7 +12,7 @@ export READER='ndots-gui reader'
 export TUI_APPS='music-player:lf:vis:corona:alsamixer:lyrics:nano:dice:fmz'
 
 # TODO: move to personal
-export ORG_TODO="$HOME/Dropbox/orgmode/TODO.org"
+export ORG_TODO="$HOME/Notes/TODO.org"
 export CLOUDCONVERT_API_KEY='bUGujVfvGQ6nkPZo5MvFoIz65C3spOZMtiD4Bz613XxnXsUIVDDwZILqOJZghP3D'
 
 export SHHH_JAVA_OPTIONS='-Dawt.useSystemAAFontSettings=on' # check bashrc

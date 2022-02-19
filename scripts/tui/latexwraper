@@ -6,13 +6,15 @@ YELLOW='\033[1;33m'
 GREEN='\033[1;32m'
 RESET='\033[0m'
 
+compiler=pdflatex
+
 run_showing() {
     printf "$GREEN\$$RESET %s\n" "$*" >&2
-    eval "$@"
+    "$@"
 }
 
 gen_pdf() {
-    run_showing pdflatex -interaction=nonstopmode \
+    run_showing $compiler -interaction=nonstopmode \
                 -synctex=1 --halt-on-error "$@"
 }
 
@@ -26,6 +28,13 @@ embed_fonts() {
 }
 
 garbage() {
+    [ "$1" = '--all' ] && {
+        shift
+        N=$(basename "$1")
+        echo "./.$N.build"
+        echo "$1.synctex.gz"
+        echo "$1.pdf"
+    }
     echo "$1.aux"
     echo "$1.bbl"
     echo "$1.bcf"
@@ -40,8 +49,7 @@ garbage() {
     echo "$1.nav"
     echo "$1.snm"
     echo "$1.vrb"
-    # echo "$1.synctex.gz"
-    echo "texput.log"
+    echo "./texput.log"
 }
 
 garbage_hide() {
@@ -64,16 +72,16 @@ garbage_show() {
 }
 
 cleanup() {
-    G=$(garbage "$1")
+    G=$(garbage --all "$1")
     printf "$RED>>> DELETING:$RESET\n"
     echo "$G"
-    echo "$G" | xargs rm -f
+    echo "$G" | xargs rm -rf
 }
 
 rerun_needed() {
-    echo "$1" | grep -iq 'rerun ' ||
-        echo "$1" | grep -iq '(re)run' ||
-        echo "$1" | grep -iq 'again'
+    echo "$1" | grep -iq 'Warning: .*rerun ' ||
+        echo "$1" | grep -iq 'Warning: .*(re)run ' ||
+        echo "$1" | grep -iq 'Warning: .*again '
 }
 
 bibtex_needed() {
@@ -82,10 +90,18 @@ bibtex_needed() {
 }
 
 main() {
-    ASCII=; [ "$1" = '-a' ] && ASCII=1 && shift
-    [ -t 1 ] && [ -t 0 ] || ASCII=1
+    ascii=; [ "$1" = '-a' ] && ascii=1 && shift
+    [ -t 1 ] && [ -t 0 ] || ascii=1
 
-    if [ "$ASCII" ]; then
+    [ "$1" = '--compiler' ] && {
+        compiler="$2"
+        shift 2
+    }
+
+    clean=
+    [ "$1" = 'clean' ] && clean=1 && shift
+
+    if [ "$ascii" ]; then
         BLUE=
         RED=
         YELLOW=
@@ -94,7 +110,22 @@ main() {
     fi
 
     F="$1"
+
+    [ -n "$F" ] || {
+        F=$(find . -maxdepth 1 -name '*.tex' | head -n1)
+    }
+
+    [ -f "$F" ] || {
+        printf "$RED>>> ERROR:$RESET '%s' is not a file\n" "$F"
+        return 1
+    }
+
     F="${F%.*}"
+
+    if [ "$clean" ]; then
+        cleanup "$F"
+        return
+    fi
 
     garbage_show "$F"
 

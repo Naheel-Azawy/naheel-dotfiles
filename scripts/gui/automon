@@ -15,40 +15,10 @@ notify() {
     notify-send "Display" "$1"
 }
 
-preset() {
-    # TODO: automate?
-    sum="$1"
-    case "$sum" in
-        713e1b8f93d11a9fb7daea61e9342ad1)
-            mode_preset='home desk dock'
-            cmd_preset='xrandr --output LVDS1 --mode 1366x768 --pos 0x0 --rotate normal --output DP1 --off --output DP2 --off --output DP3 --primary --mode 1600x900 --pos 1366x0 --rotate normal --output HDMI1 --off --output HDMI2 --off --output HDMI3 --off --output VGA1 --off --output VIRTUAL1 --off'
-            ;;
-
-        b27529ae25bc5931fcc0ff0f9fc2b9b8)
-            mode_preset='home desk dock with vertical monitor'
-            cmd_preset='xrandr --output DP3 --mode 1600x900 --pos 0x0 --rotate normal --output VGA1  --mode 1366x768 --pos 1600x0 --rotate left'
-            # TODO: add LVDS1, looks like graphics card can't handle more than 2 monitors
-            # https://unix.stackexchange.com/questions/485026/xrandr-fails-randomly-with-configure-crtc-x-failed-on-dock-with-multiple-monit
-            # https://askubuntu.com/questions/136139/xrandr-configure-crtc-0-failed-when-trying-to-change-resolution-on-external-m
-            # https://bbs.archlinux.org/viewtopic.php?id=260191
-            ;;
-
-        *)
-            return 1
-    esac
-    return 0
-}
-
-sum() {
-    xrandr --verbose   |
-        grep -A 8 EDID |
-        md5sum         |
-        cut -d ' ' -f1
-}
-
 handle() {
     mode="$1"
     [ -n "$mode" ] || mode=extend
+    [ "$mode" = auto ] && mode=extend # TODO: proper auto mode
 
     randr=$(xrandr --verbose)
 
@@ -120,6 +90,7 @@ handle() {
 
         *)
             echo "ERROR: unknown mode '$mode'"
+            return 1
     esac
 
     IFS=' '
@@ -136,92 +107,8 @@ handle() {
     run_if_exists bar &
 }
 
-handle_old() {
-    mode="$1"
-    [ -n "$mode" ] || mode=extend
-
-    randr=$(xrandr --verbose)
-    sum=$(sum)
-    echo "SUM = $sum"
-
-    [ "$mode" = auto ] &&
-        preset "$sum"
-
-    # primary=$(echo "$randr" | # first
-    #               awk '/^[A-Za-z0-9\-]+ connected/ {print echo $1}' |
-    #               head -n1)
-    primary=$(echo "$randr" | # largest width
-                  sed -rn "s/(.+) connected.* ([0-9]+)x([0-9]+)\+.+/\2x\3 \1/p" |
-                  sort -rn | head -n1 | cut -d ' ' -f2)
-
-    outputs=$(echo "$randr" |
-                  awk '/^[A-Za-z0-9\-]+ (dis)?connected/ {print echo $1" "$2}')
-
-    primary_dim=$(echo "$randr" |
-                      sed -rn "s/$primary .+ ([0-9]+x[0-9]+)\+.+/\1/p")
-
-    cmd="xrandr"
-    cmd_off="$cmd"
-
-    prev=
-    IFS='
-'
-    for out in $outputs; do
-        con=$(echo "$out" | cut -d ' ' -f2)
-        out=$(echo "$out" | cut -d ' ' -f1)
-
-        cmd_off="$cmd_off --output $out --off"
-
-        if [ "$con" = connected ]; then
-            if [ "$out" = "$primary" ]; then
-                if [ -n "$prev" ]; then
-                    cmd="$cmd --output $out --primary --auto --rotate normal --right-of $prev"
-                else
-                    cmd="$cmd --output $out --primary --auto --rotate normal --pos 0x0"
-                fi
-            else
-                case "$mode" in
-                    extend|auto)
-                        if [ -n "$prev" ]; then
-                            cmd="$cmd --output $out --auto --rotate normal --right-of $prev"
-                        else
-                            cmd="$cmd --output $out --auto --rotate normal --pos 0x0"
-                        fi ;;
-
-                    mirror)
-                        cmd="$cmd --output $out --same-as $primary --scale-from $primary_dim" ;;
-
-                    *)
-                        cmd="$cmd --output $out --off" ;;
-                esac
-            fi
-            prev="$out"
-        else
-            cmd="$cmd --output $out --off"
-        fi
-    done
-    IFS=' '
-
-    [ "$cmd_preset" ]  && cmd="$cmd_preset"
-    [ "$mode_preset" ] && mode="$mode_preset"
-
-    run "$cmd" || {
-        run "$cmd_off"
-        run "$cmd"
-    }
-
-    notify "$mode"
-
-    # post
-    run_if_exists setwallpaper
-    run_if_exists bar &
-}
-
 main() {
     case "$1" in
-        sum)
-            sum ;;
-
         auto|extend|mirror)
             handle "$1" ;;
 
@@ -236,6 +123,7 @@ main() {
 
         *)
             echo 'ERROR: unknown args'
+            return 1
     esac
 }
 
