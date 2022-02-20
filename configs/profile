@@ -44,7 +44,7 @@ if ! command -v apt >/dev/null; then
     sudo chmod a+rw /sys/class/backlight/intel_backlight/brightness \
          2>/dev/null ||:
 
-    # Start graphical server if i3 not already running.
+    # Start graphical server if wm not already running.
     if [ "$(tty)" = "/dev/tty1" ]; then
         pgrep -x "$WINDOW_MANAGER" || exec startx
     fi
