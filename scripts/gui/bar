@@ -419,7 +419,7 @@ class Bar(BarBase):
         try:
             acpi = sh.grep(sh.acpi("-b"), v="unavailable").split("\n")[0]
             percent = int(acpi.split(", ")[1].replace("%", ""))
-            charging = "Charging" in acpi
+            charging = "Discharging" not in acpi
         except:
             return None
 
