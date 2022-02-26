@@ -213,12 +213,12 @@ inchroot() {
     echo
 
     info 'Enabling wheel group in sudoers...'
-    uncomment '%wheel ALL=(ALL) ALL' /etc/sudoers
+    uncomment '%wheel ALL=(ALL:ALL) ALL' /etc/sudoers
 
     if [ "$INSTALL_DOTS" ]; then
         # my dotfiles installer uses sudo a lot :)
         info 'Enabling no password sudo...'
-        uncomment '%wheel ALL=(ALL) NOPASSWD: ALL' /etc/sudoers
+        uncomment '%wheel ALL=(ALL:ALL) NOPASSWD: ALL' /etc/sudoers
         echo
 
         info 'Installing dots...'
@@ -227,7 +227,7 @@ inchroot() {
         echo
 
         info 'Disabling no password sudo...'
-        comment '%wheel ALL=(ALL) NOPASSWD: ALL' /etc/sudoers
+        comment '%wheel ALL=(ALL:ALL) NOPASSWD: ALL' /etc/sudoers
         echo
     fi
 
