@@ -573,7 +573,7 @@ class Bar(BarBase):
 
     @item()
     def systray(self):
-        return "%{A:ndots-gui systraytog&:}" + icons["more"] + \
+        return "%{A:ndg systraytog&:}" + icons["more"] + \
             "%{A}" if not self.a else None
 
     @item(big=True)

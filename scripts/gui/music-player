@@ -1,4 +1,4 @@
 #!/bin/sh
 
 # TODO: delete?
-exec ndots-gui music "$@"
+exec ndg music "$@"

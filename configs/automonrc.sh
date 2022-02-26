@@ -1,6 +1,6 @@
 
 post() {
-    run_if_exists ndots-gui wallpaper reset
+    run_if_exists ndg wallpaper reset
     run_if_exists bar &
 }
 

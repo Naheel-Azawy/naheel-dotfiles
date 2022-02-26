@@ -43,7 +43,7 @@
 
 ** Update
    #+begin_src shell 
-     ndots update
+     nd update
    #+end_src
 
 ** License

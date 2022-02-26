@@ -575,7 +575,7 @@ from: https://stackoverflow.com/a/998472/3825872"
     (delete '("\\.pdf\\'" . default) org-file-apps)
     (add-to-list 'org-file-apps '("\\.pdf\\'" . "evince %s"))
     (delete '("\\.html\\'" . default) org-file-apps)
-    (add-to-list 'org-file-apps '("\\.html\\'" . "ndots-gui browser %s"))
+    (add-to-list 'org-file-apps '("\\.html\\'" . "ndg browser %s"))
 
     ;; -- TEMPO --
     (require 'org-tempo))

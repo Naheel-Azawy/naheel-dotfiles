@@ -80,17 +80,17 @@ export SXHKD_SHELL=dash
 # autostart programs
 autostart thinkpadutils trackpoint      # set trackpoint speed
 autostart sxhkd                         # keyboard daemon
-autostart ndots-gui lang init           # set the keyboard layouts
+autostart ndg lang init           # set the keyboard layouts
 autostart bar                           # top bar
 autostart wttr daemon                   # weather update
 autostart dunst                         # notifications daemon
 autostart clipmenud                     # clipboard manager daemon
-autostart ndots-gui input daemon        # mouse and keyboard setup
+autostart ndg input daemon        # mouse and keyboard setup
 autostart xbanish                       # hides the cursor while typing
 autostart syndaemon -i 0.5 -t -K -R     # disable touchpad while typing
 autostart edit daemon                   # emacs daemon
 autostart picom --experimental-backends # compositor
-autostart ndots-gui wallpaper reset     # wallpaper
+autostart ndg wallpaper reset     # wallpaper
 autostart automon daemon                # automatic monitor config
 autostart automon auto --no-notif       # set monitors
 autostart lang us                       # set language to 'us' and runs xmodmap

@@ -1,2 +1,2 @@
-* ndots: personal
+* nd: personal
   Scripts that might not make a lot of sense to anyone.

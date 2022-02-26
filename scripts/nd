@@ -267,8 +267,8 @@ export PATH=\"\$PATH:\$DOTFILES_SCRIPTS\"
 
     info "Installing fish complete"
     sudo mkdir -p '/usr/share/fish/completions/'
-    sudo cp -f "$D/scripts/ndots-complete.fish" \
-         '/usr/share/fish/completions/ndots.fish'
+    sudo cp -f "$D/scripts/nd-complete.fish" \
+         '/usr/share/fish/completions/nd.fish'
 
     info "Installing mpv configs"
     git clone https://github.com/Naheel-Azawy/mpv-config "$H/.config/mpv"
@@ -709,10 +709,10 @@ main() {
             pkg_install --uninstall "$@";;
         update)
             update_repo &&
-                "$D/scripts/ndots" config;;
+                "$D/scripts/nd" config;;
         update-all)
             update_repo &&
-                "$D/scripts/ndots" config &&
+                "$D/scripts/nd" config &&
                 sudo pacman -Syu &&
                 sudo pacgit -u;;
         config)

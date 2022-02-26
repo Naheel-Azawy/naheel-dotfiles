@@ -392,7 +392,29 @@ input() {
 
 # ==== main ====
 
+usage() {
+    echo audio
+    echo brightness
+    echo browser
+    echo floating_calc
+    echo calendar
+    echo display
+    echo lang
+    echo lockscreen
+    echo music
+    echo notiftog
+    echo reader
+    echo input
+    echo wallpaper
+    echo taskmanager
+    echo touchpadtog
+    echo systraytog
+    echo wm
+    echo empty
+}
+
 main() {
+    [ $# = 0 ] && usage && return
     cmd="$1"
     shift
     case "$cmd" in

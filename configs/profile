@@ -7,8 +7,8 @@ export EDITOR='edit'
 export VISUAL="$EDITOR"
 export TERMINAL='theterm'
 export FILE_MANAGER='fmz'
-export BROWSER='ndots-gui browser'
-export READER='ndots-gui reader'
+export BROWSER='ndg browser'
+export READER='ndg reader'
 export TUI_APPS='music-player:lf:vis:corona:alsamixer:lyrics:nano:dice:fmz'
 
 # TODO: move to personal
@@ -30,7 +30,7 @@ export EU=2.71828182845904523537
     PATH="$PATH:$DOTFILES_SCRIPTS/personal"
     export PATH
 }
-export TINY=$(ndots istiny && echo t)
+export TINY=$(nd istiny && echo t)
 
 try_export() {   [ -d "$2" ] && export "$1=$2";:;       }
 try_add_path() { [ -d "$1" ] && export PATH="$PATH:$1";:; }

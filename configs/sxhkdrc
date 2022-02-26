@@ -112,7 +112,7 @@ super+apostrophe
 
 # Empty window
 super+e
-	ndots-gui empty
+	ndg empty
 
 # Start the program launcher
 super+d
@@ -124,11 +124,11 @@ super+k
 
 # Open the internet browser
 super+b
-	ndots-gui browser
+	ndg browser
 
 # Open calculator
 super+plus
-	ndots-gui floating_calc
+	ndg floating_calc
 
 # Open tiny camera
 super+minus
@@ -136,7 +136,7 @@ super+minus
 
 # Lock screen
 super+l
-	ndots-gui lockscreen
+	ndg lockscreen
 
 # Power options
 super+x
@@ -144,11 +144,11 @@ super+x
 
 # Display options
 super+p
-	ndots-gui display
+	ndg display
 
 # Reset display options
 super+shift+p
-	ndots-gui display -d
+	ndg display -d
 
 # Clipboard manager
 super+c
@@ -180,7 +180,7 @@ super+n
 
 # Toggle notifications
 super+i
-	ndots-gui notiftog
+	ndg notiftog
 
 # Notifications pop history
 super+ctrl+i
@@ -236,58 +236,58 @@ super+F1
 
 # Show the system monitor
 super+grave
-	wm-msg workspace 10; ndots-gui taskmanager -1
+	wm-msg workspace 10; ndg taskmanager -1
 
 XF86AudioMute
-	ndots-gui audio mute
+	ndg audio mute
 
 XF86AudioMicMute
-	ndots-gui audio mutemic
+	ndg audio mutemic
 
 XF86AudioLowerVolume
-	ndots-gui audio down 5
+	ndg audio down 5
 
 XF86AudioRaiseVolume
-	ndots-gui audio up   5
+	ndg audio up   5
 
 super+XF86AudioMute
-	ndots-gui audio pause
+	ndg audio pause
 
 super+XF86AudioLowerVolume
-	ndots-gui audio prev
+	ndg audio prev
 
 super+XF86AudioRaiseVolume
-	ndots-gui audio next
+	ndg audio next
 
 super+shift+XF86AudioLowerVolume
-	ndots-gui audio back    10
+	ndg audio back    10
 
 super+shift+XF86AudioRaiseVolume
-	ndots-gui audio forward 10
+	ndg audio forward 10
 
 XF86AudioNext
-	ndots-gui audio next
+	ndg audio next
 
 XF86AudioPrev
-	ndots-gui audio prev
+	ndg audio prev
 
 XF86AudioNext+shift
-	ndots-gui audio forward 10
+	ndg audio forward 10
 
 XF86AudioPrev+shift
-	ndots-gui audio back 10
+	ndg audio back 10
 
 XF86AudioPlay
-	ndots-gui audio pause
+	ndg audio pause
 
 XF86AudioStop
-	ndots-gui audio stop
+	ndg audio stop
 
 XF86AudioRewind
-	ndots-gui audio back    10
+	ndg audio back    10
 
 XF86AudioForward
-	ndots-gui audio forward 10
+	ndg audio forward 10
 
 XF86PowerOff
 	menus power
@@ -299,22 +299,22 @@ XF86Explorer
 	theterm $FILE_MANAGER
 
 XF86WWW
-	ndots-gui browser
+	ndg browser
 
 XF86ScreenSaver
-	ndots-gui lockscreen
+	ndg lockscreen
 
 XF86MyComputer
 	theterm $FILE_MANAGER
 
 XF86HomePage
-	ndots-gui browser
+	ndg browser
 
 XF86Reload
 	restart
 
 XF86TouchpadToggle
-	ndots-gui touchpadtog
+	ndg touchpadtog
 
 XF86TouchpadOn
 	synclient TouchpadOff=0
@@ -323,7 +323,7 @@ XF86TouchpadOff
 	synclient TouchpadOff=1
 
 XF86Suspend
-	ndots-gui lockscreen
+	ndg lockscreen
 
 XF86Close
 	wm-msg window_close
@@ -332,28 +332,28 @@ XF86WebCam
 	tiny-camera
 
 XF86Search
-	ndots-gui browser https://naheel.xyz/searx
+	ndg browser https://naheel.xyz/searx
 
 XF86Shop
-	ndots-gui browser https://ebay.com
+	ndg browser https://ebay.com
 
 XF86MonBrightnessDown
-	ndots-gui brightness -dec 15
+	ndg brightness -dec 15
 
 XF86MonBrightnessUp
-	ndots-gui brightness -inc 15
+	ndg brightness -inc 15
 
 shift+XF86MonBrightnessDown
-	ndots-gui brightness -dec 1
+	ndg brightness -dec 1
 
 shift+XF86MonBrightnessUp
-	ndots-gui brightness -inc 1
+	ndg brightness -inc 1
 
 XF86AudioMedia
 	cmus-tmux-st
 
 XF86Display
-	ndots-gui display
+	ndg display
 
 XF86Documents
 	theterm $FILE_MANAGER "$HOME/Documents"
@@ -380,7 +380,7 @@ super+semicolon
 	edit "$HOME/Notes/TODO.org"
 
 super+shift+semicolon
-	ndots-gui calendar
+	ndg calendar
 
 super+period
 	pkill highlight-point || highlight-pointer -r 15 -c red

@@ -265,7 +265,6 @@ abbr gito  'git checkout'
 abbr gitq  'git add -A && git commit -m "quick update" && git push origin'
 abbr gitn  'git clone'
 
-abbr nd    'ndots'
 abbr o     'open'
 abbr m     'tmux'
 abbr f     'fmz'
@@ -299,6 +298,7 @@ abbr ytdla 'youtube-dl --add-metadata -xic --audio-format mp3'
 abbr blesh 'env USE_BLESH=1 bash'
 abbr ports 'netstat -tulnp'
 abbr backup 'rsync -avx --delete --info=progress2,del,name,stats2'
+abbr t     'eval (tools path)'
 
 bind \cq exit
 

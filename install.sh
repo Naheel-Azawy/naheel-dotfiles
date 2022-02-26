@@ -27,9 +27,9 @@ CMD sudo -u main sh -c 'cd && . ~/.profile && tmux'" > ./Dockerfile
     echo 'Running docker image...'
     docker run -it --rm "$IMG"
 
-elif [ -f ./scripts/ndots ]; then
+elif [ -f ./scripts/nd ]; then
 
-    exec ./scripts/ndots install dots "$@"
+    exec ./scripts/nd install dots "$@"
 
 else
 

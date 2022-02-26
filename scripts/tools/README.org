@@ -1,3 +1,3 @@
-* ndots: tools
+* nd: tools
   A collection of tools of random stuff I use from time to time.
   TODO: serious cleanup needed
