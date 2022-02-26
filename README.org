@@ -21,12 +21,12 @@
 ** Install
    Arch Linux is expected to be already installed with a working internet connection.
    #+begin_src shell 
-     curl https://raw.githubusercontent.com/Naheel-Azawy/naheel-dotfiles/master/install.sh > /tmp/nd.sh && sh /tmp/nd.sh base base-gui
+     curl https://naheel.xyz/dots > /tmp/nd.sh && sh /tmp/nd.sh base base-gui
    #+end_src
 
    For Ubuntu
    #+begin_src shell 
-     wget https://raw.githubusercontent.com/Naheel-Azawy/naheel-dotfiles/master/install.sh -O /tmp/nd.sh && sh /tmp/nd.sh ubuntu
+     wget https://naheel.xyz/dots -O /tmp/nd.sh && sh /tmp/nd.sh ubuntu
    #+end_src
 
    Or

@@ -155,7 +155,7 @@ dots_update() {
 dots_install() {
     info "Installing Naheel's dotfiles..."
 
-    # makes a 'main' user and keep it passwordless
+    # makes a 'me' user and keep it passwordless
     # used probably for docker
     QUICK=
     [ "$1" = '--quick' ] && {
@@ -192,7 +192,7 @@ dots_install() {
         fi
 
         info 'Enabling wheel group in sudoers...'
-        uncomment '%wheel ALL=(ALL) ALL' /etc/sudoers
+        uncomment '%wheel ALL=(ALL:ALL) ALL' /etc/sudoers
         if [ ! "$QUICK" ]; then
             info "Looks like you're running as root!"
             echo '1) Create a new user'
@@ -205,8 +205,8 @@ dots_install() {
                 *) return 1;;
             esac
         else
-            user=main
-            [ -d /home/main ] ||
+            user=me
+            [ -d /home/me ] ||
                 useradd -m -g wheel "$user" &&
                     passwd -d "$user"
         fi
@@ -215,7 +215,7 @@ dots_install() {
         rm -rf "$DEST" &&
             cp -r "$D" "$DEST" &&
             chown -R "$user" "$DEST" && {
-                uncomment '%wheel ALL=(ALL) NOPASSWD: ALL' /etc/sudoers
+                uncomment '%wheel ALL=(ALL:ALL) NOPASSWD: ALL' /etc/sudoers
                 sudo -u "$user" sh -c "cd $DEST && ./install.sh $QUICK $PACS"
             }
 
@@ -226,11 +226,11 @@ dots_install() {
 
     info "Setting up sudo"
     # allow no password sudo
-    uncomment '%wheel ALL=(ALL) NOPASSWD: ALL' /etc/sudoers
+    uncomment '%wheel ALL=(ALL:ALL) NOPASSWD: ALL' /etc/sudoers
     # add some commands to no password sudo if needed
     #  `sudo updatedb` is needed for `locate`
     #  `sudo encfs` is needed when using the `--public` option
-    nopass='%wheel ALL=(ALL) NOPASSWD: /usr/bin/updatedb,/usr/bin/encfs,/usr/bin/chmod a+rw /sys/class/backlight/intel_backlight/brightness,/usr/bin/mount,/usr/bin/umount'
+    nopass='%wheel ALL=(ALL:ALL) NOPASSWD: /usr/bin/updatedb,/usr/bin/encfs,/usr/bin/chmod a+rw /sys/class/backlight/intel_backlight/brightness,/usr/bin/mount,/usr/bin/umount'
     sudo grep -q "$nopass" /etc/sudoers ||
         echo "$nopass" | sudo tee -a /etc/sudoers
 
@@ -299,7 +299,7 @@ export PATH=\"\$PATH:\$DOTFILES_SCRIPTS\"
 
     # disallow no password sudo
     [ "$QUICK" ] ||
-        comment '%wheel ALL=(ALL) NOPASSWD: ALL' /etc/sudoers
+        comment '%wheel ALL=(ALL:ALL) NOPASSWD: ALL' /etc/sudoers
 
     echo 'DONE!!!'
 }
