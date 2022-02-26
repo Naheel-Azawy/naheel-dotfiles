@@ -124,7 +124,7 @@ display() {
         sel='Auto'
     else
         l=$({
-               # echo 'Auto'
+               echo 'Auto'
                echo 'Mirror'
                echo 'Extend'
                echo 'Edit screen layout'
@@ -147,11 +147,11 @@ display() {
 
     case "$sel" in
         '') ;;
-        Auto)   automon extend; wallpaper reset ;;
-        Mirror) automon mirror; wallpaper reset ;;
-        Extend) automon extend; wallpaper reset ;;
-        Edit*)  arandr;         wallpaper reset ;;
-        Invert*) xrandr-invert-colors ;;
+        Auto)   automon auto            ;;
+        Mirror) automon mirror          ;;
+        Extend) automon extend          ;;
+        Edit*)  arandr; wallpaper reset ;;
+        Invert*) xrandr-invert-colors   ;;
         Temperature*)
             sel=$(echo "$sel" | awk '{print $2}')
             if [ "$sel" = Custom ]; then

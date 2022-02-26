@@ -41,11 +41,11 @@ post() {
 }
 
 handle() {
-    allow_notif=1
-    [ "$1" = '--no-notif' ] && allow_notif= && shift
-
     mode="$1"
     [ -n "$mode" ] || mode=auto
+
+    allow_notif=1
+    [ "$2" = '--no-notif' ] && allow_notif= && shift
 
     randr=$(xrandr --verbose)
 
@@ -148,7 +148,7 @@ main() {
             current_sum ;;
 
         auto|extend|mirror)
-            handle --no-notif "$1" ;;
+            handle "$@" ;;
 
         daemon)
             udevadm monitor | while read -r line; do

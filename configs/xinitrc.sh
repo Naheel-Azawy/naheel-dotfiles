@@ -1,7 +1,7 @@
 #!/bin/sh
 
-#export WINDOW_MANAGER='i3'
 export WINDOW_MANAGER='bspwm'
+#export WINDOW_MANAGER='i3'
 #export WINDOW_MANAGER='emacs'
 #export WINDOW_MANAGER='gnome-session'
 
@@ -92,7 +92,7 @@ autostart edit daemon                   # emacs daemon
 autostart picom --experimental-backends # compositor
 autostart ndots-gui wallpaper reset     # wallpaper
 autostart automon daemon                # automatic monitor config
-autostart automon auto                  # set monitors
+autostart automon auto --no-notif       # set monitors
 autostart lang us                       # set language to 'us' and runs xmodmap
 autostart fmz --mount-monitor           # automatically mount drives
 autostart mount-private                 # mount encfs private directory
