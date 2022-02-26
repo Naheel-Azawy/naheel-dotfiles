@@ -121,6 +121,7 @@ dots_link() {
     lnnn "$D/configs/nanorc"              "$H/.nanorc"
     lnnn "$D/configs/sxhkdrc"             "$H/.config/sxhkd/sxhkdrc"
     lnnn "$D/configs/fmzrc.sh"            "$H/.config/fmzrc.sh"
+    lnnn "$D/configs/automonrc.sh"        "$H/.config/automonrc.sh"
     lnnn "$D/configs/gsimplecal.conf"     "$H/.config/gsimplecal/config"
 }
 
