@@ -60,7 +60,6 @@
 | pacman   | mpd                    | N.A.                                      | music player daemon                                              |
 | pacman   | mpc                    | N.A.                                      | mpd client                                                       |
 | pacman   | ncmpcpp                | N.A.                                      | mpd UI                                                           |
-| aur      | mpd-notification       | N.A.                                      | mpd notifications                                                |
 | pacman   | onboard                | N.A.                                      | on-screen keyboard                                               |
 | git      | theprayer              | https://github.com/Naheel-Azawy/theprayer | CLI prayer time                                                  |
 | aur      | btop-git               | N.A.                                      | a nice system monitor                                            |
