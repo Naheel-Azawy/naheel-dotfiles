@@ -48,6 +48,26 @@ err() {
     printf "${E}ERROR:${R} %s\n" "$@" >&2
 }
 
+uncomment() {
+    line="$1"
+    file="$2"
+    if [ -w "$file" ]; then
+        sed -i "s/# *$line/$line/" "$file"
+    else
+        sudo sed -i "s/# *$line/$line/" "$file"
+    fi
+}
+
+comment() {
+    line="$1"
+    file="$2"
+    if [ -w "$file" ]; then
+        sed -i "s/$line/# $line/" "$file"
+    else
+        sudo sed -i "s/$line/# $line/" "$file"
+    fi
+}
+
 if ispi; then
     CATEGORIES="pi"
 elif isubuntu; then
@@ -157,8 +177,6 @@ dots_install() {
         useradd -m -g wheel "$user"
         echo 'Enter password:'
         passwd "$user"
-        sed -i 's/# %wheel ALL=(ALL) ALL/%wheel ALL=(ALL) ALL/' \
-            /etc/sudoers 2>/dev/null
     }
 
     ARCH_ROOT_UPDATED=
@@ -172,6 +190,9 @@ dots_install() {
                 pacman --noconfirm --needed -S sudo &&
                 ARCH_ROOT_UPDATED=1
         fi
+
+        info 'Enabling wheel group in sudoers...'
+        uncomment '%wheel ALL=(ALL) ALL' /etc/sudoers
         if [ ! "$QUICK" ]; then
             info "Looks like you're running as root!"
             echo '1) Create a new user'
@@ -194,18 +215,18 @@ dots_install() {
         rm -rf "$DEST" &&
             cp -r "$D" "$DEST" &&
             chown -R "$user" "$DEST" && {
-                sed -i 's/# %wheel ALL=(ALL) NOPASSWD: ALL/%wheel ALL=(ALL) NOPASSWD: ALL/' /etc/sudoers
+                uncomment '%wheel ALL=(ALL) NOPASSWD: ALL' /etc/sudoers
                 sudo -u "$user" sh -c "cd $DEST && ./install.sh $QUICK $PACS"
             }
 
-        echo 'Now log in to your user account'
-        echo "\$ su $user"
+        info 'Now log in to your user account'
+        info "\$ su $user"
         return
     }
 
     info "Setting up sudo"
     # allow no password sudo
-    sudo sed -i 's/# %wheel ALL=(ALL) NOPASSWD: ALL/%wheel ALL=(ALL) NOPASSWD: ALL/' /etc/sudoers
+    uncomment '%wheel ALL=(ALL) NOPASSWD: ALL' /etc/sudoers
     # add some commands to no password sudo if needed
     #  `sudo updatedb` is needed for `locate`
     #  `sudo encfs` is needed when using the `--public` option
@@ -278,7 +299,7 @@ export PATH=\"\$PATH:\$DOTFILES_SCRIPTS\"
 
     # disallow no password sudo
     [ "$QUICK" ] ||
-        sudo sed -i 's/%wheel ALL=(ALL) NOPASSWD: ALL/# %wheel ALL=(ALL) NOPASSWD: ALL/' /etc/sudoers
+        comment '%wheel ALL=(ALL) NOPASSWD: ALL' /etc/sudoers
 
     echo 'DONE!!!'
 }
