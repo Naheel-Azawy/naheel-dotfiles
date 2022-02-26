@@ -66,9 +66,13 @@ autostart() {
     [ "$WINDOW_MANAGER" = 'gnome-session' ] &&
         return
     d=$(date)
-    echo "$d: STDOUT OF" "$@" > "$logdir/$1"
-    echo "$d: STDERR OF" "$@" > "$logdir/$1-err"
-    "$@" >> "$logdir/$1" 2>> "$logdir/$1-err" &
+    if command -v "$1" >/dev/null; then
+        echo "$d: STDOUT OF" "$@" > "$logdir/$1"
+        echo "$d: STDERR OF" "$@" > "$logdir/$1-err"
+        "$@" >> "$logdir/$1" 2>> "$logdir/$1-err" &
+    else
+        echo "$1 not found!!!" > "$logdir/$1-err"
+    fi
 }
 
 export SXHKD_SHELL=dash
@@ -93,6 +97,8 @@ autostart lang us                       # set language to 'us' and runs xmodmap
 autostart fmz --mount-monitor           # automatically mount drives
 autostart mount-private                 # mount encfs private directory
 #autostart menus hud daemon              # hud menu daemon
+autostart nm-applet                     # network applet
+autostart blueman-applet                # bluetooth applet
 
 # start the window manager
 exec "$WINDOW_MANAGER" # defined in profile
