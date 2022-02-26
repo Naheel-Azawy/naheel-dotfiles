@@ -38,12 +38,13 @@ dir_bspwm() {
 }
 
 bspwm_move() {
-    case "$1" in
-        left)  bspc node -v -20   0 || bspc node -s west  ;;
-        right) bspc node -v  20   0 || bspc node -s east  ;;
-        up)    bspc node -v   0 -20 || bspc node -s north ;;
-        down)  bspc node -v   0  20 || bspc node -s south ;;
-    esac
+    d=$(dir_bspwm "$1")
+    case "$d" in
+        west)  bspc node -v -20   0 ;;
+        east)  bspc node -v  20   0 ;;
+        north) bspc node -v   0 -20 ;;
+        south) bspc node -v   0  20 ;;
+    esac || bspc node -s "$d" # || bspc node -m "$d" --follow
 }
 
 bspwm_float_cycle() {
@@ -192,7 +193,7 @@ main() {
                 container_focus_parent) bspc node -f @parent ;;
                 container_focus_child)  bspc node -f @first ;;
                 window_close)           bspc node -c ;;
-                window_focus)           bspc node -f "$(dir_bspwm "$arg")" ;;
+                window_focus)           d=$(dir_bspwm "$arg"); bspc node -f "$d" || bspc monitor -f "$d" ;;
                 window_move)            bspwm_move "$arg" ;;
                 window_resize)          bspwm_resize "$arg" 30 ;;
                 window_resize_tiny)     bspwm_resize "$arg" 5 ;;

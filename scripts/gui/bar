@@ -365,7 +365,7 @@ class BarBase:
 
 class Bar(BarBase):
 
-    @item(big=True)
+    @item(big=False)
     def workspaces(self):
         if self.wm is None or self.a:
             return None
