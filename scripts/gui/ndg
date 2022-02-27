@@ -236,6 +236,10 @@ systraytog() {
 
 wallpaper() {
     f=~/.config/wall
+    [ "$1" = rm ] && {
+        rm "$f" && wallpaper reset
+        return
+    }
     [ -f "$f" ] ||
         ln -s "$DOTFILES_DIR/configs/wall.png" "$f"
     [ "$1" = get ] && realpath "$f" && return

@@ -89,7 +89,7 @@ Before=suspend.target
 User=%i
 Type=forking
 Environment=DISPLAY=:0
-ExecStart=$D/scripts/lockscreen # TODO: update
+ExecStart=$D/scripts/gui/ndg lockscreen
 TimeoutSec=infinity
 ExecStartPost=/usr/bin/sleep 1
 
