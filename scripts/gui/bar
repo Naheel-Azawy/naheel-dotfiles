@@ -49,9 +49,37 @@ except:
     use_arabic = False
 
 themes = {
+    "material": {
+        # https://fonts.google.com/icons?selected=Material+Icons
+        "icons_font": "Material Icons:pixelsize=21",
+        "icons": {
+            "exclamation": "\ue645",
+            "plug":        "\ue63c",
+            "battery30":   "\uebe0",
+            "battery50":   "\uebdd",
+            "battery60":   "\uebd4",
+            "battery90":   "\uebd2",
+            "battery100":  "\ue1a4",
+            "wifi1":       "\uebe4",
+            "wifi2":       "\uebd6",
+            "wifi3":       "\uebe1",
+            "wifi4":       "\ue1d8",
+            "prayer":      "\uf03d",
+            "cloud":       "\ue2bd",
+            "temp90":      "\uf076",
+            "temp50":      "\uf076",
+            "temp40":      "\uf076",
+            "temp30":      "\uf076",
+            "power":       "\ue8ac",
+            "more":        "\ue5cf",
+            "plus":        "\ue145",
+            "close":       "\ue5cd"
+        }
+    },
+
     "awesome": {
-        # https://fontawesome.com/v5.15/icons?d=gallery&p=2
-        "icons_font": "Font Awesome 5 Free Solid:pixelsize=19",
+        # https://fontawesome.com/icons
+        "icons_font": "Font Awesome 6 Free Solid:pixelsize=19",
         "icons": {
             "exclamation": " ",
             "plug":        " ",
@@ -105,36 +133,49 @@ themes = {
         }
     },
 
-    "material": {
-        # https://fonts.google.com/icons?selected=Material+Icons
-        "icons_font": "Material Icons:pixelsize=21",
+    "ascii": {
+        "icons_font": None,
         "icons": {
-            "exclamation": "\ue645",
-            "plug":        "\ue63c",
-            "battery30":   "\uebe0",
-            "battery50":   "\uebdd",
-            "battery60":   "\uebd4",
-            "battery90":   "\uebd2",
-            "battery100":  "\ue1a4",
-            "wifi1":       "\uebe4",
-            "wifi2":       "\uebd6",
-            "wifi3":       "\uebe1",
-            "wifi4":       "\ue1d8",
-            "prayer":      "\uf03d",
-            "cloud":       "\ue2bd",
-            "temp90":      "\uf076",
-            "temp50":      "\uf076",
-            "temp40":      "\uf076",
-            "temp30":      "\uf076",
-            "power":       "\ue8ac",
-            "more":        "\ue5cf",
-            "plus":        "\ue145",
-            "close":       "\ue5cd"
+            "exclamation": "!",
+            "plug":        "~",
+            "battery30":   "b",
+            "battery50":   "b",
+            "battery60":   "b",
+            "battery90":   "b",
+            "battery100":  "b",
+            "wifi1":       "s",
+            "wifi2":       "s",
+            "wifi3":       "s",
+            "wifi4":       "s",
+            "prayer":      "p",
+            "cloud":       "w",
+            "temp90":      "t",
+            "temp50":      "t",
+            "temp40":      "t",
+            "temp30":      "t",
+            "power":       "p",
+            "more":        "<",
+            "plus":        "+",
+            "close":       "x"
         }
     }
 }
 
-theme      = "material"
+def find_theme():
+    font_to_theme = {}
+    for t in themes:
+        if themes[t]["icons_font"] is None:
+            continue
+        font_to_theme[themes[t]["icons_font"].split(":")[0]] = t
+
+    fonts_list = [l.split(":")[1].strip() for l in sh.fc_list()]
+    for f in font_to_theme:
+        for l in fonts_list:
+            if f in l:
+                return font_to_theme[f]
+    return "ascii"
+
+theme      = find_theme()
 icons_font = themes[theme]["icons_font"]
 icons      = themes[theme]["icons"]
 background = '#dd000000'
@@ -153,13 +194,18 @@ WINDOW_MANAGER = os.getenv("WINDOW_MANAGER")
 class WM:
     def __init__(self, callback):
         wm = WINDOW_MANAGER
-        self.impl = wsw.init(output="lemonbar", onchange=callback)
+        try:
+            self.impl = wsw.init(output="lemonbar", onchange=callback)
+        except:
+            self.impl = None
         self.title = None # to be set by bar.program()
         # names to be picked for new workspaces
         self.nice_workspaces = list(range(1, 10)) + [0]
         self.nice_workspaces = list(map(lambda i: str(i), self.nice_workspaces))
 
     async def run(self):
+        if self.impl is None:
+            return
         count = 0
         while count < 10:
             try:
@@ -374,7 +420,7 @@ class Bar(BarBase):
 
     @item(big=True)
     def add(self):
-        if self.a:
+        if self.a or self.wm.impl is None:
             return None
         return "%{A:wm-msg workspace_new:}" + icons["plus"] + "%{A}"
 
@@ -383,7 +429,7 @@ class Bar(BarBase):
         if self.wm is None or self.wm.title is None:
             return None
         # not accurate, depends on the resolution and font size, but too lazy
-        if "workspaces" in self.items_str:
+        if "workspaces" in self.items_str and self.wm.impl is not None:
             max_title = 50 - len(self.wm.impl.workspaces) * 3
         else:
             max_title = 80
@@ -605,8 +651,9 @@ def lemonbar():
     f = os.getenv("FONT")
     if f:
         fonts += ["-f", f]
+    if icons_font is not None:
+        fonts += ["-f", icons_font]
     fonts += [
-        "-f", icons_font,
         # "-f", "Kawkab Mono:pixelsize=12",
         "-f", "Source Han Sans CN",
         "-f", "DejaVu Sans Mono",

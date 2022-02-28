@@ -48,8 +48,8 @@ else
     CMD="$CMD '$F'"
 fi
 
-[ -z "$A" ] || killall picom
+[ -z "$A" ] || ndg compositor stop
 
 eval "$CMD"
 
-[ -z "$A" ] || picom --experimental-backends -b ||:
+[ -z "$A" ] || ndg compositor start ||:

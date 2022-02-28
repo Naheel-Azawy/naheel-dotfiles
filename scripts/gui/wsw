@@ -250,7 +250,7 @@ def init(output="json", onchange=lambda s: print(s), use_lsd=False):
     elif WINDOW_MANAGER == "bspwm":
         w = BSPWM(callback)
     else:
-        raise Exception(f"Unknown window manager {wm}")
+        raise Exception(f"Unknown window manager {WINDOW_MANAGER}")
     return w
 
 if __name__ == "__main__":

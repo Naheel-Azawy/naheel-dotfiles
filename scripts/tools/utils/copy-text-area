@@ -4,7 +4,7 @@ notify() {
     notify-send "$@" >/dev/null 2>/dev/null &
 }
 
-killall picom
+ndg compositor stop
 
 I="$HOME/.cache/copy-text-image.png"
 maim --hidecursor -s "$I"
@@ -14,4 +14,4 @@ notify 'Screen content copied'
 sed 's/\x0c//g' "$I.txt" | clipboard
 rm -f "$I" "$I.txt"
 
-picom --experimental-backends -b
+ndg compositor start
