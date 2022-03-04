@@ -1,9 +1,21 @@
-clear lock
-clear control
-keycode 66 = Control_L
-add control = Control_L Control_R
-keycode 135 = Super_R
-keycode 37 = Caps_Lock
+! Caps_lock    -> Control_L
+! ThinkVantage -> Caps_lock
+! Control_L    -> Super_L
+! Control_R    -> Super_R
 
+remove Lock    = Caps_Lock
+remove Control = Control_L Control_R
+remove Mod4    = Super_L Super_R
+
+keycode 156 = Caps_Lock
+keycode 66  = Control_L
+keycode 37  = Super_L
+keycode 105 = Super_R
+
+add Lock    = Caps_Lock
+add Control = Control_L
+add Mod4    = Super_L Super_R
+
+! next and previous as page up and down
 keycode 166 = Page_Up
 keycode 167 = Page_Down

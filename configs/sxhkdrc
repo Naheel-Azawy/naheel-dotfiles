@@ -361,9 +361,6 @@ XF86Documents
 XF86WLAN
 	sudo -A systemctl restart NetworkManager
 
-XF86Launch1
-	menus
-
 XF86Tools
 	theterm music-player
 
