@@ -56,6 +56,14 @@ bspwm_float_cycle() {
     } 2>/dev/null
 }
 
+bspwm_workspace_monitor_next() {
+    current=$(bspc query -D -d focused --names)
+    count=$(bspc query -D -m focused --names | wc -l)
+    [ "$count" = 1 ] && bspdd new
+    bspc desktop "$current" -m next
+    bspdd "$current"
+}
+
 # ==== utils ====
 
 ws_scshot() {
@@ -203,7 +211,7 @@ main() {
                 workspace_next)         ws_scshot; bspdd next ;;
                 workspace_prev)         ws_scshot; bspdd prev ;;
                 workspace_new)          ws_scshot; bspdd new ;;
-                workspace_monitor_next) bspc desktop -m next --follow ;;
+                workspace_monitor_next) bspwm_workspace_monitor_next ;;
                 restart)                bspc wm -r ;;
                 end)                    bspc quit ;;
             esac ;;

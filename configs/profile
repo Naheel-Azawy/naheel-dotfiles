@@ -16,6 +16,7 @@ export ORG_TODO="$HOME/Notes/TODO.org"
 export CLOUDCONVERT_API_KEY='bUGujVfvGQ6nkPZo5MvFoIz65C3spOZMtiD4Bz613XxnXsUIVDDwZILqOJZghP3D'
 
 export SHHH_JAVA_OPTIONS='-Dawt.useSystemAAFontSettings=on' # check bashrc
+export _JAVA_AWT_WM_NONREPARENTING=1 # https://unix.stackexchange.com/a/428908/183147
 export NEWT_COLORS='root=,black'
 #export LESS="$LESS --mouse -K"
 

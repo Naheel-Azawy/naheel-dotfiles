@@ -218,6 +218,26 @@ lang() {
     esac
 }
 
+# ==== input ====
+
+input_handle() {
+    lang init
+    xset r rate 230 50
+}
+
+input() {
+    input_handle
+    if [ "$1" = daemon ]; then
+        udevadm monitor | while read -r line; do
+            if echo "$line" | grep -Eq 'UDEV.+\(input\)'; then
+                date
+                echo "$line"
+                input_handle
+            fi
+        done
+    fi
+}
+
 # ==== mini utils ====
 
 notiftog() {
@@ -394,29 +414,6 @@ music() {
             music_notif &
             ncmpcpp "$@"
     esac
-}
-
-# ==== input ====
-
-input_handle() {
-    usermodmap=$HOME/.Xmodmap
-    if [ -f "$usermodmap" ]; then
-        xmodmap "$usermodmap"
-    fi
-    xset r rate 230 50
-}
-
-input() {
-    input_handle
-    if [ "$1" = daemon ]; then
-        udevadm monitor | while read -r line; do
-            if echo "$line" | grep -Eq 'UDEV.+\(input\)'; then
-                date
-                echo "$line"
-                input_handle
-            fi
-        done
-    fi
 }
 
 # ==== compositor ====
