@@ -38,6 +38,14 @@ set_trackpoint() {
     echo "$SENSITIVITY" > "$SYSFS/sensitivity"
 }
 
+set_usb_keyboard() {
+    p='Lite-On Tech Lenovo USB Travel Keyboard with Ultra Nav Mouse'
+    xinput set-prop "$p" "libinput Scroll Method Enabled" 0, 0, 1
+    xinput set-prop "$p" "libinput Accel Speed" 1
+    # TODO: move to xorg config
+    # not sure why, but `Option "Scroll Method Enabled" "0 0 1"` is ignored
+}
+
 config_xorg() {
     p=/etc/X11/xorg.conf.d/50-synaptics.conf
     info "Setting Xorg configurations at $p..."
@@ -73,8 +81,8 @@ Section "InputClass"
         Option "TapButton2" "3"
         Option "TapButton3" "2"
 
-    # Disable two fingers right mouse click
-    Option "TapButton2" "0"
+        # Disable two fingers right mouse click
+        Option "TapButton2" "0"
         Option "HorizHysteresis" "100"
         Option "VertHysteresis" "100"
         # fix touchpad scroll speed
@@ -120,8 +128,9 @@ ExecStart=$0 trackpoint
 main() {
     [ $# = 0 ] && return 1
     case "$1" in
-        trackpoint)
-            set_trackpoint ;;
+        input)
+            set_trackpoint
+            set_usb_keyboard ;;
 
         init)
             config_xorg

@@ -223,6 +223,7 @@ lang() {
 input_handle() {
     lang init
     xset r rate 230 50
+    thinkpadutils input
 }
 
 input() {
@@ -484,7 +485,6 @@ start() {
     rm -r "$logdir"/*
 
     # autostart programs
-    autostart thinkpadutils trackpoint      # set trackpoint speed
     autostart sxhkd                         # keyboard daemon
     autostart lang init                     # set the keyboard layouts
     autostart wttr daemon                   # weather update
