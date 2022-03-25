@@ -51,12 +51,16 @@ exists () {
 MAX_VOL=250
 
 audio_notify() {
-    res=$(dunstify         \
-              -r $NOTIF_ID \
-              -A 'gui,GUI' \
-              "$@")
-    if [ "$res" = gui ]; then
-        pavucontrol
+    if exists dunstify; then
+        res=$(dunstify         \
+                  -r $NOTIF_ID \
+                  -A 'gui,GUI' \
+                  "$@")
+        if [ "$res" = gui ]; then
+            pavucontrol
+        fi
+    else
+        notify-send "$@"
     fi
 }
 
@@ -485,6 +489,7 @@ start() {
     rm -r "$logdir"/*
 
     # autostart programs
+    autostart xset s 900                    # blank after 15 minutes
     autostart sxhkd                         # keyboard daemon
     autostart lang init                     # set the keyboard layouts
     autostart wttr daemon                   # weather update

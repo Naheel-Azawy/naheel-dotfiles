@@ -15,7 +15,3 @@ keycode 105 = Super_R
 add Lock    = Caps_Lock
 add Control = Control_L
 add Mod4    = Super_L Super_R
-
-! next and previous as page up and down
-keycode 166 = Page_Up
-keycode 167 = Page_Down
