@@ -390,17 +390,31 @@ taskmanager() {
 
 # ==== music ====
 
+music_stat() {
+    s=$(mpc status -f '>>> %artist% - %title%')
+    sym=$(if echo "$s" | grep -q '\[playing\]'; then
+              echo '▶'
+          else
+              echo '⏸'
+          fi)
+    s=$(echo "$s" | sed -rn 's/>>> (.+)/\1/p')
+    echo "$sym $s"
+}
+
 music_notif() {
     mpc idleloop | while read -r e; do
         [ "$e" = player ] || continue
-        s=$(mpc status -f '>>> %artist% - %title%')
-        sym=$(if echo "$s" | grep -q '\[playing\]'; then
-                  echo '▶'
-              else
-                  echo '⏸'
-              fi)
-        s=$(echo "$s" | sed -rn 's/>>> (.+)/\1/p')
-        dunstify -r $NOTIF_ID Music "$sym $s"
+        dunstify -r $NOTIF_ID Music "$(music_stat)"
+    done
+}
+
+music_tmux_title() {
+    [ -n "$TMUX" ] || return
+    tmux set automatic-rename off
+    tmux rename-window "$(music_stat) - Music"
+    mpc idleloop | while read -r e; do
+        [ "$e" = player ] || continue
+        tmux rename-window "$(music_stat) - Music"
     done
 }
 
@@ -417,6 +431,7 @@ music() {
         *)
             mpd 2>/dev/null >/dev/null # start the daemon
             music_notif &
+            music_tmux_title &
             ncmpcpp "$@"
     esac
 }
@@ -429,6 +444,12 @@ compositor() {
         stop)  killall picom ;;
         *)     return 1
     esac
+}
+
+# ==== experimental ====
+
+foo() {
+    bspc desktop -f $(bspc query -D --names | while read -r d; do printf '%d:&' "$d"; bspc query -N -d "$d" | xargs -l xdotool getwindowname 2>/dev/null | sed -z 's/\n/, /g' | head -c -2; echo; done | column -s '&' -t | dmenu -i -l 10 | cut -d : -f 1)
 }
 
 # ==== start ====
@@ -546,7 +567,7 @@ main() {
         audio|brightness|browser|floating_calc|calendar| \
             display|lang|lockscreen|music|notiftog|reader| \
             input|wallpaper|taskmanager|touchpadtog|systraytog| \
-            compositor|start)
+            compositor|start|foo)
             "$cmd" "$@" ;;
         wm)    exec "$HERE/wm-msg" "$@" ;;
         empty) exec "$HERE/empty"       ;;

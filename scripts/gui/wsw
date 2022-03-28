@@ -213,6 +213,27 @@ def callback_lemonbar_circles(wm, onchange):
         onchange(s)
         wm.prev_s = s
 
+def callback_lemonbar_circles_mini(wm, onchange):
+    onclick = "ndg foo" # TODO: cleanup if ok?
+    s = f"%{{A:{onclick}:}}"
+    for ws in wm.workspaces:
+        if ws.focused:
+            s += "%{F#ffffff}"
+        elif ws.visible:
+            s += "%{F#333333}"
+        elif ws.urgent:
+            s += "%{F#900000}"
+        else:
+            s += "%{F#ffffff}"
+        circle = "●" if ws.focused or ws.visible or ws.urgent else "○"
+        s += circle
+    s += "%{F-}" # reset the colors
+    s += "%{A}"
+
+    if s != wm.prev_s:
+        onchange(s)
+        wm.prev_s = s
+
 def callback_dunst(wm, onchange):
     u = "normal"
     s = ""
@@ -238,6 +259,7 @@ callbacks = {
     "ascii":            callback_ascii,
     "lemonbar":         callback_lemonbar,
     "lemonbar_circles": callback_lemonbar_circles,
+    "lemonbar_circles_mini": callback_lemonbar_circles_mini,
     "dunst":            callback_dunst
 }
 

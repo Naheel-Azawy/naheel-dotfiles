@@ -130,9 +130,13 @@ super+b
 super+plus
 	ndg floating_calc
 
-# Open tiny camera
+# Jump to a workspace
 super+minus
-	tiny-camera
+	ndg foo # TODO: cleanup?
+
+# Move window to a workspace
+super+shift+minus
+	ndg foo bar # TODO: cleanup?
 
 # Lock screen
 super+l

@@ -195,7 +195,7 @@ class WM:
     def __init__(self, callback):
         wm = WINDOW_MANAGER
         try:
-            self.impl = wsw.init(output="lemonbar", onchange=callback)
+            self.impl = wsw.init(output="lemonbar_circles_mini", onchange=callback)
         except:
             self.impl = None
         self.title = None # to be set by bar.program()
