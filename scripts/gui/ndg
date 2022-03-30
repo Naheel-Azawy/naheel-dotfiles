@@ -46,21 +46,36 @@ exists () {
     command -v "$1" >/dev/null
 }
 
+notify() {
+    if exists dunstify; then
+        dunstify                                  \
+            -h string:x-dunst-stack-tag:$NOTIF_ID \
+            "$@"
+    else
+        notify-send "$@"
+    fi
+}
+
+notify_action() {
+    if exists dunstify; then
+        # https://github.com/dunst-project/dunst/issues/672#issuecomment-554513535
+        dunstify                                  \
+            -h string:x-dunst-stack-tag:$NOTIF_ID \
+            -A 'clicked,CLICK'                    \
+            "$@"
+    else
+        notify-send "$@"
+    fi
+}
+
 # ==== audio ====
 
 MAX_VOL=250
 
 audio_notify() {
-    if exists dunstify; then
-        res=$(dunstify         \
-                  -r $NOTIF_ID \
-                  -A 'gui,GUI' \
-                  "$@")
-        if [ "$res" = gui ]; then
-            pavucontrol
-        fi
-    else
-        notify-send "$@"
+    res=$(notify_action "$@")
+    if [ "$res" = clicked ]; then
+        pavucontrol
     fi
 }
 
@@ -140,10 +155,8 @@ brightness() {
     fi
 
     xbacklight "$@"
-    V=$(xbacklight -get)
-    dunstify -i none -r $NOTIF_ID \
-             -h int:value:"$V"    \
-             "Brightness: $V%"
+    v=$(xbacklight -get)
+    notify -h int:value:"$v" "Brightness: $v%"
 }
 
 # ==== display ====
@@ -404,7 +417,7 @@ music_stat() {
 music_notif() {
     mpc idleloop | while read -r e; do
         [ "$e" = player ] || continue
-        dunstify -r $NOTIF_ID Music "$(music_stat)"
+        notify Music "$(music_stat)"
     done
 }
 
@@ -449,7 +462,7 @@ compositor() {
 # ==== experimental ====
 
 foo() {
-    bspc desktop -f $(bspc query -D --names | while read -r d; do printf '%d:&' "$d"; bspc query -N -d "$d" | xargs -l xdotool getwindowname 2>/dev/null | sed -z 's/\n/, /g' | head -c -2; echo; done | column -s '&' -t | dmenu -i -l 10 | cut -d : -f 1)
+    :
 }
 
 # ==== start ====

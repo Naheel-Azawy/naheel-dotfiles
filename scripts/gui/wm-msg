@@ -112,6 +112,38 @@ program_menu() {
     esac
 }
 
+ws_menu() {
+    move= ; [ "$1" = move ] && move=1
+
+    # TODO: i3 support?
+
+    items=$({
+               bspc query -D --names | while read -r d; do
+                   printf '%d:&' "$d"
+                   bspc query -N -d "$d"                          |
+                       xargs -l xdotool getwindowname 2>/dev/null |
+                       sed -z 's/\n/, /g'                         |
+                       head -c -2 | fribidi --nopad --nobreak
+                   echo
+               done
+               echo "$(bspdd new-name):&NEW"
+           })
+    items_len=$(echo "$items" | wc -l)
+
+    ws=$(echo "$items"                     |
+             column -s '&' -t              |
+             menus-face -i -l "$items_len" |
+             cut -d : -f 1)
+
+    [ -n "$ws" ] && {
+        if [ -n "$move" ]; then
+            bspdd node-move-go "$ws"
+        else
+            bspdd "$ws"
+        fi
+    }
+}
+
 # ==== main ====
 
 main() {
@@ -121,6 +153,11 @@ main() {
     case "$cmd" in
         program-menu|menu)
             program_menu
+            return ;;
+
+        ws-menu)
+            shift
+            ws_menu "$@"
             return ;;
     esac
 

@@ -94,6 +94,14 @@ super+equal
 super+ctrl+p
 	wm-msg workspace_monitor_next
 
+# Jump to a workspace
+super+minus
+	wm-msg ws-menu
+
+# Move window to a workspace
+super+shift+minus
+	wm-msg ws-menu move
+
 # Restart window manager
 super+shift+r
 	wm-msg restart; pkill -USR1 -x sxhkd
@@ -129,14 +137,6 @@ super+b
 # Open calculator
 super+plus
 	ndg floating_calc
-
-# Jump to a workspace
-super+minus
-	ndg foo # TODO: cleanup?
-
-# Move window to a workspace
-super+shift+minus
-	ndg foo bar # TODO: cleanup?
 
 # Lock screen
 super+l
