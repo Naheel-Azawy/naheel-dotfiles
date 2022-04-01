@@ -2,6 +2,7 @@
 
 bookmark ~/Documents/events/2021_12_01_Work_Research_QU_smartgrid_security
 bookmark ~/Documents/QU/3.5-TA/1-spring-2022
+bookmark ~/Documents/events/2021_12_01_Study_TAMU
 bookmark ~/Documents/events
 bookmark ~/.dotfiles
 
