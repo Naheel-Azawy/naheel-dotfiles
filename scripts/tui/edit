@@ -10,12 +10,16 @@ export TERM='screen-256color'
 
 daemon() { emacsclient -e 0 >/dev/null || emacs --daemon "$@"; }
 die()    { exec emacsclient -e '(kill-emacs)'; }
-client() { daemon; exec emacsclient "$@"; }
+client() { daemon; emacsclient "$@"; }
 
 gui() { client -c "$@"; }
 existing() { client -n "$@"; }
-nw()  { client -nw "$@"; }
 tnw() { exec theterm "$BINPATH" nw "$@"; }
+nw()  {
+    tmux set automatic-rename off
+    client -nw "$@"
+    tmux set automatic-rename on
+}
 
 [ "$BIDI" ] &&
     nw() { exec bicon.bin --reshape-only "$BINPATH" c -nw "$@" 2>/dev/null; }

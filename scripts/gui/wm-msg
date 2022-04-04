@@ -93,7 +93,7 @@ program_menu() {
                echo 'Super up'
            })
     items_len=$(echo "$items" | wc -l)
-    choice=$(echo "$items" | menus-face -l "$items_len")
+    choice=$(echo "$items" | menus-face -L cursor -l "$items_len")
 
     case "$choice" in
         "$title")                              ;;
@@ -104,8 +104,7 @@ program_menu() {
         'Super down')        xdotool keydown Super_L ;;
         'Super up')          xdotool keyup   Super_L ;;
         'Move to...')
-            ws=$(seq 1 10 | menus-face)
-            [ -n "$ws" ] && main workspace_move_go "$ws" ;;
+            ws_menu move ;;
         'Move '*)
             dir=$(echo "$choice" | cut -d ' ' -f2)
             main window_move "$dir" ;;
@@ -220,6 +219,7 @@ main() {
                 workspace_next)         ws_scshot; i3-msg workspace next ;;
                 workspace_prev)         ws_scshot; i3-msg workspace prev ;;
                 workspace_new)          ws_scshot; i3_ws_new ;;
+                workspace_new_move)     : ;;
                 workspace_monitor_next) i3-msg move workspace to output right ;;
                 restart)                i3-msg restart ;;
                 end)                    i3-msg exit ;;
@@ -247,7 +247,8 @@ main() {
                 workspace_move_go)      ws_scshot; bspdd node-move-go "$arg" ;;
                 workspace_next)         ws_scshot; bspdd next ;;
                 workspace_prev)         ws_scshot; bspdd prev ;;
-                workspace_new)          ws_scshot; bspdd new ;;
+                workspace_new)          ws_scshot; bspdd new-reorder ;;
+                workspace_new_move)     ws_scshot; bspdd new-reorder-move ;;
                 workspace_monitor_next) bspwm_workspace_monitor_next ;;
                 restart)                bspc wm -r ;;
                 end)                    bspc quit ;;

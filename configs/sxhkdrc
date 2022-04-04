@@ -90,6 +90,10 @@ super+shift+Tab
 super+equal
     wm-msg workspace_new
 
+# Move current window to a new workspace
+super+plus
+    wm-msg workspace_new_move
+
 # Move workspace to next monitor
 super+ctrl+p
 	wm-msg workspace_monitor_next
@@ -135,7 +139,7 @@ super+b
 	ndg browser
 
 # Open calculator
-super+plus
+super+backslash
 	ndg floating_calc
 
 # Lock screen
@@ -217,22 +221,6 @@ alt+Print
 # Take a screenshot of current window to clipboard
 alt+ctrl+Print
 	screenshot -w -c
-
-# ¯\_(ツ)_/¯
-super+backslash
-	lolcowforune
-
-# ¯\_(ö)_/¯
-super+shift+backslash
-	lolcowforune -p
-
-# Jump to quick command
-super+j
-	quickcmd
-
-# Edit to quick command
-super+ctrl+j
-	quickcmd -e
 
 # Show shortcuts help screen
 super+F1
