@@ -78,14 +78,16 @@
 ;;(setq-default show-trailing-whitespace 1)
 
 ;; ---- TITLE ----
-(defun xterm-title-update ()
+(setq-default frame-title-format '("%b - emacs"))
+(defun my-buffer-change-hook ()
+  "Set the title in terminals."
+  ;; xterm
   (send-string-to-terminal
-   (concat "\033]2; " (buffer-name) " - " invocation-name "\007")))
-(defun frame-title-update ()
-  (setq frame-title-format
-		(concat (buffer-name) " - " invocation-name)))
-;; (add-hook 'window-configuration-change-hook 'xterm-title-update)
-;; (add-hook 'window-configuration-change-hook 'frame-title-update)
+   (concat "\033]2; " (buffer-name) " - " invocation-name "\007"))
+  ;; tmux
+  (let ((cmd (concat "tmux rename-window '" (buffer-name) " - emacs'")))
+    (shell-command cmd)))
+(add-hook 'window-configuration-change-hook 'my-buffer-change-hook)
 
 ;; ---- SCROLL ----
 (setq scroll-step 1
