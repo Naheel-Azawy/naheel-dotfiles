@@ -17,6 +17,11 @@ case "$class" in
         echo 'state=floating' ;;
 esac
 
+case "$instance" in
+    *__floatme__*)
+        echo 'state=floating' ;;
+esac
+
 case "$title" in
     *__floatme__* | \
         'Python Turtle Graphics')

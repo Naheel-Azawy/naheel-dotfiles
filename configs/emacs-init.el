@@ -85,9 +85,9 @@
   (send-string-to-terminal
    (concat "\033]2; " (buffer-name) " - " invocation-name "\007"))
   ;; tmux
-  (let ((cmd (concat "tmux rename-window '" (buffer-name) " - emacs'")))
+  (let ((cmd (concat "tmux rename-window '" (buffer-name) " - emacs' 2>/dev/null ||:")))
     (shell-command cmd)))
-(add-hook 'window-configuration-change-hook 'my-buffer-change-hook)
+;;(add-hook 'window-configuration-change-hook 'my-buffer-change-hook)
 
 ;; ---- SCROLL ----
 (setq scroll-step 1

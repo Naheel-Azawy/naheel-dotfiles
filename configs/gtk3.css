@@ -18,3 +18,12 @@ headerbar {
 window, dialog, messagedialog, viewport, stack, header, toolbar, popover {
     background-color: black;
 }
+
+calendar.view {
+	background-color: black;
+}
+
+calendar:selected {
+	background-color: white;
+    color:            black;
+}

@@ -17,12 +17,13 @@ fi
 [ -e "$dev" ] || exit 1
 
 pkill -f /dev/video ||
-    mpv --no-osc                          \
-        --no-input-default-bindings       \
-        --input-conf=/dev/null            \
-        --geometry=-10-10                 \
-        --autofit=15%                     \
-        --profile=low-latency             \
-        --untimed                         \
-        --title='__floatme__|__stickme__' \
+    mpv --no-osc                             \
+        --no-input-default-bindings          \
+        --input-conf=/dev/null               \
+        --geometry=-10-10                    \
+        --autofit=15%                        \
+        --profile=low-latency                \
+        --untimed                            \
+        --title='Camera'                     \
+        --x11-name='__floatme__|__stickme__' \
         av://v4l2:"$dev"
