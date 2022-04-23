@@ -83,6 +83,7 @@ ws_scshot() {
 }
 
 program_menu() {
+    xdotool keyup Super_L
     title=$(xdotool getactivewindow getwindowname)
     items=$({
                echo "$title" | head -c 50

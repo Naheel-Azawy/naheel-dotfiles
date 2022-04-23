@@ -8,7 +8,7 @@ index 6f05dce..ee31a2d 100644
   */
 -static char *font = "Liberation Mono:pixelsize=12:antialias=true:autohint=true";
 -static int borderpx = 2;
-+static char *font = "Iosevka Fixed:pixelsize=16:antialias=true:autohint=true";
++static char *font = "Iosevka Fixed Slab:pixelsize=16:antialias=true:autohint=true";
 +/* Spare fonts */
 +static char *font2[] = {
 +  "Kawkab Mono:pixelsize=12:antialias=true:autohint=true"
