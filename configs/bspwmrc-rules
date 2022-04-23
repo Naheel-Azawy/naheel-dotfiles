@@ -24,7 +24,8 @@ esac
 
 case "$title" in
     *__floatme__* | \
-        'Python Turtle Graphics')
+        'Python Turtle Graphics' | \
+        'Picture in picture')
         echo 'state=floating' ;;
 esac
 

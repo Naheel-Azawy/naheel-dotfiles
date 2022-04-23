@@ -228,7 +228,7 @@ super+F1
 
 # Show the system monitor
 super+grave
-	wm-msg workspace 10; ndg taskmanager -1
+	ndg taskmanager -1
 
 XF86AudioMute
 	ndg audio mute

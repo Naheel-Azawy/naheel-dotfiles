@@ -1,3 +1,3 @@
 #!/bin/sh
 
-exec ndg browser --app=file:///mnt/hdd1/Private/Tmp/virtual-piano-wget/ijagjeet.github.io/virtual-piano/index.html
+exec ndg browser --app=file:///mnt/hdd1/Private/Projects/naheelxyz/server-root/srv/http/piano/index.html

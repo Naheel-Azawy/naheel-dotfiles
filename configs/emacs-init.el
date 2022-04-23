@@ -87,7 +87,7 @@
   ;; tmux
   (let ((cmd (concat "tmux rename-window '" (buffer-name) " - emacs' 2>/dev/null ||:")))
     (shell-command cmd)))
-;;(add-hook 'window-configuration-change-hook 'my-buffer-change-hook)
+(add-hook 'window-configuration-change-hook 'my-buffer-change-hook)
 
 ;; ---- SCROLL ----
 (setq scroll-step 1
@@ -535,7 +535,7 @@ from: https://stackoverflow.com/a/998472/3825872"
      org-image-actual-width 500
      org-export-in-background nil
 
-     org-latex-pdf-process '("latexwrapper %f")
+     org-latex-pdf-process '("latexwrapper --compiler xelatex %f")
 
      org-preview-latex-default-process 'dvipng
      org-format-latex-options (plist-put org-format-latex-options :scale 1.7)

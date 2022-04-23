@@ -14,10 +14,16 @@ i3_resize() {
 i3_ws_new() {
     workspaces=$(i3-msg -t get_workspaces | jq -r '.[].name')
     new=$(seq 10 | grep -v "$workspaces" | head -n1)
-    i3-msg workspace "$new"
+    if [ "$1" = move ]; then
+        i3-msg move container to workspace "$new"
+    else
+        i3-msg workspace "$new"
+    fi
 }
 
 # ==== bspwm ====
+
+export BSPDD_NUM_REORDER=1
 
 bspwm_resize() {
     case "$1" in
@@ -79,7 +85,7 @@ ws_scshot() {
 program_menu() {
     title=$(xdotool getactivewindow getwindowname)
     items=$({
-               echo "$title"
+               echo "$title" | head -c 50
                echo 'Close'
                echo 'Toggle fullscreen'
                echo 'Toggle float'
@@ -125,20 +131,31 @@ ws_menu() {
                        head -c -2 | fribidi --nopad --nobreak
                    echo
                done
-               echo "$(bspdd new-name):&NEW"
+               echo "n:&NEW"
            })
     items_len=$(echo "$items" | wc -l)
 
-    ws=$(echo "$items"                     |
-             column -s '&' -t              |
-             menus-face -i -l "$items_len" |
+    n=$(bspc query -D -d .focused --names)
+    n=$((n - 1))
+    ws=$(echo "$items"        |
+             column -s '&' -t |
+             menus-face -i -l "$items_len" \
+                        -n "$n" -L top-left -y 30 |
              cut -d : -f 1)
 
     [ -n "$ws" ] && {
         if [ -n "$move" ]; then
-            bspdd node-move-go "$ws"
+            if [ "$ws" = n ]; then
+                bspdd new-move
+            else
+                bspdd node-move-go "$ws"
+            fi
         else
-            bspdd "$ws"
+            if [ "$ws" = n ]; then
+                bspdd new
+            else
+                bspdd "$ws"
+            fi
         fi
     }
 }
@@ -162,8 +179,8 @@ main() {
 
     win=$(xdotool getactivewindow)
 
-    # handle emacs windows
-    if xdotool getwindowname "$win" | grep -q emacs; then
+    # handle emacs windows TODO: delete?
+    if false && xdotool getwindowname "$win" | grep -q emacs; then
         case "$cmd" in
             window_focus)
                 emacsclient --no-wait --eval "(windmove-$arg)" && return ;;
@@ -219,7 +236,7 @@ main() {
                 workspace_next)         ws_scshot; i3-msg workspace next ;;
                 workspace_prev)         ws_scshot; i3-msg workspace prev ;;
                 workspace_new)          ws_scshot; i3_ws_new ;;
-                workspace_new_move)     : ;;
+                workspace_new_move)     ws_scshot; i3_ws_new move ;;
                 workspace_monitor_next) i3-msg move workspace to output right ;;
                 restart)                i3-msg restart ;;
                 end)                    i3-msg exit ;;
@@ -247,8 +264,8 @@ main() {
                 workspace_move_go)      ws_scshot; bspdd node-move-go "$arg" ;;
                 workspace_next)         ws_scshot; bspdd next ;;
                 workspace_prev)         ws_scshot; bspdd prev ;;
-                workspace_new)          ws_scshot; bspdd new-reorder ;;
-                workspace_new_move)     ws_scshot; bspdd new-reorder-move ;;
+                workspace_new)          ws_scshot; bspdd new ;;
+                workspace_new_move)     ws_scshot; bspdd new-move ;;
                 workspace_monitor_next) bspwm_workspace_monitor_next ;;
                 restart)                bspc wm -r ;;
                 end)                    bspc quit ;;

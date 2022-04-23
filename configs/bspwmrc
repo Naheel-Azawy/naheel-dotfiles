@@ -19,4 +19,5 @@ bspc config borderless_monocle true
 this=$(realpath "$0")
 bspc config external_rules_command "${this}-rules"
 
+export BSPDD_NUM_REORDER=1
 bspdd daemon &
