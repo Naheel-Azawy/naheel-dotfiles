@@ -430,7 +430,7 @@ class Bar(BarBase):
             return None
         # not accurate, depends on the resolution and font size, but too lazy
         if "workspaces" in self.items_str and self.wm.impl is not None:
-            max_title = 50 - len(self.wm.impl.workspaces) * 3
+            max_title = 50 - int(len(self.wm.impl.workspaces) * 1.5)
         else:
             max_title = 80
         title = self.wm.title

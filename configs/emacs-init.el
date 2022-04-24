@@ -81,12 +81,14 @@
 (setq-default frame-title-format '("%b - emacs"))
 (defun my-buffer-change-hook ()
   "Set the title in terminals."
-  ;; xterm
-  (send-string-to-terminal
-   (concat "\033]2; " (buffer-name) " - " invocation-name "\007"))
-  ;; tmux
-  (let ((cmd (concat "tmux rename-window '" (buffer-name) " - emacs' 2>/dev/null ||:")))
-    (shell-command cmd)))
+  (unless (true-color-p)
+      (progn
+        ;; xterm
+        (send-string-to-terminal
+         (concat "\033]2; " (buffer-name) " - " invocation-name "\007"))
+        ;; tmux
+        (let ((cmd (concat "tmux rename-window '" (buffer-name) " - emacs' 2>/dev/null ||:")))
+          (shell-command cmd)))))
 (add-hook 'window-configuration-change-hook 'my-buffer-change-hook)
 
 ;; ---- SCROLL ----
