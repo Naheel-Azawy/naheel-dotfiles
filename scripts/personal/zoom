@@ -1,0 +1,17 @@
+#!/bin/sh
+
+JAIL="$HOME/.local/share/jail-zoom"
+IMG='Zoom-5.10.3.2778.glibc2.17-x86_64.AppImage'
+URL="https://github.com/probonopd/Zoom.AppImage/releases/download/stable/$IMG"
+
+[ "$1" = 'rm' ]     && { rm -r "$JAIL"; exit; }
+[ -d "$JAIL" ]      || mkdir -p "$JAIL"
+[ -f "$JAIL/$IMG" ] || (cd "$JAIL" && wget "$URL")
+[ -x "$JAIL/$IMG" ] || chmod +x "$JAIL/$IMG"
+
+exec firejail          \
+     --private-tmp     \
+     --blacklist=/mnt  \
+     --private="$JAIL" \
+     --appimage        \
+     "$JAIL/$IMG" "$@"

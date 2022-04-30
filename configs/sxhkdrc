@@ -26,10 +26,6 @@ super+shift+t
 super+shift+slash
 	wm-msg split
 
-# Toggle split in the other direction
-super+shift+ctrl+slash
-	wm-msg split2
-
 # Equalize windows
 super+shift+comma
 	wm-msg equalize

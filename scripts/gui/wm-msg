@@ -141,7 +141,7 @@ ws_menu() {
     ws=$(echo "$items"        |
              column -s '&' -t |
              menus-face -i -l "$items_len" \
-                        -n "$n" -L top-left -y 30 |
+                        -n "$n" -L top-left -y 25 |
              cut -d : -f 1)
 
     [ -n "$ws" ] && {
@@ -222,7 +222,6 @@ main() {
                 balance)                : ;;
                 equalize)               : ;;
                 split)                  i3-msg split t ;;
-                split2)                 i3-msg split t ;;
                 float_focus)            i3-msg focus mode_toggle ;;
                 container_focus_parent) i3-msg focus parent ;;
                 container_focus_child)  i3-msg focus child ;;
@@ -250,8 +249,7 @@ main() {
                 stick)                  bspc node -s sticky ;;
                 balance)                bspc node -B ;;
                 equalize)               bspc node -E ;;
-                split)                  bspc node -p ~east ;;
-                split2)                 bspc node -p ~south ;;
+                split)                  bspc node -f @parent && bspc node -R 90 && bspc node -f @first ;;
                 float_focus)            bspwm_float_cycle ;;
                 container_focus_parent) bspc node -f @parent ;;
                 container_focus_child)  bspc node -f @first ;;

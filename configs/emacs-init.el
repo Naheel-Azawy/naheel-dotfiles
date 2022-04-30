@@ -88,7 +88,9 @@
          (concat "\033]2; " (buffer-name) " - " invocation-name "\007"))
         ;; tmux
         (let ((cmd (concat "tmux rename-window '" (buffer-name) " - emacs' 2>/dev/null ||:")))
-          (shell-command cmd)))))
+          ;;(shell-command cmd nil)
+          (call-process-shell-command cmd nil 0)
+          ))))
 (add-hook 'window-configuration-change-hook 'my-buffer-change-hook)
 
 ;; ---- SCROLL ----
@@ -274,7 +276,7 @@ https://www.emacswiki.org/emacs/NoTabs"
   (use-package php-mode)
   (use-package lua-mode)
   (use-package basic-mode)
-  (use-package cc-mode)
+  (use-package cc-mode :init (setq-default c-basic-offset 4))
   (use-package vala-mode)
   (use-package csharp-mode)
   (use-package dart-mode)
@@ -555,7 +557,6 @@ from: https://stackoverflow.com/a/998472/3825872"
     (org-babel-do-load-languages
      'org-babel-load-languages
      '((C          . t)
-       (vala       . t)
        (python     . t)
        (js         . t)
        (R          . t)
@@ -586,6 +587,7 @@ from: https://stackoverflow.com/a/998472/3825872"
 
   (use-package org-ref)
   ;;(use-package org-bullets)
+  (require 'ox-beamer)
   (use-package ox-reveal)
   (use-package ox-pandoc :init
     (setq
@@ -639,14 +641,7 @@ from: https://stackoverflow.com/a/998472/3825872"
                    ("\\section{%s}" . "\\section*{%s}")
                    ("\\subsection{%s}" . "\\subsection*{%s}")
                    ("\\subsubsection{%s}" . "\\subsubsection*{%s}")
-                   ("\\paragraph{%s}" . "\\paragraph*{%s}")))
-
-    (add-to-list 'org-latex-classes
-                 '("beamer"
-                   "\\documentclass\[presentation\]\{beamer\}"
-                   ("\\section\{%s\}" . "\\section*\{%s\}")
-                   ("\\subsection\{%s\}" . "\\subsection*\{%s\}")
-                   ("\\subsubsection\{%s\}" . "\\subsubsection*\{%s\}")))))
+                   ("\\paragraph{%s}" . "\\paragraph*{%s}")))))
 
 ;; ---- OUTLINE ----
 (unless tiny

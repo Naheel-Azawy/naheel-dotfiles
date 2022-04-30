@@ -13,7 +13,8 @@ case "$class" in
         echo 'state=tiled' ;;
     Empty)
         echo 'state=tiled' ;;
-    dmenu|Pavucontrol|Arandr|Onboard)
+    dmenu|Pavucontrol|Arandr|Onboard|\
+        Panther_launcher)
         echo 'state=floating' ;;
 esac
 

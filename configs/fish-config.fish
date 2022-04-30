@@ -245,6 +245,7 @@ abbr la    'ls -lha'
 abbr cd..  'cd ..'
 abbr mkd   'mkdir -p'
 abbr mkdc  'mkdircd'
+abbr cdc   'cd (clipboard)'
 abbr g     'grep'
 abbr gr    'grep -r'
 

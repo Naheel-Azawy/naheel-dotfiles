@@ -48,7 +48,7 @@ exists () {
 
 notify() {
     if exists dunstify; then
-        dunstify                                  \
+        dunstify -i /dev/null                     \
             -h string:x-dunst-stack-tag:$NOTIF_ID \
             "$@"
     else
@@ -59,7 +59,7 @@ notify() {
 notify_action() {
     if exists dunstify; then
         # https://github.com/dunst-project/dunst/issues/672#issuecomment-554513535
-        dunstify                                  \
+        dunstify -i /dev/null                     \
             -h string:x-dunst-stack-tag:$NOTIF_ID \
             -A 'clicked,CLICK'                    \
             "$@"
