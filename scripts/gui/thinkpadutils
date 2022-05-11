@@ -125,6 +125,21 @@ ExecStart=$0 trackpoint
     systemctl start trackpoint_parameters.path
 }
 
+battery() {
+    case "$1" in
+        limit)
+            tpacpi-bat -s ST 0 80
+            tpacpi-bat -s SP 0 95 ;;
+
+        unlimit)
+            tpacpi-bat -s ST 0 0
+            tpacpi-bat -s SP 0 0 ;;
+
+        *)
+            echo "enter limit or unlimit"
+    esac
+}
+
 main() {
     [ $# = 0 ] && return 1
     case "$1" in
@@ -135,6 +150,10 @@ main() {
         init)
             config_xorg
             config_systemd ;;
+
+        bat)
+            shift
+            battery "$@" ;;
     esac
 }
 

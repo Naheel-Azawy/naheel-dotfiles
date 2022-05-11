@@ -465,7 +465,8 @@ class Bar(BarBase):
         try:
             acpi = sh.grep(sh.acpi("-b"), v="unavailable").split("\n")[0]
             percent = int(acpi.split(", ")[1].replace("%", ""))
-            charging = "Discharging" not in acpi
+            charging = "Charging" in acpi
+            plugged = charging or "Not charging" in acpi
         except:
             return None
 
@@ -478,7 +479,6 @@ class Bar(BarBase):
 
             if charging:
                 r = '#FFFFFF' if percent >= 99 else '#FFD700'
-                out += icons["plug"]
             elif percent <= 20:
                 if percent > 10:
                     r = '#FF0000'
@@ -486,6 +486,9 @@ class Bar(BarBase):
                     r = '#000000'
                 if percent <= 15:
                     out += icons["exclamation"]
+
+            if plugged:
+                out += icons["plug"]
 
             if percent < 30:
                 out += icons["battery30"]

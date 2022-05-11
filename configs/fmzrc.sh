@@ -131,11 +131,15 @@ paste_backup() {
     fi
 }
 
-
 add_fun adb_install 'ADB install'
 adb_install() {
     tput rmcup
     echo "$fx" | while read -r file; do
         adb install "$file"
     done
+}
+
+add_fun cd_realpath 'cd realpath'
+cd_realpath() {
+    cd "$(realpath .)" || :
 }
