@@ -247,7 +247,7 @@ input() {
     input_handle
     if [ "$1" = daemon ]; then
         udevadm monitor | while read -r line; do
-            if echo "$line" | grep -Eq 'UDEV.+\(input\)'; then
+            if echo "$line" | grep -Eq 'UDEV.+ add .+\(input\)'; then
                 date
                 echo "$line"
                 input_handle
