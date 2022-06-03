@@ -534,7 +534,7 @@ start() {
     autostart xbanish                       # hides the cursor while typing
     autostart syndaemon -i 0.5 -t -K -R     # disable touchpad while typing
     autostart edit daemon                   # emacs daemon
-    autostart compositor start              # compositor
+    #autostart compositor start              # compositor
     autostart wallpaper reset               # wallpaper
     autostart automon daemon                # automatic monitor config
     autostart automon auto --no-notif       # set monitors and starts the bar

@@ -58,3 +58,4 @@
 | aur        | archivemount        | N.A.                                         | mount archives using fuse                                    |
 | git        | latexwrapper        | https://github.com/Naheel-Azawy/latexwrapper | LaTeX wrapper                                                |
 | git        | calc                | https://github.com/Naheel-Azawy/shell-calc   | mini shell math tools                                        |
+| aur        | ly                  | N.A.                                         | display manager                                              |

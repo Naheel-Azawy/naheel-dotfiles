@@ -4,17 +4,19 @@ command -v curl >/dev/null || {
     command -v apt >/dev/null && sudo apt install --yes curl
 }
 
+DOCKER_CMD=docker
+
 if [ "$1" = '--docker' ]; then
     IMG='arch-naheel'
-    if docker images | cut -d ' ' -f 1 | grep "$IMG" -q; then
+    if $DOCKER_CMD images | cut -d ' ' -f 1 | grep "$IMG" -q; then
         echo "Image '$IMG' already exist"
-        echo "remove with 'docker rmi $IMG'"
+        echo "remove with '$DOCKER_CMD rmi $IMG'"
     else
         echo "Building image ($IMG)..."
-        docker build -t "$IMG" .
+        $DOCKER_CMD build -t "$IMG" .
     fi
-    echo 'Running docker image...'
-    docker run -it --rm "$IMG"
+    echo "Running $DOCKER_CMD image..."
+    $DOCKER_CMD run -it --rm "$IMG"
 
 elif [ -f ./scripts/nd ]; then
     exec ./scripts/nd install dots "$@"

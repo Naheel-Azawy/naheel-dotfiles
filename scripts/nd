@@ -8,11 +8,19 @@ fi
 
 H="$HOME"
 
+G='\033[1m\033[32m' # cmd color
 C='\033[1m\033[34m' # info color
 E='\033[1m\033[31m' # error color
 R='\033[0m'         # reset color
 
 INSTALLED=
+
+errors=
+
+run() {
+    printf "${G}>>>${R} %s\n" "$*" >&2
+    "$@"
+}
 
 get_installed() {
     [ "$INSTALLED" ] ||
@@ -46,6 +54,16 @@ info() {
 
 err() {
     printf "${E}ERROR:${R} %s\n" "$@" >&2
+    errors="${errors}${E}>${R} $*
+"
+}
+
+echo_errors() {
+    if [ -n "$errors" ]; then
+        echo
+        echo "Errors:"
+        echo "$errors"
+    fi
 }
 
 uncomment() {
@@ -97,7 +115,7 @@ ExecStartPost=/usr/bin/sleep 1
 WantedBy=sleep.target
 WantedBy=suspend.target" |
         sudo tee /etc/systemd/system/wakelock@.service >/dev/null
-    sudo systemctl enable "wakelock@$USER.service"
+    run sudo systemctl enable "wakelock@$USER.service"
 }
 
 # symlink configs
@@ -174,9 +192,9 @@ dots_install() {
     mkuser() {
         echo 'Enter username:'
         read -r user
-        useradd -m -g wheel "$user"
+        run useradd -m -g wheel "$user"
         echo 'Enter password:'
-        passwd "$user"
+        run passwd "$user"
     }
 
     ARCH_ROOT_UPDATED=
@@ -184,15 +202,15 @@ dots_install() {
         # double check keyring, updates, sudo
         if isarch; then
             info "Upgrading the system"
-            pacman --noconfirm -Sy &&
+            run pacman --noconfirm -Sy &&
                 pacman --noconfirm -S archlinux-keyring
-            pacman --noconfirm -Syu &&
-                pacman --noconfirm --needed -S sudo &&
+            run pacman --noconfirm -Syu &&
+                run pacman --noconfirm --needed -S sudo &&
                 ARCH_ROOT_UPDATED=1
         fi
 
         info 'Enabling wheel group in sudoers...'
-        uncomment '%wheel ALL=(ALL:ALL) ALL' /etc/sudoers
+        run uncomment '%wheel ALL=(ALL:ALL) ALL' /etc/sudoers
         if [ ! "$QUICK" ]; then
             info "Looks like you're running as root!"
             echo '1) Create a new user'
@@ -207,16 +225,16 @@ dots_install() {
         else
             user=me
             [ -d /home/me ] ||
-                useradd -m -g wheel "$user" &&
-                    passwd -d "$user"
+                run useradd -m -g wheel "$user" &&
+                    run passwd -d "$user"
         fi
 
         DEST="/home/$user/.dotfiles"
-        rm -rf "$DEST" &&
-            cp -r "$D" "$DEST" &&
-            chown -R "$user" "$DEST" && {
-                uncomment '%wheel ALL=(ALL:ALL) NOPASSWD: ALL' /etc/sudoers
-                sudo -u "$user" sh -c "cd $DEST && ./install.sh $QUICK $PACS"
+        run rm -rf "$DEST" &&
+            run cp -r "$D" "$DEST" &&
+            run chown -R "$user" "$DEST" && {
+                run uncomment '%wheel ALL=(ALL:ALL) NOPASSWD: ALL' /etc/sudoers
+                run sudo -u "$user" sh -c "cd $DEST && ./install.sh $QUICK $PACS"
             }
 
         info 'Now log in to your user account'
@@ -226,7 +244,7 @@ dots_install() {
 
     info "Setting up sudo"
     # allow no password sudo
-    uncomment '%wheel ALL=(ALL:ALL) NOPASSWD: ALL' /etc/sudoers
+    run uncomment '%wheel ALL=(ALL:ALL) NOPASSWD: ALL' /etc/sudoers
     # add some commands to no password sudo if needed
     #  `sudo updatedb` is needed for `locate`
     #  `sudo encfs` is needed when using the `--public` option
@@ -236,8 +254,8 @@ dots_install() {
 
     info "Upgrading the system"
     if isubuntu; then
-        sudo apt update --yes
-        sudo apt upgrade --yes
+        run sudo apt update --yes
+        run sudo apt upgrade --yes
     elif [ "$ARCH_ROOT_UPDATED" != 1 ]; then
         sudo grep -q '^\[multilib\]' /etc/pacman.conf ||
             printf '[multilib]\nInclude = /etc/pacman.d/mirrorlist\n' | sudo tee -a /etc/pacman.conf
@@ -249,13 +267,14 @@ dots_install() {
     pkg_install "$PACS"
 
     info "Setting up systemd services"
-    sudo systemctl enable NetworkManager
-    sudo systemctl enable org.cups.cupsd
+    run sudo systemctl enable NetworkManager
+    run sudo systemctl enable org.cups.cupsd
+    run sudo systemctl enable ly
     lock_service
 
     info "Setting up sensors"
-    sudo sensors-detect --auto
-    sudo modprobe eeprom
+    run sudo sensors-detect --auto
+    run sudo modprobe eeprom
 
     info "Setting up keyring"
     # https://wiki.archlinux.org/index.php/GNOME/Keyring#Without_a_display_manager
@@ -292,14 +311,14 @@ export PATH=\"\$PATH:\$DOTFILES_SCRIPTS\"
          '/usr/share/fish/completions/nd.fish'
 
     info "Installing mpv configs"
-    git clone https://github.com/Naheel-Azawy/mpv-config "$H/.config/mpv"
+    run git clone https://github.com/Naheel-Azawy/mpv-config "$H/.config/mpv"
 
     info "Starting Emacs daemon"
-    emacs --daemon
+    run emacs --daemon
 
     # disallow no password sudo
     [ "$QUICK" ] ||
-        comment '%wheel ALL=(ALL:ALL) NOPASSWD: ALL' /etc/sudoers
+        run comment '%wheel ALL=(ALL:ALL) NOPASSWD: ALL' /etc/sudoers
 
     echo 'DONE!!!'
 }
@@ -725,7 +744,8 @@ main() {
     [ $# != 0 ] && shift
     case "$CMD" in
         install)
-            pkg_install "$@";;
+            pkg_install "$@"
+            echo_errors ;;
         uninstall)
             pkg_install --uninstall "$@";;
         update)

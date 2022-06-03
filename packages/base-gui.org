@@ -33,13 +33,13 @@
 | pacman   | maim                   | N.A.                                    | can take quick screenshots at your request                       |
 | pacman   | xdotool                | N.A.                                    | provides window action utilities on the command line.            |
 | pacman   | xdo                    | N.A.                                    | provides window action utilities on the command line.            |
+| aur      | xtitle                 | N.A.                                    | read x windows titles                                            |
 | pacman   | xssstate               | N.A.                                    | times out the screen if locked                                   |
 | pacman   | lxappearance           | N.A.                                    | configures GTK with a simple GUI                                 |
 | pacman   | cups                   | N.A.                                    | in case you need to use a printer                                |
 | pacman   | cups-pdf               | N.A.                                    | pdf for cups                                                     |
 | pacman   | system-config-printer  | N.A.                                    | a little GUI to control your printers                            |
 | aur      | xbanish                | N.A.                                    | hide the mouse cursor while typing                               |
-| pacman   | clipmenu               | N.A.                                    | a clipboard manger                                               |
 | pacman   | pulseaudio             | N.A.                                    | the audio system (>inb4 bloat)                                   |
 | pacman   | pamixer                | N.A.                                    | terminal audio control interface                                 |
 | pacman   | pulsemixer             | N.A.                                    | an intuitive ncurses audio controller                            |
@@ -68,8 +68,9 @@
 | pacman   | ueberzug               | N.A.                                    | image previews in the terminal                                   |
 | pacman   | sxhkd                  | N.A.                                    | keyboard bindings                                                |
 | pacman   | appmenu-gtk-module     | N.A.                                    | needed for the hud menu                                          |
-| git      | menus                  | https://github.com/Naheel-Azawy/menus   | just some menus                                                  |
 | git      | dmenu                  | https://github.com/Naheel-Azawy/dmenu   | runs commands and provides a UI for selection                    |
+| git      | menus                  | https://github.com/Naheel-Azawy/menus   | just some menus                                                  |
+| pacman   | clipmenu               | N.A.                                    | a clipboard manger                                               |
 | pacman   | xorg-xsetroot          | N.A.                                    | root window parameter setting utility for X                      |
 | pacman   | ntp                    | N.A.                                    | network time protocol                                            |
 | pacman   | perl-file-mimeinfo     | N.A.                                    | mimetype utils                                                   |

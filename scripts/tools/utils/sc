@@ -37,4 +37,4 @@ cmd=$({
      } | menu --prompt="command> ")
 
 [ -n "$cmd" ] &&
-    run systemctl "$cmd" "$s"
+    run sudo systemctl "$cmd" "$s"
