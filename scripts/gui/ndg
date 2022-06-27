@@ -453,7 +453,7 @@ music() {
 
 compositor() {
     case "$1" in
-        start)   picom --experimental-backends -b  ;;
+        start)   ;; # picom --experimental-backends -b  ;;
         stop)    killall picom                     ;;
         restart) compositor stop; compositor start ;;
         *)     return 1

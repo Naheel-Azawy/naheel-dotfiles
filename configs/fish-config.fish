@@ -139,7 +139,7 @@ end
 
 #######################################################################
 
-set -x TERM "screen-256color"
+set -x TERM "xterm-256color"
 set -x SHELL "/usr/bin/fish"
 set_theme
 

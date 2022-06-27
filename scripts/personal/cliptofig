@@ -1,0 +1,26 @@
+#!/bin/sh
+
+here=$(theterm --xpwd)
+kind=org
+
+cd "$here" || exit 1
+
+figs="./figs"
+mkdir -p "$figs"
+num=$(find "$figs" -maxdepth 1 -type f -exec basename '{}' \; |
+          grep -E 'fig\.[0-9]+\.png$' |
+          sort -n | tail -n1 | cut -d. -f2)
+num=$((num + 1))
+target="$figs/fig.$num.png"
+
+xclip -o -selection clipboard >"$target.tmp"
+convert "$target.tmp" -channel RGB -negate "$target"
+rm "$target.tmp"
+
+if [ "$kind" = tex ]; then
+    txt="\\includegraphics[width=\\linewidth]{$target}"
+else
+    txt="[[$target]]"
+fi
+
+xdotool type "$txt"

@@ -22,6 +22,8 @@ openfile() {
     else
         # file name
         case "$f" in
+            *.ipynb)
+                mynohup code --enable-proposed-api ms-toolsai.jupyter -a . "$f";;
             *.html)
                 mynohup ndg browser "$f";;
             *.link)

@@ -1,0 +1,281 @@
+| α | \alpha      | latex: greek |
+| β | \beta       | latex: greek |
+| γ | \gamma      | latex: greek |
+| Γ | \Gamma      | latex: greek |
+| δ | \delta      | latex: greek |
+| Δ | \Delta      | latex: greek |
+| ε | \epsilon    | latex: greek |
+| ϵ | \varepsilon | latex: greek |
+| ζ | \zeta       | latex: greek |
+| η | \eta        | latex: greek |
+| θ | \theta      | latex: greek |
+| Θ | \Theta      | latex: greek |
+| ϑ | \vartheta   | latex: greek |
+| ι | \iota       | latex: greek |
+| κ | \kappa      | latex: greek |
+| ϰ | \varkappa   | latex: greek |
+| λ | \lambda     | latex: greek |
+| Λ | \Lambda     | latex: greek |
+| μ | \mu         | latex: greek |
+| ν | \nu         | latex: greek |
+| ξ | \xi         | latex: greek |
+| Ξ | \Xi         | latex: greek |
+| π | \pi         | latex: greek |
+| Π | \Pi         | latex: greek |
+| ϖ | \varpi      | latex: greek |
+| ρ | \rho        | latex: greek |
+| ϱ | \varrho     | latex: greek |
+| σ | \sigma      | latex: greek |
+| Σ | \Sigma      | latex: greek |
+| ς | \varsigma   | latex: greek |
+| τ | \tau        | latex: greek |
+| υ | \upsilon    | latex: greek |
+| Υ | \Upsilon    | latex: greek |
+| ϕ | \phi        | latex: greek |
+| Φ | \Phi        | latex: greek |
+| φ | \varphi     | latex: greek |
+| χ | \chi        | latex: greek |
+| ψ | \psi        | latex: greek |
+| Ψ | \Psi        | latex: greek |
+| ω | \omega      | latex: greek |
+| Ω | \Omega      | latex: greek |
+| ℵ | \aleph      | latex: hebrew |
+
+|   | \mathcal{L} | latex: Laplace                            |
+|   | \mathcal{F} | latex: Fourier                            |
+| ℕ | \mathbb{N}  | latex: set of natural numbers             |
+| ℤ | \mathbb{Z}  | latex: set of integers                    |
+| ℚ | \mathbb{Q}  | latex: set of rational numbers            |
+| ℝ | \mathbb{R}  | latex: set of real numbers                |
+| ℂ | \mathbb{C}  | latex: set of complex numbers             |
+| 𝔸 | \mathbb{A}  | latex: set of algebraic numbers           |
+| ℍ | \mathbb{H}  | latex: set of quaternions                 |
+| 𝕆 | \mathbb{O}  | latex: set of octonions                   |
+| 𝕊 | \mathbb{S}  | latex: set of sedenions                   |
+| ∅ | \emptyset   | latex: empty set                          |
+| ⦰ | \varnothing | latex: empty set                          |
+| ∈ | \in         | latex: element of                         |
+| ∋ | \ni         | latex: contains as member                 |
+| ∉ | \notin      | latex: not an element of                  |
+| ⊂ | \subset     | latex: subset of                          |
+| ⊃ | \supset     | latex: superset of                        |
+| ⊄ | \not\subset | latex: not a subset of                    |
+| ⊅ | \not\supset | latex: not a superset of                  |
+| ⊆ | \subseteq   | latex: subset of or equal to              |
+| ⊇ | \supseteq   | latex: superset of or equal to            |
+| ⊈ | \nsubseteq  | latex: neither a subset of nor equal to   |
+| ⊉ | \nsupseteq  | latex: neither a superset of nor equal to |
+| ∩ | \cap        | latex: set intersection                   |
+| ∪ | \cup        | latex: set union                          |
+| ∖ | \setminus   | latex: set difference                     |
+| ∃ | \exists     | latex: there exists                       |
+| ∄ | \nexists    | latex: there does not exist               |
+| ∀ | \forall     | latex: for all                            |
+| ¬ | \neg        | latex: logical not                        |
+| ∧ | \land       | latex: logical and                        |
+| ∨ | \lor        | latex: logical or                         |
+
+| ≮ | \nless      | latex: relation operator not less than                           |
+| ≯ | \ngtr       | latex: relation operator not greater than                        |
+| ≠ | \neq        | latex: relation operator not equal to                            |
+| ≤ | \leq        | latex: relation operator less than or equal to                   |
+| ≥ | \geq        | latex: relation operator greater than or equal to                |
+| ≰ | \nleq       | latex: relation operator neither less than nor equal to          |
+| ≱ | \ngeq       | latex: relation operator neither greater than nor equal to       |
+| ≪ | \ll         | latex: relation operator much less than                          |
+| ≫ | \gg         | latex: relation operator much greater than                       |
+| ⋘ | \lll        | latex: relation operator very much less than                     |
+| ⋙ | \ggg        | latex: relation operator very much greater than                  |
+| ∥ | \parallel   | latex: relation operator parallel to                             |
+| ∦ | \nparallel  | latex: relation operator not parallel to                         |
+| ≐ | \doteq      | latex: relation operator approaches the limit                    |
+| ≡ | \equiv      | latex: relation operator equivalent to                           |
+| ≈ | \approx     | latex: relation operator approximately equal to                  |
+| ≅ | \cong       | latex: relation operator congruent to or approximately equal to  |
+| ≃ | \simeq      | latex: relation operator asymptotically equal to                 |
+| ∼ | \sim        | latex: relation operator similar to                              |
+| ⊂ | \subset     | latex: relation operator subset of                               |
+| ⊃ | \supset     | latex: relation operator superset of                             |
+| ⊄ | \not\subset | latex: relation operator not a subset of                         |
+| ⊅ | \not\supset | latex: relation operator not a superset of                       |
+| ⊆ | \subseteq   | latex: relation operator subset of or equal to                   |
+| ⊇ | \supseteq   | latex: relation operator superset of or equal to                 |
+| ⊈ | \nsubseteq  | latex: relation operator neither a subset of nor equal to        |
+| ⊉ | \nsupseteq  | latex: relation operator neither a superset of nor equal to      |
+| ⊏ | \sqsubset   | latex: relation operator square image of                         |
+| ⊐ | \sqsupset   | latex: relation operator square original of                      |
+| ⊑ | \sqsubseteq | latex: relation operator square image of or equal to             |
+| ⊒ | \sqsupseteq | latex: relation operator square original of or equal to          |
+| ≺ | \prec       | latex: relation operator precedes                                |
+| ≻ | \succ       | latex: relation operator succeeds                                |
+| ⊀ | \nprec      | latex: relation operator not precede                             |
+| ⊁ | \nsucc      | latex: relation operator not succeed                             |
+| ≼ | \preceq     | latex: relation operator precedes or equal to                    |
+| ≽ | \succeq     | latex: relation operator succeeds or equal to                    |
+| ⋠ | \npreceq    | latex: relation operator not precede or equal                    |
+| ⋡ | \nsucceq    | latex: relation operator not succeed or equal                    |
+| ∝ | \propto     | latex: relation operator proportional to                         |
+| ≍ | \asymp      | latex: relation operator equivalent to                           |
+| ⋈ | \bowtie     | latex: relation operator bowtie                                  |
+| ⊢ | \vdash      | latex: relation operator                                         |
+| ⊣ | \dashv      | latex: relation operator                                         |
+| ∈ | \in         | latex: relation operator element of                              |
+| ∋ | \ni         | latex: relation operator contains as member                      |
+| ∉ | \notin      | latex: relation operator not an element of                       |
+| ⌣ | \smile      | latex: relation operator                                         |
+| ⌢ | \frown      | latex: relation operator                                         |
+| ⊧ | \models     | latex: relation operator                                         |
+| ⊥ | \perp       | latex: relation operator                                         |
+| ∣ | \mid        | latex: relation operator                                         |
+| ∵ | \because    | latex: relation operator                                         |
+| ∴ | \therefore  | latex: relation operator                                         |
+
+| ± | \pm              | latex: binary operation plus or minus     |
+| ∓ | \mp              | latex: binary operation minus or plus     |
+| × | \times           | latex: binary operation multiply          |
+| ÷ | \div             | latex: binary operation divided           |
+| ∗ | \ast             | latex: binary operation asterisk          |
+| ⋆ | \star            | latex: binary operation                   |
+| † | \dagger          | latex: binary operation                   |
+| ‡ | \ddagger         | latex: binary operation double dagger     |
+| ∩ | \cap             | latex: binary operation set intersection  |
+| ∪ | \cup             | latex: binary operation set union         |
+| ⊎ | \uplus           | latex: binary operation multiset union    |
+| ⊓ | \sqcap           | latex: binary operation                   |
+| ⊔ | \sqcup           | latex: binary operation                   |
+| ⋁ | \vee             | latex: binary operation N-ary logical or  |
+| ⋀ | \wedge           | latex: binary operation N-ary logical and |
+| ⋅ | \cdot            | latex: binary operation                   |
+| ⋄ | \diamond         | latex: binary operation                   |
+| △ | \bigtriangleup   | latex: binary operation                   |
+| ▽ | \bigtriangledown | latex: binary operation                   |
+| ◃ | \triangleleft    | latex: binary operation                   |
+| ▹ | \triangleright   | latex: binary operation                   |
+| ◯ | \bigcirc         | latex: binary operation                   |
+| • | \bullet          | latex: binary operation                   |
+| ≀ | \wr              | latex: binary operation Wreath product    |
+| ⊕ | \oplus           | latex: binary operation xor               |
+| ⊖ | \ominus          | latex: binary operation                   |
+| ⊗ | \otimes          | latex: binary operation                   |
+| ⊘ | \oslash          | latex: binary operation                   |
+| ⊙ | \odot            | latex: binary operation                   |
+| ○ | \circ            | latex: binary operation                   |
+| ∖ | \setminus        | latex: binary operation                   |
+| ⨿ | \amalg           | latex: binary operation amalgamation      |
+
+| ∣ | \mid       | latex: delimiter              |
+| ∥ | \          | latex: delimiter or \parallel |
+| { | \{         | latex: delimiter              |
+| } | \}         | latex: delimiter              |
+| [ | \[         | latex: delimiter              |
+| ] | \]         | latex: delimiter              |
+| ⟨ | \langle    | latex: delimiter              |
+| ⟩ | \rangle    | latex: delimiter              |
+| ⌈ | \lceil     | latex: delimiter              |
+| ⌉ | \rceil     | latex: delimiter              |
+| ⌊ | \lfloor    | latex: delimiter              |
+| ⌋ | \rfloor    | latex: delimiter              |
+| ⌜ | \ulcorner  | latex: delimiter              |
+| ⌝ | \urcorner  | latex: delimiter              |
+| ⌞ | \llcorner  | latex: delimiter              |
+| ⌟ | \lrcorner  | latex: delimiter              |
+
+|   | \frac{abc}{xyz}      | latex: construction |
+|   | \overline{abc}       | latex: construction |
+|   | \underline{abc}      | latex: construction |
+|   | \sqrt{abc}           | latex: construction |
+|   | \sqrt[n]{abc}        | latex: construction |
+|   | \widehat{abc}        | latex: construction |
+|   | \widetilde{abc}      | latex: construction |
+|   | \overrightarrow{abc} | latex: construction |
+|   | \overleftarrow{abc}  | latex: construction |
+|   | \overbrace{abc}      | latex: construction |
+|   | \underbrace{abc}     | latex: construction |
+
+| Σ | \sum       | latex: big sum              |
+| ∏ | \prod      | latex: big product          |
+| ∐ | \coprod    | latex: big coproduct        |
+| ∫ | \int       | latex: big integral         |
+| ∮ | \oint      | latex: big contour integral |
+| ∬ | \iint      | latex: big double integral  |
+|   | \biguplus  | latex:                      |
+|   | \bigcap    | latex:                      |
+|   | \bigcup    | latex:                      |
+|   | \bigoplus  | latex:                      |
+|   | \bigotimes | latex:                      |
+|   | \bigodot   | latex:                      |
+|   | \bigvee    | latex:                      |
+|   | \bigwedge  | latex:                      |
+|   | \bigsqcup  | latex:                      |
+
+| ←  | \leftarrow           | latex: arrow |
+| ⇐  | \Leftarrow           | latex: arrow |
+| →  | \rightarrow          | latex: arrow |
+| ⇒  | \Rightarrow          | latex: arrow |
+| ↔  | \leftrightarrow      | latex: arrow |
+| ⇔  | \Leftrightarrow      | latex: arrow |
+| ←− | \longleftarrow       | latex: arrow |
+| ⇐= | \Longleftarrow       | latex: arrow |
+| −→ | \longrightarrow      | latex: arrow |
+| =⇒ | \Longrightarrow      | latex: arrow |
+| ←→ | \longleftrightarrow  | latex: arrow |
+| ⇐⇒ | \Longleftrightarrow  | latex: arrow |
+| ↑  | \uparrow             | latex: arrow |
+| ⇑  | \Uparrow             | latex: arrow |
+| ↓  | \downarrow           | latex: arrow |
+| ⇓  | \Downarrow           | latex: arrow |
+|    | \updownarrow         | latex: arrow |
+|    | \Updownarrow         | latex: arrow |
+|    | \mapsto              | latex: arrow |
+|    | \longmapsto          | latex: arrow |
+|    | \hookleftarrow       | latex: arrow |
+|    | \hookrightarrow      | latex: arrow |
+|    | \leftharpoonup       | latex: arrow |
+|    | \rightharpoonup      | latex: arrow |
+|    | \leftharpoondown     | latex: arrow |
+|    | \rightharpoondown    | latex: arrow |
+|    | \rightleftharpoons   | latex: arrow |
+|    | \leadsto             | latex: arrow |
+|    | \dashrightarrow      | latex: arrow |
+|    | \dashleftarrow       | latex: arrow |
+|    | \leftrightarrows     | latex: arrow |
+|    | \Lleftarrow          | latex: arrow |
+|    | \leftarrowtail       | latex: arrow |
+|    | \looparrowleft       | latex: arrow |
+|    | \curvearrowleft      | latex: arrow |
+|    | \circlearrowleft     | latex: arrow |
+|    | \upuparrows          | latex: arrow |
+|    | \upharpoonleft       | latex: arrow |
+|    | \multimap            | latex: arrow |
+|    | \leftrightsquigarrow | latex: arrow |
+|    | \rightleftarrows     | latex: arrow |
+|    | \rightrightarrows    | latex: arrow |
+|    | \twoheadrightarrow   | latex: arrow |
+|    | \rightarrowtail      | latex: arrow |
+|    | \rightleftharpoons   | latex: arrow |
+|    | \curvearrowright     | latex: arrow |
+|    | \Rsh                 | latex: arrow |
+|    | \downdownarrows      | latex: arrow |
+|    | \downharpoonright    | latex: arrow |
+|    | \rightsquigarrow     | latex: arrow |
+|    | \nleftarrow          | latex: arrow |
+|    | \nrightarrow         | latex: arrow |
+|    | \nRightarrow         | latex: arrow |
+|    | \nleftrightarrow     | latex: arrow |
+|    | \nearrow             | latex: arrow |
+|    | \searrow             | latex: arrow |
+|    | \swarrow             | latex: arrow |
+|    | \nwarrow             | latex: arrow |
+|    | \leftleftarrows      | latex: arrow |
+|    | \twoheadleftarrow    | latex: arrow |
+|    | \leftrightharpoons   | latex: arrow |
+|    | \Lsh                 | latex: arrow |
+|    | \downharpoonleft     | latex: arrow |
+|    | \rightrightarrows    | latex: arrow |
+|    | \rightleftarrows     | latex: arrow |
+|    | \looparrowright      | latex: arrow |
+|    | \circlearrowright    | latex: arrow |
+|    | \upharpoonright      | latex: arrow |
+|    | \nLeftarrow          | latex: arrow |
+|    | \nLeftrightarrow     | latex: arrow |
+

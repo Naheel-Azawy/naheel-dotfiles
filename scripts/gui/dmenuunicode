@@ -1,6 +1,17 @@
 #!/bin/sh
 
-U="$DOTFILES_DIR/stuff/unicode"
-[ ! -f "$U" ] && unicode-update
-V=$(menus-face -i -l 20 < "$U" | awk -F' : ' '{print $1}')
-[ "$V" != '' ] && env printf "$V" | clipboard
+res=$(cat "$DOTFILES_DIR/stuff/symbols-"*.org |
+          column -s '|' -o '|' -t -H 1,5 |
+          dmenu -i -l 20 | tr -d ' ')
+
+char=$(printf '%s' "$res" | cut -d'|' -f1)
+code=$(printf '%s' "$res" | cut -d'|' -f2)
+
+if [ -n "$char" ] && [ -n "$code" ]; then
+    res=$(printf '%s\n%s\n' "$char" "$code" | dmenu -i)
+else
+    res=$(printf '%s %s' "$char" "$code" | tr -d ' ')
+fi
+
+#printf '%s\n' "$res"
+xdotool type "$res"

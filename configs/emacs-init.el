@@ -40,6 +40,10 @@
 (require 'use-package)
 (setq use-package-always-ensure t)
 
+;; ---- SCRATCH ----
+(setq initial-major-mode 'fundamental-mode)
+(setq initial-scratch-message nil)
+
 ;; ---- KEYS ----
 (global-set-key (kbd "C-x <up>")    'windmove-up)
 (global-set-key (kbd "C-x <down>")  'windmove-down)
@@ -277,7 +281,6 @@ https://www.emacswiki.org/emacs/NoTabs"
   (use-package php-mode)
   (use-package lua-mode)
   (use-package basic-mode)
-  (use-package cc-mode :init (setq-default c-basic-offset 4))
   (use-package vala-mode)
   (use-package csharp-mode)
   (use-package dart-mode)
@@ -301,14 +304,23 @@ https://www.emacswiki.org/emacs/NoTabs"
   (use-package xonsh-mode)
   (use-package cmake-mode)
   (use-package ein)
+  (use-package ess)
+
+  (use-package cc-mode
+    :init (setq-default c-basic-offset 4))
+
   (use-package js2-mode
     :custom-face
     (js2-external-variable ((t (:foreground "brightblack")))))
-  (use-package rjsx-mode :mode
+
+  (use-package rjsx-mode
+    :mode
     ("\\.js\\'"  . rjsx-mode)
     ("\\.jsx\\'" . rjsx-mode))
-  (use-package octave :mode ("\\.m\\'" . octave-mode))
-  (use-package ess)
+
+  (use-package octave
+    :mode ("\\.m\\'" . octave-mode))
+
   (use-package python
     :mode
     ("\\.py\\'"  . python-mode)
@@ -316,6 +328,18 @@ https://www.emacswiki.org/emacs/NoTabs"
     :bind
     ("M-<left>"  . python-indent-shift-left)
     ("M-<right>" . python-indent-shift-right))
+
+  ;; https://emacs.stackexchange.com/a/58341
+  (add-to-list 'display-buffer-alist '("*Async Shell Command*" display-buffer-no-window (nil)))
+  (defun scad-gui ()
+    (interactive)
+    (async-shell-command (concat "openscad " (buffer-file-name))))
+  (use-package scad-mode) ;; :bind ("C-x C-e" . scad-gui))
+  (use-package scad-preview
+    :custom
+    (scad-preview-colorscheme "Starnight")
+    (scad-preview-image-size '(900 . 900))
+    (scad-preview-window-size 80))
 
   ;; ---- ARDUINO ----
   (add-to-list 'auto-mode-alist
@@ -765,7 +789,7 @@ from: https://stackoverflow.com/a/998472/3825872"
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(package-selected-packages
-   '(ess smart-tabs-mode zig-mode web-beautify csv-mode php-mode exwm lua-mode epresent js-auto-beautify yaml-mode xonsh-mode xclip writeroom-mode which-key web-mode vterm visual-regexp-steroids vala-mode v-mode use-package undo-tree typescript-mode sparql-mode spacemacs-theme solidity-mode rust-mode rjsx-mode ranger rainbow-mode protobuf-mode ox-reveal ox-pandoc outshine origami org-ref org-bullets multiple-cursors lsp-ui lsp-java lsp-dart kotlin-mode julia-mode iedit haxe-mode go-mode gnuplot-mode glsl-mode git-gutter flyspell-correct-helm flycheck fish-mode elvish-mode ein dumb-jump doom-modeline dockerfile-mode csharp-mode company-lsp cmake-mode calfw-org calfw basic-mode auctex anzu adaptive-wrap academic-phrases ac-octave))
+   '(scad-preview-mode scad-mode scad-preview ess smart-tabs-mode zig-mode web-beautify csv-mode php-mode exwm lua-mode epresent js-auto-beautify yaml-mode xonsh-mode xclip writeroom-mode which-key web-mode vterm visual-regexp-steroids vala-mode v-mode use-package undo-tree typescript-mode sparql-mode spacemacs-theme solidity-mode rust-mode rjsx-mode ranger rainbow-mode protobuf-mode ox-reveal ox-pandoc outshine origami org-ref org-bullets multiple-cursors lsp-ui lsp-java lsp-dart kotlin-mode julia-mode iedit haxe-mode go-mode gnuplot-mode glsl-mode git-gutter flyspell-correct-helm flycheck fish-mode elvish-mode ein dumb-jump doom-modeline dockerfile-mode csharp-mode company-lsp cmake-mode calfw-org calfw basic-mode auctex anzu adaptive-wrap academic-phrases ac-octave))
  '(verilog-auto-newline nil))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.

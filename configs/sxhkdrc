@@ -39,11 +39,11 @@ super+slash
 	wm-msg float_focus
 
 # Focus the parent container
-super+a
+super+Prior
 	wm-msg container_focus_parent
 
 # Focus the child container
-super+shift+a
+super+Next
 	wm-msg container_focus_child
 
 # Change focus
@@ -143,7 +143,7 @@ super+l
 	ndg lockscreen
 
 # Power options
-super+x
+super+shift+l
 	menus power
 
 # Display options
@@ -155,7 +155,7 @@ super+shift+p
 	ndg display -d
 
 # Clipboard manager
-super+c
+super+shift+c
 	clipmenu
 
 # Common words (copy to clipboard)
