@@ -1,20 +1,16 @@
 diff --git a/config.def.h b/config.def.h
-index 6f05dce..ee31a2d 100644
+index 91ab8ca..64d3004 100644
 --- a/config.def.h
 +++ b/config.def.h
-@@ -5,8 +5,16 @@
-  *
+@@ -6,7 +6,13 @@
   * font: see http://freedesktop.org/software/fontconfig/fontconfig-user.html
   */
--static char *font = "Liberation Mono:pixelsize=12:antialias=true:autohint=true";
+ static char *font = "Liberation Mono:pixelsize=12:antialias=true:autohint=true";
 -static int borderpx = 2;
-+static char *font = "Iosevka Fixed Slab:pixelsize=16:antialias=true:autohint=true";
 +/* Spare fonts */
 +static char *font2[] = {
-+  "Kawkab Mono:pixelsize=12:antialias=true:autohint=true"
-+/*  "DejaVu Sans Mono:pixelsize=20:antialias=true:autohint=true", */
-+/*	"Inconsolata for Powerline:pixelsize=12:antialias=true:autohint=true", */
-+/*	"Hack Nerd Font Mono:pixelsize=11:antialias=true:autohint=true", */
++    /*"Kawkab Mono:size=9",*/
++    "DejaVu Sans Mono:size=11",
 +};
 +
 +static int borderpx = 1;
@@ -22,7 +18,7 @@ index 6f05dce..ee31a2d 100644
  /*
   * What program is execed by st depends of these precedence rules:
 diff --git a/x.c b/x.c
-index 7186040..345ddbc 100644
+index 2a3bd38..5ed04e9 100644
 --- a/x.c
 +++ b/x.c
 @@ -157,6 +157,8 @@ static void xhints(void);
@@ -42,7 +38,7 @@ index 7186040..345ddbc 100644
  	cresize(0, 0);
  	redraw();
  	xhints();
-@@ -1021,6 +1024,101 @@ xloadfonts(const char *fontstr, double fontsize)
+@@ -1050,6 +1053,101 @@ xloadfonts(const char *fontstr, double fontsize)
  	FcPatternDestroy(pattern);
  }
  
@@ -144,7 +140,7 @@ index 7186040..345ddbc 100644
  void
  xunloadfont(Font *f)
  {
-@@ -1118,6 +1216,9 @@ xinit(int cols, int rows)
+@@ -1147,6 +1245,9 @@ xinit(int cols, int rows)
  	usedfont = (opt_font == NULL)? font : opt_font;
  	xloadfonts(usedfont, 0);
  
@@ -154,3 +150,16 @@ index 7186040..345ddbc 100644
  	/* colors */
  	xw.cmap = XDefaultColormap(xw.dpy, xw.scr);
  	xloadcols();
+@@ -2031,6 +2132,12 @@ main(int argc, char *argv[])
+ 	xw.isfixed = False;
+ 	xsetcursor(cursorshape);
+ 
++	char *envfont = getenv("FONT_SIZE");
++	if (envfont == NULL || strcmp(envfont, "") == 0)
++		envfont = getenv("FONT");
++	if (envfont != NULL && strcmp(envfont, "") != 0)
++		font = envfont;
++
+ 	ARGBEGIN {
+ 	case 'a':
+ 		allowaltscreen = 0;

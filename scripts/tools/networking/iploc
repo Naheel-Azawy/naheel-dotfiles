@@ -1,0 +1,68 @@
+#!/usr/bin/env python
+
+import os
+import sys
+import json
+
+DIR               = os.getenv("HOME") + "/.local/share/iploc"
+COUNTRY_CODE_JSON = {"f": DIR + "/names.json", "url": "http://country.io/names.json"}
+IP_COUNTRY_TSV    = {"f": DIR + "/ip2asn-v4-u32.tsv", "url": "https://iptoasn.com/data/ip2asn-v4-u32.tsv.gz"}
+
+def ip2u32(ip):
+    l = ip.split(".")
+    s = 0
+    for i in range(len(l)):
+        s += int(l[i]) << ((3 - i) * 8)
+    return s
+
+def main():
+    if len(sys.argv) < 2:
+        print("enter ip(s)")
+        return 1
+
+    os.makedirs(DIR, exist_ok=True)
+
+    if not os.path.exists(COUNTRY_CODE_JSON["f"]):
+        print(f"Downloading {COUNTRY_CODE_JSON['url']}...")
+        os.system(f"curl '{COUNTRY_CODE_JSON['url']}' > " +
+                  f"'{COUNTRY_CODE_JSON['f']}'")
+
+    if not os.path.exists(IP_COUNTRY_TSV["f"]):
+        print(f"Downloading {IP_COUNTRY_TSV['url']}...")
+        os.system(f"curl '{IP_COUNTRY_TSV['url']}' > " +
+                  f"'{IP_COUNTRY_TSV['f']}.gz'")
+        os.system(f"gzip -d '{IP_COUNTRY_TSV['f']}.gz'")
+
+    ip_country = open(IP_COUNTRY_TSV["f"], "r")
+    ip_country_lines = ip_country.readlines()
+    ip_country.close()
+
+    country_code = open(COUNTRY_CODE_JSON["f"], "r")
+    country_code_dict = json.loads(country_code.read())
+    country_code.close()
+
+    for i in range(1, len(sys.argv)):
+        ip = sys.argv[i]
+        target = ip2u32(ip)
+
+        for line in ip_country_lines:
+            line = line.replace("\n", "").split("\t")
+
+            start = int(line[0])
+            end = int(line[1])
+            cc = line[3]
+            isp = line[4]
+
+            try:
+                country = country_code_dict[cc]
+            except:
+                country = "None"
+
+            if target >= start and target <= end:
+                print("\t".join([ip, cc, country, isp]))
+                break
+
+    return 0
+
+if __name__ == "__main__":
+    exit(main())

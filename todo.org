@@ -1,0 +1,45 @@
+- [ ] replace `menus`
+  + start too too slow
+  + many redundant parts
+  + you now have your own dmenu fork
+  + make a python package as extras for your dmenu
+- [ ] ndg input daemon too slow?
+- [ ] ly messing things after second login
+- [X] dmenu not patched on first install
+- [ ] picom not working well in vbox
+- [ ] picom unpredicted death
+- [ ] picom too expensive while running zoom?
+- [X] material fonts (ttf-material-icons) for bar
+  in the bar: check which font is installed
+- [ ] mpv
+  + create a standalone setup
+  + rebuild sxiv handler for mpv
+  + cleanup and maybe speedup?
+- [ ] or go back to sxiv? mpv can't handle large images and lua scripts are too slow
+- [ ] fmz: detect cd drives
+- [ ] bluetooth dies after suspend
+  https://bbs.archlinux.org/viewtopic.php?id=233527
+  FIxed. It was ~tlp~ all along.
+
+  First run this command:
+
+  [nikola@leviathan ~]$ lsusb
+  Bus 002 Device 001: ID 1d6b:0003 Linux Foundation 3.0 root hub
+  Bus 001 Device 003: ID 0bda:b721 Realtek Semiconductor Corp.
+  Bus 001 Device 002: ID 04f2:b483 Chicony Electronics Co., Ltd
+  Bus 001 Device 001: ID 1d6b:0002 Linux Foundation 2.0 root hub
+  Get the ID of the bluetooth device (in my case it is Realtek, so the ID is 0bda:b721).
+
+  Now, change the line #USB_BLACKLIST="1111:2222 3333:4444" to USB_BLACKLIST="<ID>" (in my case to USB_BLACKLIST="0bda:b721") in /etc/default/tlp.
+
+  Reboot and everything should work.
+
+  Credits go to Aditya.
+
+- [X] dunstify stays alive on volume control
+- [-] universal way of changing font
+  + [X] dmenu
+  + [X] st
+  + [ ] dunst
+  + [ ] gtk3
+  + [ ] gtk2

@@ -1,2 +1,2 @@
 #!/bin/sh
-for f in $(grep -rl "$1"); do sed -i "s/$1/$2/g" $f ; done
+for f in $(grep -rl "$1"); do sed -i "s#$1#$2#g" $f ; done

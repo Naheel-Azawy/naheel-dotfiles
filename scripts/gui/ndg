@@ -16,9 +16,10 @@ export WINDOW_MANAGER='bspwm'
 export XDG_SESSION_TYPE=x11
 export GDK_BACKEND=x11
 
-export FONT_MONO='Iosevka Fixed Slab'
+export FONT_MONO='Iosevka Fixed'
 export FONT_SANS='Liberation Sans'
 export FONT="$FONT_MONO"
+export FONT_SIZE="$FONT_MONO:size=12"
 export GTK_THEME="Adwaita:dark"
 export DESKTOP_SESSION=gnome
 export QT_QPA_PLATFORMTHEME="qt5ct"
@@ -27,6 +28,12 @@ export QT_AUTO_SCREEN_SCALE_FACTOR=0
 #export QT_STYLE_OVERRIDE=adwaita-dark
 export CM_LAUNCHER=menus-face # for clipmenu
 export SXHKD_SHELL=dash
+
+export TERMINAL='theterm'
+export FILE_MANAGER='fmz'
+export BROWSER='ndg browser'
+export READER='ndg reader'
+export TUI_APPS='music-player:lf:vis:corona:alsamixer:lyrics:nano:dice:fmz'
 
 # ==== utils ====
 
@@ -66,6 +73,34 @@ notify_action() {
     else
         notify-send "$@"
     fi
+}
+
+now() {
+    date +%s%3N
+}
+
+lowpass() {
+    # print the last line in the range of `target` seconds
+    target="$1"
+
+    lastf=$(mktemp)
+    trap 'rm $lastf' INT TERM
+
+    while read -r line; do
+        lastt=$(now)
+        echo "$lastt" >"$lastf"
+
+        {
+            receivedt=$(now)
+            sleep "$target"
+            lastt=$(cat "$lastf")
+            if [ "$receivedt" -ge "$lastt" ]; then
+                echo "$line"
+            fi
+        } &
+    done
+
+    wait
 }
 
 # ==== audio ====
@@ -248,10 +283,12 @@ input() {
     if [ "$1" = daemon ]; then
         udevadm monitor | while read -r line; do
             if echo "$line" | grep -Eq 'UDEV.+ add .+\(input\)'; then
-                date
                 echo "$line"
-                input_handle
             fi
+        done | lowpass 2 | while read -r line; do
+            date
+            echo "$line"
+            input_handle
         done
     fi
 }

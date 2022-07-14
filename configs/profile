@@ -5,11 +5,6 @@
 export TERM='screen-256color'
 export EDITOR='edit'
 export VISUAL="$EDITOR"
-export TERMINAL='theterm'
-export FILE_MANAGER='fmz'
-export BROWSER='ndg browser'
-export READER='ndg reader'
-export TUI_APPS='music-player:lf:vis:corona:alsamixer:lyrics:nano:dice:fmz'
 
 # TODO: move to personal
 export ORG_TODO="$HOME/Notes/TODO.org"

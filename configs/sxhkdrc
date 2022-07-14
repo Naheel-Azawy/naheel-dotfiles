@@ -166,14 +166,6 @@ super+w
 super+u
 	dmenuunicode
 
-# Youtube stuff
-super+y
-	youtube-menu
-
-# Youtube running items
-super+shift+y
-	youtube-menu -r
-
 # Help (based on copied term)
 super+h
 	dmenuwhat
@@ -372,3 +364,21 @@ super+period
 
 super+shift+period
 	pkill highlight-point || highlight-pointer -r 20 -c red
+
+super+@c
+	xdotool key ctrl+c
+
+super+@x
+	xdotool key ctrl+x
+
+super+@v
+	xdotool key ctrl+v
+
+super+@a
+	xdotool key ctrl+a
+
+super+@z
+	xdotool key ctrl+z
+
+super+@y
+	xdotool key ctrl+y
