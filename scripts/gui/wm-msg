@@ -125,21 +125,21 @@ ws_menu() {
 
     items=$({
                bspc query -D --names | while read -r d; do
-                   printf '%d:&' "$d"
+                   printf '%d: ' "$d"
                    bspc query -N -d "$d"                          |
                        xargs -l xdotool getwindowname 2>/dev/null |
                        sed -z 's/\n/, /g'                         |
                        head -c -2 | fribidi --nopad --nobreak
                    echo
                done
-               echo "n:&NEW"
+               printf "n: NEW\n"
            })
     items_len=$(echo "$items" | wc -l)
 
     n=$(bspc query -D -d .focused --names)
     n=$((n - 1))
     ws=$(echo "$items"        |
-             column -s '&' -t |
+             #column -s '\t' -t |
              menus-face -i -l "$items_len" \
                         -n "$n" -L top-left -y 25 |
              cut -d : -f 1)
