@@ -222,6 +222,14 @@ function unansi
     sed 's/\x1b\[[0-9;]*m//g'
 end
 
+function bool
+    if $argv
+        echo true
+    else
+        echo false
+    end
+end
+
 alias java='java "$SHHH_JAVA_OPTIONS"' # check profile
 
 abbr ث  'exit'
