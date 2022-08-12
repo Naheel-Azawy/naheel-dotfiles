@@ -433,9 +433,12 @@ reader() {
 }
 
 taskmanager() {
-    TOP=btop
-    [ "$1" = -1 ] && pgrep $TOP >/dev/null && return 1
-    theterm "exec $TOP"
+    for t in btop htop top; do
+        if exists "$t"; then
+            theterm "exec $t"
+            break
+        fi
+    done
 }
 
 # ==== music ====
