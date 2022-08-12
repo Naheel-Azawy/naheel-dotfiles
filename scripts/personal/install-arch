@@ -274,6 +274,8 @@ tui() {
 
     msgbox 'Welcome to Arch installer script'
 
+    # TODO: add an option for a quick install skipping all questions
+
     DEV=
     devs=$(lsblk -rpno name,type | tac |
                awk '$2 == "disk" {printf "\"%s\" \"\" ", $1}')
@@ -320,6 +322,10 @@ tui() {
     ZONE="$zone_dir/$ZONE"
     [ -z "$ZONE" ] && return 1
 
+    # TODO: add options to install
+    # - xfce: pacman -S xorg xfce4 xfce4-goodies; echo 'exec startxfce4' > ~/.xinitrc
+    # - gnome?
+    # - pre-built install of your dots?
     INSTALL_DOTS=$(yesno 'Install dotfiles?' && echo 1)
 
     return 0
@@ -352,6 +358,28 @@ main() {
     esac
     echo
 
+    case "$DEV" in
+        /dev/mmcblk0|/dev/nvme0n1)
+            DEVP="${DEV}p" ;;
+        *)
+            DEVP="$DEV" ;;
+    esac
+
+    # TODO: check DEV is mbr and not gpt and add an option to convert
+    # gdisk "$DEVP"
+    # r
+    # g
+    # w
+
+    echo 'Partition your disk as follows:'
+    echo "- ${DEVP}1: boot"
+    echo "- ${DEVP}2: swap"
+    echo "- ${DEVP}3: root"
+    echo "- ${DEVP}4: home (optional)"
+    echo 'Press enter to proceed'
+    read -r
+    echo
+
     # TODO: add auto partitioning as a default option
     # installation types:
     #
@@ -370,23 +398,6 @@ main() {
     #   - enable hibernation
     #   - boot, root, and home
     #   - dots base base-gui
-
-    # TODO: check DEV is mbr and not gpt and add an option to convert
-
-    if [ "$DEV" = /dev/mmcblk0 ]; then
-        DEVP=/dev/mmcblk0p
-    else
-        DEVP="$DEV"
-    fi
-
-    echo 'Partition your disk as follows:'
-    echo "- ${DEVP}1: boot"
-    echo "- ${DEVP}2: swap"
-    echo "- ${DEVP}3: root"
-    echo "- ${DEVP}4: home (optional)"
-    echo 'Press enter to proceed'
-    read -r
-    echo
 
     cfdisk "$DEV"
     echo

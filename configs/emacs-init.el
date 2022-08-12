@@ -792,6 +792,7 @@ from: https://stackoverflow.com/a/998472/3825872"
  ;; If there is more than one, they won't work right.
  '(package-selected-packages
    '(coffee-mode scad-preview-mode scad-mode scad-preview ess smart-tabs-mode zig-mode web-beautify csv-mode php-mode exwm lua-mode epresent js-auto-beautify yaml-mode xonsh-mode xclip writeroom-mode which-key web-mode vterm visual-regexp-steroids vala-mode v-mode use-package undo-tree typescript-mode sparql-mode spacemacs-theme solidity-mode rust-mode rjsx-mode ranger rainbow-mode protobuf-mode ox-reveal ox-pandoc outshine origami org-ref org-bullets multiple-cursors lsp-ui lsp-java lsp-dart kotlin-mode julia-mode iedit haxe-mode go-mode gnuplot-mode glsl-mode git-gutter flyspell-correct-helm flycheck fish-mode elvish-mode ein dumb-jump doom-modeline dockerfile-mode csharp-mode company-lsp cmake-mode calfw-org calfw basic-mode auctex anzu adaptive-wrap academic-phrases ac-octave))
+ '(safe-local-variable-values '((eval add-hook 'before-save-hook 'time-stamp)))
  '(verilog-auto-newline nil))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
@@ -816,4 +817,5 @@ from: https://stackoverflow.com/a/998472/3825872"
  '(cfw:face-toolbar ((t :foreground "#000000" :background "#000000")))
  '(cfw:face-toolbar-button-off ((t :foreground "#555555" :weight bold)))
  '(cfw:face-toolbar-button-on ((t :foreground "#ffffff" :weight bold)))
- '(js2-external-variable ((t (:foreground "brightblack")))))
+ '(js2-external-variable ((t (:foreground "brightblack"))))
+ '(mc/cursor-face ((t (:background "white" :foreground "black")))))

@@ -17,7 +17,6 @@
 | pacman     | networkmanager      | N.A.                                         | does exactly what it sounds like                             |
 | pacman     | tmux                | N.A.                                         | the terminal multiplexer                                     |
 | func       | tpm                 | N.A.                                         | tmux package manager                                         |
-| pacman     | unrar               | N.A.                                         | extracts rar's                                               |
 | pacman     | unzip               | N.A.                                         | unzips zips                                                  |
 | pacman     | wget                | N.A.                                         | downloads sites and files on the command line                |
 | pacman     | atool               | N.A.                                         | manages and gives information about archives                 |
@@ -58,4 +57,3 @@
 | aur        | archivemount        | N.A.                                         | mount archives using fuse                                    |
 | git        | latexwrapper        | https://github.com/Naheel-Azawy/latexwrapper | LaTeX wrapper                                                |
 | git        | calc                | https://github.com/Naheel-Azawy/shell-calc   | mini shell math tools                                        |
-| aur        | ly                  | N.A.                                         | display manager                                              |

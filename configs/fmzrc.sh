@@ -1,8 +1,7 @@
 # TODO: move to personal
 
+bookmark ~/Documents/events/2021_12_01_University_TAMU
 bookmark ~/Documents/events/2021_12_01_Work_Research_QU_smartgrid_security
-bookmark ~/Documents/QU/3.5-TA/1-spring-2022
-bookmark ~/Documents/events/2021_12_01_Study_TAMU
 bookmark ~/Documents/events
 bookmark ~/.dotfiles
 
@@ -142,4 +141,17 @@ adb_install() {
 add_fun cd_realpath 'cd realpath'
 cd_realpath() {
     cd "$(realpath .)" || :
+}
+
+bind alt-n fun newfilelike
+add_fun newfilelike 'New file with similar name'
+newfilelike() {
+    like=$(basename "$f")
+    name=$(echo | menu_interface --prompt 'New file name> ' -q "$like")
+    if [ -e "$name" ]; then
+        echo "$name already exists"
+    elif [ "$name" ]; then
+        touch "$name"
+        preselector_set_selected "$name"
+    fi
 }
