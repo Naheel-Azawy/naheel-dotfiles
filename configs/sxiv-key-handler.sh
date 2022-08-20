@@ -57,7 +57,12 @@ case "$choice" in
             fi
         done;;
     "Open with" | "o")
-        open --ask "${files[@]}" &;;
+        app=$(echo | mimeopen --ask "${files[0]}" 2>/dev/null |
+                  sed -En 's/\s*(.+\)\s+.+)/\1/p'       |
+                  dmenu -l 20                           |
+                  sed -En 's/(.+)\).+/\1/p')
+        echo "$app" | mimeopen --ask "${files[0]}" & ;;
+
     "Copy file name" | "f")
         printf '%s\n' "${files[@]}" | xclip -in -selection clipboard;;
     "Copy image")

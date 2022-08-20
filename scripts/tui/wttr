@@ -1,23 +1,34 @@
 #!/bin/sh
 
 f=~/.cache/weatherreport
+l=~/.cache/weatherreport-location
 
 update() {
-    curl -s wttr.in?n > "$f"
+    if [ -n "$1" ]; then
+        echo "$1" > "$l"
+        loc="$1"
+    elif [ -f "$l" ]; then
+        loc=$(cat "$l")
+    else
+        loc=
+    fi
+    curl -s "wttr.in/$loc?n" > "$f"
     bar update weather
 }
 
 daemon() {
     sleep 1m
     while :; do
-        update
+        update "$@"
         sleep 30m
     done
 }
 
 case "$1" in
-    u|update) update ;;
-    d|daemon) daemon ;;
+    u|update) shift; update "$@" ;;
+    d|daemon) shift; daemon "$@" ;;
+    '')                          ;;
+    *)               update "$@" ;;
 esac
 
 less --mouse -RF "$f"

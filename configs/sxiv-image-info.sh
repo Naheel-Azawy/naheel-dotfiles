@@ -33,7 +33,8 @@ geometry="${2}x${3}"
 type=
 [ "$4" = video ] && {
     dur=$(video_duration "$path")
-    type="${s}⯈ $dur${s}(play with ctrl-space)"
+    type="${s} $dur${s}(play with ctrl-space)"
+    filename="⯈ $filename"
 }
 
 # used to show the caption in files downloaded with "instaloader"

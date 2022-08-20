@@ -45,6 +45,16 @@ case "$class" in
         echo 'sticky=on' ;;
 esac
 
+case "$class" in
+    XEyes)
+        # xeyes -geometry 50x25+1
+        echo 'manage=off'
+        #echo 'rectangle=50x25+1+0'
+        echo 'locked=on'
+        echo 'sticky=on'
+        echo 'state=floating' ;;
+esac
+
 # https://github.com/baskerville/bspwm/issues/857#issuecomment-427670436
 if [ "$instance" = lemonbar ]; then
     echo manage=off
