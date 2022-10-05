@@ -354,7 +354,7 @@ super+shift+v
 	/mnt/hdd1/Private/m-launcher.sh
 
 super+semicolon
-	edit "$HOME/Notes/TODO.org"
+	edit t "$HOME/Notes/TODO.org"
 
 super+shift+semicolon
 	ndg calendar

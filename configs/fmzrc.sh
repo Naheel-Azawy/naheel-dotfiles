@@ -2,7 +2,11 @@
 
 bookmark ~/Documents/events/2021_12_01_University_TAMU
 bookmark ~/Documents/events/2021_12_01_Work_Research_QU_smartgrid_security
+bookmark ~/Documents/QU
 bookmark ~/Documents/events
+bookmark ~/Documents/datasheets
+bookmark ~/Documents/cheatsheets
+bookmark ~/Documents/good_books
 bookmark ~/.dotfiles
 
 # add_fun myless 'Less a file'

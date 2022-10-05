@@ -13,9 +13,8 @@ num=$(find "$figs" -maxdepth 1 -type f -exec basename '{}' \; |
 num=$((num + 1))
 target="$figs/fig.$num.png"
 
-xclip -o -selection clipboard >"$target.tmp"
-convert "$target.tmp" -channel RGB -negate "$target"
-rm "$target.tmp"
+xclip -o -selection clipboard >"$target"
+#convert "$target" -channel RGB -negate "$target"
 
 if [ "$kind" = tex ]; then
     txt="\\includegraphics[width=\\linewidth]{$target}"

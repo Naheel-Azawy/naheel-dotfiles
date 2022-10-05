@@ -26,7 +26,7 @@ export QT_QPA_PLATFORMTHEME="qt5ct"
 #export QT_DEVICE_PIXEL_RATIO=1
 export QT_AUTO_SCREEN_SCALE_FACTOR=0
 #export QT_STYLE_OVERRIDE=adwaita-dark
-export CM_LAUNCHER=menus-face # for clipmenu
+export CM_LAUNCHER=dmenu # for clipmenu
 export SXHKD_SHELL=dash
 
 export TERMINAL='theterm'
@@ -116,11 +116,12 @@ audio_notify() {
 
 audio_vol_notif() {
     v="$1"
+    if [ -n "$2" ]; then s="$2 "; else s=; fi
     [ "$v" ] || v=$(pamixer --get-volume)
 	if [ "$(pamixer --get-mute)" = "true" ]; then
         audio_notify "Volume: Muted"
 	else
-        audio_notify -h int:value:"$v" "Volume: $v%"
+        audio_notify -h int:value:"$v" "${s}Volume: $v%"
     fi
 }
 
@@ -139,12 +140,22 @@ audio_vol() {
     touch "$lock"
     c="$1"
     d="$2"; [ "$d" ] || d=5
+
+    # default to bluetooth if exists
+    sink=$(pamixer --list-sinks | grep bluez | tail -n1 | cut -d' ' -f1)
+    if [ -n "$sink" ]; then
+        sink_name='BT'
+    else
+        sink=$(pamixer --get-default-sink | tail -n +2 | cut -d' ' -f1)
+        sink_name=
+    fi
+
     case "$c" in
-        m) pamixer -m ;;
-        t) pamixer -t ;;
+        m) pamixer --sink "$sink" -m ;;
+        t) pamixer --sink "$sink" -t ;;
         up|down)
             [ "$c" = down ] && d="-$d"
-            v=$(pamixer --get-volume)
+            v=$(pamixer --sink "$sink" --get-volume)
             v=$((v+d))
             if [ $v -le $MAX_VOL ]; then
                 v=$((v/5*5))
@@ -154,11 +165,11 @@ audio_vol() {
             if [ $v -lt 0 ]; then
                 v=0
             fi
-            pamixer --allow-boost --set-volume $v
+            pamixer --sink "$sink" --allow-boost --set-volume $v
             ;;
     esac
     rm -f "$lock"
-	audio_vol_notif "$v"
+	audio_vol_notif "$v" "$sink_name"
 }
 
 audio() {
@@ -366,6 +377,14 @@ lockscreen() {
 
     [ "$FONT" ] || FONT='sans-serif'
     COLOR='ffffffff'
+
+    # img=/dev/null
+    # album=~/Projects/album/album
+    # [ -d "$album" ] &&
+    #     album_img=$(find "$album" -maxdepth 1 -name '*.jpg' |
+    #                     shuf | head -n1) &&
+    #     [ -n "$album_img" ] &&
+    #     img=$album_img
 
     # using picom for blur and opacity
     i3lock                     \

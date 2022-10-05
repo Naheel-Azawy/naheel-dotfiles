@@ -31,4 +31,6 @@ case "$1" in
     *)               update "$@" ;;
 esac
 
+s=$(stat --printf %s "$f")
+[ "$s" = 0 ] && update
 less --mouse -RF "$f"
