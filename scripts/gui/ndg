@@ -512,9 +512,9 @@ music() {
 
 compositor() {
     case "$1" in
-        start)   ;; # picom --experimental-backends -b  ;;
+        start)   picom --experimental-backends -b  ;;
         stop)    killall picom                     ;;
-        restart) compositor stop; compositor start ;;
+        restart) compositor stop; sleep .1; compositor start ;;
         *)     return 1
     esac
 }

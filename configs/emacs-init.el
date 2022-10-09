@@ -348,6 +348,13 @@ https://www.emacswiki.org/emacs/NoTabs"
                    (c++-mode)
                    (flycheck-mode -1))))
 
+  ;; ---- PLATFORMIO ----
+  ;; (use-package ccls)
+  ;; (use-package platformio-mode)
+  ;; (add-hook 'c++-mode-hook (lambda ()
+  ;;                            (lsp-deferred)
+  ;;                            (platformio-conditionally-enable)))
+
   ;; ---- CSV ----
   (use-package csv-mode
     :hook
