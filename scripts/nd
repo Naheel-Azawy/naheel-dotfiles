@@ -343,7 +343,7 @@ pkg_install_from() {
         pacman)
             if doit; then
                 if [ "$install" ]; then
-                    sudo pacman --noconfirm --needed -S "$1"
+                    sudo pacman --noconfirm --needed --overwrite '*' -S "$1"
                 else
                     sudo pacman -R "$1"
                 fi
