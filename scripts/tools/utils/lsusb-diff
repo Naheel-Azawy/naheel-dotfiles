@@ -1,0 +1,12 @@
+#!/bin/sh
+
+a=$(mktemp)
+b=$(mktemp)
+
+lsusb > "$a"
+printf 'Enter to continue '
+read -r _
+lsusb > "$b"
+
+diff -u "$a" "$b" | diff-so-fancy
+rm -f "$a" "$b"
