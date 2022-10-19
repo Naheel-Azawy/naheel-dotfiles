@@ -1,8 +1,5 @@
 #!/bin/sh
 
-SPEED=255
-SENSITIVITY=$SPEED
-
 SYSFS=/sys/devices/platform/i8042/serio1/serio2
 
 # https://www.thinkwiki.org/wiki/UltraNav
@@ -31,14 +28,17 @@ check_root() {
 }
 
 set_trackpoint() {
+    speed="$1";       [ -n "$speed" ]       || speed=255
+    sensitivity="$2"; [ -n "$sensitivity" ] || sensitivity="$speed"
+
     info "Setting trackpoint parameters at $SYSFS..."
     # %wheel ALL=(ALL:ALL) NOPASSWD: /usr/bin/updatedb,/usr/bin/encfs,/usr/bin/chmod a+rw /sys/class/backlight/intel_backlight/brightness,/usr/bin/mount,/usr/bin/umount,/usr/bin/chmod 666 /sys/devices/platform/i8042/serio1/serio2/speed /sys/devices/platform/i8042/serio1/serio2/sensitivity
     if [ ! -f "$SYSFS/speed" ] || [ ! -f "$SYSFS/speed" ]; then
         return 1
     fi
     sudo -n chmod 666 "$SYSFS/speed" "$SYSFS/sensitivity"
-    echo "$SPEED" > "$SYSFS/speed"
-    echo "$SENSITIVITY" > "$SYSFS/sensitivity"
+    echo "$speed"       > "$SYSFS/speed"
+    echo "$sensitivity" > "$SYSFS/sensitivity"
 }
 
 set_usb_keyboard() {
@@ -146,8 +146,13 @@ battery() {
 main() {
     [ $# = 0 ] && return 1
     case "$1" in
+        trackpoint)
+            shift
+            set_trackpoint "$@" ;;
+
         input)
-            set_trackpoint
+            shift
+            set_trackpoint "$@"
             set_usb_keyboard ;;
 
         init)

@@ -154,7 +154,6 @@ dots_link() {
     lnnn "$D/configs/gtk3-settings.ini"   "$H/.config/gtk-3.0/settings.ini"
     lnnn "$D/configs/gtk3.css"            "$H/.config/gtk-3.0/gtk.css"
     lnnn "$D/configs/gtk2rc"              "$H/.gtkrc-2.0"
-    lnnn "$D/configs/arduino-cli.yaml"    "$H/.arduino15/arduino-cli.yaml"
     lnnn "$D/configs/stpv-config.sh"      "$H/.config/stpv/config.sh"
     lnnn "$D/configs/nanorc"              "$H/.nanorc"
     lnnn "$D/configs/sxhkdrc"             "$H/.config/sxhkd/sxhkdrc"

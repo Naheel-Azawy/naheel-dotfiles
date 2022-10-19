@@ -37,7 +37,7 @@ test -f "$DOTFILES_DIR/configs/more-paths.sh" &&
 if ! command -v apt >/dev/null; then
 
     # To be able to change the brightness. Password is not required as edited in the sudoers
-    sudo chmod a+rw /sys/class/backlight/intel_backlight/brightness \
+    sudo -n chmod a+rw /sys/class/backlight/intel_backlight/brightness \
          2>/dev/null ||:
 
     # Start graphical server if wm not already running.
