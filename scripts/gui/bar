@@ -48,10 +48,18 @@ try:
 except:
     use_arabic = False
 
+# export FONT_SIZE='Iosevka Fixed:size=12'
+env_font = os.getenv("FONT_SIZE", "monospace")
+try:
+    env_font_size = float(env_font.split(":size=")[1])
+except:
+    env_font_size = 12
+icons_font_size = env_font_size * 1.333
+
 themes = {
     "material": {
         # https://fonts.google.com/icons?selected=Material+Icons
-        "icons_font": "Material Icons:pixelsize=21",
+        "icons_font": f"Material Icons:size={icons_font_size}",
         "icons": {
             "exclamation": "\ue645",
             "plug":        "\ue63c",
@@ -79,7 +87,7 @@ themes = {
 
     "awesome": {
         # https://fontawesome.com/icons
-        "icons_font": "Font Awesome 6 Free Solid:pixelsize=19",
+        "icons_font": f"Font Awesome 6 Free Solid:size={icons_font_size}",
         "icons": {
             "exclamation": " ",
             "plug":        " ",
@@ -107,7 +115,7 @@ themes = {
 
     "nerd": {
         # https://www.nerdfonts.com/cheat-sheet
-        "icons_font": "Hack Nerd Font:pixelsize=19",
+        "icons_font": f"Hack Nerd Font:size={icons_font_size}",
         "icons": {
             "exclamation": "",
             "plug":        "ﮣ ",
@@ -651,9 +659,8 @@ def lemonbar():
     monitors = [o for o in xrandr.parse() if o["connected"] and o["geometry"]]
 
     fonts = []
-    f = os.getenv("FONT")
-    if f:
-        fonts += ["-f", f]
+    if env_font:
+        fonts += ["-f", env_font]
     if icons_font is not None:
         fonts += ["-f", icons_font]
     fonts += [

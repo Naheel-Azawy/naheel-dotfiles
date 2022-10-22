@@ -19,7 +19,8 @@ export GDK_BACKEND=x11
 export FONT_MONO='Iosevka Fixed'
 export FONT_SANS='Liberation Sans'
 export FONT="$FONT_MONO"
-export FONT_SIZE="$FONT_MONO:size=12"
+export FONT_SIZE="$FONT_MONO:size=12" # changed later
+
 export GTK_THEME="Adwaita:dark"
 export DESKTOP_SESSION=gnome
 export QT_QPA_PLATFORMTHEME="qt5ct"
@@ -367,6 +368,19 @@ wallpaper() {
 
 # ==== lockscreen ====
 
+wait_fingerprint() {
+    # https://github.com/i3/i3lock/issues/210#issuecomment-1047313795
+    exists fprintd-list || return
+    timeout=$((10 * 60))
+    start=$(date +%s)
+    while pidof i3lock >/dev/null && [ $((t - start)) -lt $timeout ]; do
+        if timeout 5 fprintd-verify | grep -q verify-match; then
+            pkill i3lock
+        fi
+        t=$(date +%s)
+    done
+}
+
 lockscreen() {
     pgrep i3lock && {
         echo Already locked
@@ -385,6 +399,8 @@ lockscreen() {
     #                     shuf | head -n1) &&
     #     [ -n "$album_img" ] &&
     #     img=$album_img
+
+    wait_fingerprint &
 
     # using picom for blur and opacity
     i3lock                     \
@@ -581,6 +597,15 @@ start() {
     logdir="/tmp/xinitlogs-$USER"
     mkdir -p "$logdir"
     rm -r "$logdir"/*
+
+    # set font size based on resolution
+    dim=$(xdpyinfo | grep "dimensions" | awk '{ print $2 }' | cut -d x -f1)
+    if [ "$dim" -lt 1920 ]; then
+        s=12
+    else
+        s=15
+    fi
+    export FONT_SIZE="$FONT_MONO:size=$s"
 
     # autostart programs
     autostart xset s 900                    # blank after 15 minutes

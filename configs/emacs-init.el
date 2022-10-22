@@ -60,8 +60,9 @@
 (define-key isearch-mode-map "\C-f" 'isearch-repeat-forward)
 (define-key isearch-mode-map "\C-v" 'isearch-yank-pop)
 (global-set-key (kbd "C-s") 'save-buffer)
-(use-package undo-tree
-  :config (global-undo-tree-mode))
+(use-package undo-tree :config
+  (global-undo-tree-mode)
+  (setq undo-tree-history-directory-alist '(("." . "~/.emacs.d/undo"))))
 (global-set-key (kbd "C-z") 'undo-tree-undo)
 (global-set-key (kbd "M-z") 'undo-tree-redo)
 (setq org-support-shift-select t)

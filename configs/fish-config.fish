@@ -203,6 +203,10 @@ function diffbin
     diff (xxd $argv[1] | psub) (xxd $argv[2] | psub)
 end
 
+function ip
+    command ip --color=auto $argv
+end
+
 function plot
     command plot $argv & disown
 end
