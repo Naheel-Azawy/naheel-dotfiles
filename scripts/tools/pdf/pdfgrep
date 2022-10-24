@@ -7,11 +7,12 @@ doit() {
     [ "$m" != "" ] && printf "\033[0;35m%s\033[0;36m:\033[0m " "$f" && echo "$m"
 }
 
-if [ "$1" = '-r' ]; then
-    shift
-    find . -iname '*.pdf' | while read -r f; do
-        doit "$f" "$@"
-    done
-else
-    doit "$@"
-fi
+case "$1" in
+    -*r*)
+        shift
+        find . -iname '*.pdf' | while read -r f; do
+            doit "$f" "$@"
+        done ;;
+    *)
+        doit "$@"
+esac

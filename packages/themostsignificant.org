@@ -1,15 +1,15 @@
-| Tag    | Name            | Git Link                               | Purpose                                                        |
-|--------+-----------------+----------------------------------------+----------------------------------------------------------------|
-| pacman | neofetch        | N.A.                                   | displays system's information                                  |
-| pacman | cowsay          | N.A.                                   | a wise cow                                                     |
-| pacman | fortune-mod     | N.A.                                   | some wise quotes                                               |
-| pacman | lolcat          | N.A.                                   | colored cat                                                    |
-| git    | pipes.sh        | https://github.com/pipeseroni/pipes.sh | pipes screensaver                                              |
-| pacman | cmatrix         | N.A.                                   | now you are neo                                                |
-| aur    | toilet          | N.A.                                   | display large colourful characters                             |
-| pacman | figlet          | N.A.                                   | display large characters made up of ordinary screen characters |
-| aur    | figlet-fonts    | N.A.                                   | more fonts for figlet                                          |
-| pacman | cool-retro-term | N.A.                                   | CRT terminal                                                   |
-| aur    | cli-visualizer  | N.A.                                   | a CLI visualizer                                               |
-| pip    | termdown        | N.A.                                   | the ultimate countdown and stopwatch                           |
-| npm    | mapscii         | N.A.                                   | terminal map                                                   |
+| Tag    | Name            | Git Link | Purpose                                                        |
+|--------+-----------------+----------+----------------------------------------------------------------|
+| pacman | neofetch        | N.A.     | displays system's information                                  |
+| pacman | cowsay          | N.A.     | a wise cow                                                     |
+| pacman | fortune-mod     | N.A.     | some wise quotes                                               |
+| pacman | lolcat          | N.A.     | colored cat                                                    |
+| aur    | pipes.sh        | N.A.     | pipes screensaver                                              |
+| pacman | cmatrix         | N.A.     | now you are neo                                                |
+| aur    | toilet          | N.A.     | display large colourful characters                             |
+| pacman | figlet          | N.A.     | display large characters made up of ordinary screen characters |
+| aur    | figlet-fonts    | N.A.     | more fonts for figlet                                          |
+| pacman | cool-retro-term | N.A.     | CRT terminal                                                   |
+| aur    | cli-visualizer  | N.A.     | a CLI visualizer                                               |
+| pacman | termdown        | N.A.     | the ultimate countdown and stopwatch                           |
+| npm    | mapscii         | N.A.     | terminal map                                                   |

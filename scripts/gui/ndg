@@ -19,7 +19,7 @@ export GDK_BACKEND=x11
 export FONT_MONO='Iosevka Fixed'
 export FONT_SANS='Liberation Sans'
 export FONT="$FONT_MONO"
-export FONT_SIZE="$FONT_MONO:size=12" # changed later
+[ -n "$FONT_SIZE" ] || export FONT_SIZE="$FONT_MONO:size=12" # changed later
 
 export GTK_THEME="Adwaita:dark"
 export DESKTOP_SESSION=gnome
@@ -56,9 +56,9 @@ exists () {
 
 notify() {
     if exists dunstify; then
-        dunstify -i /dev/null                     \
-            -h string:x-dunst-stack-tag:$NOTIF_ID \
-            "$@"
+        dunstify -i /dev/null                          \
+                 -h string:x-dunst-stack-tag:$NOTIF_ID \
+                 "$@"
     else
         notify-send "$@"
     fi
@@ -67,10 +67,10 @@ notify() {
 notify_action() {
     if exists dunstify; then
         # https://github.com/dunst-project/dunst/issues/672#issuecomment-554513535
-        dunstify -i /dev/null                     \
-            -h string:x-dunst-stack-tag:$NOTIF_ID \
-            -A 'clicked,CLICK'                    \
-            "$@"
+        dunstify -i /dev/null                          \
+                 -h string:x-dunst-stack-tag:$NOTIF_ID \
+                 -A 'clicked,CLICK'                    \
+                 "$@"
     else
         notify-send "$@"
     fi
@@ -119,9 +119,9 @@ audio_vol_notif() {
     v="$1"
     if [ -n "$2" ]; then s="$2 "; else s=; fi
     [ "$v" ] || v=$(pamixer --get-volume)
-	if [ "$(pamixer --get-mute)" = "true" ]; then
+    if [ "$(pamixer --get-mute)" = "true" ]; then
         audio_notify "Volume: Muted"
-	else
+    else
         audio_notify -h int:value:"$v" "${s}Volume: $v%"
     fi
 }
@@ -170,24 +170,24 @@ audio_vol() {
             ;;
     esac
     rm -f "$lock"
-	audio_vol_notif "$v" "$sink_name"
+    audio_vol_notif "$v" "$sink_name"
 }
 
 audio() {
     cmd="$1"
     v="$2"
     case "$cmd" in
-	    "up")       audio_vol up   "$v"                           ;;
-	    "down")     audio_vol down "$v"                           ;;
-	    "mute")     amixer -q set Master toggle;  audio_vol_notif ;;
-	    "mutemic")  amixer -q set Capture toggle; audio_mic_notif ;;
-	    "stop")     mpc -q stop       || cmus-remote --stop       ;;
-	    "pause")    mpc -q toggle     || cmus-remote --pause      ;;
-	    "forward")  mpc -q seek +"$v" || cmus-remote --seek +"$v" ;;
-	    "back")     mpc -q seek -"$v" || cmus-remote --seek -"$v" ;;
-	    "next")     mpc -q next       || cmus-remote --next       ;;
-	    "prev")     mpc -q prev       || cmus-remote --prev       ;;
-	    "replay")   mpc seek 0%       || cmus-remote --seek 0     ;;
+        "up")       audio_vol up   "$v"                           ;;
+        "down")     audio_vol down "$v"                           ;;
+        "mute")     amixer -q set Master toggle;  audio_vol_notif ;;
+        "mutemic")  amixer -q set Capture toggle; audio_mic_notif ;;
+        "stop")     mpc -q stop       || cmus-remote --stop       ;;
+        "pause")    mpc -q toggle     || cmus-remote --pause      ;;
+        "forward")  mpc -q seek +"$v" || cmus-remote --seek +"$v" ;;
+        "back")     mpc -q seek -"$v" || cmus-remote --seek -"$v" ;;
+        "next")     mpc -q next       || cmus-remote --next       ;;
+        "prev")     mpc -q prev       || cmus-remote --prev       ;;
+        "replay")   mpc seek 0%       || cmus-remote --seek 0     ;;
         "gui")      pavucontrol                                   ;;
         *)          return 1
     esac
@@ -322,21 +322,29 @@ touchpadtog() {
 }
 
 systraytog() {
-    killall trayer && return 0
+    killall trayer 2>/dev/null && return 0
 
     eval "$(xdotool getmouselocation --shell)"
     Y=$((Y+15))
 
-    trayer --edge top \
-	       --align left \
-	       --distance "$Y" \
-	       --margin "$X" \
-	       --widthtype request \
-	       --tint 0x000000 \
-	       --transparent true \
-	       --expand true \
-	       --SetDockType false \
-	       --alpha 0 &
+    f=$(echo "$FONT_SIZE" | cut -d= -f2)
+    if [ -n "$f" ]; then
+        h=$((f * 3))
+    else
+        h=48
+    fi
+
+    trayer --edge top          \
+           --align left        \
+           --height "$h"       \
+           --distance "$Y"     \
+           --margin "$X"       \
+           --widthtype request \
+           --tint 0x000000     \
+           --transparent true  \
+           --expand true       \
+           --SetDockType true  \
+           --alpha 0 &
 
     # trayer doesn't set the location correctly
     # for multi-monitor setup
@@ -371,7 +379,7 @@ wallpaper() {
 wait_fingerprint() {
     # https://github.com/i3/i3lock/issues/210#issuecomment-1047313795
     exists fprintd-list || return
-    timeout=$((10 * 60))
+    timeout=$((1 * 60 * 60)) # 1 hr
     start=$(date +%s)
     while pidof i3lock >/dev/null && [ $((t - start)) -lt $timeout ]; do
         if timeout 5 fprintd-verify | grep -q verify-match; then

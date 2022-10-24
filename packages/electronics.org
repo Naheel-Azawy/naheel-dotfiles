@@ -1,14 +1,13 @@
-| Tag    | Name                      | Git Link                                                  | Purpose                                 |
-|--------+---------------------------+-----------------------------------------------------------+-----------------------------------------|
-| aur    | logisim                   | N.A.                                                      | logic circuits design                   |
-| aur    | fritzing                  | N.A.                                                      | simple and easy circuit design          |
-| pacman | arduino                   | N.A.                                                      | well, arduino..                         |
-| pacman | arduino-cli               | N.A.                                                      | cli for arduino                         |
-| aur    | platformio                | N.A.                                                      | code builder and library manager        |
-| aur    | icestudio                 | N.A.                                                      | FPGA studio                             |
-| git    | fish-complete-arduino-cli | https://github.com/Naheel-Azawy/fish-complete-arduino-cli | fish completion for arduino-cli         |
-| aur    | qucs                      | N.A.                                                      | circuit simulator                       |
-| pacman | uucp                      | N.A.                                                      | to use 'cu' for serial connection       |
-| pacman | kicad                     | N.A.                                                      | schematics and PCB                      |
-| pacman | kicad-library             | N.A.                                                      | Kicad component and footprint libraries |
-| pacman | kicad-library-3d          | N.A.                                                      | Kicad 3D render model libraries         |
+| Tag    | Name               | Git Link | Purpose                                 |
+|--------+--------------------+----------+-----------------------------------------|
+| aur    | logisim            | N.A.     | logic circuits design                   |
+| aur    | fritzing           | N.A.     | simple and easy circuit design          |
+| pacman | arduino            | N.A.     | well, arduino..                         |
+| pacman | arduino-cli        | N.A.     | cli for arduino                         |
+| pip    | platformio         | N.A.     | code builder and library manager        |
+| aur    | icestudio-appimage | N.A.     | FPGA studio                             |
+| aur    | qucs               | N.A.     | circuit simulator                       |
+| pacman | uucp               | N.A.     | to use 'cu' for serial connection       |
+| pacman | kicad              | N.A.     | schematics and PCB                      |
+| pacman | kicad-library      | N.A.     | Kicad component and footprint libraries |
+| pacman | kicad-library-3d   | N.A.     | Kicad 3D render model libraries         |

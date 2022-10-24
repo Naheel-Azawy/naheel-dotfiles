@@ -621,7 +621,7 @@ class Bar(BarBase):
 
     @item()
     def start(self):
-        return "%{A:dmenu_run_apps -L top-left -y 25&:} START%{A}" if not self.a else None
+        return "%{A:menus&:} START%{A}" if not self.a else None
 
     @item()
     def power(self):

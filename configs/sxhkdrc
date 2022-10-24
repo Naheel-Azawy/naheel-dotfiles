@@ -350,9 +350,6 @@ XF86Favorites
 Cancel
 	wm-msg window_nice_close
 
-super+shift+v
-	/mnt/hdd1/Private/m-launcher.sh
-
 super+semicolon
 	edit t "$HOME/Notes/TODO.org"
 
