@@ -28,8 +28,21 @@ check_root() {
 }
 
 set_trackpoint() {
-    speed="$1";       [ -n "$speed" ]       || speed=255
-    sensitivity="$2"; [ -n "$sensitivity" ] || sensitivity="$speed"
+    if [ -n "$1" ]; then
+        speed="$1"
+    elif [ -n "$THINKPAD_TRACKPOINT_SPEED" ]; then
+        speed="$THINKPAD_TRACKPOINT_SPEED"
+    else
+        speed=255
+    fi
+    
+    if [ -n "$2" ]; then
+        sensitivity="$2"
+    elif [ -n "$THINKPAD_TRACKPOINT_SENSITIVITY" ]; then
+        sensitivity="$THINKPAD_TRACKPOINT_SENSITIVITY"
+    else
+        sensitivity="$speed"
+    fi
 
     info "Setting trackpoint parameters at $SYSFS..."
     # %wheel ALL=(ALL:ALL) NOPASSWD: /usr/bin/updatedb,/usr/bin/encfs,/usr/bin/chmod a+rw /sys/class/backlight/intel_backlight/brightness,/usr/bin/mount,/usr/bin/umount,/usr/bin/chmod 666 /sys/devices/platform/i8042/serio1/serio2/speed /sys/devices/platform/i8042/serio1/serio2/sensitivity
