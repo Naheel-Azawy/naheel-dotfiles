@@ -43,3 +43,6 @@ save d6a036c70c8910af2813c69b17a83bc6 sg-lab-2 xrandr \
 
 save 1d1f9b61d37e5cebdbe8e230359a8aa4 x1-sg-lab xrandr \
      --output eDP-1 --primary --mode 1920x1200 --pos 0x0 --rotate normal --output HDMI-1 --off --output DP-1 --off --output DP-2 --off --output DP-3 --mode 1680x1050 --pos 1920x0 --rotate left --output DP-4 --off
+
+save e1afc73e010ac024dcffa8020c850d77 x1-off xrandr \
+     --output eDP-1 --mode 1920x1200 --pos 0x0 --rotate normal --output HDMI-1 --primary --mode 1920x1080 --pos 1920x0 --rotate normal --output DP-1 --off --output DP-2 --off --output DP-3 --off --output DP-4 --off

@@ -104,6 +104,36 @@ lowpass() {
     wait
 }
 
+# ==== menus ====
+
+confirm() {
+    c=$(printf 'Yes\nNo\n' |
+            dmenu -i -p "$1" -l 2 \
+                  -sb red -sf black -nb black -nf red \
+                  -L top-right -y 25)
+    [ "$c" = Yes ]
+}
+
+power() {
+    res=$({
+             echo Suspend
+             echo Shutdown
+             echo Reboot
+             echo Logout
+             echo Lock
+             echo Hibernate
+         } | dmenu -i -l 3 -c 2 -L top-right -y 25)
+
+    case "$res" in
+        Suspend)                      systemctl suspent   ;;
+        Shutdown)  confirm "$res?" && systemctl poweroff  ;;
+        Reboot)    confirm "$res?" && systemctl reboot    ;;
+        Logout)    confirm "$res?" && wm-msg end          ;;
+        Lock)                         lockscreen          ;;
+        Hibernate) confirm "$res?" && systemctl hibernate ;;
+    esac
+}
+
 # ==== audio ====
 
 MAX_VOL=250
@@ -673,7 +703,7 @@ main() {
         audio|brightness|browser|floating_calc|calendar| \
             display|lang|lockscreen|music|notiftog|reader| \
             input|wallpaper|taskmanager|touchpadtog|systraytog| \
-            compositor|start|foo)
+            compositor|start|confirm|power|foo)
             "$cmd" "$@" ;;
         wm)    exec "$HERE/wm-msg" "$@" ;;
         empty) exec "$HERE/empty"       ;;

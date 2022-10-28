@@ -66,5 +66,5 @@ v3() {
          "$HOME/zoom/opt/zoom/ZoomLauncher"
 }
 
-#v3 "$@"
-v2 "$@"
+v3 "$@"
+#v2 "$@"
