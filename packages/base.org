@@ -59,3 +59,4 @@
 | git        | calc                | https://github.com/Naheel-Azawy/shell-calc   | mini shell math tools                                        |
 | pacman     | htop                | N.A.                                         | a friendly top                                               |
 | pacman     | ufw                 | N.A.                                         | firewall                                                     |
+| pacman     | moreutils           | N.A.                                         | vidir and others                                             |

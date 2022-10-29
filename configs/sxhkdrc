@@ -124,7 +124,7 @@ super+e
 
 # Start the program launcher
 super+d
-	menus
+	gmenu
 
 # Toggle on-screen keyboard
 super+k
@@ -144,7 +144,7 @@ super+l
 
 # Power options
 super+shift+l
-	menus power
+	gmenu -power
 
 # Display options
 super+p
@@ -270,7 +270,7 @@ XF86AudioForward
 	ndg audio forward 10
 
 XF86PowerOff
-	menus power
+	gmenu -power
 
 XF86Calculator
 	calc-float

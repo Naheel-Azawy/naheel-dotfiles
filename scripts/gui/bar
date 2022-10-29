@@ -621,6 +621,12 @@ class Bar(BarBase):
     def keyboard(self):
         if self.a or self.wm.impl is None:
             return None
+        try:
+            # https://askubuntu.com/a/520360
+            sh.grep(sh.udevadm("info", "--export-db"), "ID_INPUT_TOUCHSCREEN=1")
+        except:
+            # only show in touch screen devices
+            return None
         return "%{A:pkill onboard || onboard &:}" + icons["keyboard"] + "%{A}"
 
 def lemon_kill():

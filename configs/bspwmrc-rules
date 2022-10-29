@@ -13,8 +13,13 @@ case "$class" in
         echo 'state=tiled' ;;
     Empty)
         echo 'state=tiled' ;;
-    dmenu|Pavucontrol|Arandr|Onboard|\
-        Panther_launcher|gnome-calculator)
+    dmenu|\
+        Pavucontrol|\
+        Arandr|\
+        Onboard|\
+        Panther_launcher|\
+        gnome-calculator|\
+        org.gnome.clocks)
         echo 'state=floating' ;;
 esac
 

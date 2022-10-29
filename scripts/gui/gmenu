@@ -56,11 +56,6 @@ CSS = b"""
 #mainbox {
     background-color: rgba(0, 0, 0, 0.5);
 }
-#prompt {
-    margin-top: 20px;
-    margin-left: 32px;
-    margin-right: 32px;
-}
 #searchbox {
     background: none;
     border-color: #999;
@@ -71,21 +66,22 @@ CSS = b"""
     margin-right: 32px;
 }
 flowbox {
-    transition: 500ms ease-in-out;
+    transition-duration: 300ms;
 }
 flowboxchild {
+    transition-duration: 300ms;
     background-color: rgba(0, 0, 0, 0);
     border-style: none;
     box-shadow: none;
-    color: #999;
+    color: #aaa;
 }
-flowboxchild:hover {
+#app:hover {
     background-color: rgba(255, 0, 0, 1);
     color: #eee
 }
 flowboxchild:selected {
     background-color: rgba(255, 255, 255, 0.2);
-    color: #eee
+    color: #fff
 }
 
 messagedialog {
@@ -277,7 +273,7 @@ class MainWindow(Gtk.Window):
 
         self.connect("destroy", Gtk.main_quit)
         self.connect("key-release-event", self.on_key_release)
-        self.connect("focus-out-event", self.on_focus_change)
+        self.connect("focus-out-event", self.on_focus_out)
 
         # Credits for transparency go to KurtJacobson:
         # https://gist.github.com/KurtJacobson/374c8cb83aee4851d39981b9c7e2c22c
@@ -289,12 +285,6 @@ class MainWindow(Gtk.Window):
 
         outer_box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL)
         outer_box.set_property("name", "mainbox")
-
-        if args.prompt:
-            prompt_lbl = Gtk.Label(label=args.prompt)
-            prompt_lbl.set_halign(Gtk.Align.START)
-            prompt_lbl.set_property("name", "prompt")
-            outer_box.pack_start(prompt_lbl, False, True, 0)
 
         self.search_box = Gtk.SearchEntry()
         self.search_box.set_property("name", "searchbox")
@@ -340,12 +330,24 @@ class MainWindow(Gtk.Window):
             else:
                 self.resize(geometry.w * .9, geometry.h * .7)
 
+        if args.n and args.n >= 0 and args.n < len(entries):
+            self.grid_apps.select_n(args.n)
+        else:
+            self.grid_apps.select_n(0)
+
     def on_search_change(self, item):
         self.grid_apps.update()
 
     def on_key_release(self, item, event):
         if event.type == Gdk.EventType.KEY_RELEASE:
-            if event.keyval == 0xff1b: # Escape
+            if not self.search_box.has_focus() and \
+               event.string and \
+               (event.string.isalnum() or event.string == "$"):
+                self.search_box.grab_focus()
+                self.search_box.set_text(event.string)
+                self.search_box.set_position(-1)
+
+            elif event.keyval == 0xff1b: # Escape
                 if self.search_box.get_text():
                     self.search_box.set_text("")
                     self.grid_apps.update()
@@ -353,11 +355,17 @@ class MainWindow(Gtk.Window):
                     Gtk.main_quit()
 
             elif event.keyval == 0xff0d: # Return
-                self.grid_apps.launch_first()
+                text = self.search_box.get_text()
+                if text.startswith("$"):
+                    text = text[1:]
+                    subprocess.Popen(text, shell=True)
+                    Gtk.main_quit()
+                else:
+                    self.grid_apps.launch_first()
 
         return True
 
-    def on_focus_change(self, item, event):
+    def on_focus_out(self, item, event):
         if msg is None and not args.stay:
             Gtk.main_quit()
 
@@ -392,10 +400,10 @@ def json_file_entries(jfile):
             for o in json.load(f):
                 entries.append(App.from_dict(o))
             return entries
-    except e:
+    except Exception as e:
         print(f"Failed reading json file '{jfile}'")
         print(e)
-    
+
 def desktop_entries():
     all_apps = []
     if os.path.exists(cache_file_desktops) and not args.u:
@@ -512,13 +520,11 @@ class App:
     def from_dict(json_dict):
         if type(json_dict) == str:
             return App(json_dict)
-        return App(
-            json_dict["name"],
-            json_dict["exec"],
-            json_dict["icon"],
-            json_dict["comment"],
-            json_dict["terminal"]
-        )
+        app = App()
+        for attr in ["name", "exec", "icon", "comment", "terminal"]:
+            if attr in json_dict:
+                setattr(app, attr, json_dict[attr])
+        return app
 
     def to_dict(self):
         return {
@@ -535,7 +541,7 @@ class App:
 
         comment = ""
         if len(self.name) > self.max_lbl and not args.long:
-            name = self.name[:self.max_lbl - 3] + "..."
+            name = self.name[:self.max_lbl - 1] + "…"
             if self.comment:
                 comment = self.name + ": " + self.comment
             else:
@@ -555,22 +561,32 @@ class App:
         as_line = args.lines or args.noic or args.power
 
         if as_line:
-            self.box = Gtk.HBox(Gtk.Orientation.VERTICAL)
+            box = Gtk.HBox(Gtk.Orientation.VERTICAL)
             lbl.set_halign(Gtk.Align.START)
             if not args.noic:
-                self.box.pack_start(img, False, False, 0)
-            self.box.pack_start(lbl, True, True, 0)
+                box.pack_start(img, False, False, 0)
+            box.pack_start(lbl, True, True, 0)
         else:
-            self.box = Gtk.VBox()
+            box = Gtk.VBox()
             lbl.set_halign(Gtk.Align.CENTER)
             if not args.noic:
-                self.box.pack_start(img, True, True, 5)
-            self.box.pack_start(lbl, True, True, 5)
+                box.pack_start(img, True, True, 5)
+            box.pack_start(lbl, True, True, 5)
 
         if comment:
-            self.box.set_tooltip_text(comment)
+            box.set_tooltip_text(comment)
 
-        return self.box
+        self._box = Gtk.EventBox()
+        self._box.add(box)
+        self._box.connect("enter-notify-event", self.on_hover)
+
+        #self._box = box
+        return self._box
+
+    def on_hover(self, item, event):
+        flowboxchild = item.get_parent()
+        flowbox = flowboxchild.get_parent()
+        flowbox.select_child(flowboxchild)
 
 
 def app_image(icon):
@@ -599,8 +615,12 @@ class AppsCont:
         self.first = None
         self.flow = Gtk.FlowBox()
 
-        max_per_line = 1 if args.noic and len(self.items_list) <= 10 \
-            else len(self.items_list) / 10
+        if args.noic:
+            max_per_line = len(self.items_list) // 10
+            if max_per_line < 1:
+                max_per_line = 1
+        else:
+            max_per_line = 100
 
         m = 10
         self.flow.set_margin_start(m)
@@ -618,20 +638,20 @@ class AppsCont:
         vbox = Gtk.VBox()
         vbox.set_spacing(15)
         vbox.pack_start(self.flow, False, False, 0)
-        
+
         self.scroll = Gtk.ScrolledWindow()
         self.scroll.add(vbox)
-
-        if args.n and args.n >= 0 and args.n < len(items_list):
-            child = self.flow.get_child_at_index(args.n)
-            child.grab_focus()
-            self.flow.select_child(child)
 
     def box(self):
         return self.scroll
 
     def child2item(self, child):
         return self.items_list[child.get_index()]
+
+    def select_n(self, n):
+        child = self.flow.get_child_at_index(n)
+        child.grab_focus()
+        self.flow.select_child(child)
 
     def update(self):
         self.first = None
@@ -688,7 +708,7 @@ def confirm_dialog(name, on_yes):
     msg.connect("response", msg_res)
     msg.show()
 
-        
+
 def launch(app, no_cache=False):
     command = app.exec
     if command:
