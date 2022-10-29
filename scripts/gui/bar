@@ -81,7 +81,8 @@ themes = {
             "power":       "\ue8ac",
             "more":        "\ue5cf",
             "plus":        "\ue145",
-            "close":       "\ue5cd"
+            "close":       "\ue5cd",
+            "keyboard":    "\ue312"
         }
     },
 
@@ -109,35 +110,8 @@ themes = {
             "power":       "",
             "more":        "",
             "plus":        "",
-            "close":       ""
-        }
-    },
-
-    "nerd": {
-        # https://www.nerdfonts.com/cheat-sheet
-        "icons_font": f"Hack Nerd Font:size={icons_font_size}",
-        "icons": {
-            "exclamation": "",
-            "plug":        "ﮣ ",
-            "battery30":   "",
-            "battery50":   "",
-            "battery60":   "",
-            "battery90":   "",
-            "battery100":  "",
-            "wifi1":       "",
-            "wifi2":       "",
-            "wifi3":       "",
-            "wifi4":       "",
-            "prayer":      "",
-            "cloud":       "",
-            "temp90":      "",
-            "temp50":      "",
-            "temp40":      "",
-            "temp30":      "",
-            "power":       "",
-            "more":        "",
-            "plus":        "",
-            "close":       ""
+            "close":       "",
+            "keyboard":    ""
         }
     },
 
@@ -164,7 +138,8 @@ themes = {
             "power":       "p",
             "more":        "<",
             "plus":        "+",
-            "close":       "x"
+            "close":       "x",
+            "keyboard":    "k"
         }
     }
 }
@@ -189,7 +164,7 @@ icons      = themes[theme]["icons"]
 background = '#dd000000'
 foreground = '#ffffff'
 
-default_items = "start workspaces add program | clock | systray pray weather temperature wifi battery power"
+default_items = "start workspaces add program | clock | systray keyboard pray weather temperature wifi battery power"
 
 port_file = "/tmp/.nbarport"
 pid_file  = "/tmp/.nbarpid"
@@ -621,11 +596,11 @@ class Bar(BarBase):
 
     @item()
     def start(self):
-        return "%{A:applications&:} START%{A}" if not self.a else None
+        return "%{A:gmenu&:} START%{A}" if not self.a else None
 
     @item()
     def power(self):
-        return "%{A:ndg power&:}" + icons["power"] + \
+        return "%{A:gmenu -power&:}" + icons["power"] + \
             "%{A}" if not self.a else None
 
     @item()
@@ -641,6 +616,12 @@ class Bar(BarBase):
     @item(big=True)
     def host(self):
         return os.uname()[1]
+
+    @item(big=True)
+    def keyboard(self):
+        if self.a or self.wm.impl is None:
+            return None
+        return "%{A:pkill onboard || onboard &:}" + icons["keyboard"] + "%{A}"
 
 def lemon_kill():
     if os.path.exists(pid_file):

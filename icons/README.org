@@ -1,0 +1,5 @@
+* Source
+[[https://materialdesignicons.com]]
+
+* License
+[[https://github.com/Templarian/MaterialDesign/blob/master/LICENSE]]

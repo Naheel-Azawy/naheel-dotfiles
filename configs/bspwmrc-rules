@@ -14,7 +14,7 @@ case "$class" in
     Empty)
         echo 'state=tiled' ;;
     dmenu|Pavucontrol|Arandr|Onboard|\
-        Panther_launcher)
+        Panther_launcher|gnome-calculator)
         echo 'state=floating' ;;
 esac
 

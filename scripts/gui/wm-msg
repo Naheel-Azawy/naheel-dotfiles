@@ -86,7 +86,6 @@ program_menu() {
     xdotool keyup Super_L
     title=$(xdotool getactivewindow getwindowname)
     items=$({
-               echo "$title" | head -c 50
                echo 'Close'
                echo 'Toggle fullscreen'
                echo 'Toggle float'
@@ -96,11 +95,10 @@ program_menu() {
                # echo 'Move left'
                # echo 'Move up'
                # echo 'Move down'
-               echo 'Super down'
-               echo 'Super up'
+               # echo 'Super down'
+               # echo 'Super up'
            })
-    items_len=$(echo "$items" | wc -l)
-    choice=$(echo "$items" | menus-face -L cursor -l "$items_len")
+    choice=$(echo "$items" | gmenu -dmenu -prompt "$title" -dims 200x300)
 
     case "$choice" in
         "$title")                              ;;
@@ -134,14 +132,12 @@ ws_menu() {
                done
                printf "n: NEW\n"
            })
-    items_len=$(echo "$items" | wc -l)
 
     n=$(bspc query -D -d .focused --names)
     n=$((n - 1))
     ws=$(echo "$items"        |
              #column -s '\t' -t |
-             menus-face -i -l "$items_len" \
-                        -n "$n" -L top-left -y 25 |
+             gmenu -dmenu -prompt "Workspaces" -n "$n" -long -dims 700x500 |
              cut -d : -f 1)
 
     [ -n "$ws" ] && {

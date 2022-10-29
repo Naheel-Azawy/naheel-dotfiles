@@ -1,0 +1,712 @@
+#!/usr/bin/env python3
+# _*_ coding: utf-8 _*_
+
+# Copyright (C) 2022-present naheel-azawy
+# Copyright (C) 2020 Piotr Miller & Contributors
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#
+# This script is based on sgtk-menu by Piotr Miller.
+# A newer version by him can be found there
+# https://github.com/nwg-piotr/nwg-drawer
+#
+# Old header:
+#
+# This script creates a GNOME-like application grid out of .desktop files content,
+# optionally prepended with a menu created out of user-defined template.
+#
+# Author: Piotr Miller
+# Copyright (c) 2020 Piotr Miller & Contributors
+# e-mail: nwg.piotr@gmail.com
+# Website: http://nwg.pl
+# Project: https://github.com/nwg-piotr/sgtk-menu
+# License: GPL3
+
+import os
+import tempfile
+import sys
+import subprocess
+import argparse
+import locale
+import json
+from dataclasses import dataclass
+
+import warnings
+warnings.filterwarnings("ignore")
+
+import gi
+gi.require_version('Gtk', '3.0')
+from gi.repository import Gtk, Gdk, GdkPixbuf
+
+
+NAME = "gmenu"
+
+CSS = b"""
+#mainbox {
+    background-color: rgba(0, 0, 0, 0.5);
+}
+#prompt {
+    margin-top: 20px;
+    margin-left: 32px;
+    margin-right: 32px;
+}
+#searchbox {
+    background: none;
+    border-color: #999;
+    color: #ccc;
+    margin-top: 20px;
+    margin-bottom: 20px;
+    margin-left: 32px;
+    margin-right: 32px;
+}
+flowbox {
+    transition: 500ms ease-in-out;
+}
+flowboxchild {
+    background-color: rgba(0, 0, 0, 0);
+    border-style: none;
+    box-shadow: none;
+    color: #999;
+}
+flowboxchild:hover {
+    background-color: rgba(255, 0, 0, 1);
+    color: #eee
+}
+flowboxchild:selected {
+    background-color: rgba(255, 255, 255, 0.2);
+    color: #eee
+}
+
+messagedialog {
+    background-color: #000;
+}
+messagedialog button {
+    background: black;
+    color: white;
+    text-shadow: none;
+}
+messagedialog button:focus {
+    background: red;
+    color: black;
+    text-shadow: none;
+}
+"""
+
+@dataclass
+class Geometry:
+    x: int
+    y: int
+    w: int
+    h: int
+
+def display_geometry(win):
+    """
+    Returns geometry of currently focused display
+    :return: (x, y, width, height)
+    """
+    screen = win.get_screen()
+    try:
+        active = screen.get_active_window() # FIXME: depricated
+        if active:
+            display_number = screen.get_monitor_at_window(active)
+        else:
+            # Could not detect active window; use first monitor
+            display_number = 0
+        rectangle = screen.get_monitor_geometry(display_number)
+        return Geometry(rectangle.x, rectangle.y, rectangle.width, rectangle.height)
+    except:
+        return None
+
+
+def get_locale_string(forced_lang=None):
+    if forced_lang:
+        language = forced_lang.split("_")[0]
+    else:
+        language = locale.getlocale()[0] or "en_US"
+    lang = language.split("_")[0]
+    if lang:
+        return '[{}]'.format(lang)
+    else:
+        return None
+
+
+def data_dirs():
+    paths = [os.path.expanduser('~/.local/share'), "/usr/share", "/usr/local/share"]
+    if "XDG_DATA_DIRS" in os.environ:
+        dirs = os.environ["XDG_DATA_DIRS"]
+        if dirs:
+            dirs = dirs.split(":")
+            for d in dirs:
+                while d.endswith("/"):
+                    d = d[:-1]
+                if d not in paths:
+                    paths.append(d)
+    return paths
+
+
+def load_json(path):
+    try:
+        with open(path, 'r') as f:
+            return json.load(f)
+    except Exception as e:
+        return {}
+
+
+def save_json(src_dict, path):
+    with open(path, 'w') as f:
+        json.dump(src_dict, f, indent=4)
+
+
+locale_str = ''
+
+win = None  # overlay window
+msg = None
+args = None
+
+if "XDG_CACHE_HOME" in os.environ:
+    cache_dir = os.environ["XDG_CACHE_HOME"]
+else:
+    cache_dir = os.path.join(os.path.expanduser('~/.cache'))
+if not os.path.exists(cache_dir):
+    os.makedirs(cache_dir)
+
+# We track clicks in the same cache file
+cache_file_desktops = os.path.join(cache_dir, NAME + ".json")
+cache_file = os.path.join(cache_dir, NAME + "-count.json")
+cache = None
+sorted_cache = None
+
+
+def main():
+    parser = argparse.ArgumentParser(description="Application launcher")
+
+    parser.add_argument("-d",      type=str, default="",     help="use alternate folder list (: delimited) for .Desktop files")
+    parser.add_argument("-f",      action="store_true",      help="fullscreen window")
+    parser.add_argument("-u",      action="store_true",      help="update cache")
+    parser.add_argument("-l",      type=str,                 help="force language (e.g. \"de\" for German)")
+    parser.add_argument("-s",      type=int,   default=72,   help="menu icon size (min: 16, max: 96, default: 72)")
+    parser.add_argument("-css",    type=str,   default=None, help="use alternative style sheet instead of the default")
+    parser.add_argument("-power",  action="store_true",      help="show power menu")
+    parser.add_argument("-stay",   action="store_true",      help="stay even when out of focus")
+    parser.add_argument("-lines",  action="store_true",      help="view as lines")
+    parser.add_argument("-noic",   action="store_true",      help="no icons")
+    parser.add_argument("-jfile",  type=str,   default=None, help="json file as input")
+    parser.add_argument("-jstr",   type=str,   default=None, help="json string as input")
+    parser.add_argument("-dims",   type=str,   default=None, help="window dimensions (WxH)")
+    parser.add_argument("-dmenu",  action="store_true",      help="function in a dmenu-like way")
+    parser.add_argument("-prompt", type=str,   default=None, help="text prompt at the top of the window")
+    parser.add_argument("-long",   action="store_true",      help="allow long lines")
+    parser.add_argument("-n",      type=int,   default=-1,   help="pre-selected item index")
+    global args
+    args = parser.parse_args()
+
+    if args.s < 16:
+        args.s = 16
+    elif args.s > 96:
+        args.s = 96
+
+    screen = Gdk.Screen.get_default()
+    provider = Gtk.CssProvider()
+    try:
+        if args.css:
+            provider.load_from_path(args.css)
+        else:
+            provider.load_from_data(CSS)
+        Gtk.StyleContext.add_provider_for_screen(
+            screen, provider, Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION)
+    except Exception as e:
+        print(e)
+
+    # cache stores number of clicks on each item
+    global cache
+    cache = load_json(cache_file)
+
+    if not cache:
+        save_json(cache, cache_file)
+    global sorted_cache
+    sorted_cache = sorted(cache.items(), reverse=True, key=lambda x: x[1])
+
+    global locale_str
+    locale_str = get_locale_string(args.l)
+
+    screen = Gdk.Screen.get_default()
+    provider = Gtk.CssProvider()
+    style_context = Gtk.StyleContext()
+    style_context.add_provider_for_screen(
+        screen, provider, Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION
+    )
+
+    # Overlay window
+    global win
+    win = MainWindow()
+
+    win.show_all()
+    # If done inside the constructor on Openbox, stops the window from grabbing focus!
+    win.set_skip_taskbar_hint(True)
+
+    Gtk.main()
+
+
+class MainWindow(Gtk.Window):
+    def __init__(self):
+        global args
+        Gtk.Window.__init__(self)
+
+        self.set_skip_pager_hint(True)
+
+        if args.prompt:
+            self.set_title(args.prompt)
+        elif args.dmenu:
+            self.set_title("Menu")
+        elif args.power:
+            self.set_title("Power options")
+        else:
+            self.set_title("Applications")
+        self.set_role(NAME)
+
+        self.connect("destroy", Gtk.main_quit)
+        self.connect("key-release-event", self.on_key_release)
+        self.connect("focus-out-event", self.on_focus_change)
+
+        # Credits for transparency go to KurtJacobson:
+        # https://gist.github.com/KurtJacobson/374c8cb83aee4851d39981b9c7e2c22c
+        screen = self.get_screen()
+        visual = screen.get_rgba_visual()
+        if visual and screen.is_composited():
+            self.set_visual(visual)
+        self.set_app_paintable(True)
+
+        outer_box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL)
+        outer_box.set_property("name", "mainbox")
+
+        if args.prompt:
+            prompt_lbl = Gtk.Label(label=args.prompt)
+            prompt_lbl.set_halign(Gtk.Align.START)
+            prompt_lbl.set_property("name", "prompt")
+            outer_box.pack_start(prompt_lbl, False, True, 0)
+
+        self.search_box = Gtk.SearchEntry()
+        self.search_box.set_property("name", "searchbox")
+        self.search_box.set_sensitive(True)
+        self.search_box.connect("changed", self.on_search_change)
+        outer_box.pack_start(self.search_box, False, False, 0)
+
+        if args.dmenu:
+            entries = []
+            args.noic = True
+            args.lines = True
+            for line in sys.stdin:
+                entries.append(App(line.strip()))
+        elif args.jstr:
+            entries = json_str_entries(args.jstr)
+        elif args.jfile:
+            entries = json_file_entries(args.jfile)
+        elif args.power:
+            entries = power_entries()
+        else:
+            entries = desktop_entries() + power_entries()
+
+        self.grid_apps = AppsCont(entries, self.search_box)
+        outer_box.pack_start(self.grid_apps.box(), True, True, 0)
+
+        self.add(outer_box)
+
+        geometry = display_geometry(self)
+        if args.f:
+            self.fullscreen()
+        self.set_type_hint(Gdk.WindowTypeHint.DIALOG)
+
+        if args.dims:
+            dims = args.dims.split("x")
+            self.resize(int(dims[0]), int(dims[1]))
+        elif args.power:
+            self.resize(args.s * 8, args.s * 3.7)
+        else:
+            if not geometry:
+                self.resize(1024, 1000)
+            elif geometry.w > geometry.h:
+                self.resize(geometry.w * .5, geometry.h * .8)
+            else:
+                self.resize(geometry.w * .9, geometry.h * .7)
+
+    def on_search_change(self, item):
+        self.grid_apps.update()
+
+    def on_key_release(self, item, event):
+        if event.type == Gdk.EventType.KEY_RELEASE:
+            if event.keyval == 0xff1b: # Escape
+                if self.search_box.get_text():
+                    self.search_box.set_text("")
+                    self.grid_apps.update()
+                else:
+                    Gtk.main_quit()
+
+            elif event.keyval == 0xff0d: # Return
+                self.grid_apps.launch_first()
+
+        return True
+
+    def on_focus_change(self, item, event):
+        if msg is None and not args.stay:
+            Gtk.main_quit()
+
+
+def desktop_parse_bool(line):
+    try:
+        return line.split('=')[1].strip().lower() == "true"
+    except:
+        return False
+
+def power_entries():
+    ic = os.getenv("DOTFILES_DIR") + "/icons"
+    return [
+        App("Sleep",     "systemctl suspend",   f"{ic}/power-sleep.svg",     confirm=False),
+        App("Shutdown",  "systemctl poweroff",  f"{ic}/power-shutdown.svg",  confirm=True),
+        App("Restart",   "systemctl reboot",    f"{ic}/power-restart.svg",   confirm=True),
+        App("Logout",    "wm-msg end",          f"{ic}/power-logout.svg",    confirm=True),
+        App("Lock",      "ndg lockscreen",      f"{ic}/power-lock.svg",      confirm=False),
+        App("Hibernate", "systemctl hibernate", f"{ic}/power-hibernate.svg", confirm=True),
+    ]
+
+def json_str_entries(jstr):
+    entries = []
+    for o in json.loads(jstr):
+        entries.append(App.from_dict(o))
+    return entries
+
+def json_file_entries(jfile):
+    entries = []
+    try:
+        with open(jfile, "r") as f:
+            for o in json.load(f):
+                entries.append(App.from_dict(o))
+            return entries
+    except e:
+        print(f"Failed reading json file '{jfile}'")
+        print(e)
+    
+def desktop_entries():
+    all_apps = []
+    if os.path.exists(cache_file_desktops) and not args.u:
+        try:
+            with open(cache_file_desktops, "r") as f:
+                for o in json.load(f):
+                    all_apps.append(App.from_dict(o))
+                return all_apps
+        except:
+            print("Failed reading cache")
+            pass
+
+    apps = []
+    paths = ([os.path.join(p, "applications") for p in data_dirs()])
+    if args.d != "":
+        if ":" not in args.d:
+            paths = [args.d]
+        else:
+            paths = args.d.split(':')
+    for path in paths:
+        if os.path.exists(path):
+            for f in os.listdir(path):
+                app = App()
+                try:
+                    with open(os.path.join(path, f)) as d:
+                        lines = d.readlines()
+                        read_me = True
+
+                        for line in lines:
+                            if line.startswith("["):
+                                read_me = line.strip() == "[Desktop Entry]"
+                                continue
+                            if read_me:
+                                loc_name = 'Name{}='.format(locale_str)
+
+                                if line.startswith('NoDisplay='):
+                                    if desktop_parse_bool(line):
+                                        app = None
+                                        break
+                                    continue
+
+                                if line.startswith('OnlyShowIn='):
+                                    showin = line.split('=')[1].strip()
+                                    if showin != "": # TODO: allow some?
+                                        app = None
+                                        break
+                                    continue
+
+                                if line.startswith('Name='):
+                                    app.name = line.split('=')[1].strip()
+                                    continue
+
+                                if line.startswith(loc_name):
+                                    app.name = line.split('=')[1].strip()
+                                    continue
+
+                                loc_comment = 'Comment{}='.format(locale_str)
+
+                                if line.startswith('Comment='):
+                                    app.comment = line.split('=')[1].strip()
+                                    continue
+
+                                if line.startswith(loc_comment):
+                                    app.comment = line.split('=')[1].strip()
+                                    continue
+
+                                if line.startswith('Exec='):
+                                    cmd = line.split('=')[1:]
+                                    c = '='.join(cmd)
+                                    app.exec = c.strip()
+                                    if '%' in app.exec:
+                                        app.exec = app.exec.split('%')[0].strip()
+                                    continue
+
+                                if line.startswith('Icon='):
+                                    app.icon = line.split('=')[1].strip()
+
+                                if line.startswith('Terminal='):
+                                    app.terminal = desktop_parse_bool(line)
+
+                        if app and app.name and app.exec and app.icon:
+                            # avoid adding twice
+                            found = False
+                            for item in apps:
+                                if item.name == app.name and item.exec == app.exec:
+                                    found = True
+                            if not found:
+                                apps.append(app)
+
+                except Exception as e:
+                    print(e)
+
+    apps = sorted(apps, key=lambda x: x.name.upper())
+    for app in apps:
+        all_apps.append(app)
+
+    with open(cache_file_desktops, "w") as f:
+        json.dump(apps, f, indent=4, default=lambda o: o.to_dict())
+
+    return all_apps
+
+
+@dataclass
+class App:
+    name:     str          = ""
+    exec:     str          = ""
+    icon:     str          = ""
+    comment:  str          = ""
+    terminal: bool         = False
+    max_lbl:  int          = 25
+    confirm:  bool         = False
+    _box:     Gtk.Box      = None
+
+    def from_dict(json_dict):
+        if type(json_dict) == str:
+            return App(json_dict)
+        return App(
+            json_dict["name"],
+            json_dict["exec"],
+            json_dict["icon"],
+            json_dict["comment"],
+            json_dict["terminal"]
+        )
+
+    def to_dict(self):
+        return {
+            "name":     self.name,
+            "exec":     self.exec,
+            "icon":     self.icon,
+            "comment":  self.comment,
+            "terminal": self.terminal,
+        }
+
+    def box(self):
+        if self._box is not None:
+            return self._box
+
+        comment = ""
+        if len(self.name) > self.max_lbl and not args.long:
+            name = self.name[:self.max_lbl - 3] + "..."
+            if self.comment:
+                comment = self.name + ": " + self.comment
+            else:
+                comment = self.name
+        else:
+            name = self.name
+            comment = self.comment
+        if self.exec:
+            if comment:
+                comment += " "
+            comment += f"({self.exec})"
+
+        lbl = Gtk.Label(label=name)
+        if not args.noic:
+            img = app_image(self.icon)
+
+        as_line = args.lines or args.noic or args.power
+
+        if as_line:
+            self.box = Gtk.HBox(Gtk.Orientation.VERTICAL)
+            lbl.set_halign(Gtk.Align.START)
+            if not args.noic:
+                self.box.pack_start(img, False, False, 0)
+            self.box.pack_start(lbl, True, True, 0)
+        else:
+            self.box = Gtk.VBox()
+            lbl.set_halign(Gtk.Align.CENTER)
+            if not args.noic:
+                self.box.pack_start(img, True, True, 5)
+            self.box.pack_start(lbl, True, True, 5)
+
+        if comment:
+            self.box.set_tooltip_text(comment)
+
+        return self.box
+
+
+def app_image(icon):
+    """
+    Creates a Gtk.Image instance
+    :param icon: sys icon name or .svg / png path
+    :return: Gtk.Image
+    """
+    icon_theme = Gtk.IconTheme.get_default()
+    try:
+        if icon.startswith('/'):
+            pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_size(icon, args.s, args.s)
+        else:
+            if icon.endswith('.svg') or icon.endswith('.png'):
+                icon = icon.split('.')[0]
+            pixbuf = icon_theme.load_icon(icon, args.s, Gtk.IconLookupFlags.FORCE_SIZE)
+    except:
+        pixbuf = icon_theme.load_icon("application-x-executable", args.s, Gtk.IconLookupFlags.FORCE_SIZE)
+    return Gtk.Image.new_from_pixbuf(pixbuf)
+
+
+class AppsCont:
+    def __init__(self, items_list, search_box=None):
+        self.items_list = items_list
+        self.search_box = search_box
+        self.first = None
+        self.flow = Gtk.FlowBox()
+
+        max_per_line = 1 if args.noic and len(self.items_list) <= 10 \
+            else len(self.items_list) / 10
+
+        m = 10
+        self.flow.set_margin_start(m)
+        self.flow.set_margin_end(m)
+        self.flow.set_max_children_per_line(max_per_line)
+        self.flow.set_homogeneous(True)
+        self.flow.set_orientation(Gtk.Orientation.HORIZONTAL)
+        if not args.lines:
+            self.flow.set_halign(Gtk.Align.CENTER)
+        self.flow.set_filter_func(self.filter_fun)
+        self.flow.connect("child_activated", self.on_activate)
+        for item in items_list:
+            self.flow.insert(item.box(), -1)
+
+        vbox = Gtk.VBox()
+        vbox.set_spacing(15)
+        vbox.pack_start(self.flow, False, False, 0)
+        
+        self.scroll = Gtk.ScrolledWindow()
+        self.scroll.add(vbox)
+
+        if args.n and args.n >= 0 and args.n < len(items_list):
+            child = self.flow.get_child_at_index(args.n)
+            child.grab_focus()
+            self.flow.select_child(child)
+
+    def box(self):
+        return self.scroll
+
+    def child2item(self, child):
+        return self.items_list[child.get_index()]
+
+    def update(self):
+        self.first = None
+        self.flow.invalidate_filter()
+
+    def phrase(self):
+        if not self.search_box:
+            return ""
+        else:
+            return self.search_box.get_text()
+
+    def filter_fun(self, child):
+        if not self.phrase():
+            app = None
+            ret = True
+        else:
+            app = self.child2item(child)
+            ret = self.phrase().lower() in app.name.lower()
+
+        if ret and self.first is None and app is not None:
+            self.first = app
+
+        return ret
+
+    def on_activate(self, parent, child):
+        app = self.child2item(child)
+        self.launch(app)
+
+    def launch(self, app):
+        if app.confirm:
+            confirm_dialog(app.name, lambda: launch(app))
+        else:
+            launch(app)
+
+    def launch_first(self):
+        if self.first is not None:
+            self.launch(self.first)
+
+
+def confirm_dialog(name, on_yes):
+    global msg
+    msg = Gtk.MessageDialog(
+        win,
+        Gtk.DialogFlags.MODAL,
+        Gtk.MessageType.QUESTION,
+        Gtk.ButtonsType.YES_NO,
+        name + "?"
+    )
+    def msg_res(msg, res):
+        if res == Gtk.ResponseType.YES:
+            on_yes()
+        msg.destroy()
+        Gtk.main_quit()
+    msg.connect("response", msg_res)
+    msg.show()
+
+        
+def launch(app, no_cache=False):
+    command = app.exec
+    if command:
+        if app.terminal:
+            command = "$TERMINAL -e " + command # TODO: make it more portable
+        if not no_cache:
+            # save command and increased clicks counter to the cache file; we won't cache items from the user-defined menu
+            if command not in cache:
+                cache[command] = 1
+            else:
+                cache[command] += 1
+            save_json(cache, cache_file)
+        # run the command an quit
+        subprocess.Popen(command, shell=True)
+    else:
+        print(app.name)
+    Gtk.main_quit()
+
+
+if __name__ == "__main__":
+    main()

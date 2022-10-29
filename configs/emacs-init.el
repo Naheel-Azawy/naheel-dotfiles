@@ -349,6 +349,10 @@ https://www.emacswiki.org/emacs/NoTabs"
                    (c++-mode)
                    (flycheck-mode -1))))
 
+  ;; ---- SVG ----
+  (add-to-list 'auto-mode-alist
+               '("\\.svg\\'" . (xml-mode)))
+
   ;; ---- PLATFORMIO ----
   ;; (use-package ccls)
   ;; (use-package platformio-mode)
