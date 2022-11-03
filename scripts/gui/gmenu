@@ -47,13 +47,13 @@ warnings.filterwarnings("ignore")
 
 import gi
 gi.require_version('Gtk', '3.0')
-from gi.repository import Gtk, Gdk, GdkPixbuf
+from gi.repository import Gtk, Gdk, GdkPixbuf, Vte, Pango, GLib
 
 
 NAME = "gmenu"
 
 CSS = b"""
-#mainbox {
+#maincontainer {
     background-color: rgba(0, 0, 0, 0.5);
 }
 
@@ -196,11 +196,12 @@ def main():
     parser.add_argument("-noic",   action="store_true",      help="no icons")
     parser.add_argument("-jfile",  type=str,   default=None, help="json file as input")
     parser.add_argument("-jstr",   type=str,   default=None, help="json string as input")
-    parser.add_argument("-dims",   type=str,   default=None, help="window dimensions (WxH)")
+    parser.add_argument("-dims",   type=str,   default=None, help="window dimensions (WxH); in chars for -trm, pixels otherwise")
     parser.add_argument("-dmenu",  action="store_true",      help="function in a dmenu-like way")
     parser.add_argument("-prompt", type=str,   default=None, help="text prompt at the top of the window")
     parser.add_argument("-long",   action="store_true",      help="allow long lines")
     parser.add_argument("-n",      type=int,   default=-1,   help="pre-selected item index")
+    parser.add_argument("-trm",    type=str,   default=None, help="show a mini terminal")
     global args
     args = parser.parse_args()
 
@@ -260,6 +261,8 @@ class MainWindow(Gtk.Window):
 
         if args.prompt:
             self.set_title(args.prompt)
+        elif args.trm:
+            self.set_title(args.trm.split(" ")[0])
         elif args.dmenu:
             self.set_title("Menu")
         elif args.power:
@@ -280,8 +283,48 @@ class MainWindow(Gtk.Window):
             self.set_visual(visual)
         self.set_app_paintable(True)
 
+        geometry = display_geometry(self)
+        if args.f:
+            self.fullscreen()
+
+        self.grid_apps = None
+        self.search_box = None
+        self.trm = None
+
+        main_container = Gtk.Box(orientation=Gtk.Orientation.VERTICAL)
+        main_container.set_property("name", "maincontainer")
+
+        if args.trm:
+            main_box = self.mk_trm_box()
+        else:
+            main_box = self.mk_apps_cont_box()
+
+        main_container.pack_start(main_box, True, True, 0)
+        self.add(main_container)
+
+        #self.set_type_hint(Gdk.WindowTypeHint.DIALOG)
+        self.set_position(Gtk.WindowPosition.CENTER)
+        #self.set_position(Gtk.WindowPosition.MOUSE)
+        self.set_keep_above(True)
+
+        if self.trm and args.dims:
+            dims = args.dims.split("x")
+            self.trm.set_size(int(dims[0]), int(dims[1]))
+        elif args.dims:
+            dims = args.dims.split("x")
+            self.set_default_size(int(dims[0]), int(dims[1]))
+        elif args.power:
+            self.set_default_size(args.s * 8, args.s * 3.7)
+        else:
+            if not geometry:
+                self.set_default_size(1024, 1000)
+            elif geometry.w > geometry.h:
+                self.set_default_size(geometry.w * .5, geometry.h * .8)
+            else:
+                self.set_default_size(geometry.w * .9, geometry.h * .7)
+
+    def mk_apps_cont_box(self):
         outer_box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL)
-        outer_box.set_property("name", "mainbox")
 
         self.search_box = Gtk.SearchEntry()
         self.search_box.set_property("name", "searchbox")
@@ -307,60 +350,68 @@ class MainWindow(Gtk.Window):
         self.grid_apps = AppsCont(entries, self.search_box)
         outer_box.pack_start(self.grid_apps.box(), True, True, 0)
 
-        self.add(outer_box)
-
-        geometry = display_geometry(self)
-        if args.f:
-            self.fullscreen()
-
-        #self.set_type_hint(Gdk.WindowTypeHint.DIALOG)
-        self.set_position(Gtk.WindowPosition.CENTER)
-        #self.set_position(Gtk.WindowPosition.MOUSE)
-        self.set_keep_above(True)
-
-        if args.dims:
-            dims = args.dims.split("x")
-            self.set_default_size(int(dims[0]), int(dims[1]))
-        elif args.power:
-            self.set_default_size(args.s * 8, args.s * 3.7)
-        else:
-            if not geometry:
-                self.set_default_size(1024, 1000)
-            elif geometry.w > geometry.h:
-                self.set_default_size(geometry.w * .5, geometry.h * .8)
-            else:
-                self.set_default_size(geometry.w * .9, geometry.h * .7)
-
         if args.n and args.n >= 0 and args.n < len(entries):
             self.grid_apps.select_n(args.n)
         else:
             self.grid_apps.select_n(0)
 
+        return outer_box
+
+    def mk_trm_box(self):
+        trm = Vte.Terminal()
+        pty = Vte.Pty.new_sync(Vte.PtyFlags.DEFAULT)
+        trm.set_pty(pty)
+        trm.set_cursor_shape(Vte.CursorShape.IBEAM) # BLOCK, IBEAM, UNDERLINE
+        trm.set_cursor_blink_mode(Vte.CursorBlinkMode.OFF) # SYSTEM, ON, OFF
+        trm.set_scrollback_lines(0)
+        trm.set_clear_background(False)
+
+        font = os.getenv("FONT_SIZE")
+        if font:
+            try:
+                font = font.split(":size=")
+                font_size = float(font[1])
+                font = font[0]
+                f = Pango.FontDescription.from_string(font)
+                f.set_size(font_size * Pango.SCALE)
+                trm.set_font(f)
+            except:
+                pass
+        trm.set_font_scale(1)
+
+        pty.spawn_async(None, ["sh", "-c", args.trm],
+                        None, 0, None, None, -1, None, None, None)
+        self.trm = trm
+        return trm
+
     def on_search_change(self, item):
-        self.grid_apps.update()
+        if self.grid_apps:
+            self.grid_apps.update()
 
     def on_key_release(self, item, event):
         if event.type == Gdk.EventType.KEY_RELEASE:
-            if not self.search_box.has_focus() and \
+            if self.search_box and \
+               not self.search_box.has_focus() and \
                event.string and \
                (event.string.isalnum() or event.string == "$"):
                 #self.search_box.grab_focus()
                 self.search_box.set_text(self.search_box.get_text() + event.string)
                 self.search_box.set_position(-1)
 
-            elif not self.search_box.has_focus() and \
+            elif self.search_box and \
+                 not self.search_box.has_focus() and \
                  event.keyval == 0xff08: # Backspace
                 self.search_box.set_text(self.search_box.get_text()[:-1])
                 self.search_box.set_position(-1)
 
             elif event.keyval == 0xff1b: # Escape
-                if self.search_box.get_text():
+                if self.search_box and self.search_box.get_text():
                     self.search_box.set_text("")
                     self.grid_apps.update()
                 else:
                     Gtk.main_quit()
 
-            elif event.keyval == 0xff0d: # Return
+            elif self.search_box and event.keyval == 0xff0d: # Return
                 text = self.search_box.get_text()
                 if text.startswith("$"):
                     text = text[1:]
@@ -545,22 +596,16 @@ class App:
         if self._box is not None:
             return self._box
 
-        comment = ""
-        if len(self.name) > self.max_lbl and not args.long:
-            name = self.name[:self.max_lbl - 1] + "…"
-            if self.comment:
-                comment = self.name + ": " + self.comment
-            else:
-                comment = self.name
+        if self.comment:
+            comment = self.name + ": " + self.comment
         else:
-            name = self.name
-            comment = self.comment
+            comment = self.name
         if self.exec:
             if comment:
                 comment += " "
             comment += f"({self.exec})"
 
-        lbl = Gtk.Label(label=name)
+        lbl = Gtk.Label(label=self.name)
         if not args.noic:
             img = app_image(self.icon)
 
@@ -575,6 +620,9 @@ class App:
         else:
             box = Gtk.VBox()
             lbl.set_halign(Gtk.Align.CENTER)
+            lbl.set_ellipsize(Pango.EllipsizeMode.END)
+            lbl.set_max_width_chars(self.max_lbl)
+            box.set_size_request(args.s * 2, args.s * 2)
             if not args.noic:
                 box.pack_start(img, True, True, 5)
             box.pack_start(lbl, True, True, 5)
