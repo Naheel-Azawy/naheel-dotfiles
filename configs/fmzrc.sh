@@ -159,3 +159,5 @@ newfilelike() {
         preselector_set_selected "$name"
     fi
 }
+
+bind ctrl-r "$cmd_refresh" 'Refresh'

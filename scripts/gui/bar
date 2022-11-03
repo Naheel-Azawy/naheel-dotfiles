@@ -651,7 +651,7 @@ def lemonbar():
     if icons_font is not None:
         fonts += ["-f", icons_font]
     fonts += [
-        # "-f", "Kawkab Mono:pixelsize=12",
+        "-f", "Kawkab Mono:pixelsize=12",
         "-f", "Source Han Sans CN",
         "-f", "DejaVu Sans Mono",
     ]

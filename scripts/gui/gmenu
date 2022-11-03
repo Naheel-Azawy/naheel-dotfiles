@@ -56,6 +56,7 @@ CSS = b"""
 #mainbox {
     background-color: rgba(0, 0, 0, 0.5);
 }
+
 #searchbox {
     background: none;
     border-color: #999;
@@ -65,23 +66,19 @@ CSS = b"""
     margin-left: 32px;
     margin-right: 32px;
 }
-flowbox {
-    transition-duration: 300ms;
-}
+
 flowboxchild {
-    transition-duration: 300ms;
+    transition-duration: 200ms;
     background-color: rgba(0, 0, 0, 0);
-    border-style: none;
+    border: 1px solid rgba(0, 0, 0, 0);
     box-shadow: none;
     color: #aaa;
-}
-#app:hover {
-    background-color: rgba(255, 0, 0, 1);
-    color: #eee
+    outline: none; /* https://askubuntu.com/a/1141668 */
 }
 flowboxchild:selected {
     background-color: rgba(255, 255, 255, 0.2);
-    color: #fff
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    color: #fff;
 }
 
 messagedialog {
@@ -247,9 +244,9 @@ def main():
     global win
     win = MainWindow()
 
+    win.set_resizable(False)
     win.show_all()
-    # If done inside the constructor on Openbox, stops the window from grabbing focus!
-    win.set_skip_taskbar_hint(True)
+    win.set_resizable(True) # to stay floating in a tiling wm
 
     Gtk.main()
 
@@ -257,7 +254,7 @@ def main():
 class MainWindow(Gtk.Window):
     def __init__(self):
         global args
-        Gtk.Window.__init__(self)
+        Gtk.Window.__init__(self, Gtk.WindowType.TOPLEVEL)
 
         self.set_skip_pager_hint(True)
 
@@ -315,20 +312,24 @@ class MainWindow(Gtk.Window):
         geometry = display_geometry(self)
         if args.f:
             self.fullscreen()
-        self.set_type_hint(Gdk.WindowTypeHint.DIALOG)
+
+        #self.set_type_hint(Gdk.WindowTypeHint.DIALOG)
+        self.set_position(Gtk.WindowPosition.CENTER)
+        #self.set_position(Gtk.WindowPosition.MOUSE)
+        self.set_keep_above(True)
 
         if args.dims:
             dims = args.dims.split("x")
-            self.resize(int(dims[0]), int(dims[1]))
+            self.set_default_size(int(dims[0]), int(dims[1]))
         elif args.power:
-            self.resize(args.s * 8, args.s * 3.7)
+            self.set_default_size(args.s * 8, args.s * 3.7)
         else:
             if not geometry:
-                self.resize(1024, 1000)
+                self.set_default_size(1024, 1000)
             elif geometry.w > geometry.h:
-                self.resize(geometry.w * .5, geometry.h * .8)
+                self.set_default_size(geometry.w * .5, geometry.h * .8)
             else:
-                self.resize(geometry.w * .9, geometry.h * .7)
+                self.set_default_size(geometry.w * .9, geometry.h * .7)
 
         if args.n and args.n >= 0 and args.n < len(entries):
             self.grid_apps.select_n(args.n)
@@ -343,8 +344,13 @@ class MainWindow(Gtk.Window):
             if not self.search_box.has_focus() and \
                event.string and \
                (event.string.isalnum() or event.string == "$"):
-                self.search_box.grab_focus()
-                self.search_box.set_text(event.string)
+                #self.search_box.grab_focus()
+                self.search_box.set_text(self.search_box.get_text() + event.string)
+                self.search_box.set_position(-1)
+
+            elif not self.search_box.has_focus() and \
+                 event.keyval == 0xff08: # Backspace
+                self.search_box.set_text(self.search_box.get_text()[:-1])
                 self.search_box.set_position(-1)
 
             elif event.keyval == 0xff1b: # Escape
