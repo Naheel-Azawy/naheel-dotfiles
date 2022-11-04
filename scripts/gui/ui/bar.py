@@ -412,7 +412,7 @@ class Bar(BarBase):
             if title:
                 return "%{A:wm-msg window_nice_close:}" + \
                     icons["close"] + "%{A}  " + \
-                    "%{A:wm-msg program-menu:}" + title + "%{A}"
+                    "%{A:wm-msg program-menu&:}" + title + "%{A}"
             else:
                 return None
 

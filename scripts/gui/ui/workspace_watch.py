@@ -210,7 +210,7 @@ def callback_lemonbar_circles(wm, onchange):
         wm.prev_s = s
 
 def callback_lemonbar_circles_mini(wm, onchange):
-    onclick = "wm-msg ws-menu"
+    onclick = "wm-msg ws-menu&"
     s = f"%{{A:{onclick}:}}"
     for ws in wm.workspaces:
         if ws.focused:

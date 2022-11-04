@@ -420,7 +420,7 @@ class MainWindow(Gtk.Window):
             if self.search_box and \
                not self.search_box.has_focus() and \
                event.string and \
-               (event.string.isalnum() or event.string == "$"):
+               (event.string.isalnum() or event.string in "$ "):
                 #self.search_box.grab_focus()
                 self.search_box.set_text(self.search_box.get_text() + event.string)
                 self.search_box.set_position(-1)
