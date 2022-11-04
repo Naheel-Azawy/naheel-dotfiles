@@ -3,7 +3,7 @@
 
   Warning: This thing is not so stable and might explode at any moment.
 
-  [[./screenshots/1.png]]
+  [[./screenshots/20221105.png]]
 
 ** Toys
    - emacs
