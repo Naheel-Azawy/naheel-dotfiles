@@ -11,7 +11,7 @@ if [ "$last" = 1 ]; then
 else
     dev=$(seq 0 2 "$last" | tac |
               xargs printf '/dev/video%s\n' |
-              menus-face -l $(((last / 2) + 1)))
+              ndg menu)
 fi
 
 [ -e "$dev" ] || exit 1

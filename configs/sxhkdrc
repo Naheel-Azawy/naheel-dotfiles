@@ -6,10 +6,6 @@ super+q
 super+shift+q
 	wm-msg window_close
 
-# Ignore the tmux session (if is) and kill focused window
-super+control+q
-	theterm --tmux-ignore && wm-msg window_close
-
 # Enter fullscreen mode for the focused container
 super+f
 	wm-msg fullscreen
@@ -124,7 +120,7 @@ super+e
 
 # Start the program launcher
 super+d
-	gmenu
+	ndg menu
 
 # Toggle on-screen keyboard
 super+k
@@ -144,7 +140,7 @@ super+l
 
 # Power options
 super+shift+l
-	gmenu -power
+	ndg menu --power
 
 # Display options
 super+p
@@ -158,21 +154,9 @@ super+shift+p
 super+shift+c
 	clipmenu
 
-# Common words (copy to clipboard)
-super+w
-	dmenuwords
-
 # Unicode characters (copy to clipboard)
 super+u
 	dmenuunicode
-
-# Help (based on copied term)
-super+h
-	dmenuwhat
-
-# Network manager menu
-super+n
-	networkmanager_dmenu
 
 # Toggle notifications
 super+i
@@ -212,7 +196,7 @@ alt+ctrl+Print
 
 # Show shortcuts help screen
 super+F1
-	theterm 'menus keys -d | less'
+	ndg menu --trm 'kb-shortcuts-help | less'
 
 # Show the system monitor
 super+grave
@@ -270,7 +254,7 @@ XF86AudioForward
 	ndg audio forward 10
 
 XF86PowerOff
-	gmenu -power
+	ndg menu --power
 
 XF86Calculator
 	calc-float

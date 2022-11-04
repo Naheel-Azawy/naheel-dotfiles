@@ -70,7 +70,6 @@
 | pacman   | sxhkd                  | N.A.                                    | keyboard bindings                                                |
 | pacman   | appmenu-gtk-module     | N.A.                                    | needed for the hud menu                                          |
 | git      | dmenu                  | https://github.com/Naheel-Azawy/dmenu   | runs commands and provides a UI for selection                    |
-| git      | menus                  | https://github.com/Naheel-Azawy/menus   | just some menus                                                  |
 | pacman   | clipmenu               | N.A.                                    | a clipboard manger                                               |
 | pacman   | xorg-xsetroot          | N.A.                                    | root window parameter setting utility for X                      |
 | pacman   | ntp                    | N.A.                                    | network time protocol                                            |
@@ -78,8 +77,6 @@
 | pacman   | network-manager-applet | N.A.                                    | handy nm gui applet                                              |
 | pacman   | openvpn                | N.A.                                    | the open vpn                                                     |
 | pacman   | networkmanager-openvpn | N.A.                                    | openvpn for nm                                                   |
-| aur      | networkmanager-dmenu   | N.A.                                    | manage nm from dmenu                                             |
-| pacman   | gsimplecal             | N.A.                                    | simple calender                                                  |
 | git      | bspdd                  | https://github.com/Naheel-Azawy/bspdd   | bspwm dynamic desktops                                           |
 | pacman   | fprintd                | N.A.                                    | fingerprint reader                                               |
 | pacman   | bluez                  | N.A.                                    | bluetooth service                                                |

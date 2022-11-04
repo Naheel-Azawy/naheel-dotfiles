@@ -229,7 +229,7 @@ display() {
                #     grep -v '^default' |
                #     awk -F'.' '{print $1}'
            })
-        sel=$(echo "$l" | gmenu -dmenu -prompt 'Display options' -long -dims 500x300)
+        sel=$(echo "$l" | menu --prompt 'Display options' --long --dims 500x300)
     fi
 
     case "$sel" in
@@ -242,7 +242,7 @@ display() {
         Temperature*)
             sel=$(echo "$sel" | awk '{print $2}')
             if [ "$sel" = Custom ]; then
-                sel=$(echo | menus-face -p 'Color temperature')
+                sel=$(echo | ndg menu -p 'Color temperature' --dims 300x100)
             fi
             [ "$sel" ] && xsct "$sel" ;;
 
@@ -541,6 +541,28 @@ compositor() {
     esac
 }
 
+# ==== core ui ====
+
+core_ui() {
+    python3 "$HERE/ui/main.py" "$@"
+}
+
+bar() {
+    core_ui bar "$@"
+}
+
+menu() {
+    core_ui menu "$@"
+}
+
+empty() {
+    core_ui empty "$@"
+}
+
+wm() {
+    "$HERE/wm-msg" "$@"
+}
+
 # ==== experimental ====
 
 foo() {
@@ -641,7 +663,7 @@ start() {
 
 # ==== main ====
 
-usage() {
+list() {
     echo audio
     echo brightness
     echo browser
@@ -661,22 +683,21 @@ usage() {
     echo wm
     echo empty
     echo compositor
+    echo bar
+    echo menu
+    echo foo
 }
 
 main() {
-    [ $# = 0 ] && usage && return
+    [ $# = 0 ] && list && return
     cmd="$1"
     shift
-    case "$cmd" in
-        audio|brightness|browser|floating_calc|calendar| \
-            display|lang|lockscreen|music|notiftog|reader| \
-            input|wallpaper|taskmanager|touchpadtog|systraytog| \
-            compositor|start|foo)
-            "$cmd" "$@" ;;
-        wm)    exec "$HERE/wm-msg" "$@" ;;
-        empty) exec "$HERE/empty"       ;;
-        *)     return 1
-    esac
+    if list | grep -q "$cmd"; then
+        "$cmd" "$@"
+    else
+        list
+        return 1
+    fi
 }
 
 main "$@"

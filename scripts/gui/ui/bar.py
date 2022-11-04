@@ -1,12 +1,8 @@
-#!/bin/python3
-
 # TODO: seperate?
 # TODO: turn items to shell script functions
 # python opens a shell instance, source the items script,
 # and call them whenever needed.
 # this also can turn it into something that everyone can use.
-
-# needed wsw and xrandr-parse
 
 import sh
 import os
@@ -24,21 +20,8 @@ import importlib
 import importlib.util
 import importlib.machinery
 
-def import_path(path):
-    # https://stackoverflow.com/a/56090741/3825872
-    path = os.path.dirname(os.path.realpath(__file__)) + "/" + path
-    module_name = os.path.basename(path).replace('-', '_')
-    spec = importlib.util.spec_from_loader(
-        module_name,
-        importlib.machinery.SourceFileLoader(module_name, path)
-    )
-    module = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(module)
-    sys.modules[module_name] = module
-    return module
-
-wsw    = import_path("wsw")
-xrandr = import_path("xrandr-parse")
+import workspace_watch as wsw
+import xrandr_parse    as xrandr
 
 try:
     # sudo pip3 install python-bidi arabic-reshaper
@@ -164,7 +147,7 @@ icons      = themes[theme]["icons"]
 background = '#dd000000'
 foreground = '#ffffff'
 
-default_items = "start workspaces add program | clock | systray keyboard pray weather temperature wifi battery power"
+default_items = "start workspaces program | clock | systray keyboard pray weather temperature wifi battery power"
 
 port_file = "/tmp/.nbarport"
 pid_file  = "/tmp/.nbarpid"
@@ -439,7 +422,7 @@ class Bar(BarBase):
         if self.a:
             return t
         else:
-            cmd = "gmenu -dims 68x35 -trm 'cal -y; while read -r args; do cal $args; done'"
+            cmd = "ndg menu --dims 68x35 --trm 'cal -y; while read -r args; do cal $args; done'"
             return f"%{{A:{cmd}&:}}{t}%{{A}}"
 
     @item(period=3, big=True)
@@ -488,7 +471,7 @@ class Bar(BarBase):
             if percent <= 10 and not charging:
                 out = "%{B#FF0000} " + out + " %{B-}"
 
-            cmd = "gmenu -dims 75x3 -trm 'watch -tn 1 acpi -i'"
+            cmd = "ndg menu --dims 75x3 --trm 'watch -tn 1 acpi -i'"
             out = f"%{{F{r}}}%{{A:{cmd}&:}}{out}%{{A}}%{{F-}}"
 
             return out
@@ -510,7 +493,7 @@ class Bar(BarBase):
                         ic = icons["wifi2"]
                     else:
                         ic = icons["wifi1"]
-                    cmd = "gmenu -dims 120x20 -trm 'watch -ctn 1 ip --color=always a'"
+                    cmd = "ndg menu --dims 120x20 --trm 'watch -ctn 1 ip --color=always a'"
                     return f"%{{A:{cmd}&:}}{ic} {v}%%%{{A}}"
         except:
             pass
@@ -524,7 +507,7 @@ class Bar(BarBase):
         if self.a:
             return f"p{out}"
         else:
-            cmd = "gmenu -trm prayer -dims 25x8"
+            cmd = "ndg menu --trm prayer --dims 25x8"
             return f"%{{A:{cmd}&:}} " + icons["prayer"] + \
                 f" {out}%{{A}}"
 
@@ -559,7 +542,7 @@ class Bar(BarBase):
             if self.a:
                 return f"w{out}"
             else:
-                cmd = f"gmenu -trm wttr -dims 63x28"
+                cmd = f"ndg menu --trm wttr --dims 63x28"
                 return f"%{{A:{cmd}&:}} " + icons["cloud"] + f" {out}%{{A}}"
 
         return None
@@ -591,16 +574,16 @@ class Bar(BarBase):
             else:
                 out += icons["temp30"]
             out += f" {int(t)}°C %{{F-}}"
-            cmd = "gmenu -dims 65x19 -trm 'watch -tn 1 sensors'"
+            cmd = "ndg menu --dims 65x19 --trm 'watch -tn 1 sensors'"
             return f"%{{A:{cmd}&:}}{out}%{{A}}"
 
     @item()
     def start(self):
-        return "%{A:gmenu&:} START%{A}" if not self.a else None
+        return "%{A:ndg menu&:} START%{A}" if not self.a else None
 
     @item()
     def power(self):
-        return "%{A:gmenu -power&:}" + icons["power"] + \
+        return "%{A:ndg menu --power&:}" + icons["power"] + \
             "%{A}" if not self.a else None
 
     @item()
@@ -610,7 +593,7 @@ class Bar(BarBase):
 
     @item(big=True)
     def donno(self):
-        return "%{A:gmenu -trm 'lolcowforune -p'&:}¯\_(ツ)_/¯%{A}" \
+        return "%{A:ndg menu --trm 'lolcowforune -p'&:}¯\_(ツ)_/¯%{A}" \
             if not self.a else None
 
     @item(big=True)
@@ -700,13 +683,11 @@ def lemonbar():
 
     os.remove(pid_file)
 
-async def main():
-    if len(argv) == 1 or (len(argv) >= 2 and argv[1] == "lemon"):
-        lemonbar()
-    elif len(argv) >= 2 and argv[1] == "kill":
+async def async_main(args):
+    if args.kill:
         lemon_kill()
-    elif len(argv) >= 3 and argv[1] == "update":
-        item = argv[2].encode()
+    elif args.update:
+        item = args.update.encode()
         with open(port_file, "r") as f:
             try:
                 port = int(f.read())
@@ -715,31 +696,16 @@ async def main():
                 writer.close()
             except:
                 print("Error finding socket port")
-    elif len(argv) >= 2 and argv[1] == "foobar":
-        print([o for o in xrandr.parse() if o["connected"]])
-    else:
-        a = False # ascii
-        p = False # persistent
-        items = None
-
-        if len(argv) >= 2 and argv[1] == "-a":
-            a = True
-            del argv[1]
-
-        if len(argv) >= 2 and argv[1] == "-p":
-            p = True
-            del argv[1]
-
-        if len(argv) >= 2 and argv[1]:
-            items = argv[1]
-
-        bar = Bar(use_ascii=a, items=items)
-        if p:
+    elif len(args.items) > 0:
+        bar = Bar(use_ascii=args.ascii, items=" ".join(args.items))
+        if args.persistent:
             signal.signal(signal.SIGINT, lambda signal, frame: bar.stop())
             await bar.run()
         else:
             bar.init()
             bar.render()
+    else:
+        lemonbar()
 
-if __name__ == "__main__":
-    asyncio.run(main())
+def main(args):
+    asyncio.run(async_main(args))

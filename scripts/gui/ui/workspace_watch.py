@@ -1,7 +1,3 @@
-#!/bin/python3
-
-# workspace watcher
-
 import sh
 import os
 import sys

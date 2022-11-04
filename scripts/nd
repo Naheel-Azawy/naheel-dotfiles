@@ -149,7 +149,6 @@ dots_link() {
     # lnnn "$D/configs/Xmodmap"             "$H/.Xmodmap"
     lnnn "$D/configs/tmux.conf"           "$H/.tmux.conf"
     lnnn "$D/configs/emacs-init.el"       "$H/.emacs"
-    lnnn "$D/configs/nm-dmenu.ini"        "$H/.config/networkmanager-dmenu/config.ini"
     lnnn "$D/configs/gtk-icons.theme"     "$H/.icons/default/index.theme"
     lnnn "$D/configs/gtk3-settings.ini"   "$H/.config/gtk-3.0/settings.ini"
     lnnn "$D/configs/gtk3.css"            "$H/.config/gtk-3.0/gtk.css"
@@ -159,7 +158,6 @@ dots_link() {
     lnnn "$D/configs/sxhkdrc"             "$H/.config/sxhkd/sxhkdrc"
     lnnn "$D/configs/fmzrc.sh"            "$H/.config/fmzrc.sh"
     lnnn "$D/configs/automonrc.sh"        "$H/.config/automonrc.sh"
-    lnnn "$D/configs/gsimplecal.conf"     "$H/.config/gsimplecal/config"
 }
 
 # update dots configs

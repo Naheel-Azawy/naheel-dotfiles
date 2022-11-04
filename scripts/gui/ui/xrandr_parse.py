@@ -1,5 +1,3 @@
-#!/bin/python3
-
 import sh
 import re
 import json

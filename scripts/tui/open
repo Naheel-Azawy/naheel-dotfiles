@@ -53,7 +53,7 @@ openfile() {
 pick() {
     echo | mimeopen --ask "$1" 2>/dev/null |
         sed -En 's/\s*(.+\)\s+.+)/\1/p' |
-        menus-face -l 20 |
+        ndg menu |
         sed -En 's/(.+)\).+/\1/p'
 }
 

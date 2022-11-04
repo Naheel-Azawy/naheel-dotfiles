@@ -35,7 +35,7 @@ main() {
                 echo "$vms_libvirt"
                 echo 'Manage vbox'
                 echo 'Manage libvirt'
-            } | menus-face -i)
+            } | ndg menu)
 
     [ "$choice" ] && case "$choice" in
         'Manage vbox')    virtualbox   ;;

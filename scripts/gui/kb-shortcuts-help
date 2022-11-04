@@ -1,0 +1,66 @@
+#!/usr/bin/env python3
+
+import sh
+import os
+import sys
+import re
+
+argv = sys.argv
+HOME = os.getenv("HOME")
+sxhkdrc = f"{HOME}/.config/sxhkd/sxhkdrc"
+
+class Binding:
+    def __init__(self, t):
+        if len(t) == 3:
+            self.doc  = t[0]
+            self.keys = t[1]
+            self.cmd  = t[2]
+        elif len(t) == 2:
+            self.doc  = None
+            self.keys = t[0]
+            self.cmd  = t[1]
+
+def parse_sxhkdrc():
+    if not os.path.exists(sxhkdrc):
+        return
+    with open(sxhkdrc, "r") as f:
+        text = f.read()
+        # not the bet choice, but.. whatever...
+        # replace later if you pass by here
+        items = text.split("\n\n")
+        for item in items:
+            m = re.search("# (.+)\n(.+)\n\t(.+)", item)
+            if m:
+                yield (m[1], m[2], m[3])
+
+def get_doc_from(src):
+    for b in src:
+        b = Binding(b)
+        if b.doc is not None:
+            yield ('%-40s: %s' % (b.keys, b.doc))
+
+def run_from(src, keys):
+    for b in src:
+        b = Binding(b)
+        if b.keys == keys:
+            return os.system(b.cmd)
+    return None
+
+def get_doc():
+    return get_doc_from(parse_sxhkdrc())
+
+def run(keys):
+    return run_from(parse_sxhkdrc(), keys)
+
+def main(args):
+    if len(args) == 1:
+        for d in get_doc():
+            print(d)
+        return 0
+    elif len(args) == 2 and args[1] == "-r":
+        run(args[2])
+        return 0
+    return 1
+
+if __name__ == "__main__":
+    main(sys.argv)

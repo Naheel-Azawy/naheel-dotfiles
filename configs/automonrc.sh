@@ -1,7 +1,7 @@
 
 post() {
     run_if_exists ndg wallpaper reset
-    run_if_exists bar &
+    run_if_exists ndg bar &
     # for the x1
     xinput --map-to-output 'ELAN901C:00 04F3:2C4E' eDP-1 2>/dev/null
 }
