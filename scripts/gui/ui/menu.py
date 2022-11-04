@@ -275,9 +275,6 @@ class MainWindow(Gtk.Window):
 
         self.set_skip_pager_hint(True)
 
-        if not sys.stdin.isatty():
-            self.args.dmenu = True
-
         if self.args.prompt:
             self.set_title(self.args.prompt)
         elif self.args.trm:

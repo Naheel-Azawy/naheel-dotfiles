@@ -229,7 +229,7 @@ display() {
                #     grep -v '^default' |
                #     awk -F'.' '{print $1}'
            })
-        sel=$(echo "$l" | menu --prompt 'Display options' --long --dims 500x300)
+        sel=$(echo "$l" | menu -d -p 'Display options' --long --dims 500x300)
     fi
 
     case "$sel" in
@@ -242,7 +242,7 @@ display() {
         Temperature*)
             sel=$(echo "$sel" | awk '{print $2}')
             if [ "$sel" = Custom ]; then
-                sel=$(echo | ndg menu -p 'Color temperature' --dims 300x100)
+                sel=$(echo | menu -d -p 'Color temperature' --dims 300x100)
             fi
             [ "$sel" ] && xsct "$sel" ;;
 

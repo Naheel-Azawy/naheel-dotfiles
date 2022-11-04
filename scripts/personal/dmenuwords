@@ -16,7 +16,7 @@ nk1508530@qu.edu.qa
 ( ͡° ͜ʖ ͡°)
 ( ͡°( ͡° ͜ʖ( ͡° ͜ʖ ͡°)ʖ ͡°) ͡°)"
 
-R=$(echo "$WORDS" | ndg menu -p 'Words')
+R=$(echo "$WORDS" | ndg menu -d -p 'Words')
 [ "$R" != '' ] && {
     sleep .1
     xdotool type "$R"

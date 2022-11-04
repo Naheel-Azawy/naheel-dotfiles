@@ -8,7 +8,7 @@ CHANNELS='Al-Jazeera https://www.youtube.com/watch?v=EeCn9FN94RU
 Al-Araby https://www.youtube.com/watch?v=Mhg-sJptsh0
 Al-Arabiya https://www.youtube.com/watch?v=b41SHVKo0To'
 
-ans=$(echo "$CHANNELS" | cut -d ' ' -f1 | ndg menu)
+ans=$(echo "$CHANNELS" | cut -d ' ' -f1 | ndg menu -d)
 url=$(echo "$CHANNELS" | sed -rn "s@^$ans (.+)@\1@p")
 [ "$url" ] && {
     notify-send "Starting $ans..."
