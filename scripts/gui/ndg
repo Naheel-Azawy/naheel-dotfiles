@@ -664,6 +664,7 @@ start() {
 # ==== main ====
 
 list() {
+    echo start
     echo audio
     echo brightness
     echo browser
