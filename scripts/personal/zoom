@@ -1,49 +1,10 @@
 #!/bin/sh
 
-v1() {
-    JAIL="$HOME/.local/share/jail-zoom"
-    IMG='Zoom-5.11.10.4400.glibc2.17-x86_64.AppImage'
-    URL="https://github.com/probonopd/Zoom.AppImage/releases/download/stable/$IMG"
-
-    [ "$1" = 'rm' ]     && { rm -r "$JAIL"; exit; }
-    [ -d "$JAIL" ]      || mkdir -p "$JAIL"
-    [ -f "$JAIL/$IMG" ] || (cd "$JAIL" && wget "$URL")
-    [ -x "$JAIL/$IMG" ] || chmod +x "$JAIL/$IMG"
-
-    exec firejail          \
-         --private-tmp     \
-         --blacklist=/mnt  \
-         --private="$JAIL" \
-         --net=wlp3s0      \
-         --dns=8.8.8.8     \
-         --appimage        \
-         "$JAIL/$IMG" "$@"
-
-    # sudo brctl addbr br0
-    # sudo ifconfig br0 10.10.20.1/24
-    # sudo brctl addbr br1
-    # sudo ifconfig br1 10.10.30.1/24
-    # firejail --net=br0 --net=br1
-}
-
-v2() {
-    JAIL="$HOME/.local/share/jail-zoom"
-    exec firejail          \
-         --noprofile       \
-         --private-tmp     \
-         --blacklist=/mnt  \
-         --private="$JAIL" \
-         /home/naheel/zoom/ZoomLauncher
-}
-
-v3() {
-    jail="$HOME/.local/share/jail-zoom-v3"
-
-    pkgver=5.12.0
-    _subver=4682
-
+main() {
+    jail="$HOME/.local/share/jail-zoom"
+    version=5.12.6.173
     pac='zoom_x86_64.pkg.tar.xz'
-    url="https://cdn.zoom.us/prod/${pkgver}.${_subver}/${pac}"
+    url="https://cdn.zoom.us/prod/$version/$pac"
 
     [ "$1" = 'rm' ]     && { rm -r "$jail"; exit; }
     [ -d "$jail" ]      || mkdir -p "$jail"
@@ -52,10 +13,18 @@ v3() {
                                 cd "$jail/zoom"   &&
                                 tar xvf "$jail/$pac")
     [ -d "$jail/.local/share" ] || {
+        desktop="$jail/.local/share/applications/Zoom.desktop"
         mkdir -p "$jail/.local/share" &&
             cp -r "$jail/zoom/usr/share/"* "$jail/.local/share/" &&
             sed -i "s#/usr/bin/zoom#$HOME/zoom/opt/zoom/ZoomLauncher#" \
-                "$jail/.local/share/applications/Zoom.desktop"
+                "$desktop"
+        {
+            echo '[MIME Cache]'
+            sed -rn 's/MimeType=(.+)/\1/p' "$desktop" |
+                tr ';' '\n' |
+                xargs printf '%s=Zoom.desktop\n'
+        } > "$jail/.local/share/applications/mimeinfo.cache"
+
     }
 
     exec firejail          \
@@ -66,5 +35,4 @@ v3() {
          "$HOME/zoom/opt/zoom/ZoomLauncher"
 }
 
-v3 "$@"
-#v2 "$@"
+main "$@"
