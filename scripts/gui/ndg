@@ -375,16 +375,34 @@ wallpaper() {
 # ==== lockscreen ====
 
 wait_fingerprint() {
-    # https://github.com/i3/i3lock/issues/210#issuecomment-1047313795
     exists fprintd-list || return
-    timeout=$((1 * 60 * 60)) # 1 hr
+    if [ -n "$FINGERPRINT_TIMEOUT" ]; then
+        timeout=$FINGERPRINT_TIMEOUT
+    else
+        timeout=$((1 * 60 * 60)) # 1 hr
+    fi
     start=$(date +%s)
-    while pidof i3lock >/dev/null && [ $((t - start)) -lt $timeout ]; do
-        if timeout 5 fprintd-verify | grep -q verify-match; then
-            pkill i3lock
+    while lockscreen_islocked && [ $((t - start)) -lt $timeout ]; do
+        # https://github.com/i3/i3lock/issues/210#issuecomment-1047313795
+        fprint_out=$(timeout 5 fprintd-verify |
+                         sed -rn 's/Verify result: (.+) \(done\)/\1/p')
+        if [ -n "$fprint_out" ]; then
+            notify "Fingerprint:" "$fprint_out"
+        fi
+        if echo "$fprint_out" | grep -q verify-match; then
+            lockscreen_unlock
+            break
         fi
         t=$(date +%s)
     done
+}
+
+lockscreen_islocked() {
+    pidof i3lock >/dev/null
+}
+
+lockscreen_unlock() {
+    pkill i3lock
 }
 
 lockscreen() {
@@ -673,6 +691,7 @@ list() {
     echo display
     echo lang
     echo lockscreen
+    echo wait_fingerprint
     echo music
     echo notiftog
     echo reader
