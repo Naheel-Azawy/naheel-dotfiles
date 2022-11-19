@@ -108,13 +108,13 @@ usage() {
 parse_args() {
     while getopts ':i:p:s:e:tbh' arg; do
         case ${arg} in
-            i|init)  init_at="${OPTARG}"  ;;
-            t|tty)   tty_only=1           ;;
-            b|build) build_only=1         ;;
-            p|port)  dev="${OPTARG}"      ;;
-            s|speed) speed="${OPTARG}"    ;;
-            e|env)   env="${OPTARG}"      ;;
-            *)       usage; return 1      ;;
+            i) init_at="${OPTARG}"  ;;
+            t) tty_only=1           ;;
+            b) build_only=1         ;;
+            p) dev="${OPTARG}"      ;;
+            s) speed="${OPTARG}"    ;;
+            e) env="${OPTARG}"      ;;
+            *) usage; return 1      ;;
         esac
     done
 }
@@ -210,7 +210,7 @@ set_env() {
 }
 
 set_speed() {
-    if ([ "$speed" = s ] || [ -z "$speed" ]) && [ -f ./platformio.ini ]; then
+    if { [ "$speed" = s ] || [ -z "$speed" ]; } && [ -f ./platformio.ini ]; then
         ini_speed=$(sed -rn 's/monitor_speed *= *(.+)/\1/p' ./platformio.ini)
         if echo "$SPEEDS" | grep -q "$ini_speed"; then
             # is a valid baud rate

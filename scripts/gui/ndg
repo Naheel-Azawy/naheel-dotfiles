@@ -552,8 +552,8 @@ music() {
 
 compositor() {
     case "$1" in
-        start)   picom --experimental-backends -b  ;;
-        stop)    killall picom                     ;;
+        start)   picom -b ;;
+        stop)    killall picom ;;
         restart) compositor stop; sleep .1; compositor start ;;
         *)     return 1
     esac
@@ -642,7 +642,7 @@ start() {
     # logs dir
     logdir="/tmp/xinitlogs-$USER"
     mkdir -p "$logdir"
-    rm -r "$logdir"/*
+    rm -r "$logdir:?"/*
 
     # set font size based on resolution
     dim=$(xdpyinfo | grep "dimensions" | awk '{ print $2 }' | cut -d x -f1)

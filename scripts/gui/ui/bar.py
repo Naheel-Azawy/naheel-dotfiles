@@ -422,7 +422,7 @@ class Bar(BarBase):
         if self.a:
             return t
         else:
-            cmd = "ndg menu --dims 68x35 --trm 'cal -y; while read -r args; do cal $args; done'"
+            cmd = "ndg menu --dims 68x35 --trm 'cal -y; while read -r args; do clear; cal $args; done'"
             return f"%{{A:{cmd}&:}}{t}%{{A}}"
 
     @item(period=3, big=True)
@@ -434,6 +434,16 @@ class Bar(BarBase):
             plugged = charging or "Not charging" in acpi
         except:
             return None
+
+        # https://wiki.archlinux.org/title/Lenovo_ThinkPad_X1_Carbon_(Gen_10)#Performance_modes
+        profile = None
+        profilef = "/sys/firmware/acpi/platform_profile"
+        if os.path.exists(profilef):
+            try:
+                with open(profilef, "r") as f:
+                    profile = f.read().strip()[0]
+            except:
+                pass
 
         if self.a:
             charging = "~" if charging else ""
@@ -467,6 +477,9 @@ class Bar(BarBase):
                 out += icons["battery100"]
 
             out += f" {percent}%%"
+
+            if profile:
+                out += profile
 
             if percent <= 10 and not charging:
                 out = "%{B#FF0000} " + out + " %{B-}"

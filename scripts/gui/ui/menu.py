@@ -464,6 +464,7 @@ class ItemsContainer:
         self.search_box = search_box
         self.first = None
         self.flow = Gtk.FlowBox()
+        self.hover_count = 0 # changed below in Item
 
         if self.args.noic:
             max_per_line = len(self.items_list) // 10
@@ -483,6 +484,7 @@ class ItemsContainer:
         self.flow.set_filter_func(self.filter_fun)
         self.flow.connect("child_activated", self.on_activate)
         for item in items_list:
+            item.parent = self
             self.flow.insert(item.box(self.args), -1)
 
         vbox = Gtk.VBox()
@@ -582,6 +584,7 @@ class Item:
     confirm:  bool         = False
     _box:     Gtk.Box      = None
     args                   = None
+    parent:   Gtk.Box      = None
 
     def from_dict(json_dict):
         if type(json_dict) == str:
@@ -601,10 +604,7 @@ class Item:
             "terminal": self.terminal,
         }
 
-    def box(self, args):
-        if self._box is not None:
-            return self._box
-
+    def tooltip_text(self):
         if self.comment:
             comment = self.name + ": " + self.comment
         else:
@@ -613,6 +613,11 @@ class Item:
             if comment:
                 comment += " "
             comment += f"({self.exec})"
+        return comment
+
+    def box(self, args):
+        if self._box is not None:
+            return self._box
 
         lbl = Gtk.Label(label=self.name)
         if not args.noic:
@@ -636,9 +641,6 @@ class Item:
                 box.pack_start(img, True, True, 5)
             box.pack_start(lbl, True, True, 5)
 
-        if comment:
-            box.set_tooltip_text(comment)
-
         self._box = Gtk.EventBox()
         self._box.add(box)
         self._box.connect("enter-notify-event", self.on_hover)
@@ -646,6 +648,14 @@ class Item:
         return self._box
 
     def on_hover(self, item, event):
+        if self.parent:
+            self.parent.hover_count += 1
+            if self.parent.hover_count == 1:
+                # skip changing selecting on start
+                return
+            elif self.parent.hover_count >= 2:
+                # skip showing tooltip on start
+                self._box.set_tooltip_text(self.tooltip_text())
         flowboxchild = item.get_parent()
         flowbox = flowboxchild.get_parent()
         flowbox.select_child(flowboxchild)

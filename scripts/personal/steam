@@ -1,0 +1,34 @@
+#!/bin/sh
+
+mkdcd() { mkdir -p "$1" && cd "$1" && return 0; }
+
+main() {
+    name=steam
+    jail="$HOME/.local/share/jail-$name"
+    pac='steam_latest.deb'
+    url="https://repo.steampowered.com/steam/archive/precise/$pac"
+
+    tmp="$jail/steam-tmp"
+
+    [ "$1" = 'rm' ]      && { rm -r "$jail"; exit; }
+    [ -d "$jail" ]       || mkdir -p "$jail"
+    [ -f "$jail/$pac" ]  || (cd "$jail" && wget "$url")
+    [ -d "$jail/$name" ] || (
+        mkdcd "$jail/$name"                                     &&
+            (mkdcd "$tmp"         && ar x "$jail/$pac")         &&
+            (mkdcd "$tmp/control" && tar xvf ../control.tar.gz) &&
+            (mkdcd "$tmp/data"    && tar xvf ../data.tar.xz)    &&
+            (cd "$tmp/data" && if ! md5sum -c ../control/md5sums; then
+                 echo 'Checksum failed'
+                 exit 1
+             fi) && mv "$tmp/data/usr/lib/steam" "$jail/" && rm -r "$tmp")
+
+    exec firejail          \
+         --noprofile       \
+         --private-tmp     \
+         --blacklist=/mnt  \
+         --private="$jail" \
+         "$HOME/steam/bin_steam.sh"
+}
+
+main "$@"
