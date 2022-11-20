@@ -144,7 +144,7 @@ def json_file_entries(jfile):
 
 def desktop_entries(update=False, ddir=None):
     all_apps = []
-    if os.path.exists(cache_file_desktops) and not update:
+    if os.path.exists(cache_file_desktops) and not update and not ddir:
         try:
             with open(cache_file_desktops, "r") as f:
                 for o in json.load(f):
@@ -245,8 +245,9 @@ def desktop_entries(update=False, ddir=None):
     for app in apps:
         all_apps.append(app)
 
-    with open(cache_file_desktops, "w") as f:
-        json.dump(apps, f, indent=4, default=lambda o: o.to_dict())
+    if not ddir:
+        with open(cache_file_desktops, "w") as f:
+            json.dump(apps, f, indent=4, default=lambda o: o.to_dict())
 
     return all_apps
 

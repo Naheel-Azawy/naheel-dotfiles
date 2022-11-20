@@ -12,8 +12,9 @@ main() {
     [ -d "$jail/zoom" ] || (mkdir -p "$jail/zoom" &&
                                 cd "$jail/zoom"   &&
                                 tar xvf "$jail/$pac")
+
+    desktop="$jail/.local/share/applications/Zoom.desktop"
     [ -d "$jail/.local/share" ] || {
-        desktop="$jail/.local/share/applications/Zoom.desktop"
         mkdir -p "$jail/.local/share" &&
             cp -r "$jail/zoom/usr/share/"* "$jail/.local/share/" &&
             sed -i "s#/usr/bin/zoom#$HOME/zoom/opt/zoom/ZoomLauncher#" \
@@ -24,7 +25,16 @@ main() {
                 tr ';' '\n' |
                 xargs printf '%s=Zoom.desktop\n'
         } > "$jail/.local/share/applications/mimeinfo.cache"
+    }
 
+    user_desktop="$HOME/.local/share/applications/Zoom.desktop"
+    ic="$jail/.local/share/pixmaps/Zoom.png"
+    me=$(realpath "$0")
+    [ -f "$user_desktop" ] || {
+        mkdir -p "$(dirname "$user_desktop")" &&
+            cp "$desktop" "$user_desktop" &&
+            sed -ri "s#Exec=(.+)#Exec=$me#;s#Icon=(.+)#Icon=$ic#" \
+                "$user_desktop"
     }
 
     exec firejail          \

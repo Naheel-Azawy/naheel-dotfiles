@@ -1,5 +1,44 @@
 #!/bin/sh
 
-# https://developer.android.com/studio#downloads
-# https://redirector.gvt1.com/edgedl/android/studio/ide-zips/2021.1.1.21/android-studio-2021.1.1.21-linux.tar.gz
-exec ~/.local/share/android/android-studio/bin/studio.sh "$@"
+main() {
+    jail="$HOME/.local/share/jail-android-studio"
+    targz="$1"
+    [ -n "$targz" ] && targz=$(realpath "$targz")
+
+    [ "$1" = 'rm' ]               && { rm -r "$jail"; exit; }
+    [ -d "$jail" ]                || mkdir -p "$jail"
+    [ -d "$jail/android-studio" ] || {
+        mkdir -p "$jail" &&
+            cd "$jail"   &&
+            if [ -z "$targz" ]; then
+                echo 'ERROR: pass the tar.gz file to install'
+                echo 'download from: https://developer.android.com/studio#downloads'
+                return 1
+            else
+                tar xvf "$targz"
+            fi
+    }
+
+    user_desktop="$HOME/.local/share/applications/android-studio.desktop"
+    [ -f "$user_desktop" ] || {
+        me=$(realpath "$0")
+        mkdir -p "$(dirname "$user_desktop")" && {
+            echo '[Desktop Entry]'
+            echo "Type=Application"
+            echo "Name=Android Studio"
+            echo "Icon=$jail/android-studio/bin/studio.svg"
+            echo "Exec=$me %f"
+            echo "Comment=The Drive to Develop"
+            echo "Categories=Development;IDE;"
+        } > "$user_desktop"
+    }
+
+    exec firejail          \
+         --noprofile       \
+         --private-tmp     \
+         --blacklist=/mnt  \
+         --private="$jail" \
+         "$HOME/android-studio/bin/studio.sh" "$@"
+}
+
+main "$@"
