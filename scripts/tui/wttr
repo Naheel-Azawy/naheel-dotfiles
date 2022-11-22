@@ -13,7 +13,7 @@ update() {
         loc=
     fi
     curl -s "wttr.in/$loc?n" > "$f"
-    bar update weather
+    ndg bar --update weather
 }
 
 daemon() {

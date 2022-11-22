@@ -210,15 +210,36 @@ set_env() {
 }
 
 set_speed() {
-    if { [ "$speed" = s ] || [ -z "$speed" ]; } && [ -f ./platformio.ini ]; then
-        ini_speed=$(sed -rn 's/monitor_speed *= *(.+)/\1/p' ./platformio.ini)
-        if echo "$SPEEDS" | grep -q "$ini_speed"; then
-            # is a valid baud rate
-            speed="$ini_speed"
+    if [ "$speed" = s ] || [ -z "$speed" ]; then
+        # check platform.ini file
+        if [ -f ./platformio.ini ]; then
+            ini_speed=$(sed -rn 's/monitor_speed *= *(.+)/\1/p' ./platformio.ini)
+            if echo "$SPEEDS" | grep -q "$ini_speed"; then
+                # is a valid baud rate
+                speed="$ini_speed"
+                [ -n "$speed" ] &&
+                    info "Setting speed to $speed from ./platformio.ini"
+            fi
+        fi
+
+        # check source file(s)
+        if [ -z "$speed" ] && [ -d ./src ]; then
+            src_speed=$(cd ./src && grep -r 'Serial\.begin('           |
+                                sed -rn 's/.*Serial\.begin\((.+)\).*/\1/p' |
+                                uniq)
+            # be sure there is only one speed
+            src_speeds_count=$(echo "$src_speed" | wc -l)
+            if [ "$src_speeds_count" = 1 ] &&
+                   echo "$SPEEDS" | grep -q "$src_speed"; then
+                speed="$src_speed"
+                [ -n "$speed" ] &&
+                    info "Setting speed to $speed from source file(s)"
+            fi
         fi
     fi
 
     if [ -z "$speed" ]; then
+        # don't know what to do; ask user
         speed=$(ask_menu 'Select serial tty baud rate:' "$SPEEDS")
         [ -n "$speed" ] || return 1
     fi
