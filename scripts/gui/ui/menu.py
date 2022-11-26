@@ -329,7 +329,7 @@ class MainWindow(Gtk.Window):
             dims = self.args.dims.split("x")
             self.set_default_size(int(dims[0]), int(dims[1]))
         elif self.args.power:
-            self.set_default_size(self.args.isize * 8, self.args.isize * 3.7)
+            self.set_default_size(self.args.isize * 8.5, self.args.isize * 3.7)
         else:
             if not geometry:
                 self.set_default_size(1024, 1000)
@@ -581,7 +581,7 @@ class Item:
     icon:     str          = ""
     comment:  str          = ""
     terminal: bool         = False
-    max_lbl:  int          = 25
+    max_lbl:  int          = 15
     confirm:  bool         = False
     _box:     Gtk.Box      = None
     args                   = None

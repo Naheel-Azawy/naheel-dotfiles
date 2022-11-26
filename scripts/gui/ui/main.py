@@ -13,7 +13,7 @@ def main():
     p_menu.add_argument(      "--dir",         type=str, default="",     help="directory of .desktop files")
     p_menu.add_argument("-f", "--fullscreen",  action="store_true",      help="fullscreen window")
     p_menu.add_argument("-u", "--update",      action="store_true",      help="update cache")
-    p_menu.add_argument(      "--isize",       type=int,   default=72,   help="icons' size (default 72)")
+    p_menu.add_argument(      "--isize",       type=int,   default=64,   help="icons' size")
     p_menu.add_argument(      "--css",         type=str,   default=None, help="style sheet")
     p_menu.add_argument(      "--power",       action="store_true",      help="show power menu")
     p_menu.add_argument(      "--stay",        action="store_true",      help="stay even when out of focus")
