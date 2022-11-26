@@ -310,6 +310,18 @@ https://www.emacswiki.org/emacs/NoTabs"
   (use-package cc-mode
     :init (setq-default c-basic-offset 4))
 
+  (defun insert-c-header-guard ()
+    (interactive)
+    (let ((loc (point))
+          (upper-name
+           (upcase (file-name-nondirectory (file-name-sans-extension buffer-file-name)))))
+      (goto-char (point-min))
+      (insert "#ifndef " upper-name "_H_\n")
+      (insert "#define " upper-name "_H_\n\n")
+      (goto-char (point-max))
+	  (insert "\n#endif // " upper-name "_H_\n")
+      (goto-char loc)))
+
   (use-package js2-mode
     :custom-face
     (js2-external-variable ((t (:foreground "brightblack")))))

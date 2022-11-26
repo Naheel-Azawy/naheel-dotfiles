@@ -127,7 +127,7 @@ ws_menu() {
                    bspc query -N -d "$d"                          |
                        xargs -l xdotool getwindowname 2>/dev/null |
                        sed -z 's/\n/, /g'                         |
-                       head -c -2 | fribidi --nopad --nobreak
+                       head -c -2
                    echo
                done
                printf "n: NEW\n"

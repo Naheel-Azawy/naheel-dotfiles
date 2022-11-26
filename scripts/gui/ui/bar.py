@@ -382,7 +382,11 @@ class Bar(BarBase):
         if self.wm is None or self.a:
             return None
         else:
-            return self.ws_str
+            wmcmd = self.wm.impl.workspace_cmd
+            ret =  f"%{{A:{wmcmd} prev&:}}<  %{{A}}"
+            ret += self.ws_str or ""
+            ret += f"%{{A:{wmcmd} next&:}}  >%{{A}}"
+            return ret
 
     @item(big=True)
     def add(self):

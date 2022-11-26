@@ -387,6 +387,7 @@ wait_fingerprint() {
         fprint_out=$(timeout 5 fprintd-verify)
         fprint_res=$(echo "$fprint_out" |
                          sed -rn 's/Verify result: (.+) \(done\)/\1/p')
+
         if [ -n "$fprint_res" ]; then
             if [ $((t - start)) -gt $timeout ]; then
                 fprint_res="Timeout!"
@@ -395,6 +396,12 @@ wait_fingerprint() {
 
 ===============
 $fprint_out"
+        else
+            notify "Fingerprint:" "ERROR:
+
+===============
+$fprint_out"
+            break
         fi
         if echo "$fprint_res" | grep -q verify-match; then
             lockscreen_unlock
