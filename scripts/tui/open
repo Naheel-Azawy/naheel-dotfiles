@@ -37,6 +37,8 @@ openfile() {
                 mynohup drawio "$f";;
             *.stl)
                 mynohup cura "$f";;
+            *.HC|*.HH|*.DD)
+                exec "$EDITOR" "$f";;
             *)
                 # mime type
                 case $(file --mime-type "$(realpath """$f""")" -b) in

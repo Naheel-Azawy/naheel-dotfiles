@@ -143,20 +143,20 @@ audio_vol() {
     d="$2"; [ "$d" ] || d=5
 
     # default to bluetooth if exists
-    sink=$(pamixer --list-sinks | grep bluez | tail -n1 | cut -d' ' -f1)
-    if [ -n "$sink" ]; then
-        sink_name='BT'
-    else
-        sink=$(pamixer --get-default-sink | tail -n +2 | cut -d' ' -f1)
-        sink_name=
-    fi
+    # sink=$(pamixer --list-sinks | grep bluez | tail -n1 | cut -d' ' -f1)
+    # if [ -n "$sink" ]; then
+    #     sink_name='BT'
+    # else
+    #     sink=$(pamixer --get-default-sink | tail -n +2 | cut -d' ' -f1)
+    #     sink_name=
+    # fi
 
     case "$c" in
-        m) pamixer --sink "$sink" -m ;;
-        t) pamixer --sink "$sink" -t ;;
+        m) pamixer -m ;;
+        t) pamixer -t ;;
         up|down)
             [ "$c" = down ] && d="-$d"
-            v=$(pamixer --sink "$sink" --get-volume)
+            v=$(pamixer --get-volume)
             v=$((v+d))
             if [ $v -le $MAX_VOL ]; then
                 v=$((v/5*5))
@@ -166,11 +166,11 @@ audio_vol() {
             if [ $v -lt 0 ]; then
                 v=0
             fi
-            pamixer --sink "$sink" --allow-boost --set-volume $v
+            pamixer --allow-boost --set-volume $v
             ;;
     esac
     rm -f "$lock"
-    audio_vol_notif "$v" "$sink_name"
+    audio_vol_notif "$v"
 }
 
 audio() {
