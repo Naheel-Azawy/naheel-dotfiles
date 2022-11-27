@@ -149,71 +149,6 @@
 (global-set-key (kbd "C-x |") 'toggle-window-split)
 
 ;; ---- THEME ----
-;; (use-package spacemacs-theme
-;;   :defer t
-;;   :init
-;;   (setq spacemacs-theme-custom-colors
-;;         (quote
-;;          ((act1          . "#222226")
-;;           (act2          . "#5d4d7a")
-;;           (base          . "#b2b2b2")
-;;           (base-dim      . "#686868")
-;;           (bg1           . "#000000") ;; changed
-;;           (bg2           . "#101010") ;; changed
-;;           (bg3           . "#0a0a0a") ;; changed
-;;           (bg4           . "#070707") ;; changed
-;;           (border        . "#5d4d7a")
-;;           (cblk          . "#cbc1d5")
-;;           (cblk-ln       . "#827591")
-;;           (cblk-bg       . "#070707") ;; changed
-;;           (cblk-ln-bg    . "#1f1f1f") ;; changed
-;;           (cursor        . "#e3dedd")
-;;           (const         . "#a45bad")
-;;           (comment       . "#2aa1ae")
-;;           (comment-light . "#2aa1ae")
-;;           (comment-bg    . "#000000") ;; changed
-;;           (comp          . "#6c4173") ;; changed
-;;           (err           . "#e0211d")
-;;           (func          . "#bc6ec5")
-;;           (head1         . "#4f97d7")
-;;           (head1-bg      . "#000000") ;; changed
-;;           (head2         . "#2d9574")
-;;           (head2-bg      . "#293235")
-;;           (head3         . "#67b11d")
-;;           (head3-bg      . "#293235")
-;;           (head4         . "#b1951d")
-;;           (head4-bg      . "#32322c")
-;;           (highlight     . "#444155")
-;;           (highlight-dim . "#3b314d")
-;;           (keyword       . "#4f97d7")
-;;           (lnum          . "#44505c")
-;;           (mat           . "#86dc2f")
-;;           (meta          . "#9f8766")
-;;           (str           . "#2d9574")
-;;           (suc           . "#86dc2f")
-;;           (ttip-sl       . "#5e5079")
-;;           (ttip          . "#dddddd") ;; changed
-;;           (ttip-bg       . "#111111") ;; changed
-;;           (type          . "#ce537a")
-;;           (var           . "#7590db")
-;;           (war           . "#dc752f")
-;;           (aqua          . "#2d9574")
-;;           (aqua-bg       . "#293235")
-;;           (green         . "#67b11d")
-;;           (green-bg      . "#293235")
-;;           (green-bg-s    . "#29422d")
-;;           (cyan          . "#28def0")
-;;           (red           . "#f2241f")
-;;           (red-bg        . "#3c2a2c")
-;;           (red-bg-s      . "#512e31")
-;;           (blue          . "#4f97d7")
-;;           (blue-bg       . "#293239")
-;;           (blue-bg-s     . "#2d4252")
-;;           (magenta       . "#a31db1")
-;;           (yellow        . "#b1951d")
-;;           (yellow-bg     . "#32322c"))))
-;;   (load-theme 'spacemacs-dark t))
-
 (load-theme 'tsdh-dark t)
 (set-background-color "#000000")
 (set-face-background 'hl-line "#111")
@@ -821,7 +756,7 @@ from: https://stackoverflow.com/a/998472/3825872"
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(package-selected-packages
-   '(edit-indirect coffee-mode scad-preview-mode scad-mode scad-preview ess smart-tabs-mode zig-mode web-beautify csv-mode php-mode exwm lua-mode epresent js-auto-beautify yaml-mode xonsh-mode xclip writeroom-mode which-key web-mode vterm visual-regexp-steroids vala-mode v-mode use-package undo-tree typescript-mode sparql-mode spacemacs-theme solidity-mode rust-mode rjsx-mode ranger rainbow-mode protobuf-mode ox-reveal ox-pandoc outshine origami org-ref org-bullets multiple-cursors lsp-ui lsp-java lsp-dart kotlin-mode julia-mode iedit haxe-mode go-mode gnuplot-mode glsl-mode git-gutter flyspell-correct-helm flycheck fish-mode elvish-mode ein dumb-jump doom-modeline dockerfile-mode csharp-mode company-lsp cmake-mode calfw-org calfw basic-mode auctex anzu adaptive-wrap academic-phrases ac-octave))
+   '(edit-indirect coffee-mode scad-preview-mode scad-mode scad-preview ess smart-tabs-mode zig-mode web-beautify csv-mode php-mode exwm lua-mode epresent js-auto-beautify yaml-mode xonsh-mode xclip writeroom-mode which-key web-mode vterm visual-regexp-steroids vala-mode v-mode use-package undo-tree typescript-mode sparql-mode solidity-mode rust-mode rjsx-mode ranger rainbow-mode protobuf-mode ox-reveal ox-pandoc outshine origami org-ref org-bullets multiple-cursors lsp-ui lsp-java lsp-dart kotlin-mode julia-mode iedit haxe-mode go-mode gnuplot-mode glsl-mode git-gutter flyspell-correct-helm flycheck fish-mode elvish-mode ein dumb-jump doom-modeline dockerfile-mode csharp-mode company-lsp cmake-mode calfw-org calfw basic-mode auctex anzu adaptive-wrap academic-phrases ac-octave))
  '(safe-local-variable-values '((eval add-hook 'before-save-hook 'time-stamp)))
  '(verilog-auto-newline nil))
 (custom-set-faces
