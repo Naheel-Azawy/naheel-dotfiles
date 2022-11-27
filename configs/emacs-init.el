@@ -749,6 +749,14 @@ from: https://stackoverflow.com/a/998472/3825872"
   (byte-compile-file (expand-file-name "vlang-mode.el" lisp-directory)))
 (require 'vlang-mode)
 
+;; --- HOLYC ---
+(unless (file-exists-p (expand-file-name "holyc-mode.el" lisp-directory))
+  (url-copy-file "https://raw.githubusercontent.com/naheel-azawy/holyc-mode.el/master/holyc-mode.el"
+                 (expand-file-name "holyc-mode.el" lisp-directory)))
+(unless (file-exists-p (expand-file-name "holyc-mode.elc" lisp-directory))
+  (byte-compile-file (expand-file-name "holyc-mode.el" lisp-directory)))
+(require 'holyc-mode)
+
 ;;; emacs-init.el ends here
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
