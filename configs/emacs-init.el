@@ -83,6 +83,21 @@
 (setq-default tab-width 4)
 ;;(setq-default show-trailing-whitespace 1)
 
+;; ---- THEME ----
+(load-theme 'tsdh-dark t)
+(set-background-color "#000")
+(set-face-background 'hl-line "#111")
+(set-face-foreground 'highlight nil)
+(set-face-attribute 'region nil :background "#333")
+
+;; ---- REMOVE BG COLOR ----
+(defun on-frame-open (&optional frame)
+  "If the FRAME created in terminal don't load background color."
+  (if (display-graphic-p frame)
+      (set-face-background 'default "#000" frame)
+    (set-face-background 'default "unspecified-bg" frame)))
+(add-hook 'after-make-frame-functions 'on-frame-open)
+
 ;; ---- TITLE ----
 (setq-default frame-title-format '("%b - emacs"))
 (defun my-buffer-change-hook ()
@@ -113,13 +128,6 @@
                   (font-spec :family "Kawkab Mono" :size 14)
                   nil 'prepend)
 
-;; ---- REMOVE BG COLOR ----
-(defun on-frame-open (&optional frame)
-  "If the FRAME created in terminal don't load background color."
-  (unless (display-graphic-p frame)
-    (set-face-background 'default "unspecified-bg" frame)))
-(add-hook 'after-make-frame-functions 'on-frame-open)
-
 ;; ---- WINDOW SPLIT TOGGLE ----
 ;; https://stackoverflow.com/a/33456622/3825872
 (defun toggle-window-split ()
@@ -147,13 +155,6 @@
           (select-window first-win)
           (if this-win-2nd (other-window 1))))))
 (global-set-key (kbd "C-x |") 'toggle-window-split)
-
-;; ---- THEME ----
-(load-theme 'tsdh-dark t)
-(set-background-color "#000000")
-(set-face-background 'hl-line "#111")
-(set-face-foreground 'highlight nil)
-(set-face-attribute 'region nil :background "#333")
 
 ;; ---- SPACES ----
 (setq-default indent-tabs-mode nil)
@@ -228,6 +229,7 @@ https://www.emacswiki.org/emacs/NoTabs"
   (use-package dart-mode)
   (use-package go-mode)
   (use-package rust-mode)
+  (use-package zig-mode)
   (use-package typescript-mode)
   (use-package julia-mode)
   (use-package kotlin-mode)
@@ -316,7 +318,27 @@ https://www.emacswiki.org/emacs/NoTabs"
   ;; ---- CSV ----
   (use-package csv-mode
     :hook
-    (csv-mode . csv-align-mode)))
+    (csv-mode . csv-align-mode))
+
+  ;; --- MORE SYNTAX HIGHLIGHT ----
+  (dolist (mode-iter
+           '(c-mode c++-mode java-mode
+                    javascript-mode js2-mode rjsx-mode
+                    octave-mode python-mode scad-mode glsl-mode
+                    rust-mode go-mode vala-mode vlang-mode))
+    (font-lock-add-keywords
+     mode-iter
+     '(
+       ;; numbers
+       ("\\_<[0-9.]+\\_>"        . font-lock-constant-face)
+       ("\\_<0x[0-9a-fA-F]+\\_>" . font-lock-constant-face)
+       ("\\_<0o[0-7]+\\_>"       . font-lock-constant-face)
+       ("\\_<0b[01]+\\_>"        . font-lock-constant-face)
+
+       ;; functions
+       ;; ("\\([_a-zA-Z][_a-zA-Z0-9]*\\)[\t\s]*(" 1 font-lock-function-name-face)
+       )))
+  )
 
 ;; ---- RUN ----
 (defun run-program ()
@@ -356,7 +378,7 @@ https://www.emacswiki.org/emacs/NoTabs"
   (use-package writeroom-mode
     :custom
     (writeroom-fullscreen-effect 'maximized)
-    (writeroom-border-width 50)
+    (writeroom-width 0.6)
     (writeroom-bottom-divider-width 0)
     (writeroom-extra-line-spacing nil)
     (writeroom-fringes-outside-margins nil))
@@ -791,4 +813,4 @@ from: https://stackoverflow.com/a/998472/3825872"
  '(cfw:face-toolbar-button-off ((t :foreground "#555555" :weight bold)))
  '(cfw:face-toolbar-button-on ((t :foreground "#ffffff" :weight bold)))
  '(js2-external-variable ((t (:foreground "brightblack"))))
- '(mc/cursor-face ((t (:background "white" :foreground "black")))))
+ '(mc/cursor-face ((t (:background "black" :foreground "white")))))

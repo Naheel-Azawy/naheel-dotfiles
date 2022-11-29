@@ -1,5 +1,7 @@
-| Tag    | Name    | Git Link | Purpose                                        |
-|--------+---------+----------+------------------------------------------------|
-| pacman | radare2 | N.A.     | the best reverse engineering toy out there     |
-| pacman | ghidra  | N.A.     | sometimes better than radare, not in UI though |
-| pacman | jadx    | N.A.     | Java decompiler                                |
+| Tag    | Name      | Git Link | Purpose                                        |
+|--------+-----------+----------+------------------------------------------------|
+| pacman | radare2   | N.A.     | the best reverse engineering toy out there     |
+| pacman | ghidra    | N.A.     | sometimes better than radare, not in UI though |
+| pacman | jadx      | N.A.     | Java decompiler                                |
+| pacman | rz-cutter | N.A.     | yet another rev engineering platform           |
+| pacman | rz-ghidra | N.A.     | ghidra integration for cutter                  |
