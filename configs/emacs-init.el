@@ -402,7 +402,7 @@ https://www.emacswiki.org/emacs/NoTabs"
   :init (require 'multiple-cursors)
   :bind ("C-]" . mc/mark-next-like-this)
   :custom-face
-  (mc/cursor-face ((t (:background "black" :foreground "white")))))
+  (mc/cursor-face ((t (:background "white" :foreground "black")))))
 
 ;; ---- ORIGAMI ----
 (use-package origami

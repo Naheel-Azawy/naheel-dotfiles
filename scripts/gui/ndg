@@ -382,9 +382,21 @@ wait_fingerprint() {
         timeout=$((1 * 60 * 60)) # 1 hr
     fi
     start=$(date +%s)
+
+    { # to avoid `timeout 5 fprintd-verify'
+        while :; do
+            if ! lockscreen_islocked; then
+                killall fprintd-verify 2>/dev/null
+                break
+            else
+                sleep 5
+            fi
+        done
+    } &
+
     while lockscreen_islocked; do
         # https://github.com/i3/i3lock/issues/210#issuecomment-1047313795
-        fprint_out=$(timeout 5 fprintd-verify)
+        fprint_out=$(fprintd-verify)
         fprint_res=$(echo "$fprint_out" |
                          sed -rn 's/Verify result: (.+) \(done\)/\1/p')
 
@@ -392,12 +404,9 @@ wait_fingerprint() {
             if [ $((t - start)) -gt $timeout ]; then
                 fprint_res="Timeout!"
             fi
-            notify "Fingerprint:" "$fprint_res
-
-===============
-$fprint_out"
+            notify "Fingerprint:" "$fprint_res"
         else
-            notify "Fingerprint:" "ERROR:
+            echo notify "Fingerprint:" "ERROR:
 
 ===============
 $fprint_out"
