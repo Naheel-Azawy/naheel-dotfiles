@@ -394,6 +394,7 @@ wait_fingerprint() {
         done
     } &
 
+    fail_count=0
     while lockscreen_islocked; do
         # https://github.com/i3/i3lock/issues/210#issuecomment-1047313795
         fprint_out=$(fprintd-verify)
@@ -405,16 +406,20 @@ wait_fingerprint() {
                 fprint_res="Timeout!"
             fi
             notify "Fingerprint:" "$fprint_res"
+            fail_count=0
         else
             echo notify "Fingerprint:" "ERROR:
 
 ===============
 $fprint_out"
-            break
+            if [ "$fail_count" -ge 5 ]; then
+                sleep 5
+            else
+                fail_count=$((fail_count + 1))
+            fi
         fi
         if echo "$fprint_res" | grep -q verify-match; then
             lockscreen_unlock
-            break
         fi
         t=$(date +%s)
     done

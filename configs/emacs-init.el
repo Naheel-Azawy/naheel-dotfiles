@@ -813,4 +813,4 @@ from: https://stackoverflow.com/a/998472/3825872"
  '(cfw:face-toolbar-button-off ((t :foreground "#555555" :weight bold)))
  '(cfw:face-toolbar-button-on ((t :foreground "#ffffff" :weight bold)))
  '(js2-external-variable ((t (:foreground "brightblack"))))
- '(mc/cursor-face ((t (:background "black" :foreground "white")))))
+ '(mc/cursor-face ((t (:background "white" :foreground "black")))))
