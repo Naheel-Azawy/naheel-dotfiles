@@ -59,3 +59,4 @@
 | pacman | geoip                          | N.A.                                       | geographical IP database                                                                       |
 | git    | msoffice                       | https://github.com/Naheel-Azawy/officejail | ms office wrapper                                                                              |
 | git    | gtk-print                      | https://github.com/nbfalcon/gtk-print      | gtk printer dialog                                                                             |
+| func   | blesh                          | N.A.                                       | interactive bash                                                                               |
