@@ -658,23 +658,24 @@ def lemonbar():
 
     args = ["lemonbar", "-B", background, "-F", foreground, "-a", "30"] + fonts
 
-    # map x values to geometries
-    # useful when multiple monitors start at the same x
+    # map x,y values to geometries
+    # useful when multiple monitors start at the same point
     # the smallest w will be used in this case
-    x2g = {}
+    xy2g = {}
     for mon in monitors:
         g = mon["geometry"]
-        if g['x'] in x2g:
-            if x2g[g['x']]['w'] > g['w']:
-                x2g[g['x']] = g
+        index = f"{g['x']},{g['y']}"
+        if index in xy2g:
+            if xy2g[index]['w'] > g['w']:
+                xy2g[index] = g
         else:
-            x2g[g['x']] = g
+            xy2g[index] = g
 
     # start a lemonbar process for each geometry
     lemons = []
     lemons_stdin = []
     minis = []
-    for g in x2g.values():
+    for g in xy2g.values():
         lemonp = subprocess.Popen(args + ["-g", f"{g['w']}x+{g['x']}+{g['y']}"],
                                   stdin=subprocess.PIPE,
                                   stdout=subprocess.PIPE,

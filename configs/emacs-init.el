@@ -71,6 +71,11 @@
 (global-set-key (kbd "C-S-<prior>") 'text-scale-increase)
 (global-set-key (kbd "C-S-<next>")  'text-scale-decrease)
 
+;; TODO: arabic
+(global-set-key (kbd "C-س") 'save-buffer)
+(global-set-key (kbd "C-ئ") 'undo-tree-undo)
+(global-set-key (kbd "M-ئ") 'undo-tree-redo)
+
 ;; ---- VISUALS ----
 (menu-bar-mode -1)
 (tool-bar-mode -1)
@@ -120,9 +125,11 @@
       scroll-margin 5)
 
 ;; ---- FONT ----
+(setq font-family (getenv "FONT"))
+(setq font-height 140)
 (set-face-attribute 'default nil
-                    :family (getenv "FONT")
-                    :height 120)
+                    :family 'font-family
+                    :height 'font-height)
 (set-fontset-font "fontset-default"
                   'arabic
                   (font-spec :family "Kawkab Mono" :size 14)
@@ -184,6 +191,7 @@ https://www.emacswiki.org/emacs/NoTabs"
 ;; ---- MODELINE ----
 (use-package doom-modeline
   :init
+  (set-face-attribute 'mode-line nil :box '(:width 0))
   (setq doom-modeline-icon nil)
   (doom-modeline-mode 1))
 

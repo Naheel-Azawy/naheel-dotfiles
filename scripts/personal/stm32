@@ -136,11 +136,27 @@ install_all() {
     msg1 'Installation done!'
 }
 
+run_stlink() {
+    jail_run "$HOME/$dir_ide/stlink-server" "$@"
+}
+
+run_prg() {
+    jail_run "$HOME/$dir_prg/bin/STM32CubeProgrammer"
+}
+
+run_prg2() {
+    jail_run sh -c "$HOME/$dir_ide/stlink-server & $HOME/$dir_prg/bin/STM32CubeProgrammer"
+}
+
+run_ide() {
+    jail_run "$HOME/$dir_ide/stm32cubeide"
+}
+
 main() {
     case "$1" in
-        prog)          jail_run "$HOME/$dir_prg/bin/STM32CubeProgrammer" ;;
-        ide)           jail_run "$HOME/$dir_ide/stm32cubeide" ;;
-        stlink) shift; jail_run "$HOME/$dir_ide/stlink-server" "$@" ;;
+        prog)          run_prg ;;
+        ide)           run_ide ;;
+        stlink) shift; run_stlink "$@" ;;
 
         install)       shift; install_all "$@" ;;
         build-in-jail)        build_in_jail ;;
