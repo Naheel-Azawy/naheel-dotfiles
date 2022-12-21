@@ -19,6 +19,7 @@ import signal
 import importlib
 import importlib.util
 import importlib.machinery
+import argparse
 
 import workspace_watch as wsw
 import xrandr_parse    as xrandr
@@ -725,5 +726,16 @@ async def async_main(args):
     else:
         lemonbar()
 
-def main(args):
+def main():
+    parser = argparse.ArgumentParser(prog="bar", description="top bar UI")
+    parser.add_argument("-k", "--kill",       action="store_true",      help="kill bar process")
+    parser.add_argument("-u", "--update",     type=str, default=None,   help="update a bar item")
+    parser.add_argument("-a", "--ascii",      action="store_true",      help="output ascii only")
+    parser.add_argument("-p", "--persistent", action="store_true",      help="keep running in a loop")
+    parser.add_argument("items",              type=str, nargs="*",      help="items to be printed")
+    args = parser.parse_args()
+
     asyncio.run(async_main(args))
+
+if __name__ == "__main__":
+    main()

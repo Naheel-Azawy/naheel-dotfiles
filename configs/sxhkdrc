@@ -116,7 +116,7 @@ super+apostrophe
 
 # Empty window
 super+e
-	ndg empty
+	empty
 
 # Start the program launcher
 super+d

@@ -1,3 +1,0 @@
-* nd: tui
-  Commonly used TUI/CLI scripts.
-  TODO: serious cleanup needed

@@ -587,18 +587,10 @@ compositor() {
     esac
 }
 
-# ==== core ui ====
-
-core_ui() {
-    python3 "$HERE/ui/main.py" "$@"
-}
+# ==== shortcuts ====
 
 bar() {
-    core_ui bar "$@"
-}
-
-empty() {
-    core_ui empty "$@"
+    python3 "$HERE/bar/bar.py" "$@"
 }
 
 wm() {
@@ -725,7 +717,6 @@ list() {
     echo touchpadtog
     echo systraytog
     echo wm
-    echo empty
     echo compositor
     echo bar
     echo foo

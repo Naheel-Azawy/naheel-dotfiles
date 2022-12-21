@@ -1,6 +1,6 @@
 #!/bin/sh
 
-HERE=$(realpath "$(dirname "$0")")
+HERE=$(realpath "$(dirname "$0")")/tools-scripts
 
 dirs=$(find "$HERE" -maxdepth 1 -mindepth 1 -type d -exec realpath '{}' \;)
 

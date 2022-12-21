@@ -20,9 +20,6 @@ export EU=2.71828182845904523537
 
 [ -f ~/.dotfiles-exports ] && {
     . ~/.dotfiles-exports
-    PATH="$PATH:$DOTFILES_SCRIPTS/gui"
-    PATH="$PATH:$DOTFILES_SCRIPTS/tui"
-    PATH="$PATH:$DOTFILES_SCRIPTS/tools"
     PATH="$PATH:$DOTFILES_SCRIPTS/personal"
     export PATH
 }
