@@ -120,7 +120,7 @@ super+e
 
 # Start the program launcher
 super+d
-	ndg menu
+	gmenu apps
 
 # Toggle on-screen keyboard
 super+k
@@ -140,7 +140,7 @@ super+l
 
 # Power options
 super+shift+l
-	ndg menu --power
+	gmenu power
 
 # Display options
 super+p
@@ -196,7 +196,7 @@ alt+ctrl+Print
 
 # Show shortcuts help screen
 super+F1
-	ndg menu --trm 'kb-shortcuts-help | less'
+	gtrm -p 'kb-shortcuts-help | less'
 
 # Show the system monitor
 super+grave
@@ -254,7 +254,7 @@ XF86AudioForward
 	ndg audio forward 10
 
 XF86PowerOff
-	ndg menu --power
+	gmenu power
 
 XF86Calculator
 	calc-float

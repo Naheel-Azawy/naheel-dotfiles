@@ -41,7 +41,7 @@ done
 
 choice="$1"
 [ "$1" = "C-x" ] && {
-    choice=$(echo "$LIST" | ndg menu -d)
+    choice=$(echo "$LIST" | gmenu -l)
 }
 
 case "$choice" in
@@ -98,7 +98,8 @@ case "$choice" in
             P="${#files[@]} files"
         fi
         R=$(printf "Trash\nDelete permanently\nCancel" |
-                ndg menu -d -p "Delete $P?" --dims 300x200)
+                gmenu -i 0 -c 3 -sb red -sf black -p "Delete $P?" \
+                      --dims 550x110 --nosearch --maxlbl 100)
         case "$R" in
             Trash)   for f in "${files[@]}"; do gio trash "$f" || trash-put "$f"; done;;
             Delete*) for f in "${files[@]}"; do rm -f "$f";                       done;;

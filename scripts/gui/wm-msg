@@ -98,7 +98,7 @@ program_menu() {
                # echo 'Super down'
                # echo 'Super up'
            })
-    choice=$(echo "$items" | ndg menu -d -p "$title" --dims 200x300)
+    choice=$(echo "$items" | gmenu -l -p "$title" --dims 400x300)
 
     case "$choice" in
         "$title")                              ;;
@@ -137,7 +137,7 @@ ws_menu() {
     n=$((n - 1))
     ws=$(echo "$items"        |
              #column -s '\t' -t |
-             ndg menu -d -p "Workspaces" -n "$n" --long --dims 700x500 |
+             gmenu -l -p "Workspaces" -n "$n" --dims 700x500 |
              cut -d : -f 1)
 
     [ -n "$ws" ] && {

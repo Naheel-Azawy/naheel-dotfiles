@@ -126,10 +126,9 @@
 
 ;; ---- FONT ----
 (setq font-family (getenv "FONT"))
-(setq font-height 140)
 (set-face-attribute 'default nil
                     :family 'font-family
-                    :height 'font-height)
+                    :height 140)
 (set-fontset-font "fontset-default"
                   'arabic
                   (font-spec :family "Kawkab Mono" :size 14)

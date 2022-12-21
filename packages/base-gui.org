@@ -82,3 +82,5 @@
 | pacman   | bluez                  | N.A.                                    | bluetooth service                                                |
 | pacman   | blueman                | N.A.                                    | bluetooth gui frontend                                           |
 | aur      | highlight-pointer      | N.A.                                    | red pointer for presentations                                    |
+| git      | gmenu                  | https://github.com/Naheel-Azawy/gmenu   | GTK dmenu                                                        |
+| git      | gtrm                   | https://github.com/Naheel-Azawy/gtrm    | GTK-VTE terminal                                                 |

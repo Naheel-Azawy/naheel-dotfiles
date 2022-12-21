@@ -426,7 +426,7 @@ class Bar(BarBase):
         if self.a:
             return t
         else:
-            cmd = "ndg menu --dims 68x35 --trm 'cal -y; while read -r args; do clear; cal $args; done'"
+            cmd = "gtrm --dims 68x35 -p 'cal -y; while read -r args; do clear; cal $args; done'"
             return f"%{{A:{cmd}&:}}{t}%{{A}}"
 
     @item(period=3, big=True)
@@ -488,7 +488,7 @@ class Bar(BarBase):
             if percent <= 10 and not charging:
                 out = "%{B#FF0000} " + out + " %{B-}"
 
-            cmd = "ndg menu --dims 75x3 --trm 'watch -tn 1 acpi -i'"
+            cmd = "gtrm --dims 75x3 -p 'watch -tn 1 acpi -i'"
             out = f"%{{F{r}}}%{{A:{cmd}&:}}{out}%{{A}}%{{F-}}"
 
             return out
@@ -510,7 +510,7 @@ class Bar(BarBase):
                         ic = icons["wifi2"]
                     else:
                         ic = icons["wifi1"]
-                    cmd = "ndg menu --dims 120x20 --trm 'watch -ctn 1 ip --color=always a'"
+                    cmd = "gtrm --dims 120x20 -p 'watch -ctn 1 ip --color=always a'"
                     return f"%{{A:{cmd}&:}}{ic} {v}%%%{{A}}"
         except:
             pass
@@ -524,7 +524,7 @@ class Bar(BarBase):
         if self.a:
             return f"p{out}"
         else:
-            cmd = "ndg menu --trm prayer --dims 25x8"
+            cmd = "gtrm -p prayer --dims 25x8"
             return f"%{{A:{cmd}&:}} " + icons["prayer"] + \
                 f" {out}%{{A}}"
 
@@ -559,7 +559,7 @@ class Bar(BarBase):
             if self.a:
                 return f"w{out}"
             else:
-                cmd = f"ndg menu --trm wttr --dims 63x28"
+                cmd = f"gtrm -p wttr --dims 63x28"
                 return f"%{{A:{cmd}&:}} " + icons["cloud"] + f" {out}%{{A}}"
 
         return None
@@ -591,16 +591,16 @@ class Bar(BarBase):
             else:
                 out += icons["temp30"]
             out += f" {int(t)}°C %{{F-}}"
-            cmd = "ndg menu --dims 65x19 --trm 'watch -tn 1 sensors'"
+            cmd = "gtrm --dims 65x19 -p 'watch -tn 1 sensors'"
             return f"%{{A:{cmd}&:}}{out}%{{A}}"
 
     @item()
     def start(self):
-        return "%{A:ndg menu&:} START%{A}" if not self.a else None
+        return "%{A:gmenu apps&:} START%{A}" if not self.a else None
 
     @item()
     def power(self):
-        return "%{A:ndg menu --power&:}" + icons["power"] + \
+        return "%{A:gmenu power&:}" + icons["power"] + \
             "%{A}" if not self.a else None
 
     @item()
@@ -610,7 +610,7 @@ class Bar(BarBase):
 
     @item(big=True)
     def donno(self):
-        return "%{A:ndg menu --trm 'lolcowforune -p'&:}¯\_(ツ)_/¯%{A}" \
+        return "%{A:gtrm -p 'lolcowforune -p'&:}¯\_(ツ)_/¯%{A}" \
             if not self.a else None
 
     @item(big=True)

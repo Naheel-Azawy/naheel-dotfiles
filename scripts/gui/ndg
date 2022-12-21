@@ -229,7 +229,7 @@ display() {
                #     grep -v '^default' |
                #     awk -F'.' '{print $1}'
            })
-        sel=$(echo "$l" | menu -d -p 'Display options' --long --dims 500x300)
+        sel=$(echo "$l" | gmenu --list -p 'Display options' --dims 300x350)
     fi
 
     case "$sel" in
@@ -242,7 +242,7 @@ display() {
         Temperature*)
             sel=$(echo "$sel" | awk '{print $2}')
             if [ "$sel" = Custom ]; then
-                sel=$(echo | menu -d -p 'Color temperature' --dims 300x100)
+                sel=$(echo | gmenu --list -p 'Color temperature' --dims 300x350)
             fi
             [ "$sel" ] && xsct "$sel" ;;
 
@@ -254,7 +254,7 @@ display() {
 # ==== lang ====
 
 LANGS=us,ar
-LANGS_E=us,ar,ru,fr,de,ir
+LANGS_E=us,ar,ru #,fr,de,ir
 
 lang_get() {
     setxkbmap -query | sed -En 's/layout:\s*(.+)/\1/p' 2>/dev/null
@@ -597,10 +597,6 @@ bar() {
     core_ui bar "$@"
 }
 
-menu() {
-    core_ui menu "$@"
-}
-
 empty() {
     core_ui empty "$@"
 }
@@ -732,7 +728,6 @@ list() {
     echo empty
     echo compositor
     echo bar
-    echo menu
     echo foo
 }
 
