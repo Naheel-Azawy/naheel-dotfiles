@@ -20,7 +20,7 @@
 | pacman     | unzip               | N.A.                                         | unzips zips                                                  |
 | pacman     | wget                | N.A.                                         | downloads sites and files on the command line                |
 | pacman     | atool               | N.A.                                         | manages and gives information about archives                 |
-| pacman     | fzf                 | N.A.                                         | fuzzy finder tool                                            |
+| func       | fzf                 | N.A.                                         | fuzzy finder tool                                            |
 | pacman     | highlight           | N.A.                                         | can highlight code output                                    |
 | pacman     | fish                | N.A.                                         | the friendly shell!                                          |
 | pacman     | emacs               | N.A.                                         | the best editor on this planet                               |

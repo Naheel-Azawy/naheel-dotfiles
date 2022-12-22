@@ -458,6 +458,27 @@ pkg_install_from() {
 
         func)
             case "$1" in
+                fzf)
+                    if doit; then
+                        if [ "$install" ]; then
+                            if [ -e "/usr/local/bin/fzf" ]; then
+                                echo 'fzf is already installed'
+                            else
+                                fzfd="/tmp/__fzf-build"
+                                mkdir -p "$fzfd" &&
+                                    cd "$fzfd" &&
+                                    git clone https://github.com/Naheel-Azawy/fzf &&
+                                    cd fzf &&
+                                    git checkout preselector &&
+                                    make install &&
+                                    sudo cp bin/fzf /usr/local/bin/
+                                rm -rf "$fzfd"
+                            fi
+                        else
+                            sudo rm -f "/usr/local/bin/fzf"
+                        fi
+                    fi;;
+
                 blesh)
                     if doit; then
                         if [ "$install" ]; then
