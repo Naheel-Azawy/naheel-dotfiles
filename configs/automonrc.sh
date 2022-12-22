@@ -1,51 +1,60 @@
 
+focused_desktop=
+
+pre() {
+    focused_desktop=$(bspc query -D -d .focused --names)
+}
+
 post() {
     run_if_exists ndg wallpaper reset
     run_if_exists ndg bar &
-    # for the x1
-    xinput --map-to-output 'ELAN901C:00 04F3:2C4E' eDP-1 2>/dev/null
+    rearrange_desktops
+    run_if_exists thinkpadutils x1_touch_screen_fix
 }
 
-# automon sum | clipboard
+rearrange_desktops() {
+    xr=$(xrandr)
+    mons=$(echo "$xr" |
+               sed -rn 's/(.+) connected(.*) ([0-9]+)x([0-9]+)\+([0-9]+)\+([0-9]+).+/\5 \1\2/p' |
+               sort -n | cut -d ' ' -f2- | nl)
+    mons_count=$(echo "$mons" | wc -l)
 
-# TODO: move to personal
+    primary_num=$(echo "$mons" | sed -rn 's/ *([0-9]+) *(.+) primary/\1/p')
+    mons_before_primary=$((primary_num - 1))
+    mons_after_primary=$((mons_count - primary_num))
 
-for hsh in 1862dc110979a186b3348600cb6836c7 \
-               93e18afbe5a67eed567e174153d717ac \
-               6acbde4c20b7b62be2ce9ff901b30bf0; do
-    save $hsh  desk-3 xrandr \
-         --output LVDS1 --mode 1366x768 --pos 0x0 --rotate normal            \
-         --output DP2 --mode 1280x720 --pos 2966x0 --rotate left             \
-         --output DP3 --primary --mode 1600x900 --pos 1366x0 --rotate normal \
-         --output DP1 --off   \
-         --output HDMI1 --off \
-         --output HDMI2 --off \
-         --output HDMI3 --off \
-         --output VGA1 --off  \
-         --output VIRTUAL1 --off
-done
+    desktops=$(bspc query -D -d .occupied --names)
+    prim_desktops=$(echo "$desktops"                          |
+                        tail -n +$((mons_before_primary + 1)) |
+                        head -n -$mons_after_primary)
+    prim_desktops_count=$(echo "$prim_desktops" | wc -l)
 
-save a43f993ce60afc8b42b110dae1065118 sg-lab xrandr \
-     --output LVDS1 --primary --mode 1366x768 --pos 0x0 --rotate normal \
-     --output VGA1 --mode 1680x1050 --pos 1366x0 --rotate left          \
-     --output DP1 --off   \
-     --output DP2 --off   \
-     --output DP3 --off   \
-     --output HDMI1 --off \
-     --output HDMI2 --off \
-     --output HDMI3 --off \
-     --output VIRTUAL1 --off
+    desk2mon() { run bspc desktop "$1" -m "$2"; }
 
-save d6a036c70c8910af2813c69b17a83bc6 sg-lab-2 xrandr \
-     --output LVDS1 --primary --mode 1366x768 --pos 1920x0 --rotate normal \
-     --output DP1 --mode 1920x1080 --pos 0x0 --rotate normal \
-     --output DP2 --off --output DP3 --off --output HDMI1 --off --output HDMI2 --off --output HDMI3 --off --output VGA1 --off --output VIRTUAL1 --off
+    echo "$mons" | while read -r n mon isprim; do
+        if [ -n "$isprim" ]; then
+            # primary monitor take all other desktops
+            echo "$prim_desktops" | while read -r d; do
+                desk2mon "$d" "$mon"
+            done
+        else
+            if [ "$n" -lt "$primary_num" ]; then
+                # each monitor before primary take one desktop in order
+                d=$(echo "$desktops" | sed "${n}q;d")
+                desk2mon "$d" "$mon"
+            else
+                # monitors after primary take the remaining desktops
+                order=$((n - primary_num)) # order after primary
+                d=$((mons_before_primary + prim_desktops_count + order))
+                desk2mon "$d" "$mon"
+            fi
+        fi
+    done
 
-save 1d1f9b61d37e5cebdbe8e230359a8aa4 x1-sg-lab xrandr \
-     --output eDP-1 --primary --mode 1920x1200 --pos 0x0 --rotate normal --output HDMI-1 --off --output DP-1 --off --output DP-2 --off --output DP-3 --mode 1680x1050 --pos 1920x0 --rotate left --output DP-4 --off
+    if [ -n "$focused_desktop" ]; then
+        run bspc desktop -f "$focused_desktop"
+    fi
+}
 
-save 61c79b3e56f770b8d8209d6249480a30 x1-sg-lab-3 xrandr \
-     --output eDP-1 --primary --mode 1920x1200 --pos 1920x0 --rotate normal --output HDMI-1 --mode 1920x1080 --pos 0x0 --rotate normal --output DP-1 --off --output DP-2 --off --output DP-3 --mode 1680x1050 --pos 3840x0 --rotate left --output DP-4 --off
-
-save e1afc73e010ac024dcffa8020c850d77 x1-off xrandr \
-     --output eDP-1 --mode 1920x1200 --pos 0x0 --rotate normal --output HDMI-1 --primary --mode 1920x1080 --pos 1920x0 --rotate normal --output DP-1 --off --output DP-2 --off --output DP-3 --off --output DP-4 --off
+cfg_saved="$DOTFILES_DIR/configs/automonrc-saved.sh"
+[ -e "$cfg_saved" ] && . "$cfg_saved"

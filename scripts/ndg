@@ -34,7 +34,6 @@ export TERMINAL='theterm'
 export FILE_MANAGER='fmz'
 export BROWSER='ndg browser'
 export READER='ndg reader'
-export TUI_APPS='music-player:lf:vis:corona:alsamixer:lyrics:nano:dice:fmz'
 
 # ==== utils ====
 
@@ -589,7 +588,7 @@ compositor() {
 # ==== shortcuts ====
 
 bar() {
-    python3 "$HERE/bar/bar.py" "$@"
+    "$HERE/bar" "$@"
 }
 
 wm() {

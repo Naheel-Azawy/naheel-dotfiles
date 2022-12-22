@@ -1,8 +1,4 @@
-# TODO: seperate?
-# TODO: turn items to shell script functions
-# python opens a shell instance, source the items script,
-# and call them whenever needed.
-# this also can turn it into something that everyone can use.
+#!/usr/bin/env python3
 
 import sh
 import os
@@ -21,8 +17,21 @@ import importlib.util
 import importlib.machinery
 import argparse
 
-import workspace_watch as wsw
-import xrandr_parse    as xrandr
+def import_path(path):
+    # https://stackoverflow.com/a/56090741/3825872
+    path = os.path.dirname(os.path.realpath(__file__)) + "/" + path
+    module_name = os.path.basename(path).replace('-', '_')
+    spec = importlib.util.spec_from_loader(
+        module_name,
+        importlib.machinery.SourceFileLoader(module_name, path)
+    )
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    sys.modules[module_name] = module
+    return module
+
+wsw    = import_path("wsw")
+xrandr = import_path("xrandr-parse")
 
 try:
     # sudo pip3 install python-bidi arabic-reshaper
@@ -148,19 +157,17 @@ icons      = themes[theme]["icons"]
 background = '#dd000000'
 foreground = '#ffffff'
 
-default_items = "start workspaces program | clock | systray keyboard pray weather temperature wifi battery power"
+default_items = "workspaces program | clock | battery host"
 
 port_file = "/tmp/.nbarport"
 pid_file  = "/tmp/.nbarpid"
 
 argv = sys.argv
 HOME = os.getenv("HOME")
-WINDOW_MANAGER = os.getenv("WINDOW_MANAGER")
 
 # example: WM(lambda s: print(s)).run()
 class WM:
     def __init__(self, callback):
-        wm = WINDOW_MANAGER
         try:
             self.impl = wsw.init(output="lemonbar_circles_mini", onchange=callback)
         except:
@@ -231,10 +238,11 @@ class BarBase:
         self.outs = outs
         self.minis = minis
 
-        if items is None:
-            self.items_str = default_items
-        else:
-            self.items_str = items
+        if not hasattr(self, "items_str"):
+            if items is None:
+                self.items_str = default_items
+            else:
+                self.items_str = items
 
         places = re.split(r"\s*\|\s*", self.items_str)
 
@@ -377,6 +385,8 @@ class BarBase:
         self.tasks.cancel()
 
 class Bar(BarBase):
+
+    items_str = "start workspaces program | clock | systray keyboard pray weather temperature wifi battery power"
 
     @item(big=False)
     def workspaces(self):

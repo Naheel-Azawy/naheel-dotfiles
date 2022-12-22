@@ -1,12 +1,8 @@
 #!/bin/sh
 
-num=$(shuf -i 1-6 -n 1)
-percent=$(shuf -i 0-100 -n 1)
-binary=$(shuf -i 0-1 -n 1)
-choice=$(if [ "$binary" = 1 ]; then echo 'yes'; else echo 'no'; fi)
-
-case "$num" in
-    1) dice='
+num2dice() {
+    case "$1" in
+        1) dice='
 ╭─────────╮
 │         │
 │    ⬤    │
@@ -14,7 +10,7 @@ case "$num" in
 ╰─────────╯
 ' ;;
 
-    2) dice='
+        2) dice='
 ╭─────────╮
 │  ⬤      │
 │         │
@@ -22,7 +18,7 @@ case "$num" in
 ╰─────────╯
 ' ;;
 
-    3) dice='
+        3) dice='
 ╭─────────╮
 │  ⬤      │
 │    ⬤    │
@@ -30,7 +26,7 @@ case "$num" in
 ╰─────────╯
 ' ;;
 
-    4) dice='
+        4) dice='
 ╭─────────╮
 │  ⬤   ⬤  │
 │         │
@@ -38,7 +34,7 @@ case "$num" in
 ╰─────────╯
 ' ;;
 
-    5) dice='
+        5) dice='
 ╭─────────╮
 │  ⬤   ⬤  │
 │    ⬤    │
@@ -46,19 +42,73 @@ case "$num" in
 ╰─────────╯
 ' ;;
 
-    6) dice='
+        6) dice='
 ╭─────────╮
 │  ⬤   ⬤  │
 │  ⬤   ⬤  │
 │  ⬤   ⬤  │
 ╰─────────╯
 ' ;;
+    esac
+    echo "$dice"
+}
 
-esac
+throw() {
+    num=$(shuf -i 1-6 -n 1)
+    percent=$(shuf -i 0-100 -n 1)
+    binary=$(shuf -i 0-1 -n 1)
+    choice=$(if [ "$binary" = 1 ]; then echo 'yes'; else echo 'no'; fi)
 
-echo "$dice"
-echo "Random percentage: $percent%"
-echo "Random choice: $choice"
-echo "$(shuf -i 1-2 -n 1)/2 $(shuf -i 1-3 -n 1)/3"
-echo "$(shuf -i 1-4 -n 1)/4 $(shuf -i 1-5 -n 1)/5"
-read -r ans
+    num2dice "$num"
+    echo "Random percentage: $percent%"
+    echo "Random choice: $choice"
+    echo "Random fractions:"
+    echo "$(shuf -i 1-2 -n 1)/2 $(shuf -i 1-3 -n 1)/3"
+    echo "$(shuf -i 1-4 -n 1)/4 $(shuf -i 1-5 -n 1)/5"
+}
+
+mk_desktop() {
+    force=
+    user_desktop="$HOME/.local/share/applications/dice.desktop"
+    user_icon="$HOME/.local/share/pixmaps/dice.png"
+
+    if [ -n "$force" ] || [ ! -f "$user_icon" ]; then
+        mkdir -p "$(dirname "$user_icon")" &&
+            echo "$ICON" | base64 -d > /tmp/__dice.bmp &&
+            convert /tmp/__dice.bmp -scale 256x256\! "$user_icon"
+        rm -f /tmp/__dice.bmp
+    fi
+
+    if [ -n "$force" ] || [ ! -f "$user_desktop" ]; then
+        me=$(realpath "$0")
+        mkdir -p "$(dirname "$user_desktop")" && {
+            echo '[Desktop Entry]'
+            echo "Type=Application"
+            echo "Name=Dice"
+            echo "Icon=$user_icon"
+            echo "Exec=gtrm -d 25x12 -p $me"
+            echo "Categories=Web;Messaging"
+        } > "$user_desktop"
+    fi
+}
+
+main() {
+    mk_desktop
+    throw
+    while :; do
+        read -r _
+        throw
+    done
+}
+
+ICON='Qk3OAQAAAAAAAIoAAAB8AAAACQAAAAkAAAABACAAAwAAAEQBAAAjLgAAIy4AAAAAAAAAAAAAAAD/
+AAD/AAD/AAAAAAAA/0JHUnMAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+AAAAAAAAAAACAAAAAAAAAAAAAAAAAAAAAAAAAAAAAP8AAAD/AAAA/wAAAP8AAAD/AAAA/wAAAP8A
+AAAAAAAA//////////////////////////////////////8AAAD/AAAA//////8AAAD/////////
+////////AAAA//////8AAAD/AAAA//////////////////////////////////////8AAAD/AAAA
+/////////////////wAAAP////////////////8AAAD/AAAA////////////////////////////
+//////////8AAAD/AAAA//////8AAAD/////////////////AAAA//////8AAAD/AAAA////////
+//////////////////////////////8AAAD/AAAAAAAAAP8AAAD/AAAA/wAAAP8AAAD/AAAA/wAA
+AP8AAAAA'
+
+main

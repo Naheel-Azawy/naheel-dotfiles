@@ -156,6 +156,10 @@ battery() {
     esac
 }
 
+x1_touch_screen_fix() {
+    xinput --map-to-output 'ELAN901C:00 04F3:2C4E' eDP-1 2>/dev/null
+}
+
 main() {
     [ $# = 0 ] && return 1
     case "$1" in
@@ -175,6 +179,9 @@ main() {
         bat)
             shift
             battery "$@" ;;
+
+        x1_touch_screen_fix)
+            x1_touch_screen_fix ;;
     esac
 }
 

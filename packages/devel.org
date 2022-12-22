@@ -2,8 +2,6 @@
 |--------+-------------------------------+----------+----------------------------------------|
 | pacman | man-pages                     | N.A.     | manuals                                |
 | pacman | docker                        | N.A.     | to run docker containers               |
-| pacman | vala                          | N.A.     | Vala language                          |
-| aur    | android-studio                | N.A.     | Android studio IDE                     |
 | pacman | cloc                          | N.A.     | Calculates lines of code               |
 | pacman | cmake                         | N.A.     | CMake build system                     |
 | pacman | clang                         | N.A.     | another cool c compiler                |

@@ -208,9 +208,8 @@ inchroot() {
     echo
 
     info 'Installing GRUB...'
-    # TODO: add efi
-    # grub-install --target=x86_64-efi --efi-directory=esp --bootloader-id=GRUB
-    grub-install --target=i386-pc "$DEV" &&
+    grub-install --target=x86_64-efi --efi-directory=esp --bootloader-id=GRUB "$DEV" &&
+        grub-install --target=i386-pc "$DEV" &&
         grub-mkconfig -o /boot/grub/grub.cfg
     echo
 

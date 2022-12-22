@@ -137,9 +137,7 @@ dots_link() {
     lnnn "$D/configs/sxiv-image-info.sh"  "$H/.config/sxiv/exec/image-info"
     lnnn "$D/configs/picom.conf"          "$H/.config/picom.conf"
     lnnn "$D/configs/user-dirs.dirs"      "$H/.config/user-dirs.dirs"
-    lnnn "$D/configs/mednafen.cfg"        "$H/.mednafen/mednafen.cfg"
     lnnn "$D/configs/bashrc.sh"           "$H/.bashrc"
-    lnnn "$D/configs/blerc.sh"            "$H/.config/blesh/init.sh"
     lnnn "$D/configs/profile"             "$H/.profile"
     lnnn "$D/configs/profile"             "$H/.bash_profile"
     lnnn "$D/configs/profile"             "$H/.xprofile"
@@ -314,6 +312,9 @@ export PATH=\"\$PATH:\$DOTFILES_SCRIPTS\"
     # disallow no password sudo
     [ "$QUICK" ] ||
         run comment '%wheel ALL=(ALL:ALL) NOPASSWD: ALL' /etc/sudoers
+
+    info "Updating time..."
+    run "$D/scripts/time-update" -y
 
     echo 'DONE!!!'
 }

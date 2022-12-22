@@ -13,12 +13,7 @@ test -f "$DOTFILES_DIR/configs/more-paths.sh" &&
 
 alias java='java "$SHHH_JAVA_OPTIONS"' # check profile
 
-#USE_BLESH=1
-BLESH=~/.local/share/blesh/ble.sh
-
 if [[ $- == *i* ]]; then
-    [[ "$USE_BLESH" && -f "$BLESH" ]] &&
-        source "$BLESH" --noattach
 
     command -v valsh >/dev/null && {
         source "$(valsh --source)"
@@ -149,9 +144,6 @@ if [[ $- == *i* ]]; then
     }
 
     bash_greeting
-    if [[ ${BLE_VERSION-} ]]; then
-        ble-attach
-    fi
 fi
 
 # BEGIN_KITTY_SHELL_INTEGRATION

@@ -58,8 +58,8 @@ case "$choice" in
         done;;
     "Open with" | "o")
         app=$(echo | mimeopen --ask "${files[0]}" 2>/dev/null |
-                  sed -En 's/\s*(.+\)\s+.+)/\1/p'       |
-                  dmenu -l 20                           |
+                  sed -En 's/\s*(.+\)\s+.+)/\1/p'             |
+                  gmenu -l                                    |
                   sed -En 's/(.+)\).+/\1/p')
         echo "$app" | mimeopen --ask "${files[0]}" & ;;
 

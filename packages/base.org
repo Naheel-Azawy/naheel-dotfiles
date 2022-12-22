@@ -39,7 +39,6 @@
 | git        | stpv                | https://github.com/Naheel-Azawy/stpv         | files previewer in the terminal (used for LF and fzf mainly) |
 | git        | fmz                 | https://github.com/Naheel-Azawy/fmz          | terminal file manager                                        |
 | pacman     | chafa               | N.A.                                         | image to text                                                |
-| pacman     | colordiff           | N.A.                                         | a more colorful diff                                         |
 | pacman     | diff-so-fancy       | N.A.                                         | an even more colorful diff                                   |
 | pacman     | wdiff               | N.A.                                         | diff but for words                                           |
 | pacman     | encfs               | N.A.                                         | encrypted file system                                        |
@@ -53,9 +52,10 @@
 | pacman     | cmake               | N.A.                                         | needed to build some packages                                |
 | pacman     | mlocate             | N.A.                                         | find files quickly                                           |
 | pacman     | rsync               | N.A.                                         | synchronize files                                            |
-| aur        | archivemount        | N.A.                                         | mount archives using fuse                                    |
+| aur        | archivemount-git    | N.A.                                         | mount archives using fuse                                    |
 | git        | latexwrapper        | https://github.com/Naheel-Azawy/latexwrapper | LaTeX wrapper                                                |
 | git        | calc                | https://github.com/Naheel-Azawy/shell-calc   | mini shell math tools                                        |
 | pacman     | htop                | N.A.                                         | a friendly top                                               |
 | pacman     | ufw                 | N.A.                                         | firewall                                                     |
 | pacman     | moreutils           | N.A.                                         | vidir and others                                             |
+| git        | tetris              | https://github.com/Naheel-Azawy/tetris       | terminal tetris                                              |
