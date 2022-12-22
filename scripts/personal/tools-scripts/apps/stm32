@@ -158,6 +158,7 @@ main() {
         ide)           run_ide ;;
         stlink) shift; run_stlink "$@" ;;
 
+        install-desktops)     mk_desktops ;;
         install)       shift; install_all "$@" ;;
         build-in-jail)        build_in_jail ;;
         *) return 1 ;;

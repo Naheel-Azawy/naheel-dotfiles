@@ -503,8 +503,7 @@ browser() {
 }
 
 floating_calc() {
-    eval "$(xdotool getmouselocation --shell)"
-    theterm -s ignored-calc -a "-c __floatme__ -g 45x10+$X+$Y" calc
+    theterm -s ignored-calc -a "-c -d 45x10" calc
 }
 
 calendar() {

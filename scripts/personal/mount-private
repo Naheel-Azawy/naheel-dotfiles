@@ -2,51 +2,14 @@
 
 # TODO: move to personal
 
-ENC=/mnt/hdd1/Private-enc/
-DEC=/mnt/hdd1/Private/
-
-mountpoint -q /mnt/hdd1 || {
-    mkdir -p /mnt/hdd1
-    sudo mount /dev/sdb1 /mnt/hdd1
-    [ -d "$ENC" ] || {
-        # if the expect directory is not there,
-        # then this is not supposed to run here.
-        sudo umount /mnt/hdd1
-        exit
-    }
-}
+CTL="$HOME/.data/Public/ctl.sh"
 
 case "$1" in
-    -u)
-        mountpoint -q "$HOME/M"      && fusermount -u "$HOME/M"
-        mountpoint -q "$DEC"         && fusermount -u "$DEC"
-        mountpoint -q "$HOME/.cache" && fusermount -u "$HOME/.cache"
-        ;;
-
-    -m)
-        printf 'Enter password: '
-        # https://unix.stackexchange.com/q/222974/183147
-        # https://stackoverflow.com/a/28393320/3825872
-        sttybak=$(stty -g)
-        stty -echo
-        read -r p
-        stty "$sttybak"
-        printf '\nLoading...\n'
-        mountpoint -q "$DEC" || {
-            echo "$p" | encfs -S "$ENC" "$DEC"
-        }
-        mountpoint -q "$HOME/.cache" || {
-            [ -d "$HOME/.cache-enc/" ] && {
-                rm -rf ~/.cache && mkdir -p ~/.cache
-                echo "$p" | sudo encfs --public -S "$HOME/.cache-enc/" "$HOME/.cache"
-            }
-        }
-        ;;
-
+    -u) "$CTL" end ;;
+    -m) "$CTL" begin ;;
     '')
-        mountpoint -q "$DEC" && exit 0
         theterm \
-            -a '-c __floatme__ -g 40x5' \
+            -a '-f -d 40x5' \
             "echo;echo;exec '$0' -m"
         ;;
 esac

@@ -1,21 +1,24 @@
-- [ ] replace `menus`
+- [X] replace `menus`
   + start too too slow
   + many redundant parts
   + you now have your own dmenu fork
   + make a python package as extras for your dmenu
-- [ ] ndg input daemon too slow?
-- [ ] ly messing things after second login
+- [X] ndg input daemon too slow?
+  lowpassed
+- [X] ly messing things after second login
+  got rid of ly
 - [X] dmenu not patched on first install
 - [ ] picom not working well in vbox
-- [ ] picom unpredicted death
-- [ ] picom too expensive while running zoom?
+- [X] picom unpredicted death
+  now using the main branch
+- [X] picom too expensive while running zoom?
 - [X] material fonts (ttf-material-icons) for bar
   in the bar: check which font is installed
-- [ ] mpv
+- [X] mpv
   + create a standalone setup
   + rebuild sxiv handler for mpv
   + cleanup and maybe speedup?
-- [ ] or go back to sxiv? mpv can't handle large images and lua scripts are too slow
+- [X] or go back to sxiv? mpv can't handle large images and lua scripts are too slow
 - [ ] fmz: detect cd drives
 - [ ] bluetooth dies after suspend
   https://bbs.archlinux.org/viewtopic.php?id=233527
