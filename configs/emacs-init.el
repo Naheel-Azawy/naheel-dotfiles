@@ -247,7 +247,6 @@ https://www.emacswiki.org/emacs/NoTabs"
   (use-package yaml-mode)
   (use-package glsl-mode)
   (use-package haxe-mode)
-  ;; (use-package arduino-mode)
   (use-package solidity-mode)
   (use-package dockerfile-mode)
   (use-package fish-mode)
@@ -750,11 +749,6 @@ from: https://stackoverflow.com/a/998472/3825872"
       (require 'outline-mode-easy-bindings nil t))
 
     (add-hook 'LaTeX-mode-hook #'outline-minor-mode)))
-
-;; ---- VTERM ----
-(unless tiny
-  (use-package vterm
-    :custom (vterm-shell "/usr/bin/fish")))
 
 ;; ---- EXTRA LISP ----
 (setq lisp-directory (concat user-emacs-directory "lisp"))

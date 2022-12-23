@@ -314,7 +314,7 @@ export PATH=\"\$PATH:\$DOTFILES_SCRIPTS\"
         run comment '%wheel ALL=(ALL:ALL) NOPASSWD: ALL' /etc/sudoers
 
     info "Updating time..."
-    run "$D/scripts/time-update" -y
+    run sudo "$D/scripts/time-update" -y
 
     echo 'DONE!!!'
 }

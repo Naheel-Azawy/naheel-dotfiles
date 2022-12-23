@@ -103,6 +103,10 @@ lowpass() {
     wait
 }
 
+mem() {
+    echo $(("$(sed -rn 's/MemTotal: +([0-9]+) kB/\1/p' /proc/meminfo)" / 1000000))
+}
+
 # ==== audio ====
 
 MAX_VOL=250
@@ -578,10 +582,24 @@ music() {
 
 compositor() {
     case "$1" in
-        start)   picom -b ;;
-        stop)    killall picom ;;
-        restart) compositor stop; sleep .1; compositor start ;;
-        *)     return 1
+        start)
+            if [ "$(mem)" -gt 2 ]; then
+                picom -b
+            fi ;;
+
+        force-start)
+            picom -b ;;
+
+        stop)
+            killall picom ;;
+
+        restart)
+            compositor stop
+            sleep .1
+            compositor start ;;
+
+        *)
+            return 1
     esac
 }
 

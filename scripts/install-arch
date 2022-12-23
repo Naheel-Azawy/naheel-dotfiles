@@ -72,7 +72,7 @@ mkfss() {
     # boot
     info "Formatting ${DEVP}1 as boot partition..."
     if [ -e "${DEVP}1" ]; then
-        yes | mkfs.ext4 "${DEVP}1"
+        yes | mkfs.fat -F32 "${DEVP}1"
     else
         err "${DEVP}1 not found"
         return 1
@@ -159,7 +159,8 @@ installarch() {
              base-devel \
              linux linux-firmware \
              networkmanager \
-             grub
+             grub \
+             efibootmgr
     echo
 }
 
@@ -208,7 +209,7 @@ inchroot() {
     echo
 
     info 'Installing GRUB...'
-    grub-install --target=x86_64-efi --efi-directory=esp --bootloader-id=GRUB "$DEV" &&
+    grub-install --target=x86_64-efi --efi-directory=/boot --bootloader-id=GRUB "$DEV" &&
         grub-install --target=i386-pc "$DEV" &&
         grub-mkconfig -o /boot/grub/grub.cfg
     echo
