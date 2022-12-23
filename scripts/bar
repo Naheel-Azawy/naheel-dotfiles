@@ -386,7 +386,7 @@ class BarBase:
 
 class Bar(BarBase):
 
-    items_str = "start workspaces program | clock | systray keyboard pray weather temperature wifi battery power"
+    items_str = "start workspaces add program | clock | systray keyboard pray weather temperature wifi battery power"
 
     @item(big=False)
     def workspaces(self):
