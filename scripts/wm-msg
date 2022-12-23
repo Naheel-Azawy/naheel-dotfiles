@@ -242,7 +242,7 @@ main() {
             case "$cmd" in
                 fullscreen)             bspc node -t ~fullscreen ;;
                 float)                  bspc node -t ~floating ;;
-                stick)                  bspc node -s sticky ;;
+                stick)                  bspc node -g sticky ;;
                 balance)                bspc node -B ;;
                 equalize)               bspc node -E ;;
                 split)                  bspc node -f @parent && bspc node -R 90 && bspc node -f @first ;;

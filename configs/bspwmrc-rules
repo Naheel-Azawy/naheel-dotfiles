@@ -7,7 +7,7 @@ consequences=$4
 title=$(xdotool getwindowname "$wid")
 
 case "$class" in
-    Dragon)
+    Dragon|Dragon-drop)
         echo 'sticky=on' ;;
     Emacs)
         echo 'state=tiled' ;;
