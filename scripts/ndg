@@ -104,7 +104,8 @@ lowpass() {
 }
 
 mem() {
-    echo $(("$(sed -rn 's/MemTotal: +([0-9]+) kB/\1/p' /proc/meminfo)" / 1000000))
+    kb=$(sed -rn 's/MemTotal: +([0-9]+) kB/\1/p' /proc/meminfo)
+    echo $((kb / 1000000)) # gb
 }
 
 # ==== audio ====

@@ -310,6 +310,7 @@ abbr ytdla 'youtube-dl --add-metadata -xic --audio-format mp3'
 abbr ports 'netstat -tulnp'
 abbr backup 'rsync -avx --delete --info=progress2,del,name,stats2'
 abbr t      'eval (tools path)'
+abbr lw     'latexwrapper'
 
 bind \cq exit
 
