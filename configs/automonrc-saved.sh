@@ -43,3 +43,5 @@ save 61c79b3e56f770b8d8209d6249480a30 x1-sg-lab-3 xrandr \
 save e1afc73e010ac024dcffa8020c850d77 x1-off xrandr \
      --output eDP-1 --mode 1920x1200 --pos 0x0 --rotate normal --output HDMI-1 --primary --mode 1920x1080 --pos 1920x0 --rotate normal --output DP-1 --off --output DP-2 --off --output DP-3 --off --output DP-4 --off
 
+save 74881a811e4a9789c30e13b4a305d34e x1-off-2 xrandr \
+     --output eDP-1 --mode 1920x1200 --pos 0x1080 --rotate normal --output HDMI-1 --off --output DP-1 --off --output DP-2 --off --output DP-3 --primary --mode 1920x1080 --pos 0x0 --rotate normal --output DP-4 --off

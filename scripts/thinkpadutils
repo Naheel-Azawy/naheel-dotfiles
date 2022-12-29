@@ -56,6 +56,7 @@ set_trackpoint() {
 
 set_usb_keyboard() {
     p='Lite-On Tech Lenovo USB Travel Keyboard with Ultra Nav Mouse'
+    xinput list | grep -q "$p" || return 1
     xinput set-prop "$p" "libinput Scroll Method Enabled" 0, 0, 1
     xinput set-prop "$p" "libinput Accel Speed" 1
     # TODO: move to xorg config
@@ -160,6 +161,13 @@ x1_touch_screen_fix() {
     xinput --map-to-output 'ELAN901C:00 04F3:2C4E' eDP-1 2>/dev/null
 }
 
+x1_touchpad() {
+    d='SYNA8017:00 06CB:CEB2 Touchpad'
+    xinput list | grep -q "$d" || return 1
+    xinput set-prop "$d" 'Synaptics Scrolling Distance' -28 -28
+    xinput set-prop "$d" 'Synaptics Tap Action' 0, 0, 0, 0, 1, 3, 2
+}
+
 main() {
     [ $# = 0 ] && return 1
     case "$1" in
@@ -170,7 +178,8 @@ main() {
         input)
             shift
             set_trackpoint "$@"
-            set_usb_keyboard ;;
+            set_usb_keyboard
+            x1_touchpad ;;
 
         init)
             config_xorg
