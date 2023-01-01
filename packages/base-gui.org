@@ -86,3 +86,4 @@
 | pacman | libgee                 | N.A.                                    | data structures for GObject                                      |
 | git    | gmenu                  | https://github.com/Naheel-Azawy/gmenu   | GTK dmenu                                                        |
 | git    | gtrm                   | https://github.com/Naheel-Azawy/gtrm    | GTK-VTE terminal                                                 |
+| aur    | linux-wifi-hotspot     | N.A.                                    | WiFi hotspot                                                     |

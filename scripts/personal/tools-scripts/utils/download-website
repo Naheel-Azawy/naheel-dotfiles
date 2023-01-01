@@ -1,2 +1,3 @@
 #!/bin/sh
-wget -mkEpnp $@
+
+exec wget -mkEpnp --connect-timeout=10 "$@"
