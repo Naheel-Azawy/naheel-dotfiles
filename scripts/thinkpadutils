@@ -168,6 +168,15 @@ x1_touchpad() {
     xinput set-prop "$d" 'Synaptics Tap Action' 0, 0, 0, 0, 1, 3, 2
 }
 
+x1_touchpad_tog() {
+    d='SYNA8017:00 06CB:CEB2 Touchpad'
+    if xinput list-props "$d" | grep -q 'Device Enabled (.*):.*1'; then
+        xinput set-prop "$d" 'Device Enabled' 0
+    else
+        xinput set-prop "$d" 'Device Enabled' 1
+    fi
+}
+
 main() {
     [ $# = 0 ] && return 1
     case "$1" in
@@ -191,6 +200,9 @@ main() {
 
         x1_touch_screen_fix)
             x1_touch_screen_fix ;;
+
+        x1_touchpad_tog)
+            x1_touchpad_tog ;;
     esac
 }
 

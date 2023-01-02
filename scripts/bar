@@ -320,7 +320,6 @@ class BarBase:
         self.ws_str = ws_str
         self.run_item(self.workspaces)
         self.run_item(self.program)
-        self.run_item(self.add)
         self.render()
 
     def run_xtitle_items(self, title):
@@ -386,24 +385,21 @@ class BarBase:
 
 class Bar(BarBase):
 
-    items_str = "start workspaces add program | clock | systray keyboard pray weather temperature wifi battery power"
+    items_str = "start workspaces program | clock | systray keyboard pray weather temperature wifi battery power"
 
     @item(big=False)
     def workspaces(self):
         if self.wm is None or self.a:
             return None
-        else:
-            wmcmd = self.wm.impl.workspace_cmd
+        wmcmd = self.wm.impl.workspace_cmd
+        count = len(self.wm.impl.workspaces)
+        if count > 1:
             ret =  f"%{{A:{wmcmd} prev&:}}<  %{{A}}"
             ret += self.ws_str or ""
             ret += f"%{{A:{wmcmd} next&:}}  >%{{A}}"
             return ret
-
-    @item(big=True)
-    def add(self):
-        if self.a or self.wm.impl is None:
+        else:
             return None
-        return "%{A:wm-msg workspace_new:}" + icons["plus"] + "%{A}"
 
     @item()
     def program(self):
@@ -425,9 +421,9 @@ class Bar(BarBase):
         else:
             out = ""
             if title:
-                return "%{A:wm-msg window_nice_close:}" + \
-                    icons["close"] + "%{A}  " + \
-                    "%{A:wm-msg program-menu&:}" + title + "%{A}"
+                ad = "%{A:wm-msg workspace_new:}"     + icons["plus"]  + "%{A} "
+                cl = "%{A:wm-msg window_nice_close:}" + icons["close"] + "%{A} "
+                return ad + cl + "%{A:wm-msg program-menu&:}" + title + "%{A}"
             else:
                 return None
 
@@ -607,7 +603,7 @@ class Bar(BarBase):
 
     @item()
     def start(self):
-        return "%{A:gmenu apps&:} START%{A}" if not self.a else None
+        return "%{A:ndg start_menu&:} START%{A}" if not self.a else None
 
     @item()
     def power(self):

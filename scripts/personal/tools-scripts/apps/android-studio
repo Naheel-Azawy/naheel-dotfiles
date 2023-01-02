@@ -36,7 +36,7 @@ main() {
     exec firejail          \
          --noprofile       \
          --private-tmp     \
-         --blacklist=/mnt  \
+         --disable-mnt     \
          --private="$jail" \
          "$HOME/android-studio/bin/studio.sh" "$@"
 }

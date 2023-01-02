@@ -604,6 +604,53 @@ compositor() {
     esac
 }
 
+# ==== menus ====
+
+start_menu_cache="$HOME/.cache/applications"
+
+start_menu_update() {
+    rm -rf   "$start_menu_cache"
+    mkdir -p "$start_menu_cache"
+
+    (cd "$start_menu_cache" &&
+         ln -s "$DOTFILES_DIR"/desktops/desktops/*.desktop ./ &&
+         ln -s ~/.local/share/applications/*.desktop       ./ &&
+         ln -s /usr/share/applications/*.desktop           ./ &&
+
+         grep -R 'NoDisplay=true' | cut -d: -f1 | xargs rm &&
+         grep -R 'OnlyShowIn'     | cut -d: -f1 | xargs rm &&
+
+         while read -r d; do
+             rm -f ./"$d"
+         done < "$DOTFILES_DIR"/desktops/blacklist)
+}
+
+start_menu() {
+    test -d "$start_menu_cache" || start_menu_update
+    printf '>>desktops %s\n>>power\n' "$start_menu_cache" | gmenu
+}
+
+settings() {
+    i() {
+        n=$1
+        i=$2
+        e=$3
+        exists "$(echo "$e" | cut -d ' ' -f1)" || return
+        printf '>>j {"name": "%s", "icon": "%s", "exec": "%s"}\n' "$n" "$i" "$e";
+    }
+
+    {
+        i 'Network'   'nm-device-wired'           'nm-connection-editor'
+        i 'Hotspot'   'wihotspot'                 'wihotspot-gui'
+        i 'Bluetooth' 'blueman'                   'blueman-manager'
+        i 'Monitors'  'display'                   'ndg display'
+        i 'Audio'     'audio-headset'             'pavucontrol'
+        i 'Printer'   'printer'                   'system-config-printer'
+        i 'GTK'       'preferences-desktop-theme' 'lxappearance'
+        i 'Qt5'       'preferences-desktop-theme' 'qt5ct'
+    } | gmenu -p 'Settings' -h -i 48 -d 11ix7i
+}
+
 # ==== shortcuts ====
 
 bar() {
@@ -736,6 +783,9 @@ list() {
     echo wm
     echo compositor
     echo bar
+    echo start_menu
+    echo start_menu_update
+    echo settings
     echo foo
 }
 
