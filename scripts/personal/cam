@@ -1,0 +1,101 @@
+#!/bin/sh
+
+notify() {
+    echo "$@"
+    notify-send "$*"
+}
+
+preview() {
+    # https://wiki.archlinux.org/title/Webcam_setup
+    pkill -f /dev/video ||
+        mpv --no-osc                             \
+            --no-input-default-bindings          \
+            --input-conf=/dev/null               \
+            --geometry=-10-10                    \
+            --autofit=15%                        \
+            --profile=low-latency                \
+            --untimed                            \
+            --title='Camera'                     \
+            --x11-name='__floatme__|__stickme__' \
+            av://v4l2:"$1"
+}
+
+mk_name() {
+    if [ "$1" = vid ]; then
+        dir="$HOME/Videos/Camera"
+        ext='mp4'
+    else
+        dir="$HOME/Pictures/Camera"
+        ext='jpg'
+    fi
+    mkdir -p "$dir"
+    echo "$dir/$(date '+%Y%m%d_%H%M%S').$ext"
+}
+
+capture() {
+    d="$1"
+    f=$(mk_name)
+    ffmpeg -i "$d" -frames 1 "$f"
+    notify "Photo saved"
+}
+
+record() {
+    d="$1"
+    f=$(mk_name vid)
+    ffmpeg -i "$d" "$f" &
+    echo $! >/tmp/cam-record-pid
+    fg
+}
+
+record_running() {
+    [ -f /tmp/cam-record-pid ]
+}
+
+record_stop() {
+    record_running || {
+        notify 'Recorder is not running'
+        return 1
+    }
+
+    pid=$(cat /tmp/cam-record-pid)
+    rm -f /tmp/cam-record-pid
+    kill -2 "$pid"
+    notify "Video saved"
+}
+
+main() {
+    last=$(command ls -1 /dev/video* |
+               tail -n1 |
+               sed -rn 's@/dev/video([0-9]+)@\1@p')
+
+    if [ "$last" = 1 ]; then
+        dev=/dev/video0
+    else
+        dev=$(seq 0 2 "$last" |
+                  xargs printf '/dev/video%s\n' |
+                  gmenu -l)
+    fi
+
+    [ -e "$dev" ] || {
+        notify 'No video device found'
+        return 1
+    }
+
+    opt=$({
+             if record_running; then
+                 echo 'Stop recording'
+             fi
+             echo 'Preview'
+             echo 'Capture'
+             echo 'Record'
+     } | gmenu -l)
+    case "$opt" in
+        'Preview')        preview "$dev" ;;
+        'Capture')        capture "$dev" ;;
+        'Record')         record  "$dev" ;;
+        'Stop recording') record_stop    ;;
+        *)                return 1       ;;
+    esac
+}
+
+main "$@"

@@ -293,7 +293,7 @@ XF86Close
 	wm-msg window_close
 
 XF86WebCam
-	tiny-camera
+	cam
 
 XF86Search
 	ndg browser https://naheel.xyz/searx
@@ -329,7 +329,7 @@ XF86Tools
 	theterm music-player
 
 XF86Favorites
-	tiny-camera
+	cam
 
 Cancel
 	wm-msg window_nice_close

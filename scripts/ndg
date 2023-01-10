@@ -609,11 +609,13 @@ compositor() {
 start_menu_cache="$HOME/.cache/applications"
 
 start_menu_update() {
+    mkdir -p ~/.local/share/applications
+    cp "$DOTFILES_DIR"/desktops/desktops/*.desktop ~/.local/share/applications/
+
     rm -rf   "$start_menu_cache"
     mkdir -p "$start_menu_cache"
 
     (cd "$start_menu_cache" &&
-         ln -s "$DOTFILES_DIR"/desktops/desktops/*.desktop ./ &&
          ln -s ~/.local/share/applications/*.desktop       ./ &&
          ln -s /usr/share/applications/*.desktop           ./ &&
 
