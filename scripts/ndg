@@ -618,6 +618,7 @@ start_menu_update() {
     (cd "$start_menu_cache" &&
          ln -s ~/.local/share/applications/*.desktop       ./ &&
          ln -s /usr/share/applications/*.desktop           ./ &&
+         ln -s /usr/local/share/applications/*.desktop     ./ &&
 
          grep -R 'NoDisplay=true' | cut -d: -f1 | xargs rm &&
          grep -R 'OnlyShowIn'     | cut -d: -f1 | xargs rm &&

@@ -678,6 +678,14 @@ def lemonbar():
         else:
             xy2g[index] = g
 
+    # looks like lemonbar sets geometries incorrectly
+    # https://github.com/LemonBoy/bar/issues/163
+    # hard-codding a special case for now...
+    # TODO: fix and/or cleanup somehow
+    fingerprint = ";".join(xy2g.keys())
+    if fingerprint == "0,1080;0,0;1920,0":
+        xy2g["1920,0"]['x'] = 1920 * 2
+
     # start a lemonbar process for each geometry
     lemons = []
     lemons_stdin = []
