@@ -63,6 +63,15 @@ case "$class" in
         echo 'state=floating' ;;
 esac
 
+case "$class" in
+    matplotlib)
+        # move plot to the monitor on the right, if any
+        if [ "$(bspc query -M | wc -l)" -gt 1 ]; then
+            d=$(bspc query -D --names | tail -n1)
+            echo "desktop=$d"
+        fi ;;
+esac
+
 # https://github.com/baskerville/bspwm/issues/857#issuecomment-427670436
 if [ "$instance" = lemonbar ]; then
     echo manage=off

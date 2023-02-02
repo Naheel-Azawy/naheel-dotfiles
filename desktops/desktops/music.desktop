@@ -1,0 +1,9 @@
+[Desktop Entry]
+Name=Music
+Comment=Play and organize your music collection
+Keywords=Music;Player;
+Exec=ndg music
+Icon=audio-x-generic
+Terminal=true
+Type=Application
+Categories=Utility;Core;AudioVideo;Player;Audio;

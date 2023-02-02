@@ -3,17 +3,8 @@
 # https://wiki.archlinux.org/index.php/System_time
 
 hwsync() {
-    if [ "$1" = '-y' ]; then
-        echo 'Syncing hardware clock'
-        ans=y
-    else
-        msg='Sync hardware clock?'
-        printf '%s [Y/n] ' "$msg"
-        read -r ans
-    fi
-    case "$ans" in
-        Y|y) hwclock --systohc ;;
-    esac
+    echo 'Syncing hardware clock'
+    hwclock --systohc
 }
 
 auto() {
@@ -31,7 +22,10 @@ settime() {
 tui() {
     date=$(dialog --stdout --calendar 'Set current date' 0 0)
     time=$(dialog --stdout --timebox 'Set current time' 0 0)
-    echo "$date $time"
+    d=$(echo "$date" | cut -d/ -f1)
+    m=$(echo "$date" | cut -d/ -f2)
+    y=$(echo "$date" | cut -d/ -f3)
+    echo "$y-$m-$d $time"
 }
 
 # To check the current zone defined for the system:
@@ -48,7 +42,7 @@ main() {
     fi
 
     auto
-    hwsync "$@"
+    hwsync
 }
 
 main "$@"
