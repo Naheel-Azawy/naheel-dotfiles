@@ -44,18 +44,33 @@ choice="$1"
     choice=$(echo "$LIST" | gmenu -l)
 }
 
+captiontxt() {
+    path="$1"
+    txt="$path.txt"
+    [ -f "$txt" ] || txt="$path.org"
+    [ -f "$txt" ] || txt="$path.html"
+    [ -f "$txt" ] || txt="${path%%.*}.txt"
+    [ -f "$txt" ] || return 1
+    echo "$txt"
+}
+
 case "$choice" in
-    "Details")
-        theterm "less '$TXT'";;
     "Information" | "i")
         for f in "${files[@]}"; do
-            txt="${f%%.*}.txt"
+            txt=$(captiontxt "$f")
             if [ -f "$txt" ]; then
                 theterm bash -c "(cat '$txt' && echo && exiftool '$f') | less" &
             else
                 theterm "exiftool '$f' | less" &
             fi
         done;;
+
+    "Edit caption" | "c")
+        f="${files[-1]}"
+        txt=$(captiontxt "$f")
+        [ -f "$txt" ] || txt="$f.txt"
+        edit t "$txt" & ;;
+
     "Open with" | "o")
         app=$(echo | mimeopen --ask "${files[0]}" 2>/dev/null |
                   sed -En 's/\s*(.+\)\s+.+)/\1/p'             |
@@ -73,12 +88,15 @@ case "$choice" in
     "Move" | "C-w")
         S=$(printf 'save\nmove\n'; printf '%s\n' "${files[@]}")
         lf -remote "$S";;
+
     "Set as wallpaper" | "w")
         ndg wallpaper "${files[-1]}";;
     "Set as temporary wallpaper")
         feh --bg-fill "${files[-1]}";;
+
     "Duplicate" | "2")
         sxiv "${files[@]}" &;;
+
     "Rotate auto")
         for f in "${files[@]}"; do convert "$f" -auto-orient "$f"; done;;
     "Rotate 270" | "C-comma")
@@ -87,10 +105,12 @@ case "$choice" in
         for f in "${files[@]}"; do convert "$f" -rotate  90 "$f"; done;;
     "Rotate 180" | "C-slash")
         for f in "${files[@]}"; do convert "$f" -rotate 180 "$f"; done;;
+
     "Flip horizontally")
         for f in "${files[@]}"; do convert "$f" -flop "$f"; done;;
     "Flip vertically")
         for f in "${files[@]}"; do convert "$f" -flip "$f"; done;;
+
     "Delete")
         if [ "${#files[@]}" = 1 ]; then
             P=$(basename "$f")
@@ -104,8 +124,18 @@ case "$choice" in
             Trash)   for f in "${files[@]}"; do gio trash "$f" || trash-put "$f"; done;;
             Delete*) for f in "${files[@]}"; do rm -f "$f";                       done;;
         esac;;
+
     "Play video" | "p")
         open "${files[@]}";;
+
     "Drag and drop" | "d")
-        dragon -a -x "${files[@]}";;
+        if exists dragon; then
+            dragoncmd=dragon
+        elif exists dragon-drop; then
+            dragoncmd=dragon-drop
+        else
+            return 1
+        fi
+        $dragoncmd -a -x "${files[@]}";;
+
 esac

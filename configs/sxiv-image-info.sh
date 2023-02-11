@@ -37,10 +37,19 @@ type=
     filename="⯈ $filename"
 }
 
-# used to show the caption in files downloaded with "instaloader"
-txt=$(echo "$path" | sed -En 's@(.+)\....@\1.txt@p')
+# caption text
+txt="$path.txt"
+[ -f "$txt" ] || txt="$path.org"
+[ -f "$txt" ] || txt="$path.html"
+[ -f "$txt" ] || txt="${path%%.*}.txt"
 if [ -f "$txt" ]; then
-    caption=$(tr '\n' ' ' < "$txt" | fribidi --nopad)
+    caption=$(cat "$txt")
+    equals=$(echo "$caption" | sed -rn 's/EQUAL (.+)/\1/p')
+    if [ -f "$equals" ]; then
+        equals="$equals.txt"
+        caption=$(cat "$equals")
+    fi
+    caption=$(echo "$caption" | tr '\n' ' ' | fribidi --nopad)
     caption="${s}$caption"
 fi
 

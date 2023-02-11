@@ -103,7 +103,7 @@ orglink() {
     echo "$fx" | while read -r file; do
         bn=$(basename "$file")
         echo "[[$file][$bn]]"
-    done | clipboard
+    done | head -c -1 | clipboard
 }
 
 add_fun wallpaper 'Set as wallpaper'

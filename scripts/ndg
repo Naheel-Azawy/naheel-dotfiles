@@ -738,6 +738,7 @@ start() {
 
     # autostart programs
     autostart xset s 900                    # blank after 15 minutes
+    autostart xset -b                       # disable bell
     autostart sxhkd                         # keyboard daemon
     autostart lang init                     # set the keyboard layouts
     autostart wttr daemon                   # weather update
