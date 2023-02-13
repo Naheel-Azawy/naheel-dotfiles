@@ -1,8 +1,25 @@
 #!/bin/sh
 
+exists() {
+    command -v "$1" >/dev/null
+}
+
+prepare() {
+    exists wget && exists firejail && return
+
+    echo '>>> Installing dependacies, sudo needed...'
+    if exists pacman; then
+        sudo pacman --noconfirm --needed -S wget firejail
+    elif exists apt; then
+        sudo apt install -y wget firejail libxcb-xtest0
+    fi
+}
+
 main() {
+    prepare
+
     jail="$HOME/.local/share/jail-zoom"
-    version=5.12.6.173
+    version=5.13.7.683
     pac='zoom_x86_64.pkg.tar.xz'
     url="https://cdn.zoom.us/prod/$version/$pac"
 

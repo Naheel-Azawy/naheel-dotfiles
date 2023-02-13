@@ -28,6 +28,8 @@ check_root() {
 }
 
 set_trackpoint() {
+    set_trackpoint_elan && return
+
     if [ -n "$1" ]; then
         speed="$1"
     elif [ -n "$THINKPAD_TRACKPOINT_SPEED" ]; then
@@ -52,6 +54,14 @@ set_trackpoint() {
     sudo -n chmod 666 "$SYSFS/speed" "$SYSFS/sensitivity"
     echo "$speed"       > "$SYSFS/speed"
     echo "$sensitivity" > "$SYSFS/sensitivity"
+}
+
+set_trackpoint_elan() {
+    p='TPPS/2 Elan TrackPoint'
+    xinput list | grep -q "$p" || return 1
+    xinput set-prop "$p" "libinput Accel Speed" 0.5
+    xinput set-prop "$p" "libinput Accel Profile Enabled" 1 0
+    # or https://askubuntu.com/a/761504
 }
 
 set_usb_keyboard() {
