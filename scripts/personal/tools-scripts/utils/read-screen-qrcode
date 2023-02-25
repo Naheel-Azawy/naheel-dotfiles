@@ -7,12 +7,12 @@ notify() {
 ndg compositor stop
 sleep .1
 
-I="$HOME/.cache/copy-text-image.png"
+I="$HOME/.cache/qrcode-tmp-img.png"
 maim --hidecursor -s "$I" && {
     notify 'Reading screen...'
-    tesseract "$I" "$I"
-    notify 'Screen content copied'
-    sed 's/\x0c//g' "$I.txt" | clipboard
+    txt=$(zbarimg "$I")
+    notify "$txt"
+    echo "$txt" | clipboard
 }
 
 rm -f "$I" "$I.txt"

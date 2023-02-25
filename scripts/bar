@@ -16,6 +16,7 @@ import importlib
 import importlib.util
 import importlib.machinery
 import argparse
+import random
 
 def import_path(path):
     # https://stackoverflow.com/a/56090741/3825872
@@ -619,6 +620,11 @@ class Bar(BarBase):
     def donno(self):
         return "%{A:gtrm -p 'lolcowforune -p'&:}¯\_(ツ)_/¯%{A}" \
             if not self.a else None
+
+    @item(big=True, period=3)
+    def die(self):
+        r = random.randint(1, 6)
+        return f"\ueb40 {r}"
 
     @item(big=True)
     def host(self):
