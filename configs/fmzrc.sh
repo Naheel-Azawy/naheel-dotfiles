@@ -7,6 +7,7 @@ bookmark ~/Documents/QU
 bookmark ~/Documents/events
 bookmark ~/Documents/datasheets
 bookmark ~/Documents/cheatsheets
+bookmark ~/Documents/papers
 bookmark ~/Documents/good_books
 bookmark ~/.dotfiles
 
