@@ -1,0 +1,113 @@
+#!/bin/sh
+
+ICON= # defined below
+TIMEOUT=10 # seconds
+
+free_port() {
+    # https://unix.stackexchange.com/a/358101/183147
+    netstat -aln | awk '
+  $6 == "LISTEN" {
+    if ($4 ~ "[.:][0-9]+$") {
+      split($4, a, /[:.]/);
+      port = a[length(a)];
+      p[port] = 1
+    }
+  }
+  END {
+    for (i = 3000; i < 65000 && p[i]; i++){};
+    if (i == 65000) {exit 1};
+    print i
+  }
+'
+}
+
+running_port() {
+    docker ps | sed -rn 's/.+jupyter.+127.0.0.1:([0-9]+).+/\1/p'
+}
+
+get_ps() {
+    docker ps | grep jupyter | cut -d' ' -f1
+}
+
+is_alive() {
+    [ -n "$(get_ps)" ]
+}
+
+now() {
+    date "+%s"
+}
+
+new_win() {
+    ps=$(get_ps)
+    token=
+    time_start=$(now)
+    while [ -z "$token" ]; do
+        sleep .5
+        token=$(docker logs "$ps" 2>&1 |
+                    sed -rn 's@ *http://127.+token=(.+)@\1@p' | tail -n1)
+        time=$(now)
+        time=$((time - time_start))
+        if [ "$time" -gt "$TIMEOUT" ]; then
+            break
+        fi
+    done
+    port=$(running_port)
+    url="http://127.0.0.1:$port/lab?token=$token"
+    echo "$BROWSER" --app="$url"
+    $BROWSER --app="$url"
+}
+
+run() {
+    is_alive && return 1
+    port=$(free_port)
+    docker run --rm -d               \
+           -p 127.0.0.1:"$port":8888 \
+           -v ./ipy:/home/jovyan     \
+           jupyter/tensorflow-notebook || return
+    new_win
+}
+
+die() {
+    ps=$(get_ps)
+    docker kill "$ps"
+}
+
+mk() {
+    user_desktop="$HOME/.local/share/applications/jupyter.desktop"
+    user_icon="$HOME/.local/share/pixmaps/jupyter.png"
+
+    [ -f "$user_icon" ] || {
+        mkdir -p "$(dirname "$user_icon")" &&
+            echo "$ICON" | rsvg-convert -w 256 -h 256 -o "$user_icon"
+    }
+
+    [ -f "$user_desktop" ] || {
+        me=$(realpath "$0")
+        mkdir -p "$(dirname "$user_desktop")" && {
+            echo '[Desktop Entry]'
+            echo "Type=Application"
+            echo "Name=Jupyter"
+            echo "Icon=$user_icon"
+            echo "Exec=$me"
+            echo "Categories=Development;"
+        } > "$user_desktop"
+    }
+}
+
+main() {
+    mk
+    if is_alive; then
+        choice=$(printf 'New window\nKill\nCancel\n' |
+                     gmenu -l -d '25%x20%' -p 'Jupyter is already running')
+        case "$choice" in
+            'New window') new_win ;;
+            'Kill')       die     ;;
+        esac
+    else
+        run
+    fi
+}
+
+ICON='<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"><title>file_type_jupyter</title><path d="M26.233,3.588A1.69,1.69,0,1,1,24.473,2a1.67,1.67,0,0,1,1.76,1.585Z" style="fill:#767677"/><path d="M16.375,23.111c-4.487,0-8.43-1.61-10.469-3.988a11.162,11.162,0,0,0,20.938,0C24.81,21.5,20.882,23.111,16.375,23.111Z" style="fill:#f37726"/><path d="M16.375,7.648c4.487,0,8.43,1.61,10.469,3.988a11.162,11.162,0,0,0-20.938,0C7.945,9.253,11.869,7.648,16.375,7.648Z" style="fill:#f37726"/><path d="M10.2,27.739a2.109,2.109,0,1,1-.2-.8,2.129,2.129,0,0,1,.2.8Z" style="fill:#9e9e9e"/><path d="M6.416,7.106A1.226,1.226,0,1,1,7.608,5.83,1.241,1.241,0,0,1,6.416,7.106Z" style="fill:#616262"/></svg>'
+
+main
