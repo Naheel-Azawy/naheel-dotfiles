@@ -16,9 +16,9 @@ gui() { client -c "$@"; }
 existing() { client -n "$@"; }
 tnw() { exec theterm "$BINPATH" nw "$@"; }
 nw()  {
-    tmux set automatic-rename off
+    tmux set automatic-rename off 2>/dev/null
     client -nw "$@"
-    tmux set automatic-rename on
+    tmux set automatic-rename on 2>/dev/null
 }
 
 [ "$BIDI" ] &&

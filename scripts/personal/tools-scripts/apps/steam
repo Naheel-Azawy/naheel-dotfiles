@@ -31,6 +31,7 @@ main() {
                  exit 1
              fi) && {
                 user_desktop="$HOME/.local/share/applications/steam.desktop"
+                user_desktop_nonet="$HOME/.local/share/applications/steam_nonet.desktop"
                 user_ic="$jail/steam.png"
                 desktop="$tmp/data/usr/share/applications/steam.desktop"
                 ic="$tmp/data/usr/share/icons/hicolor/256x256/apps/steam.png"
@@ -43,6 +44,9 @@ main() {
                     sed -ri "s#Exec=.*steam #Exec=$me #g" "$desktop" &&
                     sed -ri "s#Icon=.+#Icon=$user_ic#g" "$desktop"   &&
                     cp "$desktop" "$user_desktop"                    &&
+                    sed -r -e 's#Exec=(.+)#Exec=\1 --nonet#;'         \
+                        -e 's#Name=Steam#Name=Steam No Net#'          \
+                        "$user_desktop" > "$user_desktop_nonet"      &&
                     rm -r "$tmp"; then
                     notify "Installed $name successfully!"
                 else
@@ -50,11 +54,20 @@ main() {
                 fi
             })
 
+    net=
+    for a; do
+        if [ "$a" = '--nonet' ]; then
+            net=--net=none
+        fi
+    done
+
+    # shellcheck disable=SC2086
     exec firejail          \
          --noprofile       \
          --private-tmp     \
          --blacklist=/mnt  \
          --private="$jail" \
+         $net              \
          "$HOME/steam/bin_steam.sh"
 }
 
