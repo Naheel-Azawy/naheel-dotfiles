@@ -9,6 +9,8 @@ NOTIF_ID=123
 
 export WINDOW_MANAGER='bspwm'
 #export WINDOW_MANAGER='i3'
+#export WINDOW_MANAGER='awesome'
+#export WINDOW_MANAGER='tinywm'
 #export WINDOW_MANAGER='emacs'
 #export WINDOW_MANAGER='openbox'
 #export WINDOW_MANAGER='xfwm4'

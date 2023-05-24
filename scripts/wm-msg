@@ -266,6 +266,36 @@ main() {
                 end)                    bspc quit ;;
             esac ;;
 
+        awesome)
+            ac()  { awesome-client "$@"; }
+            aca() { ac 'require("awful").'"$*"; }
+            case "$cmd" in
+                fullscreen)             : ;;
+                float)                  : ;;
+                stick)                  : ;;
+                balance)                : ;;
+                equalize)               : ;;
+                split)                  : ;;
+                float_focus)            : ;;
+                container_focus_parent) : ;;
+                container_focus_child)  : ;;
+                window_close)           : ;;
+                window_focus)           : ;;
+                window_move)            : ;;
+                window_resize)          : ;;
+                window_resize_tiny)     : ;;
+                workspace)              : ;;
+                workspace_move)         : ;;
+                workspace_move_go)      : ;;
+                workspace_next)         aca 'tag.viewnext()' ;;
+                workspace_prev)         aca 'tag.viewprev()' ;;
+                workspace_new)          : ;;
+                workspace_new_move)     : ;;
+                workspace_monitor_next) : ;;
+                restart)                : ;;
+                end)                    : ;;
+            esac ;;
+
         *)
             echo "Unknown window manager '$WINDOW_MANAGER'" ;;
     esac

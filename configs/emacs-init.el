@@ -125,14 +125,13 @@
       scroll-margin 5)
 
 ;; ---- FONT ----
-(setq font-family (getenv "FONT"))
-(set-face-attribute 'default nil
-                    :family 'font-family
-                    :height 140)
-(set-fontset-font "fontset-default"
-                  'arabic
-                  (font-spec :family "Kawkab Mono" :size 14)
-                  nil 'prepend)
+(defun apply-font-now ()
+  "Apply the intended font."
+  (let ((font (concat (getenv "FONT") " Regular 14")))
+    (set-face-attribute 'default   nil :font font)
+    (set-face-attribute 'mode-line nil :font font)))
+(apply-font-now)
+(add-hook 'after-make-frame-functions (lambda (frame) (apply-font-now)))
 
 ;; ---- WINDOW SPLIT TOGGLE ----
 ;; https://stackoverflow.com/a/33456622/3825872
@@ -560,6 +559,7 @@ from: https://stackoverflow.com/a/998472/3825872"
      org-export-in-background nil
 
      org-latex-pdf-process '("latexwrapper --compiler xelatex %f")
+     org-highlight-latex-and-related '(native)
 
      org-preview-latex-default-process 'dvipng
      org-format-latex-options (plist-put org-format-latex-options :scale 1.7)
@@ -568,9 +568,10 @@ from: https://stackoverflow.com/a/998472/3825872"
      org-todo-keyword-faces '(("PROG" . "yellow") ("CNCL" . "blue")))
 
     :hook
+    (org-mode . toggle-truncate-lines)
     (org-mode . toggle-word-wrap)
     (org-mode . adaptive-wrap-prefix-mode)
-    ;;(org-mode . org-bullets-mode)
+    (org-mode . org-toggle-pretty-entities)
 
     :config
     ;; -- BABEL LANGS --
@@ -606,7 +607,6 @@ from: https://stackoverflow.com/a/998472/3825872"
     (require 'org-tempo))
 
   (use-package org-ref)
-  ;;(use-package org-bullets)
   (require 'ox-beamer)
   (use-package ox-reveal)
   (use-package ox-pandoc :init
@@ -787,11 +787,11 @@ from: https://stackoverflow.com/a/998472/3825872"
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(package-selected-packages
-   '(edit-indirect coffee-mode scad-preview-mode scad-mode scad-preview ess smart-tabs-mode zig-mode web-beautify csv-mode php-mode exwm lua-mode epresent js-auto-beautify yaml-mode xonsh-mode xclip writeroom-mode which-key web-mode vterm visual-regexp-steroids vala-mode v-mode use-package undo-tree typescript-mode sparql-mode solidity-mode rust-mode rjsx-mode ranger rainbow-mode protobuf-mode ox-reveal ox-pandoc outshine origami org-ref org-bullets multiple-cursors lsp-ui lsp-java lsp-dart kotlin-mode julia-mode iedit haxe-mode go-mode gnuplot-mode glsl-mode git-gutter flyspell-correct-helm flycheck fish-mode elvish-mode ein dumb-jump doom-modeline dockerfile-mode csharp-mode company-lsp cmake-mode calfw-org calfw basic-mode auctex anzu adaptive-wrap academic-phrases ac-octave))
+   '(org-fragtog edit-indirect coffee-mode scad-preview-mode scad-mode scad-preview ess smart-tabs-mode zig-mode web-beautify csv-mode php-mode exwm lua-mode epresent js-auto-beautify yaml-mode xonsh-mode xclip writeroom-mode which-key web-mode vterm visual-regexp-steroids vala-mode v-mode use-package undo-tree typescript-mode sparql-mode solidity-mode rust-mode rjsx-mode ranger rainbow-mode protobuf-mode ox-reveal ox-pandoc outshine origami org-ref org-bullets multiple-cursors lsp-ui lsp-java lsp-dart kotlin-mode julia-mode iedit haxe-mode go-mode gnuplot-mode glsl-mode git-gutter flyspell-correct-helm flycheck fish-mode elvish-mode ein dumb-jump doom-modeline dockerfile-mode csharp-mode company-lsp cmake-mode calfw-org calfw basic-mode auctex anzu adaptive-wrap academic-phrases ac-octave))
  '(safe-local-variable-values '((eval add-hook 'before-save-hook 'time-stamp)))
  '(verilog-auto-newline nil)
  '(warning-suppress-log-types '(((unlock-file)) ((unlock-file))))
- '(warning-suppress-types '(((unlock-file)))))
+ '(warning-suppress-types '((auto-save) ((unlock-file)))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.

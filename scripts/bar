@@ -390,7 +390,7 @@ class Bar(BarBase):
 
     @item(big=False)
     def workspaces(self):
-        if self.wm is None or self.a:
+        if self.wm is None or self.wm.impl is None or self.a:
             return None
         wmcmd = self.wm.impl.workspace_cmd
         count = len(self.wm.impl.workspaces)
