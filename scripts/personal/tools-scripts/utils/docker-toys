@@ -76,7 +76,7 @@ case "$CMD" in
             DSTN=$(basename "$DST")
             TMP=$(mktemp -d)
             cp "$SRC" "$TMP"
-            docker run --rm -v "$TMP":/tmp jbarlow83/ocrmypdf /tmp/"$SRCN" /tmp/"$DSTN" "$@" &&
+            docker run --rm -v "$TMP":/tmp jbarlow83/ocrmypdf --force-ocr /tmp/"$SRCN" /tmp/"$DSTN" "$@" &&
                 mv "$TMP/$DSTN" "$DST"
             rm -rf "$TMP"
         else

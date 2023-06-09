@@ -1,54 +1,58 @@
-! Use a nice truetype font and size by default... 
+! font
 xterm*faceName: FONT
 xterm*faceSize: 15
 
-! Every shell is a login shell by default (for inclusion of all necessary environment variables)
+! every shell is a login shell by default (for inclusion of all necessary environment variables)
 xterm*loginshell: true
 
-! double-click to select whole URLs :D
+! double-click to select whole URLs
 xterm*charClass: 33:48,36-47:48,58-59:48,61:48,63-64:48,95:48,126:48
 
-! DOS-box colours...
+! colours
 xterm*foreground: rgb:ff/ff/ff
 xterm*background: rgb:00/00/00
-xterm*color0: rgb:00/00/00
-xterm*color1: rgb:a8/00/00
-xterm*color2: rgb:00/a8/00
-xterm*color3: rgb:a8/54/00
-xterm*color4: rgb:00/00/a8
-xterm*color5: rgb:a8/00/a8
-xterm*color6: rgb:00/a8/a8
-xterm*color7: rgb:a8/a8/a8
-xterm*color8: rgb:54/54/54
-xterm*color9: rgb:fc/54/54
-xterm*color10: rgb:54/fc/54
-xterm*color11: rgb:fc/fc/54
-xterm*color12: rgb:54/54/fc
-xterm*color13: rgb:fc/54/fc
-xterm*color14: rgb:54/fc/fc
-xterm*color15: rgb:fc/fc/fc
+xterm*color0:     rgb:00/00/00
+xterm*color1:     rgb:b9/01/01
+xterm*color2:     rgb:01/b9/01
+xterm*color3:     rgb:b9/b9/01
+xterm*color4:     rgb:01/01/d7
+xterm*color5:     rgb:b9/01/b9
+xterm*color6:     rgb:01/b9/b9
+xterm*color7:     rgb:cf/cf/cf
+xterm*color8:     rgb:74/74/74
+xterm*color9:     rgb:e6/01/01
+xterm*color10:    rgb:01/e6/01
+xterm*color11:    rgb:e6/e6/01
+xterm*color12:    rgb:54/54/e6
+xterm*color13:    rgb:e6/01/e6
+xterm*color14:    rgb:01/e6/e6
+xterm*color15:    rgb:e6/e6/e6
 
-! remove scrollbar...
+! remove scrollbar
 xterm*ScrollBar: false
 
 ! stop output to terminal from jumping down to bottom of scroll again
 xterm*scrollTtyOutput: false
 
+! sane keys
+xterm*backarrowKey: false
+xterm*metaSendsEscape: true
+
 ! window size
 xterm*geometry: 75x35
 
 ! zoom keys
-XTerm.vt100.translations: #override \n\
+xterm.vt100.translations: #override \n\
   Ctrl <Key> minus: smaller-vt-font() \n\
   Ctrl <Key> plus: larger-vt-font()
 
-! SXIV options
+! sixel
+xterm*decTerminalID: vt340
+xterm*numColorRegisters: 256
+
+! sxiv options
 Sxiv.foreground: rgb:bb/bb/bb
 Sxiv.background: rgb:00/00/00
 
-! Cursor size
+! cursor size
 Xcursor.size: 16
-
-! Sixel
-XTerm*decTerminalID: vt340
-XTerm*numColorRegisters: 256

@@ -202,6 +202,14 @@ end
 function diffbin
     diff (xxd $argv[1] | psub) (xxd $argv[2] | psub)
 end
+function diffpdf
+    test (count $argv) -gt 2; and set a $argv[3..-1]
+    diff -u $a (pdftotext -layout $argv[1] - | psub) (pdftotext -layout $argv[2] - | psub)
+end
+function wdiffpdf
+    test (count $argv) -gt 2; and set a $argv[3..-1]
+    wdiff $a (pdftotext -layout $argv[1] - | psub) (pdftotext -layout $argv[2] - | psub)
+end
 
 function ip
     command ip --color=auto $argv

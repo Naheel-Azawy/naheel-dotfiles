@@ -199,7 +199,7 @@ audio() {
     esac
 }
 
-# ==== brightness ====
+# ==== display ====
 
 brightness() {
     if [ $# = 0 ]; then
@@ -211,8 +211,6 @@ brightness() {
     v=$(xbacklight -get)
     notify -h int:value:"$v" "Brightness: $v%"
 }
-
-# ==== display ====
 
 display() {
     if [ "$1" = '-d' ]; then
@@ -257,7 +255,7 @@ display() {
     esac
 }
 
-# ==== lang ====
+# ==== input ====
 
 LANGS=us,ar
 LANGS_E=us,ar,ru #,fr,de,ir
@@ -285,8 +283,6 @@ lang() {
         '')    lang_get        ;;
     esac
 }
-
-# ==== input ====
 
 input_handle() {
     lang init

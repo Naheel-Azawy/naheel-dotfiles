@@ -2,7 +2,8 @@
 
 APK="$1"
 shift
-KEY=~/.android/debug.keystore
+#KEY=~/.android/debug.keystore
+KEY=~/.local/share/jail-android-studio/.android/debug.keystore
 # KEY=/mnt/hdd1/Private/Keys/android_keystore_naheel
 [ -f "$1" ] && KEY="$1" && shift
 
