@@ -319,6 +319,7 @@ abbr ports 'netstat -tulnp'
 abbr backup 'rsync -avx --delete --info=progress2,del,name,stats2'
 abbr t      'eval (tools path)'
 abbr lw     'latexwrapper'
+abbr ly     'lyrics'
 
 bind \cq exit
 

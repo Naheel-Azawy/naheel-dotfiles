@@ -35,16 +35,18 @@ xterm*ScrollBar: false
 xterm*scrollTtyOutput: false
 
 ! sane keys
-xterm*backarrowKey: false
-xterm*metaSendsEscape: true
+xterm.vt100.backarrowKey: false    ! fix backspace
+xterm.ttyModes:           erase ^?
+xterm*metaSendsEscape:    true     ! fix alt
+xterm.fullscreen:         never    ! fix alt-return
 
 ! window size
 xterm*geometry: 75x35
 
 ! zoom keys
 xterm.vt100.translations: #override \n\
-  Ctrl <Key> minus: smaller-vt-font() \n\
-  Ctrl <Key> plus: larger-vt-font()
+  Shift Ctrl <Key> Next:  smaller-vt-font() \n\
+  Shift Ctrl <Key> Prior: larger-vt-font()
 
 ! sixel
 xterm*decTerminalID: vt340

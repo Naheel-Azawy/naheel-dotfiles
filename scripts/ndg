@@ -33,6 +33,7 @@ export CM_LAUNCHER=gmenu # for clipmenu
 export SXHKD_SHELL=dash
 
 export TERMINAL='theterm'
+export THETERM_TERM='xterm'
 export FILE_MANAGER='fmz'
 export BROWSER='ndg browser'
 export READER='ndg reader'
@@ -505,7 +506,7 @@ browser() {
 }
 
 floating_calc() {
-    theterm -s ignored-calc -a "-c -d 45x10" calc
+    env THETERM_TERM=gtrm theterm -s ignored-calc -a "-c -d 45x10" calc
 }
 
 calendar() {

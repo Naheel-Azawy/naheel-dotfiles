@@ -8,8 +8,7 @@ case "$1" in
     -u) "$CTL" end ;;
     -m) "$CTL" begin ;;
     '')
-        theterm \
-            -a '-f -d 40x5' \
-            "echo;echo;exec '$0' -m"
+        gtrm -f -d 40x5 \
+             -e sh -c "echo;echo;exec '$0' -m"
         ;;
 esac
