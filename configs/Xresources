@@ -1,56 +1,60 @@
 ! font
-xterm*faceName: FONT
-xterm*faceSize: 15
+XTerm*faceName: FONT
+XTerm*faceSize: 15
 
 ! every shell is a login shell by default (for inclusion of all necessary environment variables)
-xterm*loginshell: true
+XTerm*loginshell: true
 
 ! double-click to select whole URLs
-xterm*charClass: 33:48,36-47:48,58-59:48,61:48,63-64:48,95:48,126:48
+XTerm*charClass: 33:48,36-47:48,58-59:48,61:48,63-64:48,95:48,126:48
 
 ! colours
-xterm*foreground: rgb:ff/ff/ff
-xterm*background: rgb:00/00/00
-xterm*color0:     rgb:00/00/00
-xterm*color1:     rgb:b9/01/01
-xterm*color2:     rgb:01/b9/01
-xterm*color3:     rgb:b9/b9/01
-xterm*color4:     rgb:01/01/d7
-xterm*color5:     rgb:b9/01/b9
-xterm*color6:     rgb:01/b9/b9
-xterm*color7:     rgb:cf/cf/cf
-xterm*color8:     rgb:74/74/74
-xterm*color9:     rgb:e6/01/01
-xterm*color10:    rgb:01/e6/01
-xterm*color11:    rgb:e6/e6/01
-xterm*color12:    rgb:54/54/e6
-xterm*color13:    rgb:e6/01/e6
-xterm*color14:    rgb:01/e6/e6
-xterm*color15:    rgb:e6/e6/e6
+XTerm*foreground: rgb:ff/ff/ff
+XTerm*background: rgb:00/00/00
+XTerm*color0:     rgb:00/00/00
+XTerm*color1:     rgb:b9/01/01
+XTerm*color2:     rgb:01/b9/01
+XTerm*color3:     rgb:b9/b9/01
+XTerm*color4:     rgb:01/01/d7
+XTerm*color5:     rgb:b9/01/b9
+XTerm*color6:     rgb:01/b9/b9
+XTerm*color7:     rgb:cf/cf/cf
+XTerm*color8:     rgb:74/74/74
+XTerm*color9:     rgb:e6/01/01
+XTerm*color10:    rgb:01/e6/01
+XTerm*color11:    rgb:e6/e6/01
+XTerm*color12:    rgb:54/54/e6
+XTerm*color13:    rgb:e6/01/e6
+XTerm*color14:    rgb:01/e6/e6
+XTerm*color15:    rgb:e6/e6/e6
 
 ! remove scrollbar
-xterm*ScrollBar: false
+XTerm*ScrollBar: false
 
 ! stop output to terminal from jumping down to bottom of scroll again
-xterm*scrollTtyOutput: false
+XTerm*scrollTtyOutput: false
 
-! sane keys
-xterm.vt100.backarrowKey: false    ! fix backspace
-xterm.ttyModes:           erase ^?
-xterm*metaSendsEscape:    true     ! fix alt
-xterm.fullscreen:         never    ! fix alt-return
+! fix alt
+XTerm.vt100.metaSendsEscape: true
+
+! fix alt-return
+XTerm.fullscreen: never
+
+! fix backspace
+XTerm.vt100.backarrowKey: false
+XTerm.ttyModes: erase ^?
 
 ! window size
-xterm*geometry: 75x35
+XTerm*geometry: 75x35
 
 ! zoom keys
-xterm.vt100.translations: #override \n\
+XTerm.vt100.translations: #override \n\
   Shift Ctrl <Key> Next:  smaller-vt-font() \n\
   Shift Ctrl <Key> Prior: larger-vt-font()
 
 ! sixel
-xterm*decTerminalID: vt340
-xterm*numColorRegisters: 256
+XTerm*decTerminalID: vt340
+XTerm*numColorRegisters: 256
 
 ! sxiv options
 Sxiv.foreground: rgb:bb/bb/bb
