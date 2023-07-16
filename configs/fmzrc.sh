@@ -83,6 +83,24 @@ lopdf() {
     done
 }
 
+add_fun impdf 'Imagemagic to PDF'
+impdf() {
+    tput rmcup
+    echo "$fx" | while read -r file; do
+        convert "$file" "$file.pdf"
+    done
+}
+
+add_fun pdfcropfun 'PDF crop'
+pdfcropfun() {
+    tput rmcup
+    echo "$fx" | while read -r file; do
+        pdfcrop "$file" &&
+            crop=$(echo "$file" | sed 's/.pdf/-crop.pdf/') &&
+            mv "$crop" "$file"
+    done
+}
+
 add_fun chmodmenu 'Chmod'
 chmodmenu() {
     tput rmcup

@@ -12,7 +12,7 @@
 # where C/M/S indicate Ctrl/Meta(Alt)/Shift modifier states and KEY is the X
 # keysym as listed in /usr/include/X11/keysymdef.h without the "XK_" prefix.
 
-# TODO: replace lf commands with fmz ones, CUA keys, cleanups
+# TODO: CUA keys directly on sxiv, cleanups
 
 LIST='Information
 Open with
@@ -34,10 +34,16 @@ Drag and drop'
 
 # put files in an array
 files=()
+fx=
+f=
 while IFS= read -r file; do
     file=$(realpath "$file")
     files+=("$file")
+    fx="$file
+"
 done
+f=$(echo "$fx" | head -n1)
+export fx f # fmz compatibal
 
 choice="$1"
 [ "$1" = "C-x" ] && {
@@ -83,11 +89,9 @@ case "$choice" in
     "Copy image")
         xclip -selection clipboard -target image/png "${files[-1]}";;
     "Copy" | "M-w")
-        S=$(printf 'save\ncopy\n'; printf '%s\n' "${files[@]}")
-        lf -remote "$S";;
+        fmz --eval copy ;;
     "Move" | "C-w")
-        S=$(printf 'save\nmove\n'; printf '%s\n' "${files[@]}")
-        lf -remote "$S";;
+        fmz --eval copy ;;
 
     "Set as wallpaper" | "w")
         ndg wallpaper "${files[-1]}";;

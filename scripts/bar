@@ -526,13 +526,14 @@ class Bar(BarBase):
 
     @item(period=30, big=True)
     def pray(self):
-        out = os.popen("prayer --mini 2>/dev/null").read().strip()
+        cfg = 'c=~/.config/prayer/rc; [ -e "$c" ] && . "$c";'
+        out = os.popen(cfg + "prayer --mini 2>/dev/null").read().strip()
         if not out:
             return None
         if self.a:
             return f"p{out}"
         else:
-            cmd = "gtrm -p 'watch -ctn 15 prayer' --dims 25x8"
+            cmd = cfg + "gtrm -p 'watch -ctn 15 prayer' --dims 25x8"
             return f"%{{A:{cmd}&:}} " + icons["prayer"] + \
                 f" {out}%{{A}}"
 

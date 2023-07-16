@@ -11,12 +11,52 @@ decoration {
     border-left-color: black;
 }
 
-/*headerbar {
+headerbar {
     background: black;
 }
 
-window, dialog, messagedialog, viewport, stack, header, toolbar, popover {
+.nemo-window scrolledwindow,
+headerbar,
+window,
+dialog,
+messagedialog,
+stack,
+header,
+toolbar,
+popover,
+iconview,
+scrollbar,
+treeview {
     background-color: black;
+}
+
+.nemo-window scrolledwindow:selected
+scrolledwindow:selected,
+headerbar:selected,
+window:selected,
+dialog:selected,
+messagedialog:selected,
+viewport:selected,
+stack:selected,
+header:selected,
+toolbar:selected,
+popover:selected,
+iconview:selected,
+scrollbar:selected,
+treeview:selected {
+    background-color: @theme_selected_bg_color;
+}
+
+/*evview {
+    background-color: #080808;
+}
+
+evview:active {
+    background-color: red;
+}
+
+evview:selected {
+    background-color: @theme_selected_bg_color;
 }*/
 
 calendar.view {

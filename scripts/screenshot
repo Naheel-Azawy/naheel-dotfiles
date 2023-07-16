@@ -3,6 +3,8 @@
 # acts like gnome-screenshot
 # uses maim, xdotool, xclip
 
+DIR="$HOME/Pictures/Screenshots"
+
 help() {
     BIN=$(basename "$0")
     echo "usage: $BIN [-cwa] [-f FILE]"
@@ -42,8 +44,8 @@ if [ "$C" ]; then
     CMD="$CMD | xclip -selection clipboard -t image/png"
 else
     [ "$F" ] || {
-        mkdir -p "$HOME/Pictures/"
-        F="$HOME/Pictures/Screenshot from $(date '+%Y-%m-%d %H-%M-%S').png"
+        mkdir -p "$DIR"
+        F="$DIR/Screenshot from $(date '+%Y-%m-%d %H-%M-%S').png"
     }
     CMD="$CMD '$F'"
 fi

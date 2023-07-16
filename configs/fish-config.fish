@@ -320,6 +320,7 @@ abbr backup 'rsync -avx --delete --info=progress2,del,name,stats2'
 abbr t      'eval (tools path)'
 abbr lw     'latexwrapper'
 abbr ly     'lyrics'
+abbr mu     'ndg music'
 
 bind \cq exit
 
@@ -327,5 +328,7 @@ function try_export;   [ -d $argv[2] ] && export $argv[1]=$argv[2];:;     end
 function try_add_path; [ -d $argv[1] ] && export PATH="$PATH:$argv[1]";:; end
 test -f "$DOTFILES_DIR/configs/more-paths.sh" && \
     source "$DOTFILES_DIR/configs/more-paths.sh"
+test -f ~/.config/prayer/rc && \
+    source ~/.config/prayer/rc
 
 source "$DOTFILES_DIR/scripts/nd-complete.fish"
