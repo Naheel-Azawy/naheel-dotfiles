@@ -5,6 +5,7 @@
 export TERM='screen-256color'
 export EDITOR='edit'
 export VISUAL="$EDITOR"
+export WWW_HOME='https://searx.naheel.xyz'
 
 # TODO: move to personal
 export ORG_TODO="$HOME/Notes/TODO.org"

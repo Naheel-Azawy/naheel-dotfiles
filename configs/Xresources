@@ -47,10 +47,12 @@ XTerm.ttyModes: erase ^?
 ! window size
 XTerm*geometry: 75x35
 
-! zoom keys
+! zoom keys, copy paste
 XTerm.vt100.translations: #override \n\
   Shift Ctrl <Key> Next:  smaller-vt-font() \n\
-  Shift Ctrl <Key> Prior: larger-vt-font()
+  Shift Ctrl <Key> Prior: larger-vt-font() \n\
+  Shift Ctrl <Key> C: copy-selection(CLIPBOARD) \n\
+  Shift Ctrl <Key> V: insert-selection(CLIPBOARD)
 
 ! sixel
 XTerm*decTerminalID: vt340

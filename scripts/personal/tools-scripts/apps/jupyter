@@ -37,7 +37,7 @@ now() {
     date "+%s"
 }
 
-new_win() {
+get_url() {
     ps=$(get_ps)
     token=
     time_start=$(now)
@@ -52,7 +52,11 @@ new_win() {
         fi
     done
     port=$(running_port)
-    url="http://127.0.0.1:$port/lab?token=$token"
+    echo "http://127.0.0.1:$port/lab?token=$token"
+}
+
+new_win() {
+    url=$(get_url)
     echo "$BROWSER" --app="$url"
     $BROWSER --app="$url"
 }
@@ -97,6 +101,7 @@ mk() {
 main() {
     mk
     if is_alive; then
+        get_url
         choice=$(printf 'New window\nKill\nCancel\n' |
                      gmenu -l -d '25%x20%' -p 'Jupyter is already running')
         case "$choice" in

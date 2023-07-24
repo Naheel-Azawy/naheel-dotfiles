@@ -252,7 +252,11 @@ https://www.emacswiki.org/emacs/NoTabs"
   (use-package elvish-mode)
   (use-package xonsh-mode)
   (use-package cmake-mode)
-  (use-package ein)
+  (use-package ein
+    :custom
+     (ein:cell-output-area ((t :foreground "#ffffff" :background "#ff0000")))
+     (ein:codecell-input-area-face ((t (:inherit "#000000"))))
+     )
   (use-package ess)
 
   (use-package cc-mode
@@ -817,5 +821,6 @@ from: https://stackoverflow.com/a/998472/3825872"
  '(cfw:face-toolbar-button-off ((t :foreground "#555555" :weight bold)))
  '(cfw:face-toolbar-button-on ((t :foreground "#ffffff" :weight bold)))
  '(ein:cell-output-area ((t (:inherit \#ff0000))) t)
+ '(ein:codecell-input-area-face ((t (:inherit \#030303))))
  '(js2-external-variable ((t (:foreground "brightblack"))))
  '(mc/cursor-face ((t (:background "white" :foreground "black")))))
