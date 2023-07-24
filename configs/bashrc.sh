@@ -78,12 +78,21 @@ if [[ $- == *i* ]]; then
         git_branch=$(git branch --show-current 2>/dev/null)
         [ -n "$git_branch" ] && git_branch=" ($git_branch)"
 
-        PS1="$ps_face$color_cwd\W$git_branch\e[0m$suffix "
+        PS1="$CONDA_PROMPT_MODIFIER$ps_face$color_cwd\W$git_branch\e[0m$suffix "
     }
     PROMPT_COMMAND=bash_prompt
 
     alias please='sudo'
     alias ls='ls --color --group-directories-first'
+
+    alias l=ls
+    alias ll='ls -lh'
+    alias la='ls -lha'
+    alias f=fmz
+    alias e=exit
+    alias q=exit
+    alias d=docker
+    alias t='tmux a -t 0 || tmux'
 
     exists() {
         command -v "$1" >/dev/null
