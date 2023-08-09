@@ -258,8 +258,9 @@ display() {
 
 # ==== input ====
 
-LANGS=us,ar
-LANGS_E=us,ar,ru #,fr,de,ir
+LANGS=us,ara
+LANGS_E=us,ara,ru #,fr,de,ir
+# /usr/share/X11/xkb/symbols
 
 lang_get() {
     setxkbmap -query | sed -En 's/layout:\s*(.+)/\1/p' 2>/dev/null

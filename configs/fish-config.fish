@@ -321,6 +321,7 @@ abbr t      'eval (tools path)'
 abbr lw     'latexwrapper'
 abbr ly     'lyrics'
 abbr mu     'ndg music'
+abbr scp    'rsync --progress'
 
 bind \cq exit
 
