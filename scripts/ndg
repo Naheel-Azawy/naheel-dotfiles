@@ -629,8 +629,9 @@ start_menu_update() {
 }
 
 start_menu() {
-    test -d "$start_menu_cache" || start_menu_update
-    printf '>>desktops %s\n>>power\n' "$start_menu_cache" | gmenu
+    gmenu apps
+    # test -d "$start_menu_cache" || start_menu_update
+    # printf '>>desktops %s\n>>power\n' "$start_menu_cache" | gmenu
 }
 
 settings() {
