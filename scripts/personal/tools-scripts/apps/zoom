@@ -19,7 +19,9 @@ main() {
     prepare
 
     jail="$HOME/.local/share/jail-zoom"
-    version=5.15.5.5603
+
+    # check latest version at https://zoom.us/download
+    version=5.15.12.7665
     pac='zoom_x86_64.pkg.tar.xz'
     url="https://cdn.zoom.us/prod/$version/$pac"
 

@@ -187,11 +187,35 @@ https://www.emacswiki.org/emacs/NoTabs"
   (find-file (concat "/sudo::" buffer-file-name)))
 
 ;; ---- MODELINE ----
-(use-package doom-modeline
-  :init
-  (set-face-attribute 'mode-line nil :box '(:width 0))
-  (setq doom-modeline-icon nil)
-  (doom-modeline-mode 1))
+(set-face-background 'mode-line "#222222")
+(set-face-attribute 'mode-line nil :box '(:width 0))
+(setq-default mode-line-format
+      `(
+        " "
+        mode-line-mule-info
+        mode-line-modified
+        ;; mode-line-frame-identification
+        "   "
+        mode-line-buffer-identification
+        "   "
+        mode-line-position
+        " "
+        (vc-mode vc-mode)
+        "   "
+        ;; mode-line-modes
+        (:propertize ("" mode-name)
+                     help-echo "Major mode\n\
+mouse-1: Display major mode menu\n\
+mouse-2: Show help for major mode\n\
+mouse-3: Toggle minor modes"
+                     mouse-face mode-line-highlight
+                     local-map ,mode-line-major-mode-keymap)
+        (which-function-mode ("" which-func-format "--"))
+        (global-mode-string ("--" global-mode-string))
+        " "
+        ;; "-%-"
+        ))
+(column-number-mode)
 
 ;; ---- GIT ----
 (use-package git-gutter
@@ -258,6 +282,10 @@ https://www.emacswiki.org/emacs/NoTabs"
   (use-package cc-mode
     :init (setq-default c-basic-offset 4))
 
+  (add-hook 'c-mode-common-hook
+	        (lambda()
+	          (c-set-offset 'inextern-lang 0)))
+
   (defun insert-c-header-guard ()
     (interactive)
     (let ((loc (point))
@@ -268,6 +296,15 @@ https://www.emacswiki.org/emacs/NoTabs"
       (insert "#define " upper-name "_H_\n\n")
       (goto-char (point-max))
 	  (insert "\n#endif // " upper-name "_H_\n")
+      (goto-char loc)))
+
+  (defun insert-c-if-cpp ()
+    (interactive)
+    (let ((loc (point)))
+      (goto-char (point-min))
+      (insert "#ifdef __cplusplus\nextern \"C\"\n{\n#endif\n\n")
+      (goto-char (point-max))
+	  (insert "\n#ifdef __cplusplus\n}\n#endif\n")
       (goto-char loc)))
 
   (use-package js2-mode
@@ -312,6 +349,10 @@ https://www.emacswiki.org/emacs/NoTabs"
   ;; ---- SVG ----
   (add-to-list 'auto-mode-alist
                '("\\.svg\\'" . (xml-mode)))
+
+  ;; ---- XSD ----
+  (add-to-list 'auto-mode-alist
+               '("\\.xsd\\'" . (xml-mode)))
 
   ;; ---- PLATFORMIO ----
   ;; (use-package ccls)
@@ -379,7 +420,7 @@ https://www.emacswiki.org/emacs/NoTabs"
     (add-hook 'xref-backend-functions #'dumb-jump-xref-activate)
     :bind
     ("C-j" . xref-find-definitions)
-    ("M-j" . xref-pop-marker-stack))
+    ("M-j" . xref-go-back))
   (use-package writeroom-mode
     :custom
     (writeroom-fullscreen-effect 'maximized)

@@ -1,0 +1,5 @@
+#!/bin/sh
+
+ls -l "$1"
+size -A -d "$1"
+nm --print-size --size-sort --radix=d "$1"

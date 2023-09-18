@@ -37,7 +37,8 @@ esac
 case "$title" in
     *__floatme__* | \
         'Python Turtle Graphics' | \
-        'Picture in picture')
+        'Picture in picture' | \
+        'MetaMask Notification')
         echo 'state=floating' ;;
 esac
 

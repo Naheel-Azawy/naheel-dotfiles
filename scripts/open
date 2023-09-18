@@ -22,6 +22,8 @@ openfile() {
     else
         # file name
         case "$f" in
+            *.1)
+                man "$(realpath "$f")" ;;
             *.kicad_pro)
                 mynohup kicad "$f" ;;
             *.ipynb)
@@ -30,7 +32,11 @@ openfile() {
                 mynohup ndg browser "$f";;
             *.link)
                 url=$(cat "$f")
-                mynohup ndg browser "$url";;
+                if [ -n "$url" ]; then
+                    mynohup ndg browser "$url"
+                else
+                    exec "$EDITOR" "$f"
+                fi;;
             *.el.gz)
                 exec "$EDITOR" "$f";;
             *.pcapng|*.cap)

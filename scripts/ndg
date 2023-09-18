@@ -294,17 +294,22 @@ input_handle() {
 
 input() {
     input_handle
-    if [ "$1" = daemon ]; then
-        udevadm monitor | while read -r line; do
-            if echo "$line" | grep -Eq 'UDEV.+ add .+\(input\)'; then
+    case "$1" in
+        daemon)
+            udevadm monitor | while read -r line; do
+                if echo "$line" | grep -Eq 'UDEV.+ add .+\(input\)'; then
+                    echo "$line"
+                fi
+            done | lowpass 2 | while read -r line; do
+                date
                 echo "$line"
-            fi
-        done | lowpass 2 | while read -r line; do
-            date
-            echo "$line"
-            input_handle
-        done
-    fi
+                input_handle
+            done ;;
+        reset)
+            setxkbmap -option ;;
+        init) ;;
+        *) echo 'Invalid option'
+    esac
 }
 
 # ==== mini utils ====
