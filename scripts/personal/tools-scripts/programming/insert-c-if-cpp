@@ -1,0 +1,26 @@
+#!/bin/sh
+
+HEADER='#ifdef __cplusplus
+extern "C"
+{
+#endif
+'
+
+FOOTER='#ifdef __cplusplus
+}
+#endif'
+
+TMP=$(mktemp)
+chmod 644 "$TMP"
+
+find . -name '*.c' -or -name '*.h' | while read -r f; do
+    grep -q 'ifdef __cplusplus' "$f" && continue
+    echo "$HEADER"  > "$TMP"
+    cat "$f"       >> "$TMP"
+    echo "$FOOTER" >> "$TMP"
+
+    echo "modified $f"
+    cp "$TMP" "$f"
+done
+
+rm "$TMP"

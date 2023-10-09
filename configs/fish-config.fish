@@ -332,4 +332,23 @@ test -f "$DOTFILES_DIR/configs/more-paths.sh" && \
 test -f ~/.config/prayer/rc && \
     source ~/.config/prayer/rc
 
+function idf.py
+    if test -z $IDF_PATH
+        set esp_idf_exports $HOME/.local/share/esp/esp-idf/export.fish
+        if test -f $esp_idf_exports
+            . $esp_idf_exports
+        else
+            mkdir -p $HOME/.local/share/esp &&
+            cd $HOME/.local/share/esp &&
+            git clone --recursive https://github.com/espressif/esp-idf.git &&
+            cd esp-idf &&
+            ./install.fish esp32
+        end
+    end
+
+    env MENUCONFIG_STYLE='aquatic list=fg:white,bg:black' idf.py $argv
+end
+
+abbr idf idf.py
+
 source "$DOTFILES_DIR/scripts/nd-complete.fish"
