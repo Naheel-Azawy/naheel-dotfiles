@@ -6,6 +6,7 @@
 
 BINPATH=$(realpath "$0")
 
+LD_LIBRARY_PATH= # to fix miniconda issues
 export TERM='screen-256color'
 
 daemon() { emacsclient -e 0 >/dev/null || emacs --daemon "$@"; }
@@ -41,7 +42,22 @@ if ! command -v emacs >/dev/null || [ "$(mem)" -le 2 ]; then
     nw()  { client "$@"; }
 fi
 
+mk_desktop() {
+    [ -f ~/.local/share/applications/editor.desktop ] && return
+    mkdir -p ~/.local/share/applications/
+    {
+        echo '[Desktop Entry]'
+        echo 'Name=Editor'
+        echo 'Comment=Edit text'
+        echo 'MimeType=text/english;text/plain;text/x-makefile;text/x-c++hdr;text/x-c++src;text/x-chdr;text/x-csrc;text/x-java;text/x-moc;text/x-pascal;text/x-tcl;text/x-tex;application/x-shellscript;text/x-c;text/x-c++;'
+        echo 'Exec=edit g %F'
+        echo 'Icon=emacs'
+        echo 'Categories=Development;TextEditor;'
+    } > ~/.local/share/applications/editor.desktop
+}
+
 main() {
+    mk_desktop
     CMD="$1"
     case "$CMD" in
         d|daemon)   shift && daemon   "$@";;
