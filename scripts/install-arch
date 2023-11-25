@@ -19,7 +19,7 @@
 [ "$MP" ]           || MP=/mnt/arch-install
 [ "$USERNAME" ]     || USERNAME=me
 [ "$PASSWORD" ]     || PASSWORD=123
-[ "$HOSTNAME" ]     || HOSTNAME=arch
+[ "$HOSTNAME" ]     || HOSTNAME=pc
 [ "$ZONE" ]         || ZONE=Asia/Qatar
 [ "$INSTALL_DOTS" ] || INSTALL_DOTS=
 [ "$LOCALES" ]      || LOCALES=en_US.UTF-8:ar_QA.UTF-8
@@ -153,7 +153,7 @@ mountall() {
 }
 
 installarch() {
-    info "Installing Arch packages..."
+    info "Installing packages..."
     pacstrap "$MP" \
              base \
              base-devel \
@@ -274,7 +274,7 @@ tui() {
         whiptail --msgbox "$1" 7 50 3>&1 1>&2 2>&3
     }
 
-    msgbox 'Welcome to Arch installer script'
+    msgbox 'Welcome to Arch/Parabola installer script'
 
     # TODO: add an option for a quick install skipping all questions
 

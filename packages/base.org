@@ -1,62 +1,63 @@
-| Tag        | Name                 | Git Link                                     | Purpose                                                      |
-|------------+----------------------+----------------------------------------------+--------------------------------------------------------------|
-| pacman     | sl                   | N.A.                                         | cures the bad habit of miss-typing                           |
-| pacman     | base-devel           | N.A.                                         | group package with sudo and compilation software             |
-| pacman     | git                  | N.A.                                         | version control system                                       |
+| Tag       | Name                 | Git Link                                     | Purpose                                                      |
+|-----------+----------------------+----------------------------------------------+--------------------------------------------------------------|
+| pacman    | sl                   | N.A.                                         | cures the bad habit of miss-typing                           |
+| pacman    | base-devel           | N.A.                                         | group package with sudo and compilation software             |
+| pacman    | git                  | N.A.                                         | version control system                                       |
 | git_manual | pacgit               | https://github.com/Naheel-Azawy/pacgit       | quick dirty way to install git repos                         |
-| pacman     | go                   | N.A.                                         | go language                                                  |
+| pacman    | go                   | N.A.                                         | go language                                                  |
 | aur_manual | yay                  | N.A.                                         | Arch User Repository helper                                  |
-| pacman     | python-pip           | N.A.                                         | python's package manager                                     |
-| pacman     | python-wheel         | N.A.                                         | built-package format for Python                              |
-| pacman     | python-gobject       | N.A.                                         | GObject bindings for python                                  |
-| pacman     | cronie               | N.A.                                         | manages scheduled tasks                                      |
-| pacman     | dosfstools           | N.A.                                         | allows your computer to access dos-like filesystems          |
-| pacman     | exfat-utils          | N.A.                                         | allows management of FAT drives                              |
-| pacman     | ntfs-3g              | N.A.                                         | allows accessing NTFS partitions                             |
-| pacman     | ffmpeg               | N.A.                                         | can record and splice video and audio on the command line    |
-| pacman     | networkmanager       | N.A.                                         | does exactly what it sounds like                             |
-| pacman     | tmux                 | N.A.                                         | the terminal multiplexer                                     |
-| func       | tpm                  | N.A.                                         | tmux package manager                                         |
-| pacman     | unzip                | N.A.                                         | unzips zips                                                  |
-| pacman     | wget                 | N.A.                                         | downloads sites and files on the command line                |
-| pacman     | atool                | N.A.                                         | manages and gives information about archives                 |
-| pacman     | fzf                  | N.A.                                         | fuzzy finder tool                                            |
-| pacman     | highlight            | N.A.                                         | can highlight code output                                    |
-| pacman     | fish                 | N.A.                                         | the friendly shell!                                          |
-| pacman     | emacs                | N.A.                                         | the best editor on this planet                               |
-| pacman     | nano                 | N.A.                                         | the tiny text editor                                         |
-| pacman     | ispell               | N.A.                                         | spell checker                                                |
-| pacman     | aspell-en            | N.A.                                         | English dictionary for ispell                                |
-| pacman     | acpi                 | N.A.                                         | laptop battery information                                   |
-| pacman     | time                 | N.A.                                         | measures the time taken by a process                         |
-| pacman     | jq                   | N.A.                                         | json in the shell                                            |
-| pacman     | lm_sensors           | N.A.                                         | mainly to monitor the temperature                            |
-| aur        | bicon-git            | N.A.                                         | bidirectional console                                        |
-| pacman     | ffmpegthumbnailer    | N.A.                                         | video thumbnails. Needed for ranger                          |
-| aur        | simple-mtpfs         | N.A.                                         | MTP mounter using fuse                                       |
-| pacman     | perl-image-exiftool  | N.A.                                         | media details                                                |
-| git        | cp-p                 | https://github.com/Naheel-Azawy/cp-p         | cp with progress                                             |
-| git        | stpv                 | https://github.com/Naheel-Azawy/stpv         | files previewer in the terminal (used for LF and fzf mainly) |
-| git        | fmz                  | https://github.com/Naheel-Azawy/fmz          | terminal file manager                                        |
-| pacman     | chafa                | N.A.                                         | image to text                                                |
-| pacman     | diff-so-fancy        | N.A.                                         | an even more colorful diff                                   |
-| pacman     | wdiff                | N.A.                                         | diff but for words                                           |
-| pacman     | encfs                | N.A.                                         | encrypted file system                                        |
-| pip        | trash-cli            | N.A.                                         | CLI XDG trash                                                |
-| pacman     | strace               | N.A.                                         | trace system calls. Needed for cp-p                          |
-| pacman     | expect               | N.A.                                         | needed for ttylock                                           |
-| pacman     | python-sh            | N.A.                                         | shell integration in python. Needed for many commands        |
-| pacman     | dash                 | N.A.                                         | the light quick shell                                        |
-| pacman     | lsof                 | N.A.                                         | list open files                                              |
-| pacman     | man                  | N.A.                                         | the manual                                                   |
-| pacman     | cmake                | N.A.                                         | needed to build some packages                                |
-| pacman     | mlocate              | N.A.                                         | find files quickly                                           |
-| pacman     | rsync                | N.A.                                         | synchronize files                                            |
-| aur        | archivemount-git     | N.A.                                         | mount archives using fuse                                    |
-| git        | latexwrapper         | https://github.com/Naheel-Azawy/latexwrapper | LaTeX wrapper                                                |
-| git        | calc                 | https://github.com/Naheel-Azawy/shell-calc   | mini shell math tools                                        |
-| pacman     | htop                 | N.A.                                         | a friendly top                                               |
-| pacman     | ufw                  | N.A.                                         | firewall                                                     |
-| pacman     | moreutils            | N.A.                                         | vidir and others                                             |
-| git        | tetris               | https://github.com/Naheel-Azawy/tetris       | terminal tetris                                              |
-| pacman     | arch-install-scripts | N.A.                                         | scripts to install/repair arch                               |
+| pacman    | python-pip           | N.A.                                         | python's package manager                                     |
+| pacman    | python-wheel         | N.A.                                         | built-package format for Python                              |
+| pacman    | python-gobject       | N.A.                                         | GObject bindings for python                                  |
+| pacman    | cronie               | N.A.                                         | manages scheduled tasks                                      |
+| pacman    | dosfstools           | N.A.                                         | allows your computer to access dos-like filesystems          |
+| pacman    | exfat-utils          | N.A.                                         | allows management of FAT drives                              |
+| pacman    | ntfs-3g              | N.A.                                         | allows accessing NTFS partitions                             |
+| pacman    | ffmpeg               | N.A.                                         | can record and splice video and audio on the command line    |
+| pacman    | networkmanager       | N.A.                                         | does exactly what it sounds like                             |
+| pacman    | tmux                 | N.A.                                         | the terminal multiplexer                                     |
+| func      | tpm                  | N.A.                                         | tmux package manager                                         |
+| pacman    | unzip                | N.A.                                         | unzips zips                                                  |
+| pacman    | wget                 | N.A.                                         | downloads sites and files on the command line                |
+| pacman    | atool                | N.A.                                         | manages and gives information about archives                 |
+| pacman    | fzf                  | N.A.                                         | fuzzy finder tool                                            |
+| pacman    | highlight            | N.A.                                         | can highlight code output                                    |
+| pacman    | fish                 | N.A.                                         | the friendly shell!                                          |
+| pacman    | emacs                | N.A.                                         | the best editor on this planet                               |
+| pacman    | nano                 | N.A.                                         | the tiny text editor                                         |
+| pacman    | ispell               | N.A.                                         | spell checker                                                |
+| pacman    | aspell-en            | N.A.                                         | English dictionary for ispell                                |
+| pacman    | acpi                 | N.A.                                         | laptop battery information                                   |
+| pacman    | time                 | N.A.                                         | measures the time taken by a process                         |
+| pacman    | jq                   | N.A.                                         | json in the shell                                            |
+| pacman    | lm_sensors            | N.A.                                         | mainly to monitor the temperature                            |
+| aur       | bicon-git            | N.A.                                         | bidirectional console                                        |
+| pacman    | ffmpegthumbnailer    | N.A.                                         | video thumbnails. Needed for ranger                          |
+| aur       | simple-mtpfs         | N.A.                                         | MTP mounter using fuse                                       |
+| pacman    | perl-image-exiftool  | N.A.                                         | media details                                                |
+| git       | cp-p                 | https://github.com/Naheel-Azawy/cp-p         | cp with progress                                             |
+| git       | stpv                 | https://github.com/Naheel-Azawy/stpv         | files previewer in the terminal (used for LF and fzf mainly) |
+| git       | fmz                  | https://github.com/Naheel-Azawy/fmz          | terminal file manager                                        |
+| pacman    | chafa                | N.A.                                         | image to text                                                |
+| pacman    | diff-so-fancy        | N.A.                                         | an even more colorful diff                                   |
+| pacman    | wdiff                | N.A.                                         | diff but for words                                           |
+| pacman    | encfs                | N.A.                                         | encrypted file system                                        |
+| pacman    | trash-cli            | N.A.                                         | CLI XDG trash                                                |
+| pacman    | strace               | N.A.                                         | trace system calls. Needed for cp-p                          |
+| pacman    | expect               | N.A.                                         | needed for ttylock                                           |
+| pacman    | python-sh            | N.A.                                         | shell integration in python. Needed for many commands        |
+| pacman    | dash                 | N.A.                                         | the light quick shell                                        |
+| pacman    | lsof                 | N.A.                                         | list open files                                              |
+| pacman    | man                  | N.A.                                         | the manual                                                   |
+| pacman    | cmake                | N.A.                                         | needed to build some packages                                |
+| pacman    | mlocate              | N.A.                                         | find files quickly                                           |
+| pacman    | rsync                | N.A.                                         | synchronize files                                            |
+| aur       | archivemount-git     | N.A.                                         | mount archives using fuse                                    |
+| git       | latexwrapper         | https://github.com/Naheel-Azawy/latexwrapper | LaTeX wrapper                                                |
+| git       | calc                 | https://github.com/Naheel-Azawy/shell-calc   | mini shell math tools                                        |
+| pacman    | bc                   | N.A.                                         | shell calculator                                             |
+| pacman    | htop                 | N.A.                                         | a friendly top                                               |
+| pacman    | ufw                  | N.A.                                         | firewall                                                     |
+| pacman    | moreutils            | N.A.                                         | vidir and others                                             |
+| git       | tetris               | https://github.com/Naheel-Azawy/tetris       | terminal tetris                                              |
+| pacman    | arch-install-scripts | N.A.                                         | scripts to install/repair arch                               |

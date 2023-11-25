@@ -464,29 +464,38 @@ lockscreen() {
     wait_fingerprint &
 
     # using picom for blur and opacity
-    i3lock                     \
-        -e -f -c 000000        \
-        --clock                \
-        --indicator            \
-        --time-str '%H:%M'     \
-        --date-str '%Y.%m.%d'  \
-        --time-font "$FONT"    \
-        --date-font "$FONT"    \
-        --layout-font "$FONT"  \
-        --verif-font "$FONT"   \
-        --wrong-font "$FONT"   \
-        --greeter-font "$FONT" \
-        --time-size 40         \
-        --date-size 20         \
-        --time-align 0         \
-        --date-align 0         \
-        --time-color "$COLOR"  \
-        --date-color "$COLOR"  \
-        --ring-color ffffffff  \
-        --pass-media-keys      \
-        --pass-screen-keys     \
-        --pass-power-keys      \
-        --pass-volume-keys     \
+    i3lock                      \
+        -e -f -c 000000         \
+        --clock                 \
+        --time-str  '%H:%M'     \
+        --date-str  '%Y.%m.%d'  \
+        --time-font    "$FONT"  \
+        --date-font    "$FONT"  \
+        --layout-font  "$FONT"  \
+        --verif-font   "$FONT"  \
+        --wrong-font   "$FONT"  \
+        --greeter-font "$FONT"  \
+        --time-size 200         \
+        --date-size 30          \
+        --ind-pos   'w/2:h/1.5' \
+        --time-pos  'w/2:h/2.0' \
+        --date-pos  'w/2:h/1.8' \
+        --time-color   "$COLOR" \
+        --date-color   "$COLOR" \
+        --layout-color "$COLOR" \
+        --ring-color   "$COLOR" \
+        --radius 30             \
+        --pointer default       \
+        --keylayout 1           \
+        --verif-text      '...' \
+        --wrong-text      '!!!' \
+        --noinput-text    ''    \
+        --lock-text       '..'  \
+        --lockfailed-text '!'   \
+        --pass-media-keys       \
+        --pass-screen-keys      \
+        --pass-power-keys       \
+        --pass-volume-keys      \
         --ignore-empty-password
 }
 
