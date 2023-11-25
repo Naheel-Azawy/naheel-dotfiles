@@ -7,6 +7,7 @@
 | pacman | xorg-xinput            | N.A.                                    | controls the input devices in xorg                               |
 | pacman | xf86-input-synaptics   | N.A.                                    | handles the touchpad the right way                               |
 | pacman | xorg-xprop             | N.A.                                    | property displayer for xorg                                      |
+| pacman | xorg-xset              | N.A.                                    | preference for xorg                                              |
 | pacman | xclip                  | N.A.                                    | clipboard manageer for xorg                                      |
 | pacman | xterm                  | N.A.                                    | a simple terminal                                                |
 | git    | theterm                | https://github.com/Naheel-Azawy/theterm | a wrapper to give the terminal super powers                      |

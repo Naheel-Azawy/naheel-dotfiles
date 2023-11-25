@@ -39,6 +39,10 @@ err() {
     printf "${E}ERROR:${R} %s\n" "$@" >&2
 }
 
+is_parabola() {
+    grep -q 'ID=parabola' /etc/os-release
+}
+
 uncomment() {
     line="$1"
     file="$2"
@@ -153,14 +157,20 @@ mountall() {
 }
 
 installarch() {
+    pacs='base base-devel networkmanager grub efibootmgr'
+    info "Updating keyrings..."
+    if is_parabola; then
+        pacman -Sy archlinux-keyring parabola-keyring
+        pacs="$pacs linux-libre linux-libre-firmware"
+        pacs="$pacs your-freedom your-privacy"
+    else
+        pacman -Sy archlinux-keyring
+        pacs="$pacs linux linux-firmware"
+    fi || return 1
+
     info "Installing packages..."
-    pacstrap "$MP" \
-             base \
-             base-devel \
-             linux linux-firmware \
-             networkmanager \
-             grub \
-             efibootmgr
+    # shellcheck disable=SC2086
+    pacstrap "$MP" $pacs
     echo
 }
 
@@ -175,6 +185,13 @@ dochroot() {
 }
 
 inchroot() {
+    if is_parabola; then
+        info "Installing Parabola's freedom and privacy..."
+        printf '[nonprism]\nInclude = /etc/pacman.d/mirrorlist\n' \
+               > /etc/pacman.conf
+        pacman -Sy your-freedom your-privacy
+    fi
+
     info "Adding user $USERNAME and setting password..."
     useradd -m -g wheel "$USERNAME" || return 1
     printf '%s\n%s\n' "$PASSWORD" "$PASSWORD" |

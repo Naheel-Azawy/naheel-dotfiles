@@ -309,12 +309,12 @@ export PATH=\"\$PATH:\$DOTFILES_SCRIPTS\"
     info "Starting Emacs daemon"
     run emacs --daemon
 
+    info "Updating time..."
+    run sudo "$D/scripts/time-update" -y
+
     # disallow no password sudo
     [ "$QUICK" ] ||
         run comment '%wheel ALL=(ALL:ALL) NOPASSWD: ALL' /etc/sudoers
-
-    info "Updating time..."
-    run sudo "$D/scripts/time-update" -y
 
     echo 'DONE!!!'
 }
