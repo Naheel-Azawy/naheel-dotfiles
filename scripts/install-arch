@@ -160,11 +160,10 @@ installarch() {
     pacs='base base-devel networkmanager grub efibootmgr'
     info "Updating keyrings..."
     if is_parabola; then
-        pacman -Sy archlinux-keyring parabola-keyring
+        yes | pacman -Sy archlinux-keyring parabola-keyring
         pacs="$pacs linux-libre linux-libre-firmware"
-        pacs="$pacs your-freedom your-privacy"
     else
-        pacman -Sy archlinux-keyring
+        yes | pacman -Sy archlinux-keyring
         pacs="$pacs linux linux-firmware"
     fi || return 1
 
@@ -189,7 +188,7 @@ inchroot() {
         info "Installing Parabola's freedom and privacy..."
         printf '[nonprism]\nInclude = /etc/pacman.d/mirrorlist\n' \
                > /etc/pacman.conf
-        pacman -Sy your-freedom your-privacy
+        yes | pacman -Sy your-freedom your-privacy
     fi
 
     info "Adding user $USERNAME and setting password..."
