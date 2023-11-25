@@ -1,6 +1,7 @@
 | Tag    | Name                           | Git Link                                   | Purpose                                                                                        |
 |--------+--------------------------------+--------------------------------------------+------------------------------------------------------------------------------------------------|
 | func   | blackarch                      | N.A.                                       | hacking tools                                                                                  |
+| pacman | python-pip                     | N.A.                                       | python's package manager                                                                       |
 | pacman | nodejs                         | N.A.                                       | node.js is needed to run some programs ahead                                                   |
 | pacman | npm                            | N.A.                                       | node.js pacage manager                                                                         |
 | npm    | shelljs                        | N.A.                                       | shell commands on js                                                                           |
@@ -16,7 +17,7 @@
 | pacman | nautilus                       | N.A.                                       | GNOME's file manager                                                                           |
 | pacman | wine                           | N.A.                                       | runs Windows programs. Always be careful while using non free software. Best fit with firejail |
 | pacman | wine-mono                      | N.A.                                       | needed by wine                                                                                 |
-| pacman | wine_gecko                     | N.A.                                       | needed by wine                                                                                 |
+| pacman | wine_gecko                      | N.A.                                       | needed by wine                                                                                 |
 | pacman | libwbclient                    | N.A.                                       | needed for wine                                                                                |
 | pacman | samba                          | N.A.                                       | needed for wine                                                                                |
 | pacman | mpg123                         | N.A.                                       | needed for wine                                                                                |

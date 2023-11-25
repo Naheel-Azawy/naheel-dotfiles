@@ -6,7 +6,6 @@
 | git_manual | pacgit               | https://github.com/Naheel-Azawy/pacgit       | quick dirty way to install git repos                         |
 | pacman    | go                   | N.A.                                         | go language                                                  |
 | aur_manual | yay                  | N.A.                                         | Arch User Repository helper                                  |
-| pacman    | python-pip           | N.A.                                         | python's package manager                                     |
 | pacman    | python-wheel         | N.A.                                         | built-package format for Python                              |
 | pacman    | python-gobject       | N.A.                                         | GObject bindings for python                                  |
 | pacman    | cronie               | N.A.                                         | manages scheduled tasks                                      |
