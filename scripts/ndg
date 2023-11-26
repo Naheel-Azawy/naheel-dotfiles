@@ -466,6 +466,7 @@ lockscreen() {
     # using picom for blur and opacity
     i3lock                      \
         -e -f -c 000000         \
+        --screen 1              \
         --clock                 \
         --time-str  '%H:%M'     \
         --date-str  '%Y.%m.%d'  \

@@ -1,0 +1,40 @@
+#!/bin/sh
+
+ocrmypdf() {
+    src=$(realpath "$1")
+    dst="$src.ocr.pdf"
+    shift
+    srcn=$(basename "$src")
+    dstn=$(basename "$dst")
+    tmp=$(mktemp -d)
+    cp "$src" "$tmp"
+    docker run --rm                          \
+           -v "$tmp":/tmp jbarlow83/ocrmypdf \
+           --force-ocr                       \
+           /tmp/"$srcn" /tmp/"$dstn" "$@" &&
+        mv "$tmp/$dstn" "$dst"
+    rm -rf "$tmp"
+}
+
+ocrmyfile() {
+    f="$1"
+    if ! echo "$f" | grep -qi '\.pdf$'; then
+        convert "$f" "$f.pdf"
+        f="$f.pdf"
+    fi && ocrmypdf "$f"
+}
+
+main() {
+    tostdout=
+    [ "$1" = '-t' ] && tostdout=1 && shift
+    if [ -f "$1" ]; then
+        ocrmyfile "$1" &&
+            if [ -n "$tostdout" ]; then
+                pdftotext -layout "$dst" -
+            fi
+    else
+        docker run --rm jbarlow83/ocrmypdf "$@"
+    fi
+}
+
+main "$@"

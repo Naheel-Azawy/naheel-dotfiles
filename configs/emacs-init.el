@@ -464,6 +464,23 @@ mouse-3: Toggle minor modes"
   (setq buffer-display-table (make-display-table))
   (aset buffer-display-table ?\^M []))
 
+;; ---- ANSI COLORS ----
+;; https://stackoverflow.com/a/76014429/3825872
+(require 'ansi-color)
+(defun ansi-color-after-scroll (window start)
+  "Used by ansi-color-mode minor mode."
+  (ansi-color-apply-on-region start (window-end window t) t))
+(define-minor-mode ansi-color-mode
+  "A very primitive minor mode to view log files containing ANSI color codes."
+  :global nil
+  :lighter ""
+  (if ansi-color-mode
+      (progn
+        (ansi-color-apply-on-region (window-start) (window-end) t)
+        (add-hook 'window-scroll-functions 'ansi-color-after-scroll 80 t))
+    (remove-hook 'window-scroll-functions 'ansi-color-after-scroll t)))
+(add-to-list 'auto-mode-alist '("\\.log\\'" . ansi-color-mode))
+
 ;; ---- DUPLICATE LINE ----
 (defun duplicate-line (arg)
   "Duplicate current line ARG times, leaving point in lower line.
