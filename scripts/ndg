@@ -222,13 +222,15 @@ display() {
                echo 'Mirror'
                echo 'Extend'
                echo 'Edit screen layout'
-               # echo 'Invert colors' # TODO: fix these
-               # echo 'Temperature: 6500  Default'
-               # echo 'Temperature: 5000  Warm'
-               # echo 'Temperature: 9000  Cool'
-               # echo 'Temperature: 2000  Extra Warm'
-               # echo 'Temperature: 20000 Extra Cool'
-               # echo 'Temperature: Custom'
+               exists xcalib &&
+                   echo 'Invert colors'
+               exists redshift && {
+                   echo 'Temperature: 6500  Default'
+                   echo 'Temperature: 5000  Warm'
+                   echo 'Temperature: 9000  Cool'
+                   echo 'Temperature: 2000  Extra Warm'
+                   echo 'Temperature: 20000 Extra Cool'
+               }
 
                # find "$HOME/.screenlayout" -type f -exec basename '{}' \; |
                #     grep -v '^default' |
@@ -243,14 +245,10 @@ display() {
         Mirror) automon mirror          ;;
         Extend) automon extend          ;;
         Edit*)  arandr; wallpaper reset ;;
-        Invert*) xrandr-invert-colors   ;;
+        Invert*) xcalib -invert -alter  ;;
         Temperature*)
             sel=$(echo "$sel" | awk '{print $2}')
-            if [ "$sel" = Custom ]; then
-                sel=$(echo | gmenu --list -p 'Color temperature' --dims 300x350)
-            fi
-            [ "$sel" ] && xsct "$sel" ;;
-
+            [ "$sel" ] && redshift -P -O "${sel}K" ;;
         *)
             sh "$D/${sel}.sh"; wallpaper reset ;;
     esac
