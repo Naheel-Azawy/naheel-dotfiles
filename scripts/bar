@@ -434,7 +434,7 @@ class Bar(BarBase):
         if self.a:
             return t
         else:
-            cmd = "gtrm --dims 68x35 -p 'cal -y; while read -r args; do clear; cal $args; done'"
+            cmd = "gtrm --dims 68x35 -p 'ndg calendar'"
             return f"%{{A:{cmd}&:}}{t}%{{A}}"
 
     @item(period=3, big=True)

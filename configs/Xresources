@@ -2,6 +2,14 @@
 XTerm*faceName: FONT
 XTerm*faceSize: 15
 
+XTerm.vt100.faceSize1: 6
+XTerm.vt100.faceSize2: 9
+XTerm.vt100.faceSize3: 11
+XTerm.vt100.faceSize4: 13
+XTerm.vt100.faceSize5: 15
+XTerm.vt100.faceSize6: 20
+XTerm.vt100.faceSize7: 26
+
 ! every shell is a login shell by default (for inclusion of all necessary environment variables)
 XTerm*loginshell: true
 

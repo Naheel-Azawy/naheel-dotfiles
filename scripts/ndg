@@ -188,13 +188,13 @@ audio() {
         "down")     audio_vol down "$v"                           ;;
         "mute")     amixer -q set Master toggle;  audio_vol_notif ;;
         "mutemic")  amixer -q set Capture toggle; audio_mic_notif ;;
-        "stop")     mpc -q stop       || cmus-remote --stop       ;;
-        "pause")    mpc -q toggle     || cmus-remote --pause      ;;
-        "forward")  mpc -q seek +"$v" || cmus-remote --seek +"$v" ;;
-        "back")     mpc -q seek -"$v" || cmus-remote --seek -"$v" ;;
-        "next")     mpc -q next       || cmus-remote --next       ;;
-        "prev")     mpc -q prev       || cmus-remote --prev       ;;
-        "replay")   mpc seek 0%       || cmus-remote --seek 0     ;;
+        "stop")     mpc -q stop       || playerctl stop           ;;
+        "pause")    mpc -q toggle     || playerctl play-pause     ;;
+        "forward")  mpc -q seek +"$v" || playerctl position +"$v" ;;
+        "back")     mpc -q seek -"$v" || playerctl position -"$v" ;;
+        "next")     mpc -q next       || playerctl next           ;;
+        "prev")     mpc -q prev       || playerctl previous       ;;
+        "replay")   mpc seek 0%       || playerctl position 0     ;;
         "gui")      pavucontrol                                   ;;
         *)          return 1
     esac
@@ -432,12 +432,14 @@ $fprint_out"
     done
 }
 
+lock_bin=i3lock
+
 lockscreen_islocked() {
-    pidof i3lock >/dev/null
+    pidof $lock_bin >/dev/null
 }
 
 lockscreen_unlock() {
-    pkill i3lock
+    pkill $lock_bin
 }
 
 lockscreen() {
@@ -462,7 +464,7 @@ lockscreen() {
     wait_fingerprint &
 
     # using picom for blur and opacity
-    i3lock                      \
+    $lock_bin                   \
         -e -f -c 000000         \
         --screen 1              \
         --clock                 \
@@ -524,7 +526,25 @@ floating_calc() {
 }
 
 calendar() {
-    edit t --eval '(cfw:open-org-calendar)'
+    # edit t --eval '(cfw:open-org-calendar)'
+    cal -y
+    # shellcheck disable=SC2086
+    while read -r a1 args; do
+        clear
+        if [ "$a1" = q ]; then
+            break
+        elif [ -z "$a1" ]; then
+            cal -y
+        elif exists hcal && [ "$a1" = h ]; then
+            if [ -n "$args" ]; then
+                hcal $args
+            else
+                hcal -y
+            fi
+        else
+            cal $a1 $args
+        fi
+    done
 }
 
 reader() {
@@ -555,6 +575,7 @@ music_stat() {
           fi)
     s=$(echo "$s" | sed -rn 's/>>> (.+)/\1/p')
     echo "$sym $s"
+    # TODO: playerctl metadata -F --format "{{emoji(status)}} {{ artist }} - {{ album }} - {{ title }} - {{ playerName }}" | while read line; notify-send $line; end
 }
 
 music_notif() {
@@ -750,6 +771,10 @@ start() {
     fi
     export FONT_SIZE="$FONT_MONO:size=$s"
 
+    # allow single super press to open start menu
+    # xcape -e 'Super_L=Super_L|d'
+    # xcape -e 'Super_R=Super_L|d'
+
     # autostart programs
     autostart xset s 900                    # blank after 15 minutes
     autostart xset -b                       # disable bell
@@ -811,7 +836,7 @@ main() {
     [ $# = 0 ] && list && return
     cmd="$1"
     shift
-    if list | grep -q "$cmd"; then
+    if list | grep -q "^$cmd\$"; then
         "$cmd" "$@"
     else
         list

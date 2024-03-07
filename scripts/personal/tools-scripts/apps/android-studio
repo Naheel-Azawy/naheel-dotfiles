@@ -1,7 +1,17 @@
 #!/bin/sh
 
+jail="$HOME/.local/share/jail-android-studio"
+
+do_jail() {
+    exec firejail          \
+         --noprofile       \
+         --private-tmp     \
+         --disable-mnt     \
+         --private="$jail" \
+         "$@"
+}
+
 main() {
-    jail="$HOME/.local/share/jail-android-studio"
     targz="$1"
     [ -n "$targz" ] && targz=$(realpath "$targz")
 
@@ -13,6 +23,7 @@ main() {
             if [ -z "$targz" ]; then
                 echo 'ERROR: pass the tar.gz file to install'
                 echo 'download from: https://developer.android.com/studio#downloads'
+                echo 'and flutter from: https://docs.flutter.dev/get-started/install/linux'
                 return 1
             else
                 tar xvf "$targz"
@@ -33,12 +44,11 @@ main() {
         } > "$user_desktop"
     }
 
-    exec firejail          \
-         --noprofile       \
-         --private-tmp     \
-         --disable-mnt     \
-         --private="$jail" \
-         "$HOME/android-studio/bin/studio.sh" "$@"
+    if [ "$1" = shell ]; then
+        do_jail "$SHELL"
+    fi
+
+    do_jail "$HOME/android-studio/bin/studio.sh" "$@"
 }
 
 main "$@"

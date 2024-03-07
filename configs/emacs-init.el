@@ -393,14 +393,14 @@ mouse-3: Toggle minor modes"
   "Execute a source file."
   (interactive)
   (defvar cmd)
-  (setq cmd (concat "rn " (buffer-name) ))
+  (setq cmd (concat "rn " (buffer-file-name)))
   (shell-command cmd))
 (global-set-key [C-f5] 'run-program)
 (defun run-program-term ()
   "Execute a source file in a new terminal."
   (interactive)
   (defvar cmd)
-  (setq cmd (concat "$TERMINAL -e \"rn '" (buffer-name)
+  (setq cmd (concat "$TERMINAL -e \"rn '" (buffer-file-name)
                     "'; echo press return to exit; read foo\" "
                     ">/dev/null 2>/dev/null &"))
   (shell-command cmd))
@@ -418,11 +418,10 @@ mouse-3: Toggle minor modes"
   (use-package flycheck :init (global-flycheck-mode))
   (use-package rainbow-mode)
   (use-package dumb-jump
-    :config
-    (add-hook 'xref-backend-functions #'dumb-jump-xref-activate)
     :bind
     ("C-j" . xref-find-definitions)
     ("M-j" . xref-go-back))
+  (add-hook 'xref-backend-functions #'dumb-jump-xref-activate)
   (use-package writeroom-mode
     :custom
     (writeroom-fullscreen-effect 'maximized)
@@ -631,7 +630,7 @@ from: https://stackoverflow.com/a/998472/3825872"
     (org-mode . toggle-truncate-lines)
     (org-mode . toggle-word-wrap)
     (org-mode . adaptive-wrap-prefix-mode)
-    (org-mode . org-toggle-pretty-entities)
+    ;; (org-mode . org-toggle-pretty-entities)
 
     :config
     ;; -- BABEL LANGS --
@@ -848,7 +847,7 @@ from: https://stackoverflow.com/a/998472/3825872"
  ;; If there is more than one, they won't work right.
  '(ein:output-area-inlined-images t)
  '(package-selected-packages
-   '(clang-format fireplace org-fragtog edit-indirect coffee-mode scad-preview-mode scad-mode scad-preview ess smart-tabs-mode zig-mode web-beautify csv-mode php-mode exwm lua-mode epresent js-auto-beautify yaml-mode xonsh-mode xclip writeroom-mode which-key web-mode vterm visual-regexp-steroids vala-mode v-mode use-package undo-tree typescript-mode sparql-mode solidity-mode rust-mode rjsx-mode ranger rainbow-mode protobuf-mode ox-reveal ox-pandoc outshine origami org-ref org-bullets multiple-cursors lsp-ui lsp-java lsp-dart kotlin-mode julia-mode iedit haxe-mode go-mode gnuplot-mode glsl-mode git-gutter flyspell-correct-helm flycheck fish-mode elvish-mode ein dumb-jump doom-modeline dockerfile-mode csharp-mode company-lsp cmake-mode calfw-org calfw basic-mode auctex anzu adaptive-wrap academic-phrases ac-octave))
+   '(iscroll clang-format fireplace org-fragtog edit-indirect coffee-mode scad-preview-mode scad-mode scad-preview ess smart-tabs-mode zig-mode web-beautify csv-mode php-mode exwm lua-mode epresent js-auto-beautify yaml-mode xonsh-mode xclip writeroom-mode which-key web-mode vterm visual-regexp-steroids vala-mode v-mode use-package undo-tree typescript-mode sparql-mode solidity-mode rust-mode rjsx-mode ranger rainbow-mode protobuf-mode ox-reveal ox-pandoc outshine origami org-ref org-bullets multiple-cursors lsp-ui lsp-java lsp-dart kotlin-mode julia-mode iedit haxe-mode go-mode gnuplot-mode glsl-mode git-gutter flyspell-correct-helm flycheck fish-mode elvish-mode ein dumb-jump doom-modeline dockerfile-mode csharp-mode company-lsp cmake-mode calfw-org calfw basic-mode auctex anzu adaptive-wrap academic-phrases ac-octave))
  '(safe-local-variable-values '((eval add-hook 'before-save-hook 'time-stamp)))
  '(verilog-auto-newline nil)
  '(warning-suppress-log-types '(((unlock-file)) ((unlock-file))))

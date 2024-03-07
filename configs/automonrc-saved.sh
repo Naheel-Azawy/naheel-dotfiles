@@ -54,3 +54,15 @@ save 05de4584e053cf3a65ae3cbc2a79936b x1-desk-2 xrandr \
 
 save 1c7aa86d62859b0cb5a926f9bac91ae4 x1-sg-lab-3-big xrandr \
      --output eDP-1 --primary --mode 1920x1200 --pos 0x2160 --rotate normal --output HDMI-1 --mode 3840x2160 --pos 0x0 --rotate normal --output DP-1 --off --output DP-2 --off --output DP-3 --mode 1680x1050 --pos 1920x2160 --rotate left --output DP-4 --off
+
+# save 2d3787f20e75dee7ccb6552319a2f17e x1-sg-lab-slide xrandr \
+#      --output eDP-1 --off --output HDMI-1 --mode 1680x1050 --pos 1680x0 --rotate left --output DP-1 --off --output DP-2 --off --output DP-3 --primary --mode 1680x1050 --pos 0x0 --rotate normal --output DP-4 --off
+
+# save 1bc1f9812a94858e6e497683fc6548d3 x1-sg-lab-slide xrandr \
+#      --output eDP-1 --off --output HDMI-1 --off --output DP-1 --off --output DP-2 --off --output DP-3 --off --output DP-4 --off --output DP-1-8 --mode 1680x1050 --pos 1920x0 --rotate left --output DP-1-9 --primary --mode 1920x1080 --pos 0x0 --rotate normal --output DP-3-8 --off --output DP-3-9 --off
+
+save 1bc1f9812a94858e6e497683fc6548d3 x1-sg-lab-slide xrandr \
+     --output eDP-1 --off --output HDMI-1 --off --output DP-1 --off --output DP-2 --off --output DP-3 --off --output DP-4 --off --output DP-1-8 --off --output DP-1-9 --off --output DP-3-8 --mode 1680x1050 --pos 1920x0 --rotate left --output DP-3-9 --primary --mode 1920x1080 --pos 0x0 --rotate normal
+
+save aad0106844296e16df6943f6771c7d36 x1-sg-lab-slide-2 xrandr \
+     --output HDMI-1 --off --output DP-1 --off --output DP-2 --off --output DP-3 --off --output DP-4 --off --output DP-3-8 --mode 1680x1050 --pos 1920x0 --rotate left --output DP-3-9 --primary --mode 1920x1080 --pos 0x0 --rotate normal

@@ -7,6 +7,7 @@ SYSFS=/sys/devices/platform/i8042/serio1/serio2
 # https://wiki.archlinux.org/title/TrackPoint
 # https://wiki.archlinux.org/title/Lenovo_ThinkPad_X230#Touchpad
 # https://wiki.archlinux.org/title/Touchpad_Synaptics
+# https://wiki.archlinux.org/title/Lenovo_ThinkPad_X1_Carbon_(Gen_10)
 
 C='\033[1m\033[34m' # blue
 E='\033[1m\033[31m' # red
@@ -20,6 +21,12 @@ err() {
     printf "${E}ERROR:${R} %s\n" "$@" >&2
 }
 
+choose() {
+    len=$(echo "$1" | wc -l)
+    len=$((len + 2))
+    echo "$1" | fzf --height=$len
+}
+
 check_root() {
     if [ "$(id -u)" != 0 ]; then
         err 'Root is needed'
@@ -27,7 +34,26 @@ check_root() {
     fi
 }
 
-set_trackpoint() {
+############################################
+
+bat() {
+    case "$1" in
+        limit)
+            tpacpi-bat -s ST 0 80
+            tpacpi-bat -s SP 0 95 ;;
+
+        unlimit)
+            tpacpi-bat -s ST 0 0
+            tpacpi-bat -s SP 0 0 ;;
+
+        *)
+            echo "enter limit or unlimit"
+    esac
+}
+
+############################################
+
+trackpoint() {
     set_trackpoint_elan && return
 
     if [ -n "$1" ]; then
@@ -37,7 +63,7 @@ set_trackpoint() {
     else
         speed=255
     fi
-    
+
     if [ -n "$2" ]; then
         sensitivity="$2"
     elif [ -n "$THINKPAD_TRACKPOINT_SENSITIVITY" ]; then
@@ -66,12 +92,15 @@ set_trackpoint_elan() {
 
 set_usb_keyboard() {
     p='Lite-On Tech Lenovo USB Travel Keyboard with Ultra Nav Mouse'
-    xinput list | grep -q "$p" || return 1
-    xinput set-prop "$p" "libinput Scroll Method Enabled" 0, 0, 1
-    xinput set-prop "$p" "libinput Accel Speed" 1
+    xinput list | grep "$p" | sed -rn 's/.+id=([0-9]+).+/\1/p' | while read -r id; do
+        xinput set-prop "$id" "libinput Scroll Method Enabled" 0, 0, 1
+        xinput set-prop "$id" "libinput Accel Speed" 1
+    done
     # TODO: move to xorg config
     # not sure why, but `Option "Scroll Method Enabled" "0 0 1"` is ignored
 }
+
+############################################
 
 config_xorg() {
     p=/etc/X11/xorg.conf.d/50-synaptics.conf
@@ -152,20 +181,12 @@ ExecStart=$0 trackpoint
     systemctl start trackpoint_parameters.path
 }
 
-battery() {
-    case "$1" in
-        limit)
-            tpacpi-bat -s ST 0 80
-            tpacpi-bat -s SP 0 95 ;;
-
-        unlimit)
-            tpacpi-bat -s ST 0 0
-            tpacpi-bat -s SP 0 0 ;;
-
-        *)
-            echo "enter limit or unlimit"
-    esac
+init() {
+    config_xorg
+    config_systemd
 }
+
+############################################
 
 x1_touch_screen_fix() {
     xinput --map-to-output 'ELAN901C:00 04F3:2C4E' eDP-1 2>/dev/null
@@ -193,33 +214,55 @@ touchpad_tog() {
         xinput_tog_dev 'SYNA8017:00 06CB:CEB2 Touchpad'
 }
 
+input() {
+    trackpoint "$@"
+    set_usb_keyboard
+    x1_touchpad
+}
+
+############################################
+
+platform_profile() {
+    cat /sys/firmware/acpi/platform_profile
+}
+
+platform_profile_set() {
+    check_root
+    ch=$(tr ' ' '\n' </sys/firmware/acpi/platform_profile_choices)
+    ch=$(choose "$ch")
+    [ -z "$ch" ] && return 1
+    echo "$ch" >/sys/firmware/acpi/platform_profile
+}
+
+############################################
+
+list() {
+    echo trackpoint
+    echo input
+    echo init
+    echo bat
+    echo x1_touch_screen_fix
+    echo touchpad_tog
+    echo platform_profile
+    echo platform_profile_set
+}
+
 main() {
-    [ $# = 0 ] && return 1
-    case "$1" in
-        trackpoint)
-            shift
-            set_trackpoint "$@" ;;
+    cmd="$1"
+    [ "$cmd" = '--help' ] && list && return
 
-        input)
-            shift
-            set_trackpoint "$@"
-            set_usb_keyboard
-            x1_touchpad ;;
+    [ $# = 0 ] && {
+        cmd=$(choose "$(list | tac)")
+        [ -z "$cmd" ] && return 1
+    }
+    [ $# = 0 ] || shift
 
-        init)
-            config_xorg
-            config_systemd ;;
-
-        bat)
-            shift
-            battery "$@" ;;
-
-        x1_touch_screen_fix)
-            x1_touch_screen_fix ;;
-
-        touchpad_tog)
-            touchpad_tog ;;
-    esac
+    if list | grep -q "^$cmd\$"; then
+        "$cmd" "$@"
+    else
+        list
+        return 1
+    fi
 }
 
 main "$@"

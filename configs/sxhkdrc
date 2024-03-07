@@ -335,7 +335,7 @@ Cancel
 	wm-msg window_nice_close
 
 super+semicolon
-	edit t "$HOME/Notes/TODO.org"
+	edit g "$HOME/Notes/TODO.org"
 
 super+shift+semicolon
 	ndg calendar

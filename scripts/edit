@@ -22,6 +22,37 @@ nw()  {
     tmux set automatic-rename on 2>/dev/null
 }
 
+swallowable() {
+    [ -n "$DISPLAY" ]                 &&
+        [ -t 0 ]                      &&
+        [ "$THETERM_TERM" = xterm ]   &&
+        [ "$WINDOW_MANAGER" = bspwm ] &&
+        command -v emacs >/dev/null   &&
+        command -v xdotool >/dev/null &&
+        command -v xdo >/dev/null
+}
+swallow() {
+    (gui "$@") > /dev/null 2>&1 &
+    cls=
+    count=0
+    while [ "$cls" != Emacs ]; do
+        [ "$count" -ge 50 ] && {
+            echo 'Timeout!!!' >&2
+            return
+        }
+        cls=$(xdotool getactivewindow getwindowclassname)
+        count=$((count + 1))
+        sleep .1
+    done
+    bspc node -s last.local
+    bspc node -f last.local
+    id=$(xdo id)
+    bspc node "$id" --flag hidden=on
+    wait
+    bspc node "$id" --flag hidden=off
+    bspc node -f "$id"
+}
+
 [ "$BIDI" ] &&
     nw() { exec bicon.bin --reshape-only "$BINPATH" c -nw "$@" 2>/dev/null; }
 
@@ -70,6 +101,8 @@ main() {
         *)
             if [ "$EMACS_VTERM_PATH" ]; then
                 existing "$@"
+            elif swallowable; then
+                swallow "$@"
             elif [ -t 0 ]; then
                 nw "$@"
             else

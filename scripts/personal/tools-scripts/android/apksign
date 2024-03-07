@@ -3,26 +3,25 @@
 APK="$1"
 shift
 #KEY=~/.android/debug.keystore
-KEY=~/.local/share/jail-android-studio/.android/debug.keystore
+#KEY=~/.local/share/jail-android-studio/.android/debug.keystore
+KEY=~/.local/share/jail-android-studio/android-signature/android-key-naheel.jks
 # KEY=/mnt/hdd1/Private/Keys/android_keystore_naheel
 [ -f "$1" ] && KEY="$1" && shift
 
 SIG=/usr/lib/jvm/java-17-openjdk/bin/jarsigner
 [ -f "$SIG" ] || SIG=/usr/lib/jvm/java-8-openjdk/bin/jarsigner
 
+"$SIG" -verbose            \
+       -keystore "$KEY"    \
+       "$APK"              \
+       naheel     \
+       "$@"
+
 # "$SIG" -verbose            \
 #        -sigalg SHA1withRSA \
 #        -digestalg SHA1     \
 #        -keystore "$KEY"    \
 #        "$APK"              \
-#        naheel     \
+#        androiddebugkey     \
+#        -storepass android  \
 #        "$@"
-
-"$SIG" -verbose            \
-       -sigalg SHA1withRSA \
-       -digestalg SHA1     \
-       -keystore "$KEY"    \
-       "$APK"              \
-       androiddebugkey     \
-       -storepass android  \
-       "$@"
