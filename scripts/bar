@@ -445,7 +445,11 @@ class Bar(BarBase):
     @item(period=3, big=True)
     def battery(self):
         try:
-            acpi = sh.grep(sh.acpi("-b"), v="unavailable").split("\n")[0]
+            acpi = None
+            for bat in sh.acpi("-b").strip().split("\n"):
+                if "unavailable" not in bat:
+                    acpi = bat
+                    break
             percent = int(acpi.split(", ")[1].replace("%", ""))
             charging = "Charging" in acpi
             plugged = charging or "Not charging" in acpi
