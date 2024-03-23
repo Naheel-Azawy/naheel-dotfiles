@@ -1,6 +1,6 @@
 ! font
 XTerm*faceName: FONT
-XTerm*faceSize: 15
+XTerm*faceSize: FONT_SIZE_NUM
 
 XTerm.vt100.faceSize1: 6
 XTerm.vt100.faceSize2: 9

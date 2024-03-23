@@ -145,7 +145,12 @@ def find_theme():
             continue
         font_to_theme[themes[t]["icons_font"].split(":")[0]] = t
 
-    fonts_list = [l.split(":")[1].strip() for l in sh.fc_list()]
+    fonts_list = []
+    for l in sh.fc_list().split("\n"):
+        try:
+            fonts_list.append(l.split(":")[1].strip())
+        except:
+            continue
     for f in font_to_theme:
         for l in fonts_list:
             if f in l:

@@ -127,7 +127,7 @@
 ;; ---- FONT ----
 (defun apply-font-now ()
   "Apply the intended font."
-  (let ((font (concat (getenv "FONT") " Regular 14")))
+  (let ((font (concat (getenv "FONT") " 14")))
     (set-face-attribute 'default   nil :font font)
     (set-face-attribute 'mode-line nil :font font)))
 (apply-font-now)
