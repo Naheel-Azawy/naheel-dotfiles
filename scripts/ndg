@@ -727,6 +727,16 @@ xrdb() {
 }
 
 start() {
+    # set font size based on resolution
+    dim=$(xdpyinfo | grep "dimensions" | awk '{ print $2 }' | cut -d x -f1)
+    if [ "$dim" -lt 1920 ]; then
+        FONT_SIZE_NUM=12
+    else
+        FONT_SIZE_NUM=15
+    fi
+    FONT_SIZE="$FONT_MONO:size=$FONT_SIZE_NUM"
+    export FONT_SIZE_NUM FONT_SIZE
+
     userresources=$HOME/.Xresources
     sysresources=/etc/X11/xinit/.Xresources
     sysmodmap=/etc/X11/xinit/.Xmodmap
@@ -766,16 +776,6 @@ start() {
     logdir="/tmp/xinitlogs-$USER"
     mkdir -p "$logdir"
     rm -r "$logdir:?"/*
-
-    # set font size based on resolution
-    dim=$(xdpyinfo | grep "dimensions" | awk '{ print $2 }' | cut -d x -f1)
-    if [ "$dim" -lt 1920 ]; then
-        FONT_SIZE_NUM=12
-    else
-        FONT_SIZE_NUM=15
-    fi
-    FONT_SIZE="$FONT_MONO:size=$FONT_SIZE_NUM"
-    export FONT_SIZE_NUM FONT_SIZE
 
     # autostart programs
     autostart xset s 900                    # blank after 15 minutes
