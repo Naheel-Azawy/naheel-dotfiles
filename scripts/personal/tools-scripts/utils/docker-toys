@@ -103,7 +103,7 @@ case "$CMD" in
             IMGS=$(docker images -q)
             [ "$IMGS" ] && {
                 echo 'Removing images...'
-                docker rmi $IMGS
+                docker rmi --force $IMGS
             }
         };;
 

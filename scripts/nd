@@ -201,9 +201,10 @@ dots_install() {
         # double check keyring, updates, sudo
         if isarch; then
             info "Upgrading the system"
-            run pacman --noconfirm -Sy &&
+            run pacman-key --init
+            yes | run pacman --noconfirm -Sy &&
                 pacman --noconfirm -S archlinux-keyring
-            run pacman --noconfirm -Syu &&
+            yes | run pacman --noconfirm -Syu &&
                 run pacman --noconfirm --needed -S sudo &&
                 ARCH_ROOT_UPDATED=1
         fi

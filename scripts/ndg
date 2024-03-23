@@ -745,6 +745,7 @@ start() {
 
     if [ -d /etc/X11/xinit/xinitrc.d ] ; then
         for f in /etc/X11/xinit/xinitrc.d/?*.sh ; do
+            # shellcheck disable=SC1090
             [ -x "$f" ] && . "$f"
         done
         unset f
@@ -752,7 +753,7 @@ start() {
 
     # start the system keyring
     eval "$(/usr/bin/gnome-keyring-daemon --start --components=pkcs11,secrets,ssh)"
-    export SSH_AUTH_SOCK
+    export SSH_AUTH_SOCK="$XDG_RUNTIME_DIR/gcr/ssh"
 
     # enable the HUD menu
     # eval "$(menus hud env)"
@@ -770,10 +771,6 @@ start() {
         s=15
     fi
     export FONT_SIZE="$FONT_MONO:size=$s"
-
-    # allow single super press to open start menu
-    # xcape -e 'Super_L=Super_L|d'
-    # xcape -e 'Super_R=Super_L|d'
 
     # autostart programs
     autostart xset s 900                    # blank after 15 minutes
