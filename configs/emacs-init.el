@@ -616,8 +616,9 @@ from: https://stackoverflow.com/a/998472/3825872"
      org-log-done 'time
      org-image-actual-width 500
      org-export-in-background nil
+     org-tags-column 0
 
-     org-latex-pdf-process '("latexwrapper --compiler xelatex %f")
+     org-latex-pdf-process '("latexwrapper %f")
      org-highlight-latex-and-related '(native)
 
      org-preview-latex-default-process 'dvipng
@@ -630,7 +631,8 @@ from: https://stackoverflow.com/a/998472/3825872"
     (org-mode . toggle-truncate-lines)
     (org-mode . toggle-word-wrap)
     (org-mode . adaptive-wrap-prefix-mode)
-    ;; (org-mode . org-toggle-pretty-entities)
+    (org-mode . flyspell-mode)
+    (org-mode . org-toggle-pretty-entities)
 
     :config
     ;; -- BABEL LANGS --
@@ -672,6 +674,7 @@ from: https://stackoverflow.com/a/998472/3825872"
     (setq
      org-reveal-root "https://cdn.jsdelivr.net/npm/reveal.js"
      org-reveal-mathjax t))
+  (use-package org-download :config (require 'org-download))
 
   (with-eval-after-load 'ox-latex
     (customize-set-value 'org-latex-hyperref-template "
@@ -682,6 +685,17 @@ from: https://stackoverflow.com/a/998472/3825872"
     (add-to-list 'org-latex-classes
                  '("IEEEtran"
                    "\\documentclass{IEEEtran}"
+                   ("\\section{%s}" . "\\section*{%s}")
+                   ("\\subsection{%s}" . "\\subsection*{%s}")
+                   ("\\subsubsection{%s}" . "\\subsubsection*{%s}")
+                   ("\\paragraph{%s}" . "\\paragraph*{%s}")
+                   ("\\subparagraph{%s}" . "\\subparagraph*{%s}")))
+
+    (add-to-list 'org-latex-classes
+                 '("article"
+                   "\\documentclass{article}
+\\usepackage{geometry}
+\\geometry{a4paper, margin=1in}"
                    ("\\section{%s}" . "\\section*{%s}")
                    ("\\subsection{%s}" . "\\subsection*{%s}")
                    ("\\subsubsection{%s}" . "\\subsubsection*{%s}")
@@ -813,6 +827,7 @@ from: https://stackoverflow.com/a/998472/3825872"
 (setq lisp-directory (concat user-emacs-directory "lisp"))
 (unless (file-directory-p lisp-directory) (make-directory lisp-directory))
 (add-to-list 'load-path lisp-directory)
+;; TODO: clean the below
 
 ;; --- LACARTE ---
 (unless (file-exists-p (expand-file-name "lacarte.el" lisp-directory))
@@ -847,7 +862,7 @@ from: https://stackoverflow.com/a/998472/3825872"
  ;; If there is more than one, they won't work right.
  '(ein:output-area-inlined-images t)
  '(package-selected-packages
-   '(iscroll clang-format fireplace org-fragtog edit-indirect coffee-mode scad-preview-mode scad-mode scad-preview ess smart-tabs-mode zig-mode web-beautify csv-mode php-mode exwm lua-mode epresent js-auto-beautify yaml-mode xonsh-mode xclip writeroom-mode which-key web-mode vterm visual-regexp-steroids vala-mode v-mode use-package undo-tree typescript-mode sparql-mode solidity-mode rust-mode rjsx-mode ranger rainbow-mode protobuf-mode ox-reveal ox-pandoc outshine origami org-ref org-bullets multiple-cursors lsp-ui lsp-java lsp-dart kotlin-mode julia-mode iedit haxe-mode go-mode gnuplot-mode glsl-mode git-gutter flyspell-correct-helm flycheck fish-mode elvish-mode ein dumb-jump doom-modeline dockerfile-mode csharp-mode company-lsp cmake-mode calfw-org calfw basic-mode auctex anzu adaptive-wrap academic-phrases ac-octave))
+   '(org-download iscroll clang-format fireplace org-fragtog edit-indirect coffee-mode scad-preview-mode scad-mode scad-preview ess smart-tabs-mode zig-mode web-beautify csv-mode php-mode exwm lua-mode epresent js-auto-beautify yaml-mode xonsh-mode xclip writeroom-mode which-key web-mode vterm visual-regexp-steroids vala-mode v-mode use-package undo-tree typescript-mode sparql-mode solidity-mode rust-mode rjsx-mode ranger rainbow-mode protobuf-mode ox-reveal ox-pandoc outshine origami org-ref org-bullets multiple-cursors lsp-ui lsp-java lsp-dart kotlin-mode julia-mode iedit haxe-mode go-mode gnuplot-mode glsl-mode git-gutter flyspell-correct-helm flycheck fish-mode elvish-mode ein dumb-jump doom-modeline dockerfile-mode csharp-mode company-lsp cmake-mode calfw-org calfw basic-mode auctex anzu adaptive-wrap academic-phrases ac-octave))
  '(safe-local-variable-values '((eval add-hook 'before-save-hook 'time-stamp)))
  '(verilog-auto-newline nil)
  '(warning-suppress-log-types '(((unlock-file)) ((unlock-file))))

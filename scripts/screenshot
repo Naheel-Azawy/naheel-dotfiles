@@ -3,37 +3,48 @@
 # acts like gnome-screenshot
 # uses maim, xdotool, xclip
 
+# if picom blurs area, add this
+# blur-background-exclude = [ "class_g = 'slop'" ];
+
 DIR="$HOME/Pictures/Screenshots"
 
 help() {
     BIN=$(basename "$0")
-    echo "usage: $BIN [-cwa] [-f FILE]"
+    echo "usage: $BIN [-hvcwap] [-f FILE]"
     echo '
 Options:
+  -h        Show this help
+  -v        Verbose
   -c        Send the grab directly to the clipboard
   -w        Grab a window instead of the entire screen
   -a        Grab an area of the screen instead of the entire screen
+  -p        Include the pointer with the screenshot
   -f=FILE   Save screenshot directly to this file'
     exit 1
 }
 
+V= # verbose
 C= # clipboard
 W= # window
 A= # area
+P= # pointer
 F= # file name
 
-while getopts 'cwaf:' arg; do
+while getopts 'hvcwapf:' arg; do
     case "$arg" in
         c) C=1         ;;
         w) W=1         ;;
         a) A=1         ;;
         f) F="$OPTARG" ;;
+        v) V=1         ;;
+        p) P=1         ;;
         *) help        ;;
     esac
 done
 shift $((OPTIND-1))
 
-CMD="maim --hidecursor"
+CMD="maim"
+[ -n "$P" ] || CMD="$CMD --hidecursor"
 if [ "$W" ]; then
     CMD="$CMD -i $(xdotool getactivewindow)"
 elif [ "$A" ]; then
@@ -50,8 +61,5 @@ else
     CMD="$CMD '$F'"
 fi
 
-[ -z "$A" ] || ndg compositor stop
-
+[ -z "$V" ] || echo "\$ $CMD"
 eval "$CMD"
-
-[ -z "$A" ] || ndg compositor start ||:

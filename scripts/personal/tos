@@ -100,6 +100,7 @@ main() {
     if [ $# = 0 ]; then
         cli "$@"
     elif list | grep -q "^$cmd\$"; then
+        shift
         "$cmd" "$@"
     else
         echo "Unknown command '$cmd'; choose one of:"

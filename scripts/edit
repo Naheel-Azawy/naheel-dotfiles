@@ -23,7 +23,8 @@ nw()  {
 }
 
 swallowable() {
-    [ -n "$DISPLAY" ]                 &&
+    true                              &&
+        [ -n "$DISPLAY" ]             &&
         [ -t 0 ]                      &&
         [ "$THETERM_TERM" = xterm ]   &&
         [ "$WINDOW_MANAGER" = bspwm ] &&
