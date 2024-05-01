@@ -322,6 +322,7 @@ abbr lw     'latexwrapper'
 abbr ly     'lyrics'
 abbr mu     'ndg music'
 abbr scp    'rsync --progress'
+abbr psed   'perl -pe'
 
 bind \cq exit
 

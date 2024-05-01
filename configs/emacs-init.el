@@ -123,6 +123,7 @@
 (setq scroll-step 1
       scroll-conservatively 10000
       scroll-margin 5)
+(pixel-scroll-precision-mode)
 
 ;; ---- FONT ----
 (defun apply-font-now ()
