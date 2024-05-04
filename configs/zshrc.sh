@@ -164,7 +164,7 @@ if [[ $- == *i* ]]; then
                     cd "$HOME/.local/share/esp" &&
                     git clone --recursive https://github.com/espressif/esp-idf.git &&
                     cd esp-idf &&
-                    ./install.fish esp32
+                    ./install.sh esp32
             fi
         fi
         env MENUCONFIG_STYLE='aquatic list=fg:white,bg:black' idf.py "$@"

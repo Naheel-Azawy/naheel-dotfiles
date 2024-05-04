@@ -112,7 +112,7 @@ super+ctrl+Return
 
 # Start file manager
 super+apostrophe
-	theterm fish -c "$FILE_MANAGER"
+	theterm zsh -c "$FILE_MANAGER"
 
 # Empty window
 super+e
