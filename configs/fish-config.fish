@@ -323,6 +323,7 @@ abbr ly     'lyrics'
 abbr mu     'ndg music'
 abbr scp    'rsync --progress'
 abbr psed   'perl -pe'
+abbr idf idf.py
 
 bind \cq exit
 
@@ -349,7 +350,5 @@ function idf.py
 
     env MENUCONFIG_STYLE='aquatic list=fg:white,bg:black' idf.py $argv
 end
-
-abbr idf idf.py
 
 source "$DOTFILES_DIR/scripts/nd-complete.fish"

@@ -1,5 +1,0 @@
-#!/bin/sh
-# Creates a new bash script
-[ ! -f "$1" ] && echo '#!/bin/sh' > "$1"
-chmod +x "$1"
-exec "$EDITOR" "$1"

@@ -22,6 +22,11 @@
 | pacman    | fzf                  | N.A.                                         | fuzzy finder tool                                            |
 | pacman    | highlight            | N.A.                                         | can highlight code output                                    |
 | pacman    | fish                 | N.A.                                         | the friendly shell!                                          |
+| pacman    | zsh                  | N.A.                                         | a good shell                                                 |
+| pacman    | zsh-autosuggestions  | N.A.                                         | make zsh a bit fishy                                         |
+| pacman    | zsh-completions      | N.A.                                         | make zsh a bit fishy                                         |
+| pacman    | zsh-syntax-highlighting | N.A.                                      | make zsh a bit fishy                                         |
+| aur       | zsh-abbr             | N.A.                                         | make zsh a bit fishy                                         |
 | pacman    | emacs                | N.A.                                         | the best editor on this planet                               |
 | pacman    | nano                 | N.A.                                         | the tiny text editor                                         |
 | pacman    | ispell               | N.A.                                         | spell checker                                                |

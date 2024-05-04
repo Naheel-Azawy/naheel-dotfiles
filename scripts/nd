@@ -142,6 +142,7 @@ dots_link() {
     lnnn "$D/configs/sxiv-image-info.sh"  "$H/.config/sxiv/exec/image-info"
     lnnn "$D/configs/picom.conf"          "$H/.config/picom.conf"
     lnnn "$D/configs/user-dirs.dirs"      "$H/.config/user-dirs.dirs"
+    lnnn "$D/configs/zshrc.sh"            "$H/.zshrc"
     lnnn "$D/configs/bashrc.sh"           "$H/.bashrc"
     lnnn "$D/configs/profile"             "$H/.profile"
     lnnn "$D/configs/profile"             "$H/.bash_profile"
