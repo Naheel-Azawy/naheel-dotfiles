@@ -13,12 +13,12 @@ if [[ $- == *i* ]]; then
     compinit
 
     export GPG_TTY=$(tty)
-    export TERM="screen-256color"
+    export TERM="xterm-256color"
 
-    export PS1="%F{040}%~%F{015}%K{000}> "
+    export PS1="%F{040}%1~%F{015}%K{000}> "
     precmd() {
         if [ $? != 0 ]; then
-            ps_face=$'\e[0;31;40m :( \e[0m'
+            ps_face=$'\e[0;31;40m:( \e[0m'
         else
             ps_face=
         fi
@@ -38,7 +38,13 @@ if [[ $- == *i* ]]; then
         git_branch=$(git branch --show-current 2>/dev/null)
         [ -n "$git_branch" ] && git_branch=" ($git_branch)"
 
-        PS1="$CONDA_PROMPT_MODIFIER$ps_face$color_cwd%~$git_branch"$'\e[0m'"$suffix "
+        PS1=$'\e[0;37;40m%T\e[0m '
+        PS1="$PS1$CONDA_PROMPT_MODIFIER"
+        PS1="$PS1$ps_face"
+        PS1="$PS1$color_cwd"
+        PS1="$PS1%1~"
+        PS1="$PS1$git_branch"
+        PS1="$PS1"$'\e[0m'"$suffix "
     }
 
     zsh_greeting() {
@@ -270,11 +276,16 @@ EOF
     fi
 
     # add fish-like capabilities
-    # pacman -S zsh-autosuggestions zsh-completions zsh-syntax-highlighting
+    # pacman -S zsh-autosuggestions zsh-completions zsh-syntax-highlighting zsh-history-substring-search
     # yay -S zsh-abbr
-    source /usr/share/zsh/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.plugin.zsh
-    source /usr/share/zsh/plugins/zsh-autosuggestions/zsh-autosuggestions.plugin.zsh
-    source /usr/share/zsh/plugins/zsh-abbr/zsh-abbr.plugin.zsh
+    d=/usr/share/zsh/plugins
+    source $d/zsh-syntax-highlighting/zsh-syntax-highlighting.plugin.zsh
+    source $d/zsh-autosuggestions/zsh-autosuggestions.plugin.zsh
+    source $d/zsh-history-substring-search/zsh-history-substring-search.zsh
+    source $d/zsh-abbr/zsh-abbr.plugin.zsh
+
+    bindkey '^[[A' history-substring-search-up
+    bindkey '^[[B' history-substring-search-down
 
     zsh_greeting
 fi
