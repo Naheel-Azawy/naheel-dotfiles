@@ -163,6 +163,14 @@ icons      = themes[theme]["icons"]
 background = '#dd000000'
 foreground = '#ffffff'
 
+# if a second clock needed
+gmt_there = 3
+gmt_here = time.localtime().tm_gmtoff / 60 / 60
+if gmt_there is not None:
+    gmt_diff = gmt_there - gmt_here
+else:
+    gmt_diff = None
+
 default_items = "workspaces program | clock | battery host"
 
 port_file = "/tmp/.nbarport"
@@ -435,7 +443,11 @@ class Bar(BarBase):
 
     @item(period=1, big=True)
     def clock(self):
-        t = datetime.datetime.now().strftime("%a %Y.%m.%d %I:%M:%S %p")
+        now = datetime.datetime.now()
+        t = now.strftime("%a %Y.%m.%d %I:%M:%S %p")
+        if gmt_diff is not None:
+            there = now + datetime.timedelta(hours=gmt_diff)
+            t += there.strftime(" (%I %p %d)")
         if self.a:
             return t
         else:
@@ -569,7 +581,7 @@ class Bar(BarBase):
             except:
                 return None
             try:
-                temp = re.search(".+\((\d+)\)", temp).group(1)
+                temp = re.search(r".+\((\d+)\)", temp).group(1)
             except:
                 pass
             out = f"{temp}°C"
@@ -628,7 +640,7 @@ class Bar(BarBase):
 
     @item(big=True)
     def donno(self):
-        return "%{A:gtrm -p 'lolcowforune -p'&:}¯\_(ツ)_/¯%{A}" \
+        return "%{A:gtrm -p 'lolcowforune -p'&:}¯\\_(ツ)_/¯%{A}" \
             if not self.a else None
 
     @item(big=True, period=3)

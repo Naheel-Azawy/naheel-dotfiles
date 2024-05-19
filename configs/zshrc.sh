@@ -7,6 +7,8 @@ setopt autocd
 unsetopt flow_control
 bindkey -e
 
+zshctr=0
+
 if [[ $- == *i* ]]; then
     zstyle :compinstall filename '/home/naheel/.zshrc'
     autoload -Uz compinit
@@ -15,22 +17,25 @@ if [[ $- == *i* ]]; then
     export GPG_TTY=$(tty)
     export TERM="xterm-256color"
 
-    export PS1="%F{040}%1~%F{015}%K{000}> "
+    export PS1="%F{green}%1~%F{reset}> "
     precmd() {
-        if [ $? != 0 ]; then
-            ps_face=$'\e[0;31;40m:( \e[0m'
+        local s=$?
+        local ps_face
+        local color_cwd
+        local suffix
+
+        if [ $s != 0 ]; then
+            ps_face=$'%F{red}:( %F{reset}'
         else
             ps_face=
         fi
 
-        local color_cwd
-        local suffix
         case "$USER" in
             root|toor)
-                color_cwd=$'\e[0;31;40m'
+                color_cwd='%F{red}'
                 suffix='#' ;;
             *)
-                color_cwd=$'\e[0;32;40m'
+                color_cwd='%F{green}'
                 suffix='>' ;;
         esac
 
@@ -38,13 +43,13 @@ if [[ $- == *i* ]]; then
         git_branch=$(git branch --show-current 2>/dev/null)
         [ -n "$git_branch" ] && git_branch=" ($git_branch)"
 
-        PS1=$'\e[0;37;40m%T\e[0m '
+        PS1=''
+        PS1="%F{249}$PS1%T%F{reset} "
         PS1="$PS1$CONDA_PROMPT_MODIFIER"
         PS1="$PS1$ps_face"
-        PS1="$PS1$color_cwd"
-        PS1="$PS1%1~"
+        PS1="$PS1$color_cwd%1~"
         PS1="$PS1$git_branch"
-        PS1="$PS1"$'\e[0m'"$suffix "
+        PS1="$PS1%F{reset}$suffix "
     }
 
     zsh_greeting() {
