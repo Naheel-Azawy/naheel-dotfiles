@@ -2,7 +2,7 @@
 
 # TODO: move to personal
 
-CTL="$HOME/.data/Public/ctl.sh"
+CTL="$HOME/.data/ctl.sh"
 
 case "$1" in
     -u) "$CTL" end ;;

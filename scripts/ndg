@@ -57,6 +57,10 @@ exists () {
     command -v "$1" >/dev/null
 }
 
+isint() {
+    [ -n "$1" ] && [ "$1" -eq "$1" ] 2>/dev/null
+}
+
 notify() {
     if exists dunstify; then
         dunstify -i /dev/null                          \
@@ -253,6 +257,55 @@ display() {
         *)
             sh "$D/${sel}.sh"; wallpaper reset ;;
     esac
+}
+
+# ==== battery ====
+
+battery_watch() {
+    BAT_WR1=15
+    BAT_WR2=10
+    BAT_MIN=5
+
+    bat_wr1_done=
+    bat_wr2_done=
+    bat_min_done=
+
+    while :; do
+        b=$(acpi -b)
+        if echo "$b" | grep -q Discharging; then
+            p=$(echo "$b" | sed -rn 's/.+, ([0-9]+)%,.+/\1/p')
+
+            if ! isint "$p"; then
+                sleep 10
+                continue
+            elif [ "$p" -le "$BAT_MIN" ] &&
+                   [ -z "$bat_min_done" ]; then
+                for i in $(seq 30 | tac); do
+                    notify -u critical "Shutting down in $i..."
+                    sleep 1
+                done
+                notify -u critical "Shutting down..."
+                systemctl poweroff
+                bat_min_done=1
+            elif [ "$p" -le "$BAT_WR2" ]    &&
+                     [ -z "$bat_min_done" ] &&
+                     [ -z "$bat_wr2_done" ] ; then
+                notify -u critical "Battery too low! ($p%)"
+                bat_wr2_done=1
+            elif [ "$p" -le "$BAT_WR1" ]    &&
+                     [ -z "$bat_min_done" ] &&
+                     [ -z "$bat_wr2_done" ] &&
+                     [ -z "$bat_wr1_done" ]; then
+                notify -u critical "Battery low! ($p%)"
+                bat_wr1_done=1
+            fi
+        else
+            bat_wr1_done=
+            bat_wr2_done=
+            bat_min_done=
+        fi
+        sleep 3
+    done
 }
 
 # ==== input ====
@@ -769,9 +822,6 @@ start() {
     eval "$(/usr/bin/gnome-keyring-daemon --start --components=pkcs11,secrets,ssh)"
     export SSH_AUTH_SOCK="$XDG_RUNTIME_DIR/gcr/ssh"
 
-    # enable the HUD menu
-    # eval "$(menus hud env)"
-
     # logs dir
     logdir="/tmp/xinitlogs-$USER"
     mkdir -p "$logdir"
@@ -798,7 +848,7 @@ start() {
     autostart mount-private                 # mount encfs private directory
     autostart nm-applet                     # network applet
     autostart blueman-applet                # bluetooth applet
-    # autostart menus hud daemon              # hud menu daemon
+    autostart battery_watch                 # low battery daemon
 
     # start the window manager
     exec "$WINDOW_MANAGER" # defined in profile
