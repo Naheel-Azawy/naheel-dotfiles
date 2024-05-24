@@ -185,21 +185,27 @@ audio_vol() {
     audio_vol_notif "$v"
 }
 
+pctl() {
+    [ "$(playerctl status)" = Playing ] || return 1
+    playerctl "$@"
+}
+
 audio() {
     cmd="$1"
     v="$2"
+
     case "$cmd" in
         "up")       audio_vol up   "$v"                           ;;
         "down")     audio_vol down "$v"                           ;;
         "mute")     amixer -q set Master toggle;  audio_vol_notif ;;
         "mutemic")  amixer -q set Capture toggle; audio_mic_notif ;;
-        "stop")     mpc -q stop       || playerctl stop           ;;
-        "pause")    mpc -q toggle     || playerctl play-pause     ;;
-        "forward")  mpc -q seek +"$v" || playerctl position +"$v" ;;
-        "back")     mpc -q seek -"$v" || playerctl position -"$v" ;;
-        "next")     mpc -q next       || playerctl next           ;;
-        "prev")     mpc -q prev       || playerctl previous       ;;
-        "replay")   mpc seek 0%       || playerctl position 0     ;;
+        "stop")     plctl stop           || mpc -q stop           ;;
+        "pause")    plctl play-pause     || mpc -q toggle         ;;
+        "forward")  plctl position +"$v" || mpc -q seek +"$v"     ;;
+        "back")     plctl position -"$v" || mpc -q seek -"$v"     ;;
+        "next")     plctl next           || mpc -q next           ;;
+        "prev")     plctl previous       || mpc -q prev           ;;
+        "replay")   plctl position 0     || mpc seek 0%           ;;
         "gui")      pavucontrol                                   ;;
         *)          return 1
     esac

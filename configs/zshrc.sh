@@ -199,6 +199,8 @@ if [[ $- == *i* ]]; then
     bindkey    '^[[1;5D' backward-word
     bindkey    '^H'      backward-kill-word
     bindkey    ';5~'     kill-word
+    bindkey    '^[[3~'   delete-char
+    bindkey    '^[[1~'   beginning-of-line
 
     abbr_file=~/.config/zsh-abbr/user-abbreviations
     if [ ! -f "$abbr_file" ]; then
