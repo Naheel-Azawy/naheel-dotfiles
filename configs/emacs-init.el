@@ -86,7 +86,7 @@
 (global-set-key (kbd "<mouse-4>") 'scroll-down-line)
 (global-set-key (kbd "<mouse-5>") 'scroll-up-line)
 (setq-default tab-width 4)
-;;(setq-default show-trailing-whitespace 1)
+(setq-default show-trailing-whitespace 1)
 
 ;; ---- THEME ----
 (load-theme 'tsdh-dark t)
@@ -854,6 +854,14 @@ from: https://stackoverflow.com/a/998472/3825872"
 (unless (file-exists-p (expand-file-name "holyc-mode.elc" lisp-directory))
   (byte-compile-file (expand-file-name "holyc-mode.el" lisp-directory)))
 (require 'holyc-mode)
+
+;; --- TOUCH ---
+(unless (file-exists-p (expand-file-name "touch-handler.el" lisp-directory))
+  (url-copy-file "https://raw.githubusercontent.com/naheel-azawy/touch-handler.el/master/touch-handler.el"
+                 (expand-file-name "touch-handler.el" lisp-directory)))
+(unless (file-exists-p (expand-file-name "touch-handler.elc" lisp-directory))
+  (byte-compile-file (expand-file-name "touch-handler.el" lisp-directory)))
+(load (expand-file-name "touch-handler.elc" lisp-directory))
 
 ;;; emacs-init.el ends here
 (custom-set-variables
