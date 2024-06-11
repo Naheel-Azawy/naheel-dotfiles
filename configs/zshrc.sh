@@ -13,6 +13,7 @@ if [[ $- == *i* ]]; then
     zstyle :compinstall filename '/home/naheel/.zshrc'
     autoload -Uz compinit
     compinit
+    setopt interactivecomments
 
     export GPG_TTY=$(tty)
     export TERM="xterm-256color"
@@ -115,12 +116,14 @@ if [[ $- == *i* ]]; then
 
     fmz() {
         tmp=$(mktemp)
-        command fmz --cd "$tmp" "$@"
+        cwd="$PWD"
+        cd || return 1
+        env -C "$cwd" fmz --cd "$tmp" "$@"
         res=$(tail -n 1 "$tmp")
-        if [ -d "$res" ] && [ "$res" != "$PWD" ]; then
+        if [ -d "$res" ] && [ "$res" != "$cwd" ]; then
             echo cd "$res"
-            cd "$res" || return 1
         fi
+        cd "$res" || cd "$cwd" || return 1
         rm "$tmp"
     }
 
