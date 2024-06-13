@@ -176,6 +176,16 @@ default_items = "workspaces program | clock | battery host"
 port_file = "/tmp/.nbarport"
 pid_file  = "/tmp/.nbarpid"
 
+START_XBM = """
+#define start_width 18
+#define start_height 16
+static unsigned char start_bits[] = {
+0x00, 0x00, 0x00, 0x00, 0x3c, 0x00, 0x00, 0xff, 0x00, 0x82, 0xdb, 0x01,
+0xea, 0x99, 0x01, 0xf8, 0x99, 0x01, 0x82, 0xbd, 0x01, 0xea, 0xff, 0x01,
+0xf8, 0xdb, 0x01, 0x82, 0x99, 0x01, 0xea, 0x99, 0x01, 0xf8, 0xbd, 0x01,
+0x82, 0xff, 0x01, 0xea, 0xc3, 0x01, 0xf8, 0x00, 0x01, 0x00, 0x00, 0x00};
+"""
+
 argv = sys.argv
 HOME = os.getenv("HOME")
 
@@ -626,7 +636,19 @@ class Bar(BarBase):
 
     @item()
     def start(self):
-        return "%{A:ndg start_menu&:} START%{A}" if not self.a else None
+        if self.a:
+            return None
+        ret = "%{A:ndg start_menu&:}"
+        support_xbm = "The icon must be in xbm format" in \
+            sh.man("lemonbar", _tty_out=False)
+        if support_xbm:
+            fpath = f"{HOME}/.cache/start.xbm"
+            if not os.path.exists(fpath):
+                with open(fpath, "w") as f:
+                    f.write(START_XBM)
+            ret += " %{F#ddd}%{I" + fpath + "}%{F-}"
+        ret += " START%{A}"
+        return ret
 
     @item()
     def power(self):

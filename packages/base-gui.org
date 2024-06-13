@@ -26,7 +26,7 @@
 | aur    | brave-bin              | N.A.                                    | default browser                                                  |
 | pacman | gnome-keyring          | N.A.                                    | serves as the system keyring                                     |
 | pacman | gnome-themes-extra     | N.A.                                    | gives the dark GTK theme                                         |
-| aur    | lemonbar-xft-git       | N.A.                                    | status bar                                                       |
+| git    | lemonbar               | https://github.com/Naheel-Azawy/lemonbar | status bar                                                      |
 | pacman | trayer                 | N.A.                                    | a standalone system tray                                         |
 | aur    | i3lock-color           | N.A.                                    | screen lock                                                      |
 | pacman | mpv                    | N.A.                                    | patrician's choice video/gif player                              |
