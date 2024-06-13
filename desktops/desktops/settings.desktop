@@ -1,7 +1,0 @@
-[Desktop Entry]
-Name=Settings
-Comment=Use the command line
-Keywords=Preferences;Settings;Configurations;
-Exec=ndg settings
-Icon=org.gnome.Settings
-Categories=Settings;

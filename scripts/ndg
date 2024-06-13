@@ -701,32 +701,8 @@ compositor() {
 
 # ==== menus ====
 
-start_menu_cache="$HOME/.cache/applications"
-
-start_menu_update() {
-    mkdir -p ~/.local/share/applications
-    cp "$DOTFILES_DIR"/desktops/desktops/*.desktop ~/.local/share/applications/
-
-    rm -rf   "$start_menu_cache"
-    mkdir -p "$start_menu_cache"
-
-    (cd "$start_menu_cache" &&
-         ln -s ~/.local/share/applications/*.desktop       ./ &&
-         ln -s /usr/share/applications/*.desktop           ./ &&
-         ln -s /usr/local/share/applications/*.desktop     ./ &&
-
-         grep -R 'NoDisplay=true' | cut -d: -f1 | xargs rm &&
-         grep -R 'OnlyShowIn'     | cut -d: -f1 | xargs rm &&
-
-         while read -r d; do
-             rm -f ./"$d"
-         done < "$DOTFILES_DIR"/desktops/blacklist)
-}
-
 start_menu() {
     gmenu apps
-    # test -d "$start_menu_cache" || start_menu_update
-    # printf '>>desktops %s\n>>power\n' "$start_menu_cache" | gmenu
 }
 
 settings() {
@@ -886,7 +862,6 @@ list() {
     echo compositor
     echo bar
     echo start_menu
-    echo start_menu_update
     echo settings
     echo foo
 }

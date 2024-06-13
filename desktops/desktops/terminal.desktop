@@ -1,7 +1,0 @@
-[Desktop Entry]
-Name=Terminal
-Comment=Use the command line
-Keywords=shell;prompt;command;commandline;cmd;
-Exec=theterm
-Icon=org.gnome.Terminal
-Categories=System;TerminalEmulator;
