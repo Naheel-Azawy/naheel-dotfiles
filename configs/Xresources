@@ -65,6 +65,8 @@ XTerm.vt100.translations: #override \n\
 ! sixel
 XTerm*decTerminalID: vt340
 XTerm*numColorRegisters: 256
+XTerm*maxStringParse: 10000000
+XTerm*maxGraphicSize: 10000x10000
 
 ! sxiv options
 Sxiv.foreground: rgb:bb/bb/bb

@@ -197,6 +197,7 @@ class WM:
         except:
             self.impl = None
         self.title = None # to be set by bar.program()
+        self.ic    = None # to be set by bar.program()
         # names to be picked for new workspaces
         self.nice_workspaces = list(range(1, 10)) + [0]
         self.nice_workspaces = list(map(lambda i: str(i), self.nice_workspaces))
@@ -213,6 +214,21 @@ class WM:
                 # in case the bar started before the window manager
                 await asyncio.sleep(1)
 
+XPROP_ICON = r"""-notype 32c _NET_WM_ICON |
+  perl -0777 -pe '@_=/\d+/g;
+    printf "P7\nWIDTH %d\nHEIGHT %d\nDEPTH 4\nMAXVAL 255\nTUPLTYPE RGB_ALPHA\nENDHDR\n", splice@_,0,2;
+    $_=pack "N*", @_;
+    s/(.)(...)/$2$1/gs' | magick - -alpha off -auto-threshold otsu -negate -resize x24 """
+def xprop_gen_ic(winid, cls):
+    fdir = f"{HOME}/.cache/bar/icons"
+    fname = f"{fdir}/{cls}.xbm"
+    # TODO: mkdirs -p
+    if not os.path.exists(fname):
+        os.popen(f"xprop -id {winid}" +
+                 XPROP_ICON +
+                 fname + " 2>/dev/null")
+    return fname
+
 class XTitle:
     def __init__(self, callback):
         self.callback = callback
@@ -224,11 +240,21 @@ class XTitle:
             raise Exception(f"xtitle thread failed")
 
     def loop(self):
-        popen = subprocess.Popen(["xtitle", "-s"],
+        popen = subprocess.Popen(["xtitle", "-s", "-f", r"%u %s\n"],
                                  stdout=subprocess.PIPE,
                                  universal_newlines=True)
         for line in iter(popen.stdout.readline, ""):
-            self.callback(line.strip())
+            line = line.strip().split(" ")
+            winid = line[0]
+            title = " ".join(line[1:])
+            cls, ic = None, None
+            # try:
+            #     cls = sh.xprop("-id", winid, "WM_CLASS") \
+            #             .split(" = \"")[1].split("\", ")[0]
+            #     ic = xprop_gen_ic(winid, cls)
+            # except:
+            #     pass
+            self.callback(title, winid, cls, ic)
         popen.stdout.close()
         code = popen.wait()
         if code != 0:
@@ -346,8 +372,9 @@ class BarBase:
         self.run_item(self.program)
         self.render()
 
-    def run_xtitle_items(self, title):
+    def run_xtitle_items(self, title, winid, cls, ic):
         self.wm.title = title
+        self.wm.ic    = ic
         self.run_item(self.program)
         self.render()
 
@@ -447,7 +474,11 @@ class Bar(BarBase):
             if title:
                 ad = "%{A:wm-msg workspace_new:}"     + icons["plus"]  + "%{A} "
                 cl = "%{A:wm-msg window_nice_close:}" + icons["close"] + "%{A} "
-                return ad + cl + "%{A:wm-msg program-menu&:}" + title + "%{A}"
+                if self.wm.ic:
+                    ic = "%{I" + self.wm.ic + "} "
+                else:
+                    ic = ""
+                return ad + cl + ic + "%{A:wm-msg program-menu&:}" + title + "%{A}"
             else:
                 return None
 
@@ -647,7 +678,7 @@ class Bar(BarBase):
                 with open(fpath, "w") as f:
                     f.write(START_XBM)
             ret += " %{F#ddd}%{I" + fpath + "}%{F-}"
-        ret += " START%{A}"
+        ret += " Start%{A}"
         return ret
 
     @item()
@@ -680,7 +711,9 @@ class Bar(BarBase):
             return None
         try:
             # https://askubuntu.com/a/520360
-            sh.grep(sh.udevadm("info", "--export-db"), "ID_INPUT_TOUCHSCREEN=1")
+            k = os.popen("udevadm info --export-db | grep ID_INPUT_TOUCHSCREEN=1").read()
+            if not k:
+                return None
         except:
             # only show in touch screen devices
             return None
