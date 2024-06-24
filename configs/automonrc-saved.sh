@@ -69,3 +69,6 @@ save aad0106844296e16df6943f6771c7d36 x1-sg-lab-slide-2 xrandr \
 
 save d21d26123a6a2c0d92ce8a659b195c59 casa-2 xrandr \
      --output eDP-1 --primary --mode 1920x1200 --pos 0x0 --rotate normal --output HDMI-1 --off --output DP-1 --mode 1920x1080 --pos 1920x0 --rotate left --output DP-2 --off --output DP-3 --off --output DP-4 --off
+
+save 56ec89b972925db63d8003e7a2819e42 casa-2-hub xrandr \
+     --output eDP-1 --primary --mode 1920x1200 --pos 0x0 --rotate normal --output HDMI-1 --off --output DP-1 --off --output DP-2 --off --output DP-3 --mode 1920x1080 --pos 1920x0 --rotate left --output DP-4 --off
