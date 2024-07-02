@@ -53,7 +53,7 @@ err() {
     printf "${E}ERROR:${R} %s\n" "$@" >&2
 }
 
-exists () {
+exists() {
     command -v "$1" >/dev/null
 }
 

@@ -11,34 +11,7 @@ bookmark ~/Documents/papers
 bookmark ~/Documents/good_books
 bookmark ~/.dotfiles
 
-# add_fun myless 'Less a file'
-# bind ctrl-p fun myless
-# myless() {
-#     tput rmcup
-#     less "$f"
-# }
-
-add_fun du_file 'Disk usage'
-bind alt-d fun du_file
-du_file() {
-    tput rmcup
-    du -sh "$f"
-    read -r _
-}
-
 bind ctrl-p 'toggle-preview' 'Toggle preview'
-
-add_fun mystat 'File status'
-mystat() {
-    tput rmcup
-    stat "$f" | less
-}
-
-add_fun myedit 'Edit file'
-myedit() {
-    tput rmcup
-    edit "$f"
-}
 
 add_fun kdesend 'Send via KDE connect'
 kdesend() {
@@ -98,21 +71,6 @@ pdfcropfun() {
         pdfcrop "$file" &&
             crop=$(echo "$file" | sed 's/.pdf/-crop.pdf/') &&
             mv "$crop" "$file"
-    done
-}
-
-add_fun chmodmenu 'Chmod'
-chmodmenu() {
-    tput rmcup
-    m=$({
-           echo +x
-           echo -x
-           echo 644
-           echo 755
-       } | menu_interface)
-    [ -n "$m" ] || return
-    echo "$fx" | while read -r file; do
-        chmod "$m" "$file"
     done
 }
 

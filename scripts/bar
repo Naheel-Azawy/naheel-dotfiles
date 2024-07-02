@@ -160,7 +160,7 @@ def find_theme():
 theme      = find_theme()
 icons_font = themes[theme]["icons_font"]
 icons      = themes[theme]["icons"]
-background = '#dd000000'
+background = '#ff000000'
 foreground = '#ffffff'
 
 # if a second clock needed

@@ -20,7 +20,7 @@ case "$class" in
         Blueman-manager|\
         Nm-connection-editor|\
         Wihotspot-gui|\
-        Pavucontrol|\
+        pavucontrol|\
         Arandr|\
         Onboard|\
         Panther_launcher|\

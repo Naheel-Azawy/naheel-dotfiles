@@ -29,8 +29,8 @@ GrPaletteSet(gr_palette_my);
 // NOTE: for whatever reason when you Abort&Exit (Shift+Esc)
 // a User Task (usually a terminal) the theme may reset to
 // gr_palette_std. I could not figure out why and how to fix that.
-// So I just made gr_palette_std to be gr_palette_gruv.
-MemCpy(gr_palette_std, gr_palette_gruv, sizeof(gr_palette_my));
+// So I just made gr_palette_std to be gr_palette_my.
+MemCpy(gr_palette_std, gr_palette_my, sizeof(gr_palette_my));
 '
 
 cfg() {
