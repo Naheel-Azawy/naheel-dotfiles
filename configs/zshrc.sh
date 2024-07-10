@@ -285,17 +285,64 @@ abbr idf='idf.py'
 EOF
     fi
 
-    # add fish-like capabilities
-    # pacman -S zsh-autosuggestions zsh-completions zsh-syntax-highlighting zsh-history-substring-search
-    # yay -S zsh-abbr
-    d=/usr/share/zsh/plugins
-    source $d/zsh-syntax-highlighting/zsh-syntax-highlighting.plugin.zsh
-    source $d/zsh-autosuggestions/zsh-autosuggestions.plugin.zsh
-    source $d/zsh-history-substring-search/zsh-history-substring-search.zsh
-    source $d/zsh-abbr/zsh-abbr.plugin.zsh
+    plugins=()
+    zsh_plugin() {
+        local p=$1
+        local u=$2
+        local h=$3
+        local d=~/.local/share/zsh-plugins
+        local f="$d/$p"
 
-    bindkey '^[[A' history-substring-search-up
-    bindkey '^[[B' history-substring-search-down
+        if [ ! -f "$f" ]; then
+            (
+                mkdir -p "$d"
+                cd "$d" || return 1
+                zip=$(basename "$u")
+                echo "Downloading plugin $p..."
+                curl -L "$u" > "$zip"
+                h_real=$(sha256sum < "$zip" | cut -d ' ' -f1)
+
+                if [ -z "$h" ]; then
+                    echo "Signature of $u is $h_real, nothing is sourced"
+                    rm "$zip"
+                    return 2
+                elif [ "$h_real" != "$h" ]; then
+                    echo "Failed matching signature for $zip"
+                    return 1
+                fi
+                unzip "$zip"
+                rm -rf "$zip"
+            ) || return
+        fi
+
+        source "$f" &&
+            plugins+=("$f")
+    }
+
+    # make zsh fishy
+
+    zsh_plugin \
+        zsh-syntax-highlighting-0.8.0/zsh-syntax-highlighting.plugin.zsh \
+        https://github.com/zsh-users/zsh-syntax-highlighting/archive/refs/tags/0.8.0.zip \
+        e8c214bf96168f13eaa9d2b78fd3e58070ecf11963b3a626fe5df9dfe0cf2925
+
+    zsh_plugin \
+        zsh-autosuggestions-0.7.0/zsh-autosuggestions.plugin.zsh \
+        https://github.com/zsh-users/zsh-autosuggestions/archive/refs/tags/v0.7.0.zip \
+        ad68b8af2a6df6b75f7f87e652e64148fd9b9cfb95a2e53d6739b76c83dd3b99
+
+    zsh_plugin \
+        zsh-abbr-5.8.0/zsh-abbr.plugin.zsh \
+        https://github.com/olets/zsh-abbr/archive/refs/tags/v5.8.0.zip \
+        66c30d5a7f69e682c352e4985d0bab3e0dccb38b6a911054ec6d007a14b829fd
+
+    zsh_plugin \
+        zsh-history-substring-search-1.1.0/zsh-history-substring-search.plugin.zsh \
+        https://github.com/zsh-users/zsh-history-substring-search/archive/refs/tags/v1.1.0.zip \
+        a7de194803e52a9de09781ee4794308f338f93c6e3cd2750d88421f843eec134 && {
+        bindkey '^[[A' history-substring-search-up
+        bindkey '^[[B' history-substring-search-down
+    }
 
     zsh_greeting
 fi

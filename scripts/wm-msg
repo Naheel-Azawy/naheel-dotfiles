@@ -97,8 +97,12 @@ program_menu() {
                # echo 'Move down'
                # echo 'Super down'
                # echo 'Super up'
+
+               command -v hud >/dev/null && {
+                   hud ls
+               }
            })
-    choice=$(echo "$items" | gmenu -l -p "$title" --dims 400x300)
+    choice=$(echo "$items" | gmenu -l -p "$title")
 
     case "$choice" in
         "$title")                              ;;
@@ -113,6 +117,10 @@ program_menu() {
         'Move '*)
             dir=$(echo "$choice" | cut -d ' ' -f2)
             main window_move "$dir" ;;
+        *)
+            command -v hud >/dev/null && {
+                hud run "$choice"
+            }
     esac
 }
 
@@ -177,7 +185,7 @@ main() {
     win=$(xdotool getactivewindow)
 
     # handle emacs windows TODO: delete?
-    if false && xdotool getwindowname "$win" | grep -q emacs; then
+    if xdotool getwindowname "$win" | grep -q emacs; then
         case "$cmd" in
             window_focus)
                 emacsclient --no-wait --eval "(windmove-$arg)" && return ;;
