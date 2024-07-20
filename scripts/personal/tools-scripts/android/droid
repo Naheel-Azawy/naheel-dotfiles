@@ -11,6 +11,18 @@ do_jail() {
          "$@"
 }
 
+enter_shell() {
+    export ANDROID_HOME="$HOME/Android/Sdk"
+    export JAVA_HOME='/usr/lib/jvm/default'
+    echo "Entering Android jail at $jail..."
+    if command -v zsh >/dev/null && [ -f ~/.zshrc ]; then
+        cp "$(realpath ~/.zshrc)" "$jail/.zshrc"
+        do_jail zsh
+    else
+        do_jail "$SHELL"
+    fi
+}
+
 main() {
     targz="$1"
     [ -n "$targz" ] && targz=$(realpath "$targz")
@@ -44,11 +56,19 @@ main() {
         } > "$user_desktop"
     }
 
-    if [ "$1" = shell ]; then
-        do_jail "$SHELL"
-    fi
+    case "$1" in
+        shell)
+        enter_shell ;;
 
-    do_jail "$HOME/android-studio/bin/studio.sh" "$@"
+        path)
+            echo "$jail" ;;
+
+        --help|-h)
+            echo "$(basename "$(realpath "$0")"): [shell|path] [ARGS]..." ;;
+
+        *)
+            do_jail "$HOME/android-studio/bin/studio.sh" "$@"
+    esac
 }
 
 main "$@"

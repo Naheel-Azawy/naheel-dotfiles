@@ -188,9 +188,9 @@ main() {
     if xdotool getwindowname "$win" | grep -q emacs; then
         case "$cmd" in
             window_focus)
-                emacsclient --no-wait --eval "(windmove-$arg)" && return ;;
+                timeout .1 emacsclient --no-wait --eval "(windmove-$arg)" && return ;;
             window_nice_close)
-                emacsclient --no-wait --eval "(delete-window)" && return ;;
+                timeout .1 emacsclient --no-wait --eval "(delete-window)" && return ;;
         esac
     fi
 

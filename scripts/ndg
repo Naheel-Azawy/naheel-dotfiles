@@ -746,10 +746,11 @@ foo() {
 
 autostart() {
     d=$(date)
-    if command -v "$1" >/dev/null; then
-        echo "$d: STDOUT OF" "$@" > "$logdir/$1"
-        echo "$d: STDERR OF" "$@" > "$logdir/$1-err"
-        "$@" >> "$logdir/$1" 2>> "$logdir/$1-err" &
+    if exists "$1" || [ -x "$1" ]; then
+        n=$(basename "$1")
+        echo "$d: STDOUT OF" "$@" > "$logdir/$n"
+        echo "$d: STDERR OF" "$@" > "$logdir/$n-err"
+        "$@" >> "$logdir/$n" 2>> "$logdir/$n-err" &
     else
         echo "$1 not found!!!" > "$logdir/$1-err"
     fi
@@ -832,6 +833,7 @@ start() {
     autostart nm-applet                     # network applet
     autostart blueman-applet                # bluetooth applet
     autostart battery_watch                 # low battery daemon
+    autostart /usr/lib/gsd-xsettings        # gnome's settings daemon
 
     # start the window manager
     exec "$WINDOW_MANAGER" # defined in profile
