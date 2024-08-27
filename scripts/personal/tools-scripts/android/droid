@@ -14,6 +14,7 @@ do_jail() {
 enter_shell() {
     export ANDROID_HOME="$HOME/Android/Sdk"
     export JAVA_HOME='/usr/lib/jvm/default'
+    export PATH="$PATH:$HOME/flutter/bin"
     echo "Entering Android jail at $jail..."
     if command -v zsh >/dev/null && [ -f ~/.zshrc ]; then
         cp "$(realpath ~/.zshrc)" "$jail/.zshrc"

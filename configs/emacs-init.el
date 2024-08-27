@@ -256,7 +256,6 @@ mouse-3: Toggle minor modes"
   (use-package lua-mode)
   (use-package basic-mode)
   (use-package vala-mode)
-  (use-package csharp-mode)
   (use-package dart-mode)
   (use-package go-mode)
   (use-package rust-mode)
@@ -317,6 +316,7 @@ mouse-3: Toggle minor modes"
   (use-package rjsx-mode
     :mode
     ("\\.js\\'"  . rjsx-mode)
+    ("\\.mjs\\'"  . rjsx-mode)
     ("\\.jsx\\'" . rjsx-mode))
 
   (use-package octave
@@ -335,12 +335,12 @@ mouse-3: Toggle minor modes"
   (defun scad-gui ()
     (interactive)
     (async-shell-command (concat "openscad " (buffer-file-name))))
-  (use-package scad-mode) ;; :bind ("C-x C-e" . scad-gui))
-  (use-package scad-preview
-    :custom
-    (scad-preview-colorscheme "Starnight")
-    (scad-preview-image-size '(900 . 900))
-    (scad-preview-window-size 80))
+  ;; (use-package scad-mode) ;; :bind ("C-x C-e" . scad-gui))
+  ;; (use-package scad-preview
+  ;;   :custom
+  ;;   (scad-preview-colorscheme "Starnight")
+  ;;   (scad-preview-image-size '(900 . 900))
+  ;;   (scad-preview-window-size 80)) ;; TODO: fix
 
   ;; ---- ARDUINO ----
   (add-to-list 'auto-mode-alist

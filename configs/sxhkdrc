@@ -340,6 +340,12 @@ super+semicolon
 super+shift+semicolon
 	ndg calendar
 
+super+r
+	$HOME/.dotfiles/scripts/personal/tools-scripts/utils/copy-text-area
+
+super+control+r
+	spd-say -w -o piper-generic "$(clipboard)"
+
 super+period
 	pkill highlight-point || highlight-pointer -r 15 -c red
 
