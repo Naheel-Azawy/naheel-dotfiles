@@ -7,6 +7,11 @@ export EDITOR='edit'
 export VISUAL="$EDITOR"
 export WWW_HOME='https://searx.naheel.xyz'
 
+export XDG_DATA_HOME="$HOME/.local/share"
+export XDG_CONFIG_HOME="$HOME/.config"
+export XDG_STATE_HOME="$HOME/.local/state"
+export XDG_CACHE_HOME="$HOME/.cache"
+
 # TODO: move to personal
 export ORG_TODO="$HOME/Notes/TODO.org"
 

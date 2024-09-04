@@ -438,7 +438,7 @@ wallpaper() {
             err "'$1' is not a file"
         fi
     }
-    feh --bg-fill "$f"
+    feh --no-fehbg --bg-fill "$f"
 }
 
 # ==== lockscreen ====

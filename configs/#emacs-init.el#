@@ -62,8 +62,7 @@
 (global-set-key (kbd "C-s") 'save-buffer)
 (use-package undo-tree :config
   (global-undo-tree-mode)
-  (setq undo-dir (concat user-emacs-directory "undo"))
-  (setq undo-tree-history-directory-alist '(("." . "~/.config/emacs/undo"))))
+  (setq undo-tree-history-directory-alist '(("." . (concat user-emacs-directory "undo")))))
 (global-set-key (kbd "C-z") 'undo-tree-undo)
 (global-set-key (kbd "M-z") 'undo-tree-redo)
 (setq org-support-shift-select t)

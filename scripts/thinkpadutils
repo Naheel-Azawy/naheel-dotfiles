@@ -242,9 +242,9 @@ list() {
     echo init
     echo bat
     echo x1_touch_screen_fix
-    echo touchpad_tog
     echo platform_profile
     echo platform_profile_set
+    echo touchpad_tog
 }
 
 main() {
