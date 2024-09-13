@@ -138,4 +138,10 @@ newfilelike() {
     fi
 }
 
+add_fun show_exif 'List EXIF information'
+show_exif() {
+    tput rmcup
+    exiftool "$f" | less
+}
+
 bind ctrl-r "$cmd_refresh" 'Refresh'

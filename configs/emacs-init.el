@@ -829,39 +829,56 @@ from: https://stackoverflow.com/a/998472/3825872"
 (setq lisp-directory (concat user-emacs-directory "lisp"))
 (unless (file-directory-p lisp-directory) (make-directory lisp-directory))
 (add-to-list 'load-path lisp-directory)
-;; TODO: clean the below
+
+(defun extra-lisp-load (url name hash)
+  "Load a random elisp file NAME at URL with HASH."
+  (let* ((target (expand-file-name name              lisp-directory))
+         (cached (expand-file-name (concat name "c") lisp-directory)))
+    (if (and (file-exists-p target) (file-exists-p cached))
+        t
+      (progn
+        (url-copy-file (concat url "/" name) target)
+        (let ((hash-real (with-temp-buffer
+                           (insert-file-contents-literally target)
+                           (secure-hash 'sha256 (current-buffer)))))
+          (if (equal hash hash-real)
+              (progn (byte-compile-file target) t)
+            (delete-file target) nil))))))
 
 ;; --- LACARTE ---
-(unless (file-exists-p (expand-file-name "lacarte.el" lisp-directory))
-  (url-copy-file "https://www.emacswiki.org/emacs/download/lacarte.el"
-                 (expand-file-name "lacarte.el" lisp-directory)))
-(unless (file-exists-p (expand-file-name "lacarte.elc" lisp-directory))
-  (byte-compile-file (expand-file-name "lacarte.el" lisp-directory)))
+(extra-lisp-load
+ "https://www.emacswiki.org/emacs/download"
+ "lacarte.el"
+ "3694f37c5c5554882cf98b32b9322d8c243c9856aa735b1022ef30d3f0e954c3")
 (require 'lacarte)
 (global-set-key [?\e ?\M-x] 'lacarte-execute-menu-command)
 
 ;; --- VLANG ---
-(unless (file-exists-p (expand-file-name "vlang-mode.el" lisp-directory))
-  (url-copy-file "https://raw.githubusercontent.com/naheel-azawy/vlang-mode.el/master/vlang-mode.el"
-                 (expand-file-name "vlang-mode.el" lisp-directory)))
-(unless (file-exists-p (expand-file-name "vlang-mode.elc" lisp-directory))
-  (byte-compile-file (expand-file-name "vlang-mode.el" lisp-directory)))
+(extra-lisp-load
+ "https://raw.githubusercontent.com/naheel-azawy/vlang-mode.el/master"
+ "vlang-mode.el"
+ "e4554cb6331775afb11dc548485683eb6af96e19640d5ce2a013803e89697d86")
 (require 'vlang-mode)
 
 ;; --- HOLYC ---
-(unless (file-exists-p (expand-file-name "holyc-mode.el" lisp-directory))
-  (url-copy-file "https://raw.githubusercontent.com/naheel-azawy/holyc-mode.el/master/holyc-mode.el"
-                 (expand-file-name "holyc-mode.el" lisp-directory)))
-(unless (file-exists-p (expand-file-name "holyc-mode.elc" lisp-directory))
-  (byte-compile-file (expand-file-name "holyc-mode.el" lisp-directory)))
+(extra-lisp-load
+ "https://raw.githubusercontent.com/naheel-azawy/holyc-mode.el/master"
+ "holyc-mode.el"
+ "6ce8777e55e01ff852f24f91fbc02b04e50fb0924a0f2df07414ff4e23dc0033")
 (require 'holyc-mode)
 
+;; --- SMALI ---
+(extra-lisp-load
+ "https://raw.githubusercontent.com/strazzere/Emacs-Smali/16c50ca2ab3159fb9f2d9b938ab7cbbf860bd14f"
+ "smali-mode.el"
+ "a5215884faf3feae341a32455c486077bed2a90d7e19142bc3b371759e89d212")
+(require 'smali-mode)
+
 ;; --- TOUCH ---
-(unless (file-exists-p (expand-file-name "touch-handler.el" lisp-directory))
-  (url-copy-file "https://raw.githubusercontent.com/naheel-azawy/touch-handler.el/master/touch-handler.el"
-                 (expand-file-name "touch-handler.el" lisp-directory)))
-(unless (file-exists-p (expand-file-name "touch-handler.elc" lisp-directory))
-  (byte-compile-file (expand-file-name "touch-handler.el" lisp-directory)))
+(extra-lisp-load
+ "https://raw.githubusercontent.com/naheel-azawy/touch-handler.el/master"
+ "touch-handler.el"
+ "1876efc5d944ce55000eceb57323304e2cd51a67ca13e2793706a802fe66bd69")
 (load (expand-file-name "touch-handler.elc" lisp-directory))
 
 ;;; emacs-init.el ends here

@@ -68,11 +68,13 @@ case "$class" in
 esac
 
 case "$class" in
-    matplotlib)
-        # move plot to the monitor on the right, if any
-        if [ "$(bspc query -M | wc -l)" -gt 1 ]; then
+    Matplotlib)
+        # move plot to the monitor on the right
+        if [ "$(bspc query -M | wc -l)" -gt 1 ]; then # if we have such monitor
             d=$(bspc query -D --names | tail -n1)
-            echo "desktop=$d"
+            if [ -z "$(bspc query -N -d "$d")" ]; then # and is empty
+                echo "desktop=$d"
+            fi
         fi ;;
 esac
 
