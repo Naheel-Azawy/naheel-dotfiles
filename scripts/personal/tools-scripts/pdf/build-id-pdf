@@ -2,20 +2,20 @@
 NAME="__id-pdf-$$"
 
 {
-    echo '\\documentclass[11pt]{article}'
-    echo '\\usepackage{graphicx}'
-    echo '\\pagenumbering{gobble}'
-    echo '\\begin{document}'
-    echo '\\begin{center}'
-    echo "\\includegraphics[width=.7\\linewidth]{$1}"
-    echo '\\end{center}'
+    printf '\\documentclass[11pt]{article}\n'
+    printf '\\usepackage{graphicx}\n'
+    printf '\\pagenumbering{gobble}\n'
+    printf '\\begin{document}\n'
+    printf '\\begin{center}\n'
+    printf '\\includegraphics[width=.7\\linewidth]{%s}\n' "$1"
+    printf '\\end{center}\n'
     [ -n "$2" ] && {
-        echo '\\vspace{1cm}'
-        echo '\\begin{center}'
-        echo "\\includegraphics[width=.7\\linewidth]{$2}"
-        echo '\\end{center}'
+        printf '\\vspace{1cm}\n'
+        printf '\\begin{center}\n'
+        printf '\\includegraphics[width=.7\\linewidth]{%s}\n' "$2"
+        printf '\\end{center}\n'
     }
-    echo '\\end{document}'
+    printf '\\end{document}\n'
 } > "${NAME}.tex"
 
 pdflatex "${NAME}.tex" >/dev/null &&

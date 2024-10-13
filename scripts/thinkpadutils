@@ -39,7 +39,7 @@ check_root() {
 bat() {
     case "$1" in
         limit)
-            tpacpi-bat -s ST 0 80
+            tpacpi-bat -s ST 0 85
             tpacpi-bat -s SP 0 95 ;;
 
         unlimit)
