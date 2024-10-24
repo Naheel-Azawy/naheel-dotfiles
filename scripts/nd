@@ -1,5 +1,9 @@
 #!/bin/sh
 
+# TODO: install zsh plugins
+# TODO: bar is not working, because: podman is needed while install
+# TODO: install keyd and config
+
 if [ "$DOTFILES_DIR" ]; then
     D="$DOTFILES_DIR"
 else

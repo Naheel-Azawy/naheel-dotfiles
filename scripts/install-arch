@@ -15,6 +15,8 @@
 # as a minimal installer. Some options might be added later, but
 # probably not too much.
 
+# TODO: grub never appears to work on uefi
+
 [ "$DEV" ]          || DEV=/dev/sdc
 [ "$MP" ]           || MP=/mnt/arch-install
 [ "$USERNAME" ]     || USERNAME=me

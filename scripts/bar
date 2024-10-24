@@ -670,8 +670,9 @@ class Bar(BarBase):
         if self.a:
             return None
         ret = "%{A:ndg start_menu&:}"
-        support_xbm = "The icon must be in xbm format" in \
-            sh.man("lemonbar", _tty_out=False)
+        support_xbm = True
+        # support_xbm = "The icon must be in xbm format" in \
+        #     sh.man("lemonbar", _tty_out=False)
         if support_xbm:
             fpath = f"{HOME}/.cache/start.xbm"
             if not os.path.exists(fpath):
