@@ -1,24 +1,23 @@
-| Tag    | Name                          | Git Link | Purpose                                |
-|--------+-------------------------------+----------+----------------------------------------|
-| pacman | man-pages                     | N.A.     | manuals                                |
-| pacman | docker                        | N.A.     | to run docker containers               |
-| pacman | cloc                          | N.A.     | Calculates lines of code               |
-| pacman | cmake                         | N.A.     | CMake build system                     |
-| pacman | clang                         | N.A.     | another cool c compiler                |
-| pacman | arm-none-eabi-gcc             | N.A.     | arm toys                               |
-| pacman | arm-none-eabi-newlib          | N.A.     | more arm toys                          |
-| pacman | emscripten                    | N.A.     | llvm to javascript                     |
-| aur    | umlet                         | N.A.     | UML builder                            |
-| pacman | yarn                          | N.A.     | dependency installer                   |
-| pacman | gdb                           | N.A.     | the gnu debugger                       |
-| pacman | strace                        | N.A.     | trace system calls                     |
-| pacman | ltrace                        | N.A.     | trace library function calls           |
-| npm    | tern                          | N.A.     | JavaScript analyzer (needed for Emacs) |
-| npm    | js-beautify                   | N.A.     | beautify web                           |
-| npm    | fx                            | N.A.     | a cool way to view JSON                |
-| pip    | yq                            | N.A.     | YAML and XML interface to jq           |
-| aur    | aha                           | N.A.     | ANSI to HTML                           |
-| pacman | gitui                         | N.A.     | a nice and quick git tui               |
-| npm    | vscode-css-languageserver-bin | N.A.     | LSP for CSS                            |
-| npm    | typescript-language-server    | N.A.     | LSP for typescript                     |
-| pip    | python-language-server        | N.A.     | LSP for python                         |
+| Tag    | Name                       | Git Link | Purpose                                |
+|--------+----------------------------+----------+----------------------------------------|
+| pacman | man-pages                  | N.A.     | manuals                                |
+| pacman | docker                     | N.A.     | to run docker containers               |
+| pacman | cloc                       | N.A.     | Calculates lines of code               |
+| pacman | cmake                      | N.A.     | CMake build system                     |
+| pacman | clang                      | N.A.     | another cool c compiler                |
+| pacman | arm-none-eabi-gcc          | N.A.     | arm toys                               |
+| pacman | arm-none-eabi-newlib       | N.A.     | more arm toys                          |
+| pacman | emscripten                 | N.A.     | llvm to javascript                     |
+| aur    | umlet                      | N.A.     | UML builder                            |
+| pacman | yarn                       | N.A.     | dependency installer                   |
+| pacman | gdb                        | N.A.     | the gnu debugger                       |
+| pacman | strace                     | N.A.     | trace system calls                     |
+| pacman | ltrace                     | N.A.     | trace library function calls           |
+| npm    | tern                       | N.A.     | JavaScript analyzer (needed for Emacs) |
+| npm    | js-beautify                | N.A.     | beautify web                           |
+| pacman | fx                         | N.A.     | a cool way to view JSON                |
+| pacman | yq                         | N.A.     | YAML and XML interface to jq           |
+| pacman | aha                        | N.A.     | ANSI to HTML                           |
+| pacman | gitui                      | N.A.     | a nice and quick git tui               |
+| pacman | typescript-language-server | N.A.     | LSP for typescript                     |
+| pacman | python-lsp-server          | N.A.     | LSP for python                         |

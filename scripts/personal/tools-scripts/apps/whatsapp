@@ -1,10 +1,24 @@
 #!/bin/sh
 
 ICON= # defined below
-AGENT='Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/101.0.4951.26 Safari/537.36'
+AGENT='Mozilla/5.0 (Windows NT 10.0; WOW64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.6301.219 Safari/537.36'
+JAIL="$HOME/.local/share/jail-whatsapp"
+
+exists() {
+    command -v "$1" >/dev/null
+}
 
 run() {
-    exec chromium --user-agent="$AGENT" --app=https://web.whatsapp.com
+    mkdir -p "$JAIL"
+    if exists brave; then
+        B=brave
+    elif exists chromium; then
+        B=bromium
+    else
+        echo 'ERROR: no browser found' >&2
+    fi
+    exec firejail --noprofile --private-tmp --disable-mnt --private="$JAIL" \
+         "$B" --user-agent="$AGENT" --app=https://web.whatsapp.com
 }
 
 mk() {

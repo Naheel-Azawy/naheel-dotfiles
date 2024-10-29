@@ -1,8 +1,6 @@
 #!/bin/sh
 
-# TODO: install zsh plugins
 # TODO: bar is not working, because: podman is needed while install
-# TODO: install keyd and config
 
 if [ "$DOTFILES_DIR" ]; then
     D="$DOTFILES_DIR"
@@ -316,6 +314,13 @@ export PATH=\"\$PATH:\$DOTFILES_SCRIPTS\"
 
     info "Installing mpv configs"
     run git clone https://github.com/Naheel-Azawy/mpv-config "$H/.config/mpv"
+
+    info "Init zsh plugins"
+    run zsh -c ". $H/.zshrc; zsh_init_plugins"
+
+    info "Installing shortcuts"
+    run mkdir -p "$H/.local/share/applications/"
+    run cp "$D/applications"/* "$H/.local/share/applications/"
 
     info "Starting Emacs daemon"
     run emacs --daemon

@@ -1,6 +1,5 @@
 | Tag    | Name                           | Git Link                                   | Purpose                                                                                        |
 |--------+--------------------------------+--------------------------------------------+------------------------------------------------------------------------------------------------|
-| func   | blackarch                      | N.A.                                       | hacking tools                                                                                  |
 | pacman | python-pip                     | N.A.                                       | python's package manager                                                                       |
 | pacman | nodejs                         | N.A.                                       | node.js is needed to run some programs ahead                                                   |
 | pacman | npm                            | N.A.                                       | node.js pacage manager                                                                         |
@@ -8,13 +7,11 @@
 | pacman | yt-dlp                         | N.A.                                       | can download any YouTube video (or playlist or channel) when given the link                    |
 | pacman | libreoffice                    | N.A.                                       | because off course someone will send a file that is not a plain text...                        |
 | pacman | jdk-openjdk                    | N.A.                                       | Java development kit                                                                           |
-| pacman | firejail                       | N.A.                                       | keeps untrusted software in jail                                                               |
 | pacman | arch-install-scripts           | N.A.                                       | contains some helpful scripts to install or maintain arch                                      |
 | pacman | gimp                           | N.A.                                       | the gnu image manipulation program                                                             |
 | aur    | drawio-desktop-bin             | N.A.                                       | diagram builder                                                                                |
 | pacman | imagemagick                    | N.A.                                       | the magical image editor                                                                       |
 | pacman | virtualbox                     | N.A.                                       | the chosen virtual machine                                                                     |
-| pacman | nautilus                       | N.A.                                       | GNOME's file manager                                                                           |
 | pacman | wine                           | N.A.                                       | runs Windows programs. Always be careful while using non free software. Best fit with firejail |
 | pacman | wine-mono                      | N.A.                                       | needed by wine                                                                                 |
 | pacman | wine_gecko                      | N.A.                                       | needed by wine                                                                                 |
@@ -28,10 +25,9 @@
 | pacman | opendesktop-fonts              | N.A.                                       | Japanese font                                                                                  |
 | aur    | transset-df                    | N.A.                                       | used to change the window opacity                                                              |
 | pacman | translate-shell                | N.A.                                       | a command-line translator                                                                      |
-| pip    | numpy                          | N.A.                                       | some actual math in python                                                                     |
-| pip    | matplotlib                     | N.A.                                       | math plotting in python                                                                        |
-| aur    | python-pmw                     | N.A.                                       | needed for matplotlib                                                                          |
-| pacman | texlive-most                   | N.A.                                       | tex stuff                                                                                      |
+| pacman | python-numpy                   | N.A.                                       | some actual math in python                                                                     |
+| pacman | python-matplotlib              | N.A.                                       | math plotting in python                                                                        |
+| pacman | texlive                        | N.A.                                       | tex stuff                                                                                      |
 | pacman | texlive-langextra              | N.A.                                       | tex extra languages support                                                                    |
 | pacman | biber                          | N.A.                                       | tex biber                                                                                      |
 | aur    | screenkey                      | N.A.                                       | display the pressed keys on the screen. Useful for screen casting                              |
@@ -54,9 +50,13 @@
 | pacman | arch-audit                     | N.A.                                       | audit your system                                                                              |
 | git    | rn                             | https://github.com/Naheel-Azawy/runner     | executes everything                                                                            |
 | pacman | lynx                           | N.A.                                       | a terminal web browser                                                                         |
-| pacman | units                          | N.A.                                       | units converter                                                                                |
+| aur    | units                          | N.A.                                       | units converter                                                                                |
 | pacman | octave                         | N.A.                                       | matlab alternative                                                                             |
 | pacman | qt5ct                          | N.A.                                       | QT5 configurations                                                                             |
 | pacman | geoip                          | N.A.                                       | geographical IP database                                                                       |
 | git    | msoffice                       | https://github.com/Naheel-Azawy/officejail | ms office wrapper                                                                              |
+| pacman | meson                          | N.A.                                       | meson build system, required to build other software                                           |
 | git    | gtk-print                      | https://github.com/nbfalcon/gtk-print      | gtk printer dialog                                                                             |
+| pacman | pandoc                         | N.A.                                       | document converter                                                                             |
+| pacman | kdenlive                       | N.A.                                       | video editor                                                                                   |
+| aur    | ttf-material-icons-git         | N.A.                                       | better icons font                                                                              |

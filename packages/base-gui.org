@@ -1,90 +1,93 @@
-| Tag    | Name                   | Git Link                                | Purpose                                                          |
-|--------+------------------------+-----------------------------------------+------------------------------------------------------------------|
-| pacman | bspwm                  | N.A.                                    | the window manager                                               |
-| pacman | xorg-server            | N.A.                                    | graphical server                                                 |
-| pacman | xorg-xdpyinfo          | N.A.                                    | retrieves screen information for some scripts                    |
-| pacman | xorg-xinit             | N.A.                                    | starts the graphical server                                      |
-| pacman | xorg-xinput            | N.A.                                    | controls the input devices in xorg                               |
-| pacman | xf86-input-synaptics   | N.A.                                    | handles the touchpad the right way                               |
-| pacman | xorg-xprop             | N.A.                                    | property displayer for xorg                                      |
-| pacman | xorg-xset              | N.A.                                    | preference for xorg                                              |
-| pacman | xclip                  | N.A.                                    | clipboard manageer for xorg                                      |
-| pacman | xterm                  | N.A.                                    | a simple terminal                                                |
-| git    | theterm                | https://github.com/Naheel-Azawy/theterm | a wrapper to give the terminal super powers                      |
-| aur    | ttf-symbola            | N.A.                                    | unicode symbols and emojis                                       |
-| pacman | ttf-liberation         | N.A.                                    | another pretty font                                              |
-| aur    | ttf-iosevka-fixed      | N.A.                                    | an even cooler monospaced font                                   |
-| aur    | ttf-sil-kawkab-mono    | N.A.                                    | Arabic mono font                                                 |
-| aur    | ttf-font-awesome       | N.A.                                    | used for the icons in the top bar                                |
-| aur    | nerd-fonts-hack        | N.A.                                    | more symbolic fonts                                              |
-| pacman | arandr                 | N.A.                                    | UI for screen adjustment                                         |
-| pacman | picom                  | N.A.                                    | for transparency and removing screen-tearing                     |
-| pacman | dunst                  | N.A.                                    | suckless notification system                                     |
-| pacman | feh                    | N.A.                                    | a minimal image viewer (used to set wallpaper)                   |
-| pacman | imlib2                 | N.A.                                    | images library. Needed for sxiv                                  |
-| git    | sxiv                   | https://github.com/Naheel-Azawy/sxiv    | the image viewer                                                 |
-| aur    | brave-bin              | N.A.                                    | default browser                                                  |
-| pacman | gnome-keyring          | N.A.                                    | serves as the system keyring                                     |
-| pacman | gnome-themes-extra     | N.A.                                    | gives the dark GTK theme                                         |
-| git    | lemonbar               | https://github.com/Naheel-Azawy/lemonbar | status bar                                                      |
-| pacman | trayer                 | N.A.                                    | a standalone system tray                                         |
-| aur    | i3lock-color           | N.A.                                    | screen lock                                                      |
-| pacman | mpv                    | N.A.                                    | patrician's choice video/gif player                              |
-| pacman | network-manager-applet | N.A.                                    | appears in the top right corner and manages the wi-fi connection |
-| pacman | maim                   | N.A.                                    | can take quick screenshots at your request                       |
-| pacman | xdotool                | N.A.                                    | provides window action utilities on the command line.            |
-| pacman | xdo                    | N.A.                                    | provides window action utilities on the command line.            |
-| aur    | xtitle                 | N.A.                                    | read x windows titles                                            |
-| pacman | xssstate               | N.A.                                    | times out the screen if locked                                   |
-| pacman | lxappearance           | N.A.                                    | configures GTK with a simple GUI                                 |
-| pacman | cups                   | N.A.                                    | in case you need to use a printer                                |
-| pacman | cups-pdf               | N.A.                                    | pdf for cups                                                     |
-| pacman | system-config-printer  | N.A.                                    | a little GUI to control your printers                            |
-| git    | xbanish                | https://github.com/AtomToast/xbanish    | hide the mouse cursor while typing                               |
-| pacman | pulseaudio             | N.A.                                    | the audio system (>inb4 bloat)                                   |
-| pacman | pamixer                | N.A.                                    | terminal audio control interface                                 |
-| pacman | pulsemixer             | N.A.                                    | an intuitive ncurses audio controller                            |
-| pacman | alsa-firmware          | N.A.                                    | sound related stuff                                              |
-| pacman | alsa-lib               | N.A.                                    | sound related stuff                                              |
-| pacman | alsa-plugins           | N.A.                                    | sound related stuff                                              |
-| pacman | alsa-utils             | N.A.                                    | sound related stuff                                              |
-| pacman | lib32-alsa-lib         | N.A.                                    | sound related stuff                                              |
-| pacman | lib32-alsa-plugins     | N.A.                                    | sound related stuff                                              |
-| pacman | pulseaudio-alsa        | N.A.                                    | sound related stuff                                              |
-| pacman | lib32-libpulse         | N.A.                                    | sound related stuff                                              |
-| pacman | libcanberra-pulse      | N.A.                                    | sound related stuff                                              |
-| pacman | libpulse               | N.A.                                    | sound related stuff                                              |
-| pacman | pulseaudio             | N.A.                                    | sound related stuff                                              |
-| pacman | lib32-openal           | N.A.                                    | sound related stuff                                              |
-| pacman | evince                 | N.A.                                    | GNOME's PDF reader                                               |
-| pacman | mpd                    | N.A.                                    | music player daemon                                              |
-| pacman | mpc                    | N.A.                                    | mpd client                                                       |
-| pacman | ncmpcpp                | N.A.                                    | mpd UI                                                           |
-| pacman | onboard                | N.A.                                    | on-screen keyboard                                               |
-| git    | prayer                 | https://github.com/Naheel-Azawy/prayer  | CLI prayer time                                                  |
-| aur    | btop-git               | N.A.                                    | a nice system monitor                                            |
-| aur    | dragon-drop            | N.A.                                    | drag and drop                                                    |
-| pacman | acpilight              | N.A.                                    | brightness control                                               |
-| pacman | udisks2                | N.A.                                    | nice disks management                                            |
-| pacman | ueberzug               | N.A.                                    | image previews in the terminal                                   |
-| pacman | sxhkd                  | N.A.                                    | keyboard bindings                                                |
-| pacman | appmenu-gtk-module     | N.A.                                    | needed for the hud menu                                          |
-| git    | dmenu                  | https://github.com/Naheel-Azawy/dmenu   | runs commands and provides a UI for selection                    |
-| pacman | clipmenu               | N.A.                                    | a clipboard manger                                               |
-| pacman | xorg-xsetroot          | N.A.                                    | root window parameter setting utility for X                      |
-| pacman | ntp                    | N.A.                                    | network time protocol                                            |
-| pacman | perl-file-mimeinfo     | N.A.                                    | mimetype utils                                                   |
-| pacman | network-manager-applet | N.A.                                    | handy nm gui applet                                              |
-| pacman | openvpn                | N.A.                                    | the open vpn                                                     |
-| pacman | networkmanager-openvpn | N.A.                                    | openvpn for nm                                                   |
-| git    | bspdd                  | https://github.com/Naheel-Azawy/bspdd   | bspwm dynamic desktops                                           |
-| pacman | fprintd                | N.A.                                    | fingerprint reader                                               |
-| pacman | bluez                  | N.A.                                    | bluetooth service                                                |
-| pacman | blueman                | N.A.                                    | bluetooth gui frontend                                           |
-| aur    | highlight-pointer      | N.A.                                    | red pointer for presentations                                    |
-| pacman | vala                   | N.A.                                    | Vala language                                                    |
-| pacman | vte3                   | N.A.                                    | virtual terminal emulator for GTK                                |
-| pacman | libgee                 | N.A.                                    | data structures for GObject                                      |
-| git    | gmenu                  | https://github.com/Naheel-Azawy/gmenu   | GTK dmenu                                                        |
-| git    | gtrm                   | https://github.com/Naheel-Azawy/gtrm    | GTK-VTE terminal                                                 |
-| aur    | linux-wifi-hotspot     | N.A.                                    | WiFi hotspot                                                     |
+| Tag    | Name                   | Git Link                                 | Purpose                                                          |
+|--------+------------------------+------------------------------------------+------------------------------------------------------------------|
+| pacman | bspwm                  | N.A.                                     | the window manager                                               |
+| pacman | xorg-server            | N.A.                                     | graphical server                                                 |
+| pacman | xorg-xdpyinfo          | N.A.                                     | retrieves screen information for some scripts                    |
+| pacman | xorg-xinit             | N.A.                                     | starts the graphical server                                      |
+| pacman | xorg-xinput            | N.A.                                     | controls the input devices in xorg                               |
+| pacman | xf86-input-synaptics   | N.A.                                     | handles the touchpad the right way                               |
+| pacman | xorg-xprop             | N.A.                                     | property displayer for xorg                                      |
+| pacman | xorg-xset              | N.A.                                     | preference for xorg                                              |
+| pacman | xclip                  | N.A.                                     | clipboard manageer for xorg                                      |
+| pacman | xterm                  | N.A.                                     | a simple terminal                                                |
+| git    | theterm                | https://github.com/Naheel-Azawy/theterm  | a wrapper to give the terminal super powers                      |
+| aur    | ttf-symbola            | N.A.                                     | unicode symbols and emojis                                       |
+| pacman | ttf-liberation         | N.A.                                     | another pretty font                                              |
+| aur    | ttf-iosevka-fixed      | N.A.                                     | an even cooler monospaced font                                   |
+| aur    | ttf-sil-kawkab-mono    | N.A.                                     | Arabic mono font                                                 |
+| aur    | ttf-font-awesome       | N.A.                                     | used for the icons in the top bar                                |
+| aur    | nerd-fonts-hack        | N.A.                                     | more symbolic fonts                                              |
+| pacman | arandr                 | N.A.                                     | UI for screen adjustment                                         |
+| pacman | picom                  | N.A.                                     | for transparency and removing screen-tearing                     |
+| pacman | dunst                  | N.A.                                     | suckless notification system                                     |
+| pacman | feh                    | N.A.                                     | a minimal image viewer (used to set wallpaper)                   |
+| pacman | imlib2                 | N.A.                                     | images library. Needed for sxiv                                  |
+| git    | sxiv                   | https://github.com/Naheel-Azawy/sxiv     | the image viewer                                                 |
+| aur    | brave-bin              | N.A.                                     | default browser                                                  |
+| pacman | gnome-keyring          | N.A.                                     | serves as the system keyring                                     |
+| pacman | gnome-themes-extra     | N.A.                                     | gives the dark GTK theme                                         |
+| pacman | glib2                  | N.A.                                     | just to be sure that gsettings is there                          |
+| pacman | gnome-settings-daemon  | N.A.                                     | settings daemon for better desktop integration                   |
+| git    | lemonbar               | https://github.com/Naheel-Azawy/lemonbar | status bar                                                       |
+| pacman | trayer                 | N.A.                                     | a standalone system tray                                         |
+| aur    | i3lock-color           | N.A.                                     | screen lock                                                      |
+| pacman | mpv                    | N.A.                                     | patrician's choice video/gif player                              |
+| pacman | network-manager-applet | N.A.                                     | appears in the top right corner and manages the wi-fi connection |
+| pacman | maim                   | N.A.                                     | can take quick screenshots at your request                       |
+| pacman | xdotool                | N.A.                                     | provides window action utilities on the command line.            |
+| pacman | xdo                    | N.A.                                     | provides window action utilities on the command line.            |
+| aur    | xtitle                 | N.A.                                     | read x windows titles                                            |
+| pacman | xssstate               | N.A.                                     | times out the screen if locked                                   |
+| pacman | lxappearance           | N.A.                                     | configures GTK with a simple GUI                                 |
+| pacman | cups                   | N.A.                                     | in case you need to use a printer                                |
+| pacman | cups-pdf               | N.A.                                     | pdf for cups                                                     |
+| pacman | system-config-printer  | N.A.                                     | a little GUI to control your printers                            |
+| git    | xbanish                | https://github.com/AtomToast/xbanish     | hide the mouse cursor while typing                               |
+| pacman | pulseaudio             | N.A.                                     | the audio system (>inb4 bloat)                                   |
+| pacman | pamixer                | N.A.                                     | terminal audio control interface                                 |
+| pacman | pulsemixer             | N.A.                                     | an intuitive ncurses audio controller                            |
+| pacman | alsa-firmware          | N.A.                                     | sound related stuff                                              |
+| pacman | alsa-lib               | N.A.                                     | sound related stuff                                              |
+| pacman | alsa-plugins           | N.A.                                     | sound related stuff                                              |
+| pacman | alsa-utils             | N.A.                                     | sound related stuff                                              |
+| pacman | lib32-alsa-lib         | N.A.                                     | sound related stuff                                              |
+| pacman | lib32-alsa-plugins     | N.A.                                     | sound related stuff                                              |
+| pacman | pulseaudio-alsa        | N.A.                                     | sound related stuff                                              |
+| pacman | lib32-libpulse         | N.A.                                     | sound related stuff                                              |
+| pacman | libcanberra-pulse      | N.A.                                     | sound related stuff                                              |
+| pacman | libpulse               | N.A.                                     | sound related stuff                                              |
+| pacman | pulseaudio             | N.A.                                     | sound related stuff                                              |
+| pacman | lib32-openal           | N.A.                                     | sound related stuff                                              |
+| pacman | evince                 | N.A.                                     | GNOME's PDF reader                                               |
+| pacman | mpd                    | N.A.                                     | music player daemon                                              |
+| pacman | mpc                    | N.A.                                     | mpd client                                                       |
+| pacman | ncmpcpp                | N.A.                                     | mpd UI                                                           |
+| pacman | onboard                | N.A.                                     | on-screen keyboard                                               |
+| git    | prayer                 | https://github.com/Naheel-Azawy/prayer   | CLI prayer time                                                  |
+| pacman | btop                   | N.A.                                     | a nice system monitor                                            |
+| aur    | dragon-drop            | N.A.                                     | drag and drop                                                    |
+| pacman | acpilight              | N.A.                                     | brightness control                                               |
+| pacman | udisks2                | N.A.                                     | nice disks management                                            |
+| pacman | ueberzug               | N.A.                                     | image previews in the terminal                                   |
+| pacman | sxhkd                  | N.A.                                     | keyboard bindings                                                |
+| pacman | appmenu-gtk-module     | N.A.                                     | needed for the hud menu                                          |
+| git    | dmenu                  | https://github.com/Naheel-Azawy/dmenu    | runs commands and provides a UI for selection                    |
+| pacman | clipmenu               | N.A.                                     | a clipboard manger                                               |
+| pacman | xorg-xsetroot          | N.A.                                     | root window parameter setting utility for X                      |
+| pacman | ntp                    | N.A.                                     | network time protocol                                            |
+| pacman | perl-file-mimeinfo     | N.A.                                     | mimetype utils                                                   |
+| pacman | network-manager-applet | N.A.                                     | handy nm gui applet                                              |
+| pacman | openvpn                | N.A.                                     | the open vpn                                                     |
+| pacman | networkmanager-openvpn | N.A.                                     | openvpn for nm                                                   |
+| git    | bspdd                  | https://github.com/Naheel-Azawy/bspdd    | bspwm dynamic desktops                                           |
+| pacman | fprintd                | N.A.                                     | fingerprint reader                                               |
+| pacman | bluez                  | N.A.                                     | bluetooth service                                                |
+| pacman | blueman                | N.A.                                     | bluetooth gui frontend                                           |
+| aur    | highlight-pointer      | N.A.                                     | red pointer for presentations                                    |
+| pacman | vala                   | N.A.                                     | Vala language                                                    |
+| pacman | vte3                   | N.A.                                     | virtual terminal emulator for GTK                                |
+| pacman | libgee                 | N.A.                                     | data structures for GObject                                      |
+| git    | gmenu                  | https://github.com/Naheel-Azawy/gmenu    | GTK dmenu                                                        |
+| git    | gtrm                   | https://github.com/Naheel-Azawy/gtrm     | GTK-VTE terminal                                                 |
+| aur    | linux-wifi-hotspot     | N.A.                                     | WiFi hotspot                                                     |
+| pacman | pavucontrol            | N.A.                                     | audio gui control                                                |

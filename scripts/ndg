@@ -775,6 +775,16 @@ start() {
     FONT_SIZE="$FONT_MONO:size=$FONT_SIZE_NUM"
     export FONT_SIZE_NUM FONT_SIZE
 
+    keys='org.gnome.desktop.interface font-name
+org.gnome.desktop.interface document-font-name
+org.onboard.theme-settings key-label-font'
+
+    echo "$keys" | while read -r p k; do
+        gsettings set "$p" "$k" "$FONT $((FONT_SIZE_NUM - 2))"
+    done
+
+    gsettings set org.gnome.desktop.interface monospace-font-name "$FONT_MONO $FONT_SIZE_NUM"
+
     userresources=$HOME/.Xresources
     sysresources=/etc/X11/xinit/.Xresources
     sysmodmap=/etc/X11/xinit/.Xmodmap

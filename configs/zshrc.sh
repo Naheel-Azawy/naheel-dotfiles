@@ -9,8 +9,25 @@ bindkey -e
 
 zshctr=0
 
-if [[ $- == *i* ]]; then
-    zstyle :compinstall filename '/home/naheel/.zshrc'
+SSH_ENV=$HOME/.ssh/env
+
+# https://askubuntu.com/a/634573
+ssh_agent_start() {
+    ps -ef | grep "$SSH_AGENT_PID" | grep ssh-agent$ > /dev/null &&
+        return 0
+    ssh-agent | sed 's/^echo/#echo/' > "$SSH_ENV"
+    chmod 600 "$SSH_ENV"
+    . "$SSH_ENV" > /dev/null
+    ssh-add
+}
+ssh_agent_init() {
+    if [ -f "$SSH_ENV" ]; then
+        . "$SSH_ENV" > /dev/null
+    fi
+}
+
+zsh_init_interactive() {
+    zstyle :compinstall filename "$HOME/.zshrc"
     autoload -Uz compinit
     compinit
     setopt interactivecomments
@@ -285,6 +302,12 @@ abbr idf='idf.py'
 EOF
     fi
 
+    zsh_init_plugins
+    ssh_agent_init
+    zsh_greeting
+}
+
+zsh_init_plugins() {
     plugins=()
     zsh_plugin() {
         local p=$1
@@ -343,6 +366,8 @@ EOF
         bindkey '^[[A' history-substring-search-up
         bindkey '^[[B' history-substring-search-down
     }
+}
 
-    zsh_greeting
+if [[ $- == *i* ]]; then
+    zsh_init_interactive
 fi

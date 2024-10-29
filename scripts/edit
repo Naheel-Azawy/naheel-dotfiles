@@ -23,7 +23,7 @@ nw()  {
 }
 
 swallowable() {
-    true                              &&
+    false                             &&
         [ -n "$DISPLAY" ]             &&
         [ -t 0 ]                      &&
         [ "$THETERM_TERM" = xterm ]   &&
