@@ -47,17 +47,14 @@ treeview:selected {
     background-color: @theme_selected_bg_color;
 }
 
-/*evview {
-    background-color: #080808;
+evview.view.content-view {
+    background-color: black;
+    border: 1px solid #333;
 }
 
-evview:active {
-    background-color: red;
-}
-
-evview:selected {
+evview.view.content-view:selected {
     background-color: @theme_selected_bg_color;
-}*/
+}
 
 calendar.view {
 	background-color: black;

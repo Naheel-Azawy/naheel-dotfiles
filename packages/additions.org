@@ -60,3 +60,4 @@
 | pacman | pandoc                         | N.A.                                       | document converter                                                                             |
 | pacman | kdenlive                       | N.A.                                       | video editor                                                                                   |
 | aur    | ttf-material-icons-git         | N.A.                                       | better icons font                                                                              |
+| pacman | baobab                         | N.A.                                       | disk usage analysis                                                                            |

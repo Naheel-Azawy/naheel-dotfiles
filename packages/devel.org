@@ -21,3 +21,4 @@
 | pacman | gitui                      | N.A.     | a nice and quick git tui               |
 | pacman | typescript-language-server | N.A.     | LSP for typescript                     |
 | pacman | python-lsp-server          | N.A.     | LSP for python                         |
+| pacman | android-tools              | N.A.     | ADB and others                         |

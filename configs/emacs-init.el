@@ -451,7 +451,7 @@ mouse-3: Toggle minor modes"
   :init (require 'multiple-cursors)
   :bind ("C-]" . mc/mark-next-like-this)
   :custom-face
-  (mc/cursor-face ((t (:background "white" :foreground "black")))))
+  (mc/cursor-face ((t (:background "black" :foreground "white")))))
 
 ;; ---- ORIGAMI ----
 (use-package origami
