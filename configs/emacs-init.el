@@ -529,6 +529,14 @@ from: https://stackoverflow.com/a/998472/3825872"
 ;; ---- BACKUP ----
 (setq backup-directory-alist `(("." . "~/.cache/emacs-saves")))
 
+;; ---- FIX MINIBUFFER ----
+(defun stop-using-minibuffer ()
+  "Kill the minibuffer.
+https://trey-jackson.blogspot.com/2010/04/emacs-tip-36-abort-minibuffer-when.html"
+  (when (and (>= (recursion-depth) 1) (active-minibuffer-window))
+    (abort-recursive-edit)))
+(add-hook 'mouse-leave-buffer-hook 'stop-using-minibuffer)
+
 ;; ---- COMPANY ----
 (use-package company
   :config (global-company-mode))
