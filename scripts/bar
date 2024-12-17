@@ -164,7 +164,7 @@ background = '#ff000000'
 foreground = '#ffffff'
 
 # if a second clock needed
-gmt_there = 3
+gmt_there = None
 gmt_here = time.localtime().tm_gmtoff / 60 / 60
 if gmt_there is not None:
     gmt_diff = gmt_there - gmt_here
