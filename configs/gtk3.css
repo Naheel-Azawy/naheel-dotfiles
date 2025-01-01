@@ -52,8 +52,16 @@ evview.view.content-view {
     border: 1px solid #333;
 }
 
-evview.view.content-view:selected {
+evview:selected {
     background-color: @theme_selected_bg_color;
+}
+
+evview.find-results:selected {
+    background-color: alpha (@theme_selected_bg_color, 0.3);
+}
+
+evview.find-results:active {
+    background-color: alpha (@theme_selected_bg_color, 0.9);
 }
 
 calendar.view {

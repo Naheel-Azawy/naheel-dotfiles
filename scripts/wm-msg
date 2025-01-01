@@ -185,7 +185,7 @@ main() {
     win=$(xdotool getactivewindow)
 
     # handle emacs windows TODO: delete?
-    if xdotool getwindowname "$win" | grep -q emacs; then
+    if false && xdotool getwindowname "$win" | grep -q emacs; then
         case "$cmd" in
             window_focus)
                 timeout .1 emacsclient --no-wait --eval "(windmove-$arg)" && return ;;
