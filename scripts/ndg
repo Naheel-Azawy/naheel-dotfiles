@@ -287,11 +287,12 @@ battery_watch() {
                 continue
             elif [ "$p" -le "$BAT_MIN" ] &&
                    [ -z "$bat_min_done" ]; then
-                for i in $(seq 30 | tac); do
+                for i in $(seq 60 | tac); do
                     acpi -b | grep -q Discharging || break
                     notify -u critical "Shutting down in $i..."
                     sleep 1
                 done
+                acpi -b | grep -q Discharging || continue
                 notify -u critical "Shutting down..."
                 systemctl poweroff
                 bat_min_done=1

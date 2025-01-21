@@ -76,7 +76,8 @@ themes = {
             "more":        "\ue5cf",
             "plus":        "\ue145",
             "close":       "\ue5cd",
-            "keyboard":    "\ue312"
+            "keyboard":    "\ue312",
+            "bluetooth":   "\ue1a7",
         }
     },
 
@@ -105,7 +106,8 @@ themes = {
             "more":        "",
             "plus":        "",
             "close":       "",
-            "keyboard":    ""
+            "keyboard":    "",
+            "bluetooth":   "h",
         }
     },
 
@@ -133,7 +135,8 @@ themes = {
             "more":        "<",
             "plus":        "+",
             "close":       "x",
-            "keyboard":    "k"
+            "keyboard":    "k",
+            "bluetooth":   "h",
         }
     }
 }
@@ -188,6 +191,107 @@ static unsigned char start_bits[] = {
 
 argv = sys.argv
 HOME = os.getenv("HOME")
+
+def exec_lines_cb(argv, cb):
+    popen = subprocess.Popen(argv,
+                             stdout=subprocess.PIPE,
+                             universal_newlines=True)
+    for line in iter(popen.stdout.readline, ""):
+        cb(line)
+    popen.stdout.close()
+    code = popen.wait()
+    if code != 0:
+        raise Exception(f"{argv[0]} exited with code {code}")
+
+# example: await Battery(print).run()
+class Battery:
+    def __init__(self, callback):
+        self.callback = callback
+        self.devs = {}
+        self.devs_simple = {}
+        self.last_dev = None
+
+    def actual_cb(self):
+        self.devs_simple = self.simplify()
+        if self.callback is not None:
+            self.callback(self.devs_simple)
+            self.check(self.devs_simple)
+
+    async def run(self):
+        try:
+            await asyncio.to_thread(self.loop)
+        except Exception:
+            raise Exception(f"upower thread failed")
+        except asyncio.exceptions.CancelledError:
+            pass
+
+    def loop(self):
+        exec_lines_cb(["upower", "--dump"], lambda l: self.parse(l, silent=True))
+        self.actual_cb()
+        exec_lines_cb(["upower", "--monitor-detail"], self.parse)
+
+    def parse(self, line, silent=False):
+        if line == "\n" and not silent:
+            self.actual_cb()
+
+        line = line.strip()
+        if m := \
+           re.match(r"^Device: (.+)$", line) or \
+           re.match(r"^\[[0-9:\.]+\]\s+device changed:\s+(.+)$", line) or \
+           re.match(r"^\[[0-9:\.]+\]\s+device added:\s+(.+)$", line):
+            self.last_dev = m[1]
+            if self.last_dev not in self.devs:
+                self.devs[self.last_dev] = {"name": self.last_dev}
+
+        elif m := re.match(r"^\[[0-9:\.]+\]\s+device removed:\s+(.+)$", line):
+            self.last_dev = m[1]
+            if self.last_dev in self.devs:
+                del self.devs[self.last_dev]
+            self.last_dev = None
+
+        elif self.last_dev is not None:
+            pair = line.split(":")
+            if len(pair) == 2:
+                attr = pair[0].strip()
+                val  = pair[1].strip()
+                self.devs[self.last_dev][attr] = val
+
+    def simplify(self):
+        devs = self.devs
+        simple = {
+            "batteries": [],
+            "acs":       [],
+            "headsets":  [],
+        }
+        names = list(devs.keys())
+
+        for name in devs:
+            dev = devs[name]
+            name_min = name.split("/")[-1]
+
+            if "battery_BAT" in name:
+                simple["batteries"].append({
+                    "name":       name_min,
+                    "percentage": int(dev["percentage"][:-1]),
+                    "charging":   dev["state"] == "charging"
+                })
+            elif "line_power_AC" in name:
+                simple["acs"].append({
+                    "name":   name_min,
+                    "online": dev["online"] == "yes"
+                })
+            elif "headset_dev_" in name:
+                if "model" in dev and dev["model"] not in names:
+                    name_min = dev["model"]
+                simple["headsets"].append({
+                    "name":       name_min,
+                    "percentage": int(dev["percentage"][:-1])
+                })
+        return simple
+
+    def check(self, devs):
+        # TODO: watch battery, send warnings, shutdown/hybernate
+        pass
 
 # example: WM(lambda s: print(s)).run()
 class WM:
@@ -282,6 +386,7 @@ class BarBase:
         self.a = use_ascii
         self.wm = WM(self.run_wm_items)
         self.xtitle = XTitle(self.run_xtitle_items)
+        self.battery_listener = Battery(self.run_battery_items)
 
         if len(minis) != len(outs):
             minis = [False] * len(outs)
@@ -378,6 +483,10 @@ class BarBase:
         self.run_item(self.program)
         self.render()
 
+    def run_battery_items(self, _):
+        self.run_item(self.battery)
+        self.render()
+
     async def handle_connection(self, reader, writer):
         data = b""
         while True:
@@ -412,6 +521,10 @@ class BarBase:
         if self.xtitle is not None:
             coroutines.append(self.xtitle.run())
 
+        # battery
+        if self.battery_listener is not None:
+            coroutines.append(self.battery_listener.run())
+
         # periodic items
         for item in self.items:
             if item("period") > 0:
@@ -436,7 +549,7 @@ class BarBase:
 
 class Bar(BarBase):
 
-    items_str = "start workspaces program | clock | systray keyboard pray weather temperature wifi battery power"
+    items_str = "start workspaces program | clock | systray profile keyboard pray weather temperature wifi battery power"
 
     @item(big=False)
     def workspaces(self):
@@ -495,8 +608,96 @@ class Bar(BarBase):
             cmd = "gtrm --dims 68x35 -p 'ndg calendar'"
             return f"%{{A:{cmd}&:}}{t}%{{A}}"
 
-    @item(period=3, big=True)
+    @item(big=True)
     def battery(self):
+        if not self.battery_listener.devs_simple:
+            return None
+
+        devs = self.battery_listener.devs_simple
+
+        out_acs   = ""
+        out_batts = ""
+        out_heads = ""
+
+        plugged = False
+        for dev in devs["acs"]:
+            if dev["online"]:
+                plugged = True
+                if self.a:
+                    out_acs += "~"
+                else:
+                    out_acs += icons["plug"]
+
+        r = '#FFFFFF'
+        for dev in devs["batteries"]:
+            percent  = dev["percentage"]
+            charging = dev["charging"]
+            if self.a:
+                out_batts += f"b{percent}%%"
+                if not charging:
+                    out_batts += "-"
+                out_batts += " "
+            else:
+                if charging:
+                    r = '#FFFFFF' if percent >= 99 else '#FFD700'
+                elif percent <= 20:
+                    if percent > 10:
+                        r = '#FF0000'
+                    else:
+                        r = '#000000'
+                    if percent <= 15:
+                        out_batts += icons["exclamation"]
+
+                if percent < 30:
+                    out_batts += icons["battery30"]
+                elif percent < 50:
+                    out_batts += icons["battery50"]
+                elif percent < 70:
+                    out_batts += icons["battery60"]
+                elif percent < 99:
+                    out_batts += icons["battery90"]
+                else:
+                    out_batts += icons["battery100"]
+
+                out_batts += f" {percent}%% "
+
+        for dev in devs["headsets"]:
+            percent = dev["percentage"]
+            if self.a:
+                out_heads += f"h{percent}%% "
+            else:
+                out_heads += icons["bluetooth"] + f"{percent}%% "
+
+        out_acs   = out_acs.strip()
+        out_batts = out_batts.strip()
+        out_heads = out_heads.strip()
+
+        out = f"{out_acs}{out_batts} {out_heads}".strip()
+
+        if not self.a:
+            if percent <= 10 and not charging:
+                out = "%{B#FF0000} " + out + " %{B-}"
+            cmd = "gtrm --dims 75x3 -p 'watch -tn 1 acpi -i'"
+            out = f"%{{F{r}}}%{{A:{cmd}&:}}{out}%{{A}}%{{F-}}"
+
+        return out
+
+    @item(period=3, big=True)
+    def profile(self):
+        # https://wiki.archlinux.org/title/Lenovo_ThinkPad_X1_Carbon_(Gen_10)#Performance_modes
+        profile = None
+        profilef = "/sys/firmware/acpi/platform_profile"
+        if os.path.exists(profilef):
+            try:
+                with open(profilef, "r") as f:
+                    profile = f.read().strip()[0]
+            except:
+                pass
+        return profile
+
+    @item(period=3, big=True)
+    def battery_periodic(self):
+        # TODO: move logic to Battery class as a fallback of upower
         try:
             acpi = None
             for bat in sh.acpi("-b").strip().split("\n"):
@@ -508,16 +709,6 @@ class Bar(BarBase):
             plugged = charging or "Not charging" in acpi
         except:
             return None
-
-        # https://wiki.archlinux.org/title/Lenovo_ThinkPad_X1_Carbon_(Gen_10)#Performance_modes
-        profile = None
-        profilef = "/sys/firmware/acpi/platform_profile"
-        if os.path.exists(profilef):
-            try:
-                with open(profilef, "r") as f:
-                    profile = f.read().strip()[0]
-            except:
-                pass
 
         if self.a:
             charging = "~" if charging else ""
@@ -552,9 +743,6 @@ class Bar(BarBase):
 
             out += f" {percent}%%"
 
-            if profile:
-                out += profile
-
             if percent <= 10 and not charging:
                 out = "%{B#FF0000} " + out + " %{B-}"
 
@@ -567,8 +755,9 @@ class Bar(BarBase):
     def wifi(self):
         try:
             with open("/proc/net/wireless") as f:
-                v = re.split(r"\s+", f.read().split("\n")[2])[2]
-                v = int(float(v))
+                v = re.split(r"\s+", f.read().split("\n")[2])
+                iface = v[0][:-1]
+                v = int(float(v[2]))
                 if self.a:
                     return f"s{v}%"
                 else:
@@ -580,7 +769,8 @@ class Bar(BarBase):
                         ic = icons["wifi2"]
                     else:
                         ic = icons["wifi1"]
-                    cmd = "gtrm --dims 120x20 -p 'watch -ctn 1 ip --color=always a'"
+                    cmd = "gtrm --dims 120x20 -p 'nmcli con show; echo; " + \
+                        f"ip --color=always addr show dev {iface}'"
                     return f"%{{A:{cmd}&:}}{ic} {v}%%%{{A}}"
         except:
             pass

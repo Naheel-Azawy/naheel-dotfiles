@@ -63,3 +63,8 @@ fi
 
 [ -z "$V" ] || echo "\$ $CMD"
 eval "$CMD"
+
+if command -v dragon-drop >/dev/null &&
+        [ -z "$C" ] && [ -f "$F" ]; then
+    dragon-drop --icon-only -s 250 -x "$F"
+fi
