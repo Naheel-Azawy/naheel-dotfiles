@@ -26,6 +26,24 @@ ssh_agent_init() {
     fi
 }
 
+exists() {
+    command -v "$1" >/dev/null
+}
+
+pyenv_init() {
+    PYENV_ROOT="$HOME/.pyenv"
+    if [ -d "$PYENV_ROOT" ] && exists pyenv; then
+        export PYENV_ROOT
+        [ -d "$PYENV_ROOT/bin" ] && export PATH="$PYENV_ROOT/bin:$PATH"
+        eval "$(pyenv init - zsh)"
+
+        if ! [ -d "$PYENV_ROOT/plugins/pyenv-virtualenv" ]; then
+            echo 'Remember to install virtualenv plugin'
+            echo "git clone https://github.com/pyenv/pyenv-virtualenv.git $PYENV_ROOT/plugins/pyenv-virtualenv"
+        fi
+    fi
+}
+
 zsh_init_interactive() {
     zstyle :compinstall filename "$HOME/.zshrc"
     autoload -Uz compinit
@@ -111,10 +129,6 @@ zsh_init_interactive() {
         fi
     }
 
-    exists() {
-        command -v "$1" >/dev/null
-    }
-
     open() {
         if [ -d "$1" ]; then
             cd "$1"
@@ -183,22 +197,6 @@ zsh_init_interactive() {
     bool() {
         if "$@"; then echo true
         else echo false; fi
-    }
-
-    idf.py() {
-        if [ -z $IDF_PATH]; then
-            esp_idf_exports="$HOME/.local/share/esp/esp-idf/export.sh"
-            if [ -f "$esp_idf_exports" ]; then
-                . "$esp_idf_exports"
-            else
-                mkdir -p "$HOME/.local/share/esp" &&
-                    cd "$HOME/.local/share/esp" &&
-                    git clone --recursive https://github.com/espressif/esp-idf.git &&
-                    cd esp-idf &&
-                    ./install.sh esp32
-            fi
-        fi
-        env MENUCONFIG_STYLE='aquatic list=fg:white,bg:black' idf.py "$@"
     }
 
     try_export()   { [ -d "$2" ] && export "$1=$2";:;         }
@@ -299,6 +297,7 @@ abbr mu='ndg music'
 abbr scp='rsync --progress'
 abbr psed='perl -pe'
 abbr idf='idf.py'
+abbr tf='pyenv_init && pyenv activate tf'
 EOF
     fi
 
