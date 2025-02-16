@@ -91,3 +91,5 @@
 | git    | gtrm                   | https://github.com/Naheel-Azawy/gtrm     | GTK-VTE terminal                                                 |
 | aur    | linux-wifi-hotspot     | N.A.                                     | WiFi hotspot                                                     |
 | pacman | pavucontrol            | N.A.                                     | audio gui control                                                |
+| pacman | xcalib                 | N.A.                                     | to invert screen colors                                          |
+| pacman | redshift               | N.A.                                     | adjusts screen temperature                                       |
