@@ -103,7 +103,7 @@ zsh_init_interactive() {
                 fi ;;
         esac
         if [ "$user" ]; then
-            echo "New session for $USER" @ "$(hostname)"
+            echo "New session for $USER" @ "$(cat /etc/hostname)"
         fi
 
         if [ "$SSH_CONNECTION" ]; then
