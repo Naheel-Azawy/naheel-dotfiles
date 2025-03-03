@@ -190,7 +190,7 @@ https://www.emacswiki.org/emacs/NoTabs"
 
 ;; ---- MODELINE ----
 (set-face-background 'mode-line "#222222")
-(set-face-attribute 'mode-line nil :box '(:width 0))
+;; (set-face-attribute 'mode-line nil :box '(:width 0))
 (setq-default mode-line-format
       `(
         " "

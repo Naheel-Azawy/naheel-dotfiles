@@ -1,6 +1,7 @@
 # TODO: move to personal
 
 bookmark ~/.data
+bookmark ~/"VM Shared"
 bookmark ~/Documents/events/2021_12_01_University_TAMU
 bookmark ~/Documents/events/2021_12_01_Work_Research_QU_smartgrid_security
 bookmark ~/Documents/QU
