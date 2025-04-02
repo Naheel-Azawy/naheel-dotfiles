@@ -10,6 +10,7 @@ bindkey -e
 zshctr=0
 
 SSH_ENV=$HOME/.ssh/env
+SHELL=$(command -v "$0")
 
 # https://askubuntu.com/a/634573
 ssh_agent_start() {
@@ -198,6 +199,22 @@ zsh_init_interactive() {
         if "$@"; then echo true
         else echo false; fi
     }
+
+    whichf() {
+        file "$(which "$@")"
+    }
+
+    paste_file_or_clipboard() {
+        if [ -f /tmp/fmz-op  ]; then
+            command fmz --eval paste
+        else
+            local c=$(xclip -o -selection clipboard)
+            zle -U "$c"
+        fi
+    }
+
+    zle -N paste_file_or_clipboard
+    bindkey '^V' paste_file_or_clipboard
 
     try_export()   { [ -d "$2" ] && export "$1=$2";:;         }
     try_add_path() { [ -d "$1" ] && export PATH="$PATH:$1";:; }

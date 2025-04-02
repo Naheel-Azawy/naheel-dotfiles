@@ -5,6 +5,7 @@ SYSFS=/sys/devices/platform/i8042/serio1/serio2
 # https://www.thinkwiki.org/wiki/UltraNav
 # https://www.thinkwiki.org/wiki/How_to_configure_the_TrackPoint
 # https://wiki.archlinux.org/title/TrackPoint
+# https://wiki.archlinux.org/title/TrackPoint#Trackpoint_moves_on_its_own
 # https://wiki.archlinux.org/title/Lenovo_ThinkPad_X230#Touchpad
 # https://wiki.archlinux.org/title/Touchpad_Synaptics
 # https://wiki.archlinux.org/title/Lenovo_ThinkPad_X1_Carbon_(Gen_10)

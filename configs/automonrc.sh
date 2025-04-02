@@ -10,6 +10,7 @@ post() {
     run_if_exists ndg bar &
     rearrange_desktops
     run_if_exists thinkpadutils x1_touch_screen_fix
+    run_if_exists ndg input init
 }
 
 rearrange_desktops() {
