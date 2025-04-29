@@ -29,6 +29,10 @@
 ;; option for tiny installations
 (setq tiny (equal (getenv "TINY") "t"))
 
+;; --- CUSTOM VARS ----
+(setq custom-file (expand-file-name "custom.el" user-emacs-directory))
+(load custom-file 'noerror)
+
 ;; ---- MELPA and USE_PACKAGE ----
 (require 'package)
 (add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/") t)
@@ -66,6 +70,7 @@
   (setq undo-tree-history-directory-alist '(("." . "~/.config/emacs/undo"))))
 (global-set-key (kbd "C-z") 'undo-tree-undo)
 (global-set-key (kbd "M-z") 'undo-tree-redo)
+(global-set-key (kbd "C-y") 'undo-tree-redo)
 (setq org-support-shift-select t)
 (global-set-key (kbd "C-q") 'save-buffers-kill-terminal)
 ;; zoom
@@ -95,6 +100,10 @@
 (set-face-background 'hl-line "#111")
 (set-face-foreground 'highlight nil)
 (set-face-attribute 'region nil :background "#333")
+;; Set background and foreground for *all* frames (existing and new)
+(add-to-list 'default-frame-alist '(background-color . "black"))
+;; Also apply to current frame if Emacs is already running
+(set-face-attribute 'default nil :background "black")
 
 ;; ---- REMOVE BG COLOR ----
 (defun on-frame-open (&optional frame)
@@ -120,6 +129,37 @@
           ))))
 (add-hook 'window-configuration-change-hook 'my-buffer-change-hook)
 
+;; ---- MODELINE ----
+(set-face-background 'mode-line "#222222")
+(set-face-attribute 'mode-line nil :box `(:line-width 1 :color "#222222"))
+(setq-default mode-line-format
+      `(
+        " "
+        mode-line-mule-info
+        mode-line-modified
+        ;; mode-line-frame-identification
+        "   "
+        mode-line-buffer-identification
+        "   "
+        mode-line-position
+        " "
+        (vc-mode vc-mode)
+        "   "
+        ;; mode-line-modes
+        (:propertize ("" mode-name)
+                     help-echo "Major mode\n\
+mouse-1: Display major mode menu\n\
+mouse-2: Show help for major mode\n\
+mouse-3: Toggle minor modes"
+                     mouse-face mode-line-highlight
+                     local-map ,mode-line-major-mode-keymap)
+        (which-function-mode ("" which-func-format "--"))
+        (global-mode-string ("--" global-mode-string))
+        " "
+        ;; "-%-"
+        ))
+(column-number-mode)
+
 ;; ---- SCROLL ----
 (setq scroll-step 1
       scroll-conservatively 10000
@@ -133,7 +173,7 @@
     (set-face-attribute 'default   nil :font font)
     (set-face-attribute 'mode-line nil :font font)))
 (apply-font-now)
-(add-hook 'after-make-frame-functions (lambda (frame) (apply-font-now)))
+(add-hook 'window-configuration-change-hook 'apply-font-now)
 
 ;; ---- WINDOW SPLIT TOGGLE ----
 ;; https://stackoverflow.com/a/33456622/3825872
@@ -187,37 +227,6 @@ https://www.emacswiki.org/emacs/NoTabs"
   "Edit currently visited file as root."
   (interactive)
   (find-file (concat "/sudo::" buffer-file-name)))
-
-;; ---- MODELINE ----
-(set-face-background 'mode-line "#222222")
-;; (set-face-attribute 'mode-line nil :box '(:width 0))
-(setq-default mode-line-format
-      `(
-        " "
-        mode-line-mule-info
-        mode-line-modified
-        ;; mode-line-frame-identification
-        "   "
-        mode-line-buffer-identification
-        "   "
-        mode-line-position
-        " "
-        (vc-mode vc-mode)
-        "   "
-        ;; mode-line-modes
-        (:propertize ("" mode-name)
-                     help-echo "Major mode\n\
-mouse-1: Display major mode menu\n\
-mouse-2: Show help for major mode\n\
-mouse-3: Toggle minor modes"
-                     mouse-face mode-line-highlight
-                     local-map ,mode-line-major-mode-keymap)
-        (which-function-mode ("" which-func-format "--"))
-        (global-mode-string ("--" global-mode-string))
-        " "
-        ;; "-%-"
-        ))
-(column-number-mode)
 
 ;; ---- GIT ----
 (use-package git-gutter
@@ -845,7 +854,7 @@ https://trey-jackson.blogspot.com/2010/04/emacs-tip-36-abort-minibuffer-when.htm
     (if (and (file-exists-p target) (file-exists-p cached))
         t
       (progn
-        (url-copy-file (concat url "/" name) target)
+        (url-copy-file (concat url "/" name) target t)
         (let ((hash-real (with-temp-buffer
                            (insert-file-contents-literally target)
                            (secure-hash 'sha256 (current-buffer)))))
@@ -883,48 +892,10 @@ https://trey-jackson.blogspot.com/2010/04/emacs-tip-36-abort-minibuffer-when.htm
 (require 'smali-mode)
 
 ;; --- TOUCH ---
-(extra-lisp-load
- "https://raw.githubusercontent.com/naheel-azawy/touch-handler.el/master"
- "touch-handler.el"
- "1876efc5d944ce55000eceb57323304e2cd51a67ca13e2793706a802fe66bd69")
-(load (expand-file-name "touch-handler.elc" lisp-directory))
+;; (extra-lisp-load
+;;  "https://raw.githubusercontent.com/naheel-azawy/touch-handler.el/master"
+;;  "touch-handler.el"
+;;  "1876efc5d944ce55000eceb57323304e2cd51a67ca13e2793706a802fe66bd69")
+;; (load (expand-file-name "touch-handler.elc" lisp-directory))
 
 ;;; emacs-init.el ends here
-(custom-set-variables
- ;; custom-set-variables was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- '(ein:output-area-inlined-images t)
- '(package-selected-packages
-   '(org-download iscroll clang-format fireplace org-fragtog edit-indirect coffee-mode scad-preview-mode scad-mode scad-preview ess smart-tabs-mode zig-mode web-beautify csv-mode php-mode exwm lua-mode epresent js-auto-beautify yaml-mode xonsh-mode xclip writeroom-mode which-key web-mode vterm visual-regexp-steroids vala-mode v-mode use-package undo-tree typescript-mode sparql-mode solidity-mode rust-mode rjsx-mode ranger rainbow-mode protobuf-mode ox-reveal ox-pandoc outshine origami org-ref org-bullets multiple-cursors lsp-ui lsp-java lsp-dart kotlin-mode julia-mode iedit haxe-mode go-mode gnuplot-mode glsl-mode git-gutter flyspell-correct-helm flycheck fish-mode elvish-mode ein dumb-jump doom-modeline dockerfile-mode csharp-mode company-lsp cmake-mode calfw-org calfw basic-mode auctex anzu adaptive-wrap academic-phrases ac-octave))
- '(safe-local-variable-values '((eval add-hook 'before-save-hook 'time-stamp)))
- '(verilog-auto-newline nil)
- '(warning-suppress-log-types '(((unlock-file)) ((unlock-file))))
- '(warning-suppress-types '((auto-save) ((unlock-file)))))
-(custom-set-faces
- ;; custom-set-faces was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- '(cfw:face-annotation ((t :foreground "#ffffff" :inherit cfw:face-day-title)))
- '(cfw:face-day-title ((t :background "grey10")))
- '(cfw:face-default-content ((t :foreground "#ffffff")))
- '(cfw:face-default-day ((t :weight bold :inherit cfw:face-day-title)))
- '(cfw:face-disable ((t :foreground "DarkGray" :inherit cfw:face-day-title)))
- '(cfw:face-grid ((t :foreground "DarkGrey")))
- '(cfw:face-header ((t (:foreground "#ffffff" :weight bold))))
- '(cfw:face-holiday ((t :background "grey10" :foreground "#ffffff" :weight bold)))
- '(cfw:face-periods ((t :foreground "cyan")))
- '(cfw:face-saturday ((t :foreground "#ffffff" :weight bold)))
- '(cfw:face-select ((t :background "#2f2f2f")))
- '(cfw:face-sunday ((t :foreground "#ffffff" :weight bold)))
- '(cfw:face-title ((t (:foreground "#f0dfaf" :weight bold :height 2.0 :inherit variable-pitch))))
- '(cfw:face-today ((t :background: "grey10" :weight bold)))
- '(cfw:face-today-title ((t :background "#5f5f87" :weight bold)))
- '(cfw:face-toolbar ((t :foreground "#000000" :background "#000000")))
- '(cfw:face-toolbar-button-off ((t :foreground "#555555" :weight bold)))
- '(cfw:face-toolbar-button-on ((t :foreground "#ffffff" :weight bold)))
- '(ein:cell-output-area ((t (:inherit \#ff0000))) t)
- '(js2-external-variable ((t (:foreground "brightblack"))))
- '(mc/cursor-face ((t (:background "white" :foreground "black")))))

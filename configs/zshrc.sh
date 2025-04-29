@@ -201,7 +201,13 @@ zsh_init_interactive() {
     }
 
     whichf() {
-        file "$(which "$@")"
+        local f=$(which "$@")
+        ls -lh "$f"
+        if [ -L "$f" ]; then
+            f=$(realpath "$f")
+            ls -lh "$f"
+        fi
+        file "$f"
     }
 
     paste_file_or_clipboard() {
