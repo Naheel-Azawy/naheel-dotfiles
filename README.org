@@ -1,50 +1,44 @@
 * Naheel's Personal Dotfiles
-  A collection of toys glued together to buildup my setup on my machines.
+A collection of toys glued together to buildup my setup on my machines.
 
-  Warning: This thing is not so stable and might explode at any moment.
+Warning: Use at your own responsibility. This collection of software is not stable and might explode at any moment.
 
-  [[./screenshots/20221105.png]]
+[[./screenshots/20250429.png]]
 
-** Toys
-   - emacs
-   - fish
-   - st
-   - [[https://github.com/Naheel-Azawy/fmz][fmz]]
-   - tmux everywhere ([[https://github.com/Naheel-Azawy/theterm][theterm]])
-   - bspwm
-   - lemonbar
-   - [[https://github.com/Naheel-Azawy/mpv-config][mpv]]/[[https://github.com/Naheel-Azawy/sxiv][sxiv]]? (custom fork)
-   - mpd and ncmpcpp
-   - brave/chromium/firefox?
-   - bunch of other stuff
+** Main components
+- emacs
+- zsh
+- xterm
+- [[https://github.com/Naheel-Azawy/fmz][fmz]]
+- tmux everywhere ([[https://github.com/Naheel-Azawy/theterm][theterm]])
+- bspwm
+- lemonbar
+- [[https://github.com/Naheel-Azawy/sxiv][sxiv]] (custom fork)
+- mpd and ncmpcpp
+- bunch of other stuff
 
 ** Install
-   Arch Linux is expected to be already installed with a working internet connection.
-   #+begin_src shell 
-     curl -L https://naheel.xyz/dots > /tmp/nd.sh && sh /tmp/nd.sh base base-gui
-   #+end_src
+Arch Linux is expected to be already installed with a working internet connection.
+#+begin_src shell
+  curl -L https://naheel.xyz/dots > /tmp/nd.sh && sh /tmp/nd.sh base base-gui
+#+end_src
 
-   For Ubuntu
-   #+begin_src shell 
-     wget -L https://naheel.xyz/dots -O /tmp/nd.sh && sh /tmp/nd.sh ubuntu
-   #+end_src
+Or
+#+begin_src shell
+  cd
+  git clone https://github.com/Naheel-Azawy/naheel-dotfiles.git .dotfiles
+  cd .dotfiles
+  ./install.sh base base-gui
+#+end_src
 
-   Or
-   #+begin_src shell 
-     cd
-     git clone https://github.com/Naheel-Azawy/naheel-dotfiles.git .dotfiles
-     cd .dotfiles
-     ./install.sh base base-gui
-   #+end_src
-
-   *Other notes:*
-   - Pass ~--docker~ option to create a playground docker image.
-   - Pick any package groups you're comfortable with other than ~base~ and ~base-gui~. Tables are under ~packages~ directory.
+*Other notes:*
+- Pass ~--docker~ option to create a playground docker image.
+- Pick any package groups you're comfortable with other than ~base~ and ~base-gui~. Tables are under ~packages~ directory.
 
 ** Update
-   #+begin_src shell 
-     nd update
-   #+end_src
+#+begin_src shell
+  nd update
+#+end_src
 
 ** License
-   GPL3
+GPL3
