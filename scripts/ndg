@@ -225,6 +225,45 @@ brightness() {
     notify -h int:value:"$v" "Brightness: $v%"
 }
 
+picom_invert_mkstr() {
+    # shellcheck disable=SC1003
+    if [ "$1" = '-d' ]; then
+        # double backslash
+        s='\\'
+        shift
+    else
+        s='\'
+    fi
+    cls="$1"
+    printf '  "class_g=%s"%s%s"", # AUTO INVERT' \
+           "$s" "$cls" "$s"
+}
+
+picom_invert_window() {
+    sed --version | grep -q 'GNU sed' || {
+        err 'GNU sed is expected but not found'
+        return 1
+    }
+    cfg=$(realpath ~/.config/picom.conf)
+    [ -f "$cfg" ] || {
+        err 'No picom config found'
+        return 2
+    }
+    cls=$(xprop -id "$(xdotool getactivewindow)" -notype WM_CLASS |
+              sed -rn 's/.+, "(.+)"/\1/p')
+    [ -n "$cls" ] || {
+        err 'No active window class found'
+        return 3
+    }
+    line=$(picom_invert_mkstr "$cls")
+    line2=$(picom_invert_mkstr -d "$cls")
+    if grep -qF "$line" "$cfg"; then
+        sed -zi "s/\n$line2//g" "$cfg"
+    else
+        sed -i 's/invert-color-include = \[/invert-color-include = \[\n'"$line2/" "$cfg"
+    fi
+}
+
 display() {
     if [ "$1" = '-d' ]; then
         sel='Auto'
@@ -235,7 +274,9 @@ display() {
                echo 'Extend'
                echo 'Edit screen layout'
                exists xcalib &&
-                   echo 'Invert colors'
+                   echo 'Invert screen colors'
+               pgrep picom >/dev/null &&
+                   echo 'Invert window class colors'
                exists redshift && {
                    echo 'Temperature: 6500  Default'
                    echo 'Temperature: 5000  Warm'
@@ -257,7 +298,8 @@ display() {
         Mirror) automon mirror          ;;
         Extend) automon extend          ;;
         Edit*)  arandr; wallpaper reset ;;
-        Invert*) xcalib -invert -alter  ;;
+        'Invert screen'*) xcalib -invert -alter ;;
+        'Invert window'*) picom_invert_window   ;;
         Temperature*)
             sel=$(echo "$sel" | awk '{print $2}')
             [ "$sel" ] && redshift -P -O "${sel}K" ;;
