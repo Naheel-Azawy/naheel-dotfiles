@@ -192,6 +192,19 @@ static unsigned char start_bits[] = {
 argv = sys.argv
 HOME = os.getenv("HOME")
 
+def grep(pattern: str, filename: str, ignore_case: bool = False,
+         invert_match: bool = False, line_numbers: bool = False):
+    flags = re.IGNORECASE if ignore_case else 0
+    regex = re.compile(pattern, flags)
+    results = []
+    with open(filename, 'r') as file:
+        for lineno, line in enumerate(file, 1):
+            match = bool(regex.search(line))
+            if match != invert_match:
+                line_output = f"{lineno}:{line}" if line_numbers else line
+                results.append(line_output.rstrip('\n'))
+    return results
+
 def exec_lines_cb(argv, cb):
     popen = subprocess.Popen(argv,
                              stdout=subprocess.PIPE,
@@ -295,9 +308,10 @@ class Battery:
 
 # example: WM(lambda s: print(s)).run()
 class WM:
-    def __init__(self, callback):
+    def __init__(self, callback, bar=None):
         try:
-            self.impl = wsw.init(output="lemonbar_circles_mini", onchange=callback)
+            self.impl = wsw.init(output="lemonbar_circles_mini",
+                                 onchange=callback, bar=bar)
         except:
             self.impl = None
         self.title = None # to be set by bar.program()
@@ -379,25 +393,47 @@ def item(period=0, big=False):
         return wrapper
     return decorate
 
+def avg_clr(clr):
+    r = int(clr[1:3], 16)
+    g = int(clr[3:5], 16)
+    b = int(clr[5:7], 16)
+    return (r + g + b) / 3
+
+def fg2_from_fg1(fg1):
+    avg = avg_clr(fg1)
+    if avg == 0:
+        avg = 1
+    if avg > 190:
+        avg /= 5
+    elif avg < 64:
+        avg *= 100
+    return "#" + ("%02x" % int(avg)) * 3
+
 class BarBase:
     def __init__(self, use_ascii=False, items=None, outs=[sys.stdout], minis=[False]):
         self.server = None
         self.ws_str = None # to be set from wsw
         self.a = use_ascii
-        self.wm = WM(self.run_wm_items)
+        self.dbgc = background
+        self.dfgc = foreground
+        self.dfgc2 = fg2_from_fg1(self.dfgc)
+        self.wm = WM(self.run_wm_items, self)
         self.xtitle = XTitle(self.run_xtitle_items)
         self.battery_listener = Battery(self.run_battery_items)
+
+        man_path = "/usr/share/man/man1/lemonbar.1"
+        self.supports_dynamic_colors = bool(grep('.IX Header "PRE_FORMATTING"', man_path))
+        self.supports_icons = bool(grep('.IX Item "Ifilename"', man_path))
 
         if len(minis) != len(outs):
             minis = [False] * len(outs)
         self.outs = outs
         self.minis = minis
 
-        if not hasattr(self, "items_str"):
-            if items is None:
-                self.items_str = default_items
-            else:
-                self.items_str = items
+        if items is not None:
+            self.items_str = items
+        elif not hasattr(self, "items_str"):
+            self.items_str = default_items
 
         places = re.split(r"\s*\|\s*", self.items_str)
 
@@ -448,6 +484,8 @@ class BarBase:
                             items_out.append(content)
                     out += "  ".join(items_out)
                 out += " "
+                if self.supports_dynamic_colors:
+                    out = f"%{{B{self.dbgc}}}%{{F{self.dfgc}}}%{{BEGIN}}" + out
 
             o.write(out + "\n")
             try:
@@ -496,9 +534,21 @@ class BarBase:
         data = data.decode().split("?")
         cmd = data[0]
         data = data[1]
-        if cmd == "update":
+
+        if cmd == "hello":
+            # connection will fail if not running
+            # so no need to have any logic here
+            pass
+        elif cmd == "update":
             item = getattr(self, data)
             self.last[item("name")] = item()
+            self.render()
+        elif cmd == "update-bg":
+            self.dbgc = data
+            self.render()
+        elif cmd == "update-fg":
+            self.dfgc = data
+            self.dfgc2 = fg2_from_fg1(self.dfgc)
             self.render()
 
     def init(self):
@@ -628,7 +678,7 @@ class Bar(BarBase):
                 else:
                     out_acs += icons["plug"]
 
-        r = '#FFFFFF'
+        r = self.dfgc
         for dev in devs["batteries"]:
             percent  = dev["percentage"]
             charging = dev["charging"]
@@ -639,7 +689,7 @@ class Bar(BarBase):
                 out_batts += " "
             else:
                 if charging:
-                    r = '#FFFFFF' if percent >= 99 else '#FFD700'
+                    r = self.dfgc if percent >= 99 else '#FFD700'
                 elif percent <= 20:
                     if percent > 10:
                         r = '#FF0000'
@@ -678,7 +728,9 @@ class Bar(BarBase):
             if percent <= 10 and not charging:
                 out = "%{B#FF0000} " + out + " %{B-}"
             cmd = "gtrm --dims 75x3 -p 'watch -tn 1 acpi -i'"
-            out = f"%{{F{r}}}%{{A:{cmd}&:}}{out}%{{A}}%{{F-}}"
+            out = f"%{{A:{cmd}&:}}{out}%{{A}}"
+            if r != self.dfgc:
+                out = f"%{{F{r}}}{out}%{{F-}}"
 
         return out
 
@@ -718,7 +770,7 @@ class Bar(BarBase):
             r = "-"
 
             if charging:
-                r = '#FFFFFF' if percent >= 99 else '#FFD700'
+                r = self.dfgc if percent >= 99 else '#FFD700'
             elif percent <= 20:
                 if percent > 10:
                     r = '#FF0000'
@@ -860,15 +912,12 @@ class Bar(BarBase):
         if self.a:
             return None
         ret = "%{A:ndg start_menu&:}"
-        support_xbm = True
-        # support_xbm = "The icon must be in xbm format" in \
-        #     sh.man("lemonbar", _tty_out=False)
-        if support_xbm:
+        if self.supports_icons:
             fpath = f"{HOME}/.cache/start.xbm"
             if not os.path.exists(fpath):
                 with open(fpath, "w") as f:
                     f.write(START_XBM)
-            ret += " %{F#ddd}%{I" + fpath + "}%{F-}"
+            ret += f" %{{I{fpath}}}"
         ret += " Start%{A}"
         return ret
 
@@ -990,19 +1039,35 @@ def lemonbar():
 
     os.remove(pid_file)
 
+async def send_cmd(cmd, arg=None):
+    cmd = cmd.encode()
+    arg = arg.encode() if arg else b""
+    with open(port_file, "r") as f:
+        try:
+            port = int(f.read())
+            reader, writer = await asyncio.open_connection("localhost", port)
+            writer.write(cmd + b"?" + arg)
+            await writer.drain()
+            writer.close()
+            await writer.wait_closed()
+            return 0
+        except:
+            return 1
+
 async def async_main(args):
     if args.kill:
         lemon_kill()
+    elif args.is_running:
+        return await send_cmd("hello")
     elif args.update:
-        item = args.update.encode()
-        with open(port_file, "r") as f:
-            try:
-                port = int(f.read())
-                reader, writer = await asyncio.open_connection("localhost", port)
-                writer.write(b"update?" + item)
-                writer.close()
-            except:
-                print("Error finding socket port")
+        item = args.update
+        return await send_cmd("update", item)
+    elif args.update_bg:
+        clr = args.update_bg
+        return await send_cmd("update-bg", clr)
+    elif args.update_fg:
+        clr = args.update_fg
+        return await send_cmd("update-fg", clr)
     elif len(args.items) > 0:
         bar = Bar(use_ascii=args.ascii, items=" ".join(args.items))
         if args.persistent:
@@ -1013,17 +1078,21 @@ async def async_main(args):
             bar.render()
     else:
         lemonbar()
+    return 0
 
 def main():
     parser = argparse.ArgumentParser(prog="bar", description="top bar UI")
+    parser.add_argument("-r", "--is-running", action="store_true",      help="return 0 if bar server is running")
     parser.add_argument("-k", "--kill",       action="store_true",      help="kill bar process")
     parser.add_argument("-u", "--update",     type=str, default=None,   help="update a bar item")
+    parser.add_argument("-B", "--update-bg",  type=str, default=None,   help="dynamically change default background")
+    parser.add_argument("-F", "--update-fg",  type=str, default=None,   help="dynamically change default foreground")
     parser.add_argument("-a", "--ascii",      action="store_true",      help="output ascii only")
     parser.add_argument("-p", "--persistent", action="store_true",      help="keep running in a loop")
     parser.add_argument("items",              type=str, nargs="*",      help="items to be printed")
     args = parser.parse_args()
 
-    asyncio.run(async_main(args))
+    return asyncio.run(async_main(args))
 
 if __name__ == "__main__":
-    main()
+    exit(main())

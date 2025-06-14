@@ -32,7 +32,7 @@ class Workspace:
         })
 
 class I3WM(WMImpl):
-    def __init__(self, callback):
+    def __init__(self, callback, bar):
         self.callback = callback
         self.workspaces = []
         self.workspace_cmd = "i3-msg workspace"
@@ -73,8 +73,9 @@ class I3WM(WMImpl):
             raise Exception(f"i3-msg exited with code {code}")
 
 class BSPWM(WMImpl):
-    def __init__(self, callback):
+    def __init__(self, callback, bar):
         self.callback = callback
+        self.bar = bar
         self.workspaces = []
         self.workspace_cmd = "bspc desktop -f"
 
@@ -107,7 +108,7 @@ class BSPWM(WMImpl):
 
 # https://github.com/phillbush/lsd
 class LSD(WMImpl):
-    def __init__(self, callback):
+    def __init__(self, callback, bar):
         self.callback = callback
         self.workspaces = []
         self.workspace_cmd = "bspc desktop -f" # TODO: use focus?
@@ -189,17 +190,24 @@ def callback_lemonbar(wm, onchange):
         onchange(s)
         wm.prev_s = s
 
+def mk_fg_clrs(wm):
+    fg1 = wm.bar.dfgc  if wm.bar else "#000000"
+    fg2 = wm.bar.dfgc2 if wm.bar else "#333333"
+    return fg1, fg2
+
 def callback_lemonbar_circles(wm, onchange):
     s = ""
+    fg1, fg2 = mk_fg_clrs(wm)
     for ws in wm.workspaces:
         if ws.focused:
-            s += "%{F#ffffff}"
+            fg = fg1
         elif ws.visible:
-            s += "%{F#333333}"
+            fg = fg2
         elif ws.urgent:
-            s += "%{F#900000}"
+            fg = "#900000"
         else:
-            s += "%{F#ffffff}"
+            fg = fg1
+        s += f"%{{F{fg}}}"
         onclick = f"{wm.workspace_cmd} '{ws.name}' >/dev/null"
         s += f"%{{A:{onclick}:}} "
         circle = "⬤" if ws.focused or ws.visible or ws.urgent else "◯"
@@ -214,15 +222,17 @@ def callback_lemonbar_circles(wm, onchange):
 def callback_lemonbar_circles_mini(wm, onchange):
     onclick = "wm-msg ws-menu&"
     s = f"%{{A:{onclick}:}}"
+    fg1, fg2 = mk_fg_clrs(wm)
     for ws in wm.workspaces:
         if ws.focused:
-            s += "%{F#ffffff}"
+            fg = fg1
         elif ws.visible:
-            s += "%{F#333333}"
+            fg = fg2
         elif ws.urgent:
-            s += "%{F#900000}"
+            fg = "#900000"
         else:
-            s += "%{F#ffffff}"
+            fg = fg1
+        s += f"%{{F{fg}}}"
         circle = "●" if ws.focused or ws.visible or ws.urgent else "○"
         s += circle
     s += "%{F-}" # reset the colors
@@ -261,14 +271,15 @@ callbacks = {
     "dunst":            callback_dunst
 }
 
-def init(output="json", onchange=lambda s: print(s), use_lsd=False):
+def init(output="json", onchange=lambda s: print(s),
+         bar=None, use_lsd=False):
     callback = lambda ws: callbacks[output](ws, onchange)
     if use_lsd:
-        w = LSD(callback)
+        w = LSD(callback, bar)
     elif WINDOW_MANAGER == "i3":
-        w = I3WM(callback)
+        w = I3WM(callback, bar)
     elif WINDOW_MANAGER == "bspwm":
-        w = BSPWM(callback)
+        w = BSPWM(callback, bar)
     else:
         raise Exception(f"Unknown window manager {WINDOW_MANAGER}")
     return w

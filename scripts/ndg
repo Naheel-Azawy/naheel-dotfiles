@@ -890,7 +890,7 @@ org.onboard.theme-settings key-label-font'
     autostart /usr/lib/gsd-xsettings        # gnome's settings daemon
 
     # start the window manager
-    exec "$WINDOW_MANAGER" # defined in profile
+    "$WINDOW_MANAGER"
 }
 
 # ==== main ====
