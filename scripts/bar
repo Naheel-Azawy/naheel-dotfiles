@@ -332,6 +332,9 @@ class WM:
                 # in case the bar started before the window manager
                 await asyncio.sleep(1)
 
+    def update(self):
+        self.impl.send_callback()
+
 XPROP_ICON = r"""-notype 32c _NET_WM_ICON |
   perl -0777 -pe '@_=/\d+/g;
     printf "P7\nWIDTH %d\nHEIGHT %d\nDEPTH 4\nMAXVAL 255\nTUPLTYPE RGB_ALPHA\nENDHDR\n", splice@_,0,2;
@@ -545,10 +548,12 @@ class BarBase:
             self.render()
         elif cmd == "update-bg":
             self.dbgc = data
+            self.wm.update()
             self.render()
         elif cmd == "update-fg":
             self.dfgc = data
             self.dfgc2 = fg2_from_fg1(self.dfgc)
+            self.wm.update()
             self.render()
 
     def init(self):

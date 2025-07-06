@@ -12,19 +12,34 @@ zshctr=0
 SSH_ENV=$HOME/.ssh/env
 SHELL=$(command -v "$0")
 
-# https://askubuntu.com/a/634573
+export GTK_THEME="Adwaita:dark" # TODO: remove from here
+
+ssh_agent_is_running() {
+    [ -f "$SSH_ENV" ] &&
+        [ -n "$SSH_AGENT_PID" ] &&
+        [ -d "/proc/$SSH_AGENT_PID" ]
+}
+
 ssh_agent_start() {
-    ps -ef | grep "$SSH_AGENT_PID" | grep ssh-agent$ > /dev/null &&
-        return 0
+    # https://askubuntu.com/a/634573
+    ssh_agent_is_running && return 0
     ssh-agent | sed 's/^echo/#echo/' > "$SSH_ENV"
     chmod 600 "$SSH_ENV"
-    . "$SSH_ENV" > /dev/null
+    . "$SSH_ENV"
     ssh-add
 }
+
 ssh_agent_init() {
     if [ -f "$SSH_ENV" ]; then
-        . "$SSH_ENV" > /dev/null
+        . "$SSH_ENV"
+    else
+        return 1
     fi
+}
+
+ssh() {
+    ssh_agent_start
+    command ssh "$@"
 }
 
 exists() {
@@ -77,7 +92,7 @@ zsh_init_interactive() {
         esac
 
         local git_branch
-        git_branch=$(git branch --show-current 2>/dev/null)
+        # git_branch=$(git branch --show-current 2>/dev/null)
         [ -n "$git_branch" ] && git_branch=" ($git_branch)"
 
         PS1=''
@@ -392,4 +407,7 @@ zsh_init_plugins() {
 
 if [[ $- == *i* ]]; then
     zsh_init_interactive
+    if exists valsh; then
+        eval "$(valsh shell)"
+    fi
 fi

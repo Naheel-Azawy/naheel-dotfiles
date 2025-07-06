@@ -1,0 +1,67 @@
+#!/bin/sh
+
+SELF=$(realpath "$0")
+URL=https://ltspice.analog.com/software/LTspice64.exe
+JAIL="$HOME/.local/share/jail-ltspice"
+ARGS="--noprofile --private-tmp --disable-mnt --net=none --private=$JAIL"
+EXE=".wine/drive_c/Program Files/LTC/LTspiceXVII/XVIIx64.exe"
+INSTALLER=$(basename "$URL")
+DESKTOP="$HOME/.local/share/applications/LTSpice.desktop"
+DOCS=".wine/drive_c/users/$USER/Documents/LTspiceXVII"
+
+exists() {
+    command -v "$1" >/dev/null
+}
+
+prepare() {
+    exists wget &&
+        exists firejail &&
+        exists wine &&
+        exists wrestool &&
+        return
+
+    echo '>>> Installing dependacies, sudo needed...'
+    if exists pacman; then
+        sudo pacman --noconfirm --needed -S wget firejail icoutils wine
+    elif exists apt; then
+        sudo apt install -y wget firejail TODO
+    fi
+}
+
+download_install() {
+    mkdir -p "$JAIL" && cd "$JAIL" || return 1
+    [ -f "$JAIL/$EXE" ]            && return 0
+    [ -f "$JAIL/$INSTALLER" ]      || wget "$URL"
+    ln -sf "$DOCS" "$JAIL/"
+    # shellcheck disable=SC2086
+    firejail $ARGS wine "$HOME/$INSTALLER"
+}
+
+mk_desktop() {
+    [ -f "$JAIL/$EXE" ] || return 1
+    ic="$JAIL/.icon.ico"
+    wrestool -x -t 14 "$JAIL/$EXE" > "$ic"
+    mkdir -p "$(dirname "$DESKTOP")"
+    {
+        echo '[Desktop Entry]'
+        echo "Type=Application"
+        echo "Name=LTSpice"
+        echo "Icon=$ic"
+        echo "Exec=$SELF"
+        echo "Categories=Development;"
+    } > "$DESKTOP"
+}
+
+main() {
+    prepare
+
+    [ "$1" = 'rm' ]     && { rm -rf "$JAIL" "$DESKTOP"; return; }
+    [ -d "$JAIL" ]      || mkdir -p "$JAIL"
+    [ -f "$JAIL/$EXE" ] || download_install
+    [ -f "$DESKTOP" ]   || mk_desktop
+
+    # shellcheck disable=SC2086
+    exec firejail $ARGS wine "$HOME/$EXE"
+}
+
+main "$@"
