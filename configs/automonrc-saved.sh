@@ -75,3 +75,12 @@ save 13ddac03dd897b80c1e775f74e68e52c x1-sg-lab-new-3 xrandr \
 
 save 38d7f5f833fa9241db49acebe284d6f4 x1-sg-lab-new-3-2 xrandr \
      --output eDP-1 --off --output HDMI-1 --off --output DP-1 --off --output DP-2 --off --output DP-3 --off --output DP-4 --off --output DP-3-8 --primary --mode 1920x1080 --pos 1920x0 --rotate normal --output DP-3-9 --mode 1680x1050 --pos 3840x0 --rotate left
+
+save f4b78882629317249a12399ecada9eae qeeri-1 xrandr \
+     --output eDP-1 --mode 1920x1200 --pos 2301x1200 --rotate normal --output HDMI-1 --primary --mode 1920x1080 --pos 381x1200 --rotate normal --output DP-1 --off --output DP-2 --off --output DP-3 --off --output DP-4 --off --output DP-3-8 --off --output DP-3-9 --off
+
+save e8160e9847e06507c6c94a5b03c87cce qeeri-2 xrandr \
+     --output eDP-1 --mode 1920x1200 --pos 1920x0 --rotate normal --output HDMI-1 --off --output DP-1 --off --output DP-2 --off --output DP-3 --primary --mode 1920x1080 --pos 0x0 --rotate normal --output DP-4 --off --output DP-3-8 --off --output DP-3-9 --off
+
+save 29443616f74d797561d41dc7c499c886 qeeri-2-dc xrandr \
+     --output eDP-1 --mode 1920x1200 --pos 1920x0 --rotate normal --output HDMI-1 --mode 1024x600 --pos 3840x0 --rotate left --output DP-1 --off --output DP-2 --off --output DP-3 --primary --mode 1920x1080 --pos 0x0 --rotate normal --output DP-4 --off

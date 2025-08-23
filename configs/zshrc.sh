@@ -14,32 +14,20 @@ SHELL=$(command -v "$0")
 
 export GTK_THEME="Adwaita:dark" # TODO: remove from here
 
-ssh_agent_is_running() {
-    [ -f "$SSH_ENV" ] &&
-        [ -n "$SSH_AGENT_PID" ] &&
-        [ -d "/proc/$SSH_AGENT_PID" ]
-}
-
+# https://askubuntu.com/a/634573
 ssh_agent_start() {
-    # https://askubuntu.com/a/634573
-    ssh_agent_is_running && return 0
+    ps -ef | grep "$SSH_AGENT_PID" | grep ssh-agent$ > /dev/null &&
+        return 0
     ssh-agent | sed 's/^echo/#echo/' > "$SSH_ENV"
     chmod 600 "$SSH_ENV"
-    . "$SSH_ENV"
+    . "$SSH_ENV" > /dev/null
     ssh-add
 }
 
 ssh_agent_init() {
     if [ -f "$SSH_ENV" ]; then
-        . "$SSH_ENV"
-    else
-        return 1
+        . "$SSH_ENV" > /dev/null
     fi
-}
-
-ssh() {
-    ssh_agent_start
-    command ssh "$@"
 }
 
 exists() {

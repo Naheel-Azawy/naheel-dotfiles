@@ -77,10 +77,24 @@
 (global-set-key (kbd "C-S-<prior>") 'text-scale-increase)
 (global-set-key (kbd "C-S-<next>")  'text-scale-decrease)
 
-;; TODO: arabic
+;; arabic
+(global-set-key (kbd "C-ئ") 'undo-tree-undo)
+(global-set-key (kbd "M-ئ") 'undo-tree-redo)
+(global-set-key (kbd "C-ش") 'mark-whole-buffer)
+(with-eval-after-load 'org
+  (define-key org-mode-map (kbd "C-ش") 'mark-whole-buffer))
+(global-set-key (kbd "C-ب") 'isearch-forward-regexp)
+(global-set-key (kbd "C-M-ب") 'isearch-forward)
+(define-key isearch-mode-map (kbd "C-ب") 'isearch-repeat-forward)
+(define-key isearch-mode-map (kbd "C-ر") 'isearch-yank-pop)
 (global-set-key (kbd "C-س") 'save-buffer)
 (global-set-key (kbd "C-ئ") 'undo-tree-undo)
 (global-set-key (kbd "M-ئ") 'undo-tree-redo)
+(global-set-key (kbd "C-غ") 'undo-tree-redo)
+(global-set-key (kbd "C-ض") 'save-buffers-kill-terminal)
+(global-set-key (kbd "C-ئ") 'kill-ring-save)
+(global-set-key (kbd "C-ء") 'kill-ring)
+(global-set-key (kbd "C-ر") 'yank)
 
 ;; ---- VISUALS ----
 (menu-bar-mode -1)
@@ -163,17 +177,19 @@ mouse-3: Toggle minor modes"
 ;; ---- SCROLL ----
 (setq scroll-step 1
       scroll-conservatively 10000
-      scroll-margin 5)
+      scroll-margin 0)
 (pixel-scroll-precision-mode)
 
 ;; ---- FONT ----
 (defun apply-font-now ()
   "Apply the intended font."
   (let ((font (concat (getenv "FONT") " " (getenv "FONT_SIZE_NUM"))))
+  ;;(let ((font "DejaVu Sans Mono 10"))
     (set-face-attribute 'default   nil :font font)
     (set-face-attribute 'mode-line nil :font font)))
 (apply-font-now)
 (add-hook 'window-configuration-change-hook 'apply-font-now)
+;;(set-fontset-font t 'arabic (font-spec :family "Kawkab Mono" :size 20))
 
 ;; ---- WINDOW SPLIT TOGGLE ----
 ;; https://stackoverflow.com/a/33456622/3825872

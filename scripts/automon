@@ -153,7 +153,7 @@ now() {
     date +%s%3N
 }
 
-lowpass() {
+lowpass_bak() {
     # print the last line in the range of `target` seconds
     target="$1"
 
@@ -175,6 +175,22 @@ lowpass() {
     done
 
     wait
+}
+
+lowpass() {
+    # prints the last line in the range of `debounce_time` seconds,
+    # defaults to 1 second
+    debounce_time="${1:-1}"
+    tmpfile=$(mktemp)
+    trap 'rm -f "$tmpfile"' EXIT INT TERM
+    while IFS= read -r line; do
+        echo "$line" > "$tmpfile"
+        [ -n "$timer_pid" ] && kill "$timer_pid" 2>/dev/null
+        (sleep "$debounce_time"
+         cat "$tmpfile") &
+        timer_pid=$!
+    done
+    [ -n "$timer_pid" ] && wait "$timer_pid"
 }
 
 main() {
