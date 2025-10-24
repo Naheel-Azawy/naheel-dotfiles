@@ -18,11 +18,12 @@ export WINDOW_MANAGER='bspwm'
 export XDG_SESSION_TYPE=x11
 export GDK_BACKEND=x11
 
-export FONT_MONO='Iosevka Fixed'
+#export FONT_MONO='Iosevka Fixed'
+export FONT_MONO='CaskaydiaMono NF'
 export FONT_SANS='Liberation Sans'
 export FONT="$FONT_MONO"
 export FONT_SIZE_NUM=12
-export FONT_SIZE="$FONT_MONO:size=$FONT_SIZE_NUM" # changed later
+export FONT_SIZE="${FONT_MONO}:size=$FONT_SIZE_NUM" # changed later
 
 export GTK_THEME="Adwaita:dark"
 export DESKTOP_SESSION=gnome
@@ -310,6 +311,10 @@ display() {
 
 # ==== battery ====
 
+acpi_get_percent() {
+    sed -rn 's/.+, ([0-9]+)%,.+/\1/p'
+}
+
 battery_watch() {
     BAT_WR1=15
     BAT_WR2=10
@@ -322,7 +327,7 @@ battery_watch() {
     while :; do
         b=$(acpi -b)
         if echo "$b" | grep -q Discharging; then
-            p=$(echo "$b" | sed -rn 's/.+, ([0-9]+)%,.+/\1/p')
+            p=$(echo "$b" | acpi_get_percent)
 
             if ! isint "$p"; then
                 sleep 10
@@ -330,7 +335,10 @@ battery_watch() {
             elif [ "$p" -le "$BAT_MIN" ] &&
                    [ -z "$bat_min_done" ]; then
                 for i in $(seq 60 | tac); do
-                    acpi -b | grep -q Discharging || break
+                    b=$(acpi -b)
+                    p=$(echo "$b" | acpi_get_percent)
+                    echo "$b" | grep -q Discharging || break
+                    [ "$p" -le "$BAT_MIN" ]         || break
                     notify -u critical "Shutting down in $i..."
                     sleep 1
                 done
@@ -435,7 +443,8 @@ systraytog() {
     killall trayer 2>/dev/null && return 0
 
     eval "$(xdotool getmouselocation --shell)"
-    Y=$((Y+15))
+    Y_offset=$(mon_prim_y_offset)
+    Y=$((Y+15-Y_offset))
 
     f="$FONT_SIZE_NUM"
     if [ -n "$f" ]; then
@@ -547,6 +556,23 @@ lockscreen_unlock() {
     pkill $lock_bin
 }
 
+automon_cache=~/.cache/automon/xrandr
+
+xrandr_wrapper() {
+    automon_cache=~/.cache/automon/xrandr
+    if [ -f "$automon_cache" ]; then
+        cat "$automon_cache"
+    else
+        xrandr
+    fi
+}
+
+mon_prim_y_offset() {
+    y=$(xrandr_wrapper |
+            awk '/primary/ { match($0, /\+([0-9]+)\+([0-9]+)/, a); print a[2]; exit }')
+    echo "${y:-0}"
+}
+
 lockscreen() {
     pgrep i3lock && {
         echo Already locked
@@ -568,6 +594,8 @@ lockscreen() {
 
     wait_fingerprint &
 
+    y=$(mon_prim_y_offset)
+
     # using picom for blur and opacity
     $lock_bin                   \
         -e -f -c 000000         \
@@ -583,9 +611,9 @@ lockscreen() {
         --greeter-font "$FONT"  \
         --time-size 200         \
         --date-size 30          \
-        --ind-pos   'w/2:h/1.5' \
-        --time-pos  'w/2:h/2.0' \
-        --date-pos  'w/2:h/1.8' \
+        --ind-pos  "w/2:h/1.5+$y" \
+        --time-pos "w/2:h/2.0+$y" \
+        --date-pos "w/2:h/1.8+$y" \
         --time-color   "$COLOR" \
         --date-color   "$COLOR" \
         --layout-color "$COLOR" \
@@ -615,10 +643,25 @@ browser() {
         scale=1
     fi
 
+    AGENT_FILE="$HOME/.config/ndg/browser_agent"
+    [ -f "$AGENT_FILE" ] || {
+        err 'No agent file found'
+        return 1
+    }
+    agent=$(cat "$AGENT_FILE")
+    [ -n "$agent" ] || {
+        err 'Agent file is empty'
+        return 1
+    }
+
     if exists brave; then
-        brave --force-device-scale-factor="$scale" "$@"
+        brave \
+            --user-agent="$agent" \
+            --force-device-scale-factor="$scale" "$@"
     elif exists chromium; then
-        chromium --force-device-scale-factor="$scale" "$@"
+        chromium \
+            --user-agent="$agent" \
+            --force-device-scale-factor="$scale" "$@"
     elif exists firefox; then
         firefox "$@"
     else

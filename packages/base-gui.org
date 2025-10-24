@@ -13,10 +13,8 @@
 | git    | theterm                | https://github.com/Naheel-Azawy/theterm  | a wrapper to give the terminal super powers                      |
 | aur    | ttf-symbola            | N.A.                                     | unicode symbols and emojis                                       |
 | pacman | ttf-liberation         | N.A.                                     | another pretty font                                              |
-| aur    | ttf-iosevka-fixed      | N.A.                                     | an even cooler monospaced font                                   |
+| pacman | ttf-cascadia-mono-nerd | N.A.                                     | an even cooler monospaced font                                   |
 | aur    | ttf-sil-kawkab-mono    | N.A.                                     | Arabic mono font                                                 |
-| aur    | ttf-font-awesome       | N.A.                                     | used for the icons in the top bar                                |
-| aur    | nerd-fonts-hack        | N.A.                                     | more symbolic fonts                                              |
 | pacman | arandr                 | N.A.                                     | UI for screen adjustment                                         |
 | pacman | picom                  | N.A.                                     | for transparency and removing screen-tearing                     |
 | pacman | dunst                  | N.A.                                     | suckless notification system                                     |

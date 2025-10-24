@@ -1,11 +1,23 @@
 
 focused_desktop=
 
+xrandr_cache=~/.cache/automon/xrandr
+
+xrandr_cache_mk() {
+    mkdir -p "$(dirname "$xrandr_cache")"
+    xrandr > "$xrandr_cache"
+}
+
+xrandr_wrapper() {
+    cat "$xrandr_cache"
+}
+
 pre() {
     focused_desktop=$(bspc query -D -d .focused --names)
 }
 
 post() {
+    xrandr_cache_mk
     run_if_exists ndg wallpaper reset
     run_if_exists ndg bar &
     rearrange_desktops
@@ -14,7 +26,7 @@ post() {
 }
 
 rearrange_desktops() {
-    xr=$(xrandr)
+    xr=$(xrandr_wrapper)
     mons=$(echo "$xr" |
                sed -rn 's/(.+) connected(.*) ([0-9]+)x([0-9]+)\+([0-9]+)\+([0-9]+).+/\5 \1\2/p' |
                sort -n | cut -d ' ' -f2- | nl)

@@ -51,39 +51,10 @@ except:
 icons_font_size = env_font_size * 1.333
 
 themes = {
-    "material": {
-        # https://fonts.google.com/icons?selected=Material+Icons
-        "icons_font": f"Material Icons:size={icons_font_size}",
-        "icons": {
-            "exclamation": "\ue645",
-            "plug":        "\ue63c",
-            "battery30":   "\uebe0",
-            "battery50":   "\uebdd",
-            "battery60":   "\uebd4",
-            "battery90":   "\uebd2",
-            "battery100":  "\ue1a4",
-            "wifi1":       "\uebe4",
-            "wifi2":       "\uebd6",
-            "wifi3":       "\uebe1",
-            "wifi4":       "\ue1d8",
-            "prayer":      "\uf03d",
-            "cloud":       "\ue2bd",
-            "temp90":      "\uf076",
-            "temp50":      "\uf076",
-            "temp40":      "\uf076",
-            "temp30":      "\uf076",
-            "power":       "\ue8ac",
-            "more":        "\ue5cf",
-            "plus":        "\ue145",
-            "close":       "\ue5cd",
-            "keyboard":    "\ue312",
-            "bluetooth":   "\ue1a7",
-        }
-    },
-
     "awesome": {
         # https://fontawesome.com/icons
-        "icons_font": f"Font Awesome 6 Free Solid:size={icons_font_size}",
+        # https://www.nerdfonts.com/font-downloads
+        "icons_font": f"CaskaydiaMono NF:size={icons_font_size}",
         "icons": {
             "exclamation": " ",
             "plug":        " ",
@@ -107,7 +78,7 @@ themes = {
             "plus":        "",
             "close":       "",
             "keyboard":    "",
-            "bluetooth":   "h",
+            "bluetooth":   "",
         }
     },
 
@@ -931,7 +902,7 @@ class Bar(BarBase):
         return "%{A:gmenu power&:}" + icons["power"] + \
             "%{A}" if not self.a else None
 
-    @item()
+    @item(big=True)
     def systray(self):
         return "%{A:ndg systraytog&:}" + icons["more"] + \
             "%{A}" if not self.a else None
@@ -1019,7 +990,8 @@ def lemonbar():
     lemons_stdin = []
     minis = []
     for g in xy2g.values():
-        lemonp = subprocess.Popen(args + ["-g", f"{g['w']}x+{g['x']}+{g['y']}"],
+        # print(["-g", f"{g['w']}x+{g['x']}+{g['y']}"])
+        lemonp = subprocess.Popen(args + ["-g", f"{g['w']}x+{g['x']}+{0}"],
                                   stdin=subprocess.PIPE,
                                   stdout=subprocess.PIPE,
                                   universal_newlines=True)

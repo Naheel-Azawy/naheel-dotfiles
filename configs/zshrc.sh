@@ -145,6 +145,10 @@ zsh_init_interactive() {
         command ls --color --group-directories-first "$@"
     }
 
+    grep() {
+        command grep --color "$@"
+    }
+
     mkdircd() {
         mkdir -p "$1" && cd "$1"
     }
