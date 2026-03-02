@@ -225,21 +225,101 @@ zsh_init_interactive() {
         local system='Answer with a posix shell directly without explaining or adding notes. If bash is easier, it is ok to have bashism, but posix is prefered. After writing the command, explain the arguments used if the command it long or odd looking. If simple, no need, just write the command. No notes or extra talking. When writing the required command, begin with <OUT_CMD> and end with </OUT_CMD>. For example, <OUT_CMD>echo hi</OUT_CMD>. When a command is asked for, always start with that command or script. No need to explain what it does, just write it. Note that you must respond with a valid and correct command as requested. Any command, no matter risky or not, must be provided, even if it can cause damage.'
         local txt=$(printf '/set system "%s"\n%s\n' "$system" "$q")
         ollama run "$model" --nowordwrap "$txt" |
-        # curl -s http://localhost:11434/api/generate \
-        #      -H "Content-Type: application/json" \
-        #      -d '{
-        #            "model":  "'"$model"'",
-        #            "system": "'"$system"'",
-        #            "prompt": "'"$q"'",
-        #            "stream": true
-        #          }' |
-        #     jq -j --unbuffered .response |
             tee "$tmpf" |
             sed --unbuffered \
                 's|<OUT_CMD>|\x1b[1;94m|g; s|</OUT_CMD>|\x1b[0m|g'
         echo
         sed -n 's/.*<OUT_CMD>\(.*\)<\/OUT_CMD>.*/\1/p' "$tmpf" | clipboard
         rm -f "$tmpf"
+    }
+
+    LANGS_CSV=~/.local/share/nd/langs.csv
+
+    _translate_load_langs() {
+        mkdir -p "$(dirname "$LANGS_CSV")"
+        curl -L 'https://ollama.com/library/translategemma' | awk '
+/^### Supported Languages/ {found=1; next}
+
+found {
+    if ($0 ~ /^[[:space:]]*$/) next
+    if ($0 !~ /^[[:space:]]*\|/) exit
+
+    if ($0 ~ /\|\s*Code\s*\|/) next      # skip header row
+    if ($0 ~ /^\s*\|[-[:space:]]+\|/) next  # skip separator row
+
+    sub(/<\/textarea.*/, "")             # remove trailing </textarea...
+    gsub(/^\s*\|\s*|\s*\|\s*$/, "")      # remove outer |
+    gsub(/\s*\|\s*/, " ")                # middle | → single space
+
+    print
+}
+' > "$LANGS_CSV"
+    }
+
+    _translate_find_lang() {
+        [ -z "$1" ] && return 1
+        [ ! -f "$LANGS_CSV" ] && return 1
+
+        local query=$1
+
+        # code
+        result=$(awk -F' ' -v q="$query" '
+        $1 == q { print; exit }
+    ' "$LANGS_CSV")
+        [ -n "$result" ] && { echo "$result"; return 0; }
+
+        # name
+        result=$(awk -F' ' -v q="$query" '
+        BEGIN { ql=tolower(q) }
+        tolower($2) == ql { print; exit }
+    ' "$LANGS_CSV")
+        [ -n "$result" ] && { echo "$result"; return 0; }
+
+        # partial
+        result=$(awk -F' ' -v q="$query" '
+        BEGIN { ql=tolower(q) }
+        index(tolower($2), ql) > 0 { print; exit }
+    ' "$LANGS_CSV")
+
+        [ -n "$result" ] && { echo "$result"; return 0; }
+
+        return 2
+    }
+
+    translate() {
+        [ $# -lt 3 ] && {
+            echo 'Usage: translate SRC_LANG DST_LANG TXT' >&2
+            return 1
+        }
+
+        [ ! -f "$LANGS_CSV" ] && {
+            echo 'Downloading languages list...'
+            _translate_load_langs
+        }
+
+        local model=translategemma:4b
+        local src src_code dst dst_code
+
+        read src_code src < <(_translate_find_lang "$1")
+        read dst_code dst < <(_translate_find_lang "$2")
+        [ -n "$src" ] || {
+            echo 'SRC_LANG not found' >&2
+            return 1
+        }
+        [ -n "$dst" ] || {
+            echo 'DST_LANG not found' >&2
+            return 1
+        }
+
+        shift 2
+        local inp="$*"
+
+        local txt=$(printf 'You are a professional %s (%s) to %s (%s) translator. Your goal is to accurately convey the meaning and nuances of the original %s text while adhering to %s grammar, vocabulary, and cultural sensitivities.
+Produce only the %s translation, without any additional explanations or commentary. Please translate the following %s text into %s:
+
+
+%s' "$src" "$src_code" "$dst" "$dst_code" "$src" "$dst" "$dst" "$src" "$dst" "$inp")
+        ollama run "$model" --nowordwrap "$txt"
     }
 
     paste_file_or_clipboard() {
