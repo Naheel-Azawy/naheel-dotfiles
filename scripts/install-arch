@@ -15,7 +15,6 @@
 # as a minimal installer. Some options might be added later, but
 # probably not too much.
 
-# TODO: grub never appears to work on uefi
 
 [ "$DEV" ]          || DEV=/dev/sdc
 [ "$MP" ]           || MP=/mnt/arch-install
@@ -23,8 +22,12 @@
 [ "$PASSWORD" ]     || PASSWORD=123
 [ "$HOSTNAME" ]     || HOSTNAME=pc
 [ "$ZONE" ]         || ZONE=Asia/Qatar
-[ "$INSTALL_DOTS" ] || INSTALL_DOTS=
 [ "$LOCALES" ]      || LOCALES=en_US.UTF-8:ar_QA.UTF-8
+[ "$AUTO_PART" ]    || AUTO_PART=        # tiny, mini, or normal
+[ "$LUKS" ]         || LUKS=             # 1 to enable LUKS encryption
+[ "$LUKS_PASS" ]    || LUKS_PASS=        # LUKS passphrase (defaults to PASSWORD)
+[ "$PROFILE" ]      || PROFILE=minimal
+[ "$UNATTENDED" ]   || UNATTENDED=       # 1 to skip all questions
 
 SELF=$(realpath "$0")
 NAME=$(basename "$SELF")
@@ -57,6 +60,12 @@ comment() {
     sed -i "s/$line/#$line/" "$file"
 }
 
+ensure_line() {
+    file="$1"
+    line="$2"
+    grep -qxF "$line" "$file" 2>/dev/null || printf '%s\n' "$line" >> "$file"
+}
+
 check_root() {
     if [ "$(id -u)" != 0 ]; then
         echo 'Root is needed'
@@ -71,7 +80,96 @@ vars() {
     [ "$1" = --all ] && echo "export PASSWORD=$PASSWORD"
     echo "export HOSTNAME=$HOSTNAME"
     echo "export ZONE=$ZONE"
-    echo "export INSTALL_DOTS=$INSTALL_DOTS"
+    echo "export LUKS=$LUKS"
+    [ "$1" = --all ] && echo "export LUKS_PASS=${LUKS_PASS:-$PASSWORD}"
+    echo "export PROFILE=$PROFILE"
+    echo "export AUTO_PART=$AUTO_PART"
+}
+
+is_gpt() {
+    gdisk -l "$1" 2>/dev/null | grep -q 'GPT:'
+}
+
+convert_gpt_to_mbr() {
+    info "Converting GPT to MBR on $DEV..."
+    printf 'r\ng\nw\nY\n' | gdisk "$DEV" || return 1
+    sleep 2
+}
+
+autopart() {
+    # Determine layout based on AUTO_PART value
+    disk_bytes=$(blockdev --getsize64 "$DEV")
+    disk_gb=$((disk_bytes / 1073741824))
+    ram_kb=$(grep MemTotal /proc/meminfo | awk '{print $2}')
+    ram_gb=$((ram_kb / 1048576))
+
+    case "$AUTO_PART" in
+        tiny)
+            # No swap, single root partition (no separate boot for BIOS,
+            # but we still need a small FAT32 boot for UEFI/GRUB)
+            layout="tiny: 256M boot + rest root"
+            boot_size=256
+            swap_size=0
+            ;;
+        mini)
+            layout="mini: 512M boot + rest root"
+            boot_size=512
+            swap_size=0
+            ;;
+        normal|*)
+            swap_size=$((ram_gb * 2))
+            [ "$swap_size" -lt 1 ] && swap_size=2
+            layout="normal: 512M boot + ${swap_size}G swap + rest root"
+            boot_size=512
+            ;;
+    esac
+
+    info "Auto partition layout: $layout (disk=${disk_gb}G, ram=${ram_gb}G)"
+
+    # Wipe and create fresh MBR partition table
+    info "Wiping $DEV and creating MBR label..."
+    parted -s "$DEV" mklabel msdos || return 1
+
+    start=1 # MiB
+    end=$((start + boot_size))
+
+    info "Creating boot partition (${boot_size}MiB)..."
+    parted -s "$DEV" mkpart primary fat32 "${start}MiB" "${end}MiB" set 1 boot on || return 1
+    start=$end
+
+    if [ "$swap_size" -gt 0 ]; then
+        swap_end=$((start + swap_size * 1024))
+        info "Creating swap partition (${swap_size}GiB)..."
+        parted -s "$DEV" mkpart primary linux-swap "${start}MiB" "${swap_end}MiB" || return 1
+        start=$swap_end
+    else
+        # Create a tiny dummy swap placeholder so DEVP2 exists for the rest
+        # of the script — use 1 MiB and simply skip mkswap/swapon later.
+        SKIP_SWAP=1
+        parted -s "$DEV" mkpart primary linux-swap "${start}MiB" "$((start + 1))MiB" || return 1
+        start=$((start + 1))
+    fi
+
+    info "Creating root partition (rest of disk)..."
+    parted -s "$DEV" mkpart primary ext4 "${start}MiB" 100% || return 1
+
+    sleep 3 # let the kernel re-read the partition table
+    partprobe "$DEV" 2>/dev/null || true
+}
+
+luks_format() {
+    _pass="${LUKS_PASS:-$PASSWORD}"
+    _keyfile=$(mktemp)
+    printf '%s' "$_pass" > "$_keyfile"
+    info "Formatting ${DEVP}3 with LUKS..."
+    cryptsetup luksFormat --batch-mode --key-file "$_keyfile" "${DEVP}3" || { rm -f "$_keyfile"; return 1; }
+    info "Opening LUKS container as cryptroot..."
+    cryptsetup open --key-file "$_keyfile" "${DEVP}3" cryptroot || { rm -f "$_keyfile"; return 1; }
+    rm -f "$_keyfile"
+}
+
+luks_close() {
+    cryptsetup close cryptroot 2>/dev/null || true
 }
 
 mkfss() {
@@ -86,21 +184,29 @@ mkfss() {
     echo
 
     # swap
-    info "Formatting ${DEVP}2 as swap partition..."
-    if [ -e "${DEVP}2" ]; then
-        yes | mkswap "${DEVP}2"
-    else
-        err "${DEVP}2 not found"
-        return 1
-    fi || return 1
-    echo
+    if [ "$SKIP_SWAP" != 1 ]; then
+        info "Formatting ${DEVP}2 as swap partition..."
+        if [ -e "${DEVP}2" ]; then
+            yes | mkswap "${DEVP}2"
+        else
+            err "${DEVP}2 not found"
+            return 1
+        fi || return 1
+        echo
+    fi
 
     # root
-    info "Formatting ${DEVP}3 as root partition..."
-    if [ -e "${DEVP}3" ]; then
-        yes | mkfs.ext4 "${DEVP}3"
+    if [ "$LUKS" ]; then
+        luks_format || return 1
+        ROOT_DEV=/dev/mapper/cryptroot
     else
-        err "${DEVP}3 not found"
+        ROOT_DEV="${DEVP}3"
+    fi
+    info "Formatting $ROOT_DEV as root partition..."
+    if [ -e "$ROOT_DEV" ]; then
+        yes | mkfs.ext4 "$ROOT_DEV"
+    else
+        err "$ROOT_DEV not found"
         return 1
     fi || return 1
     echo
@@ -118,14 +224,17 @@ mountall() {
     mkdir -p "$MP"
     echo
 
+    ROOT_DEV="${DEVP}3"
+    [ "$LUKS" ] && ROOT_DEV=/dev/mapper/cryptroot
+
     # root
-    info "Mounting ${DEVP}3 as root partition..."
-    if [ -e "${DEVP}3" ]; then
-        mount "${DEVP}3" "$MP" &&
+    info "Mounting $ROOT_DEV as root partition..."
+    if [ -e "$ROOT_DEV" ]; then
+        mount "$ROOT_DEV" "$MP" &&
             mkdir -p "$MP/boot" &&
             mkdir -p "$MP/home"
     else
-        err "${DEVP}3 not found"
+        err "$ROOT_DEV not found"
         return 1
     fi || return 1
     echo
@@ -144,22 +253,45 @@ mountall() {
     if [ -e "${DEVP}4" ]; then
         info "Mounting ${DEVP}4 as home partition..."
         mount "${DEVP}4" "$MP/home"
-    echo
+        echo
     fi || return 1
 
     # swap
-    info "Enabling ${DEVP}2 as swap..."
-    if [ -e "${DEVP}2" ]; then
-        swapon "${DEVP}2"
-    else
-        err "${DEVP}2 not found"
-        return 1
-    fi || return 1
-    echo
+    if [ "$SKIP_SWAP" != 1 ]; then
+        info "Enabling ${DEVP}2 as swap..."
+        if [ -e "${DEVP}2" ]; then
+            swapon "${DEVP}2"
+        else
+            err "${DEVP}2 not found"
+            return 1
+        fi || return 1
+        echo
+    fi
+}
+
+profile_packages() {
+    case "$PROFILE" in
+        server)
+            # TODO: parabola may not have all of these
+            echo 'docker nginx certbot certbot-nginx php php-fpm mariadb goaccess fail2ban imagemagick php-imagick php-gd dua-cli nodejs wp-cli jq' ;;
+
+        gnome)
+            echo 'xorg gnome gnome-extra gdm' ;;
+
+        xfce)
+            echo 'xorg xfce4 xfce4-goodies lightdm lightdm-gtk-greeter' ;;
+
+        cinnamon)
+            echo 'xorg cinnamon lightdm lightdm-gtk-greeter' ;;
+    esac
 }
 
 installarch() {
-    pacs='base base-devel networkmanager grub efibootmgr'
+    pacs='base base-devel networkmanager grub efibootmgr dosfstools'
+    pacs="$pacs sudo dialog tmux nano ufw openssh"
+    pacs="$pacs rsync htop zip unzip cronie sl"
+    [ "$LUKS" ] && pacs="$pacs cryptsetup"
+
     info "Updating keyrings..."
     if is_parabola; then
         yes | pacman -Sy archlinux-keyring parabola-keyring
@@ -168,6 +300,9 @@ installarch() {
         yes | pacman -Sy archlinux-keyring
         pacs="$pacs linux linux-firmware"
     fi || return 1
+
+    extra=$(profile_packages)
+    [ -n "$extra" ] && pacs="$pacs $extra"
 
     info "Installing packages..."
     # shellcheck disable=SC2086
@@ -182,14 +317,17 @@ fstabstuff() {
 dochroot() {
     cp "$SELF" "$MP/usr/bin/$NAME"
     chmod +x "$MP/usr/bin/$NAME"
-    arch-chroot "$MP" sh -c "$(vars --all); '$NAME' --eval inchroot"
+    arch-chroot "$MP" sh -c "$(vars --all); export SKIP_SWAP=$SKIP_SWAP; '$NAME' --eval inchroot"
 }
 
 inchroot() {
     if is_parabola; then
         info "Installing Parabola's freedom and privacy..."
-        printf '[nonprism]\nInclude = /etc/pacman.d/mirrorlist\n' \
-               > /etc/pacman.conf
+        # Append [nonprism] only if not already present
+        if ! grep -q '^\[nonprism\]' /etc/pacman.conf; then
+            printf '\n[nonprism]\nInclude = /etc/pacman.d/mirrorlist\n' \
+                   >> /etc/pacman.conf
+        fi
         yes | pacman -Sy your-freedom your-privacy
     fi
 
@@ -226,30 +364,95 @@ inchroot() {
     systemctl enable NetworkManager
     echo
 
-    info 'Installing GRUB...'
-    grub-install --target=x86_64-efi --efi-directory=/boot --bootloader-id=GRUB "$DEV" &&
-        grub-install --target=i386-pc "$DEV" &&
-        grub-mkconfig -o /boot/grub/grub.cfg
+    # GRUB — install for both UEFI and legacy BIOS.
+    # The two grub-install calls are independent; if one target is not
+    # supported by the firmware it will fail but we continue with the other.
+    # grub-mkconfig runs once after both installs so it sees both entries.
+    info 'Installing GRUB (UEFI)...'
+    if [ -d /sys/firmware/efi ] || ls /boot/EFI 2>/dev/null | grep -qi efi; then
+        mkdir -p /boot/EFI/GRUB
+        grub-install --target=x86_64-efi --efi-directory=/boot \
+            --bootloader-id=GRUB --recheck "$DEV" || \
+            info 'UEFI GRUB install failed (non-fatal, may not be UEFI)'
+    else
+        info 'No EFI firmware detected, skipping UEFI GRUB install'
+    fi
+
+    info 'Installing GRUB (BIOS/legacy)...'
+    grub-install --target=i386-pc --recheck "$DEV" || {
+        err 'BIOS GRUB install failed'
+        return 1
+    }
+
+    # LUKS: tell GRUB and mkinitcpio about the encrypted root
+    if [ "$LUKS" ]; then
+        root_uuid=$(blkid -s UUID -o value "${DEV}3" 2>/dev/null || \
+                    blkid -s UUID -o value "${DEV}p3" 2>/dev/null)
+        if [ "$root_uuid" ]; then
+            sed -i "s|^GRUB_CMDLINE_LINUX=.*|GRUB_CMDLINE_LINUX=\"cryptdevice=UUID=${root_uuid}:cryptroot root=/dev/mapper/cryptroot\"|" \
+                /etc/default/grub
+        fi
+        sed -i 's/^HOOKS=.*/HOOKS=(base udev autodetect modconf block encrypt filesystems keyboard fsck)/' \
+            /etc/mkinitcpio.conf
+        mkinitcpio -P || return 1
+    fi
+
+    info 'Disabling quiet mode...'
+    sed -i \
+        '/^GRUB_CMDLINE_LINUX_DEFAULT=/ s/[[:space:]]*quiet[[:space:]]*//g' \
+        /etc/default/grub
+
+    info 'Generating GRUB config...'
+    grub-mkconfig -o /boot/grub/grub.cfg || return 1
     echo
 
     info 'Enabling wheel group in sudoers...'
     uncomment '%wheel ALL=(ALL:ALL) ALL' /etc/sudoers
 
-    if [ "$INSTALL_DOTS" ]; then
-        # my dotfiles installer uses sudo a lot :)
-        info 'Enabling no password sudo...'
-        uncomment '%wheel ALL=(ALL:ALL) NOPASSWD: ALL' /etc/sudoers
-        echo
+    # Profile-specific post-install steps
+    case "$PROFILE" in
+        gnome)
+            info 'Enabling GDM...'
+            systemctl enable gdm ;;
 
-        info 'Installing dots...'
-        curl https://raw.githubusercontent.com/Naheel-Azawy/naheel-dotfiles/master/install.sh > /tmp/nd.sh
-        yes yes | sudo -u "$USERNAME" sh /tmp/nd.sh base base-gui
-        echo
+        xfce|cinnamon)
+            info 'Enabling LightDM...'
+            systemctl enable lightdm ;;
 
-        info 'Disabling no password sudo...'
-        comment '%wheel ALL=(ALL:ALL) NOPASSWD: ALL' /etc/sudoers
-        echo
-    fi
+        dots-base|dots-gui)
+            # my dotfiles installer uses sudo a lot :)
+            info 'Enabling no password sudo...'
+            uncomment '%wheel ALL=(ALL:ALL) NOPASSWD: ALL' /etc/sudoers
+            echo
+
+            info 'Installing dots...'
+            curl https://raw.githubusercontent.com/Naheel-Azawy/naheel-dotfiles/master/install.sh > /tmp/nd.sh
+            yes yes | if [ "$PROFILE" = dots-gui ]; then
+                sudo -u "$USERNAME" sh /tmp/nd.sh base base-gui
+            else
+                sudo -u "$USERNAME" sh /tmp/nd.sh base
+            fi
+            echo
+
+            info 'Disabling no password sudo...'
+            comment '%wheel ALL=(ALL:ALL) NOPASSWD: ALL' /etc/sudoers
+            echo ;;
+
+        server)
+            info 'Enabling Docker...'
+            systemctl enable docker 2>/dev/null || true ;;
+    esac
+
+    info 'Enabling UFW...'
+    systemctl enable ufw 2>/dev/null || true
+
+    info 'Configuring pacman...'
+    for opt in 'ILoveCandy' \
+                   'ParallelDownloads = 5' \
+                   'Color' 'VerbosePkgLists'; do
+        grep -qF "$opt" /etc/pacman.conf || \
+            sed -i "/^\[options\]/a $opt" /etc/pacman.conf
+    done
 
     info 'Exitting shell...'
     echo
@@ -260,8 +463,9 @@ unmountall() {
     sync
     info "Unmounting all..."
     umount -R "$MP"
-    swapoff "${DEVP}2"
-    rmdir "$MP"
+    [ "$SKIP_SWAP" != 1 ] && swapoff "${DEVP}2" 2>/dev/null || true
+    [ "$LUKS" ] && luks_close
+    rmdir "$MP" 2>/dev/null || true
 }
 
 tui() {
@@ -280,27 +484,32 @@ tui() {
     }
 
     menubox() {
-        eval "whiptail --menu '$1' 20 50 10 $2" \
+        eval "whiptail --menu '$1' 20 60 12 $2" \
              3>&1 1>&2 2>&3
     }
 
     yesno() {
-        whiptail --yesno "$1" 7 50 3>&1 1>&2 2>&3
+        whiptail --yesno "$1" 14 50 3>&1 1>&2 2>&3
     }
 
     msgbox() {
-        whiptail --msgbox "$1" 7 50 3>&1 1>&2 2>&3
+        whiptail --msgbox "$1" 14 50 3>&1 1>&2 2>&3
     }
 
     msgbox 'Welcome to Arch/Parabola installer script'
-
-    # TODO: add an option for a quick install skipping all questions
 
     DEV=
     devs=$(lsblk -rpno name,type | tac |
                awk '$2 == "disk" {printf "\"%s\" \"\" ", $1}')
     DEV=$(menubox 'Select a device:' "$devs")
     [ -z "$DEV" ] && return 1
+
+    # GPT detection
+    if is_gpt "$DEV"; then
+        if yesno "Disk $DEV has a GPT partition table. Convert to MBR? (default: No)"; then
+            convert_gpt_to_mbr || { err 'GPT to MBR conversion failed'; return 1; }
+        fi
+    fi
 
     MP=$(inputbox 'Mount point:' "$MP")
     [ -z "$MP" ] && return 1
@@ -342,13 +551,59 @@ tui() {
     ZONE="$zone_dir/$ZONE"
     [ -z "$ZONE" ] && return 1
 
-    # TODO: add options to install
-    # - xfce: pacman -S xorg xfce4 xfce4-goodies; echo 'exec startxfce4' > ~/.xinitrc
-    # - gnome?
-    # - pre-built install of your dots?
-    INSTALL_DOTS=$(yesno 'Install dotfiles?' && echo 1)
+    # Auto partitioning
+    AUTO_PART=$(menubox 'Partitioning:' \
+        '"manual" "Partition manually with cfdisk" \
+         "tiny"   "Auto: no swap, single partition (<8G disk)" \
+         "mini"   "Auto: no swap, boot+root (~8G disk)" \
+         "normal" "Auto: boot+swap(2xRAM)+root"')
+    [ -z "$AUTO_PART" ] && return 1
+    [ "$AUTO_PART" = manual ] && AUTO_PART=
+
+    # LUKS encryption
+    LUKS=
+    if yesno 'Enable LUKS encryption on root partition?'; then
+        LUKS=1
+        LUKS_PASS=
+        while :; do
+            lp1=$(passwordbox 'LUKS passphrase (blank = use login password):')
+            if [ -z "$lp1" ]; then
+                LUKS_PASS="$PASSWORD"
+                break
+            fi
+            lp2=$(passwordbox 'Re-enter LUKS passphrase:')
+            if [ "$lp1" != "$lp2" ]; then
+                msgbox 'Passphrases do not match. Try again...'
+            else
+                LUKS_PASS="$lp1"
+                break
+            fi
+        done
+    fi
+
+    # Profile / desktop environment
+    PROFILE=$(menubox 'Select install profile:' \
+        '"minimal"   "Minimal" \
+         "server"    "Server" \
+         "gnome"     "GNOME + GDM" \
+         "xfce"      "XFCE + LightDM" \
+         "cinnamon"  "Cinnamon + LightDM" \
+         "dots-gui"  "Naheel'\''s dotfiles (base + base-gui)" \
+         "dots-base" "Naheel'\''s dotfiles (base)"')
+    [ -z "$PROFILE" ] && return 1
 
     return 0
+}
+
+unattended() {
+    # Source a vars file if provided
+    if [ -n "$1" ] && [ -f "$1" ]; then
+        info "Loading vars from $1"
+        # shellcheck disable=SC1090
+        . "$1"
+    fi
+    # All vars already have defaults at the top of the script;
+    # nothing else needed.
 }
 
 main() {
@@ -358,6 +613,13 @@ main() {
         return
     }
 
+    # Unattended mode: ./install-arch --unattended [vars-file]
+    if [ "$1" = --unattended ] || [ "$UNATTENDED" = 1 ]; then
+        UNATTENDED=1
+        shift 2>/dev/null || true
+        unattended "$1"
+    fi
+
     check_root
 
     command -v pacstrap >/dev/null || {
@@ -365,81 +627,87 @@ main() {
         pacman -S arch-install-scripts
     }
 
-    tui  || return 1
-    vars || return 1
+    if [ "$UNATTENDED" != 1 ]; then
+        tui  || return 1
+        vars || return 1
+    else
+        info "Running unattended installation"
+        vars
+    fi
     echo
 
     printf "${E}WARNING:${R} everything under %s will be erased\n" "$DEV"
-    printf 'Are you sure? (y/N) '
-    read -r ans
-    case "$ans" in
-        y|Y) ;;
-        *)   return 0 ;;
-    esac
+    if [ "$UNATTENDED" != 1 ]; then
+        printf 'Are you sure? (y/N) '
+        read -r ans
+        case "$ans" in
+            y|Y) ;;
+            *)   return 0 ;;
+        esac
+    fi
     echo
 
     case "$DEV" in
-        /dev/mmcblk0|/dev/nvme0n1)
+        /dev/mmcblk*|/dev/nvme*)
             DEVP="${DEV}p" ;;
         *)
             DEVP="$DEV" ;;
     esac
 
-    # TODO: check DEV is mbr and not gpt and add an option to convert
+    # GPT check (unattended: auto-skip conversion unless CONVERT_GPT=1)
+    # if is_gpt "$DEV"; then
+    #     if [ "$UNATTENDED" = 1 ]; then
+    #         if [ "$CONVERT_GPT" = 1 ]; then
+    #             convert_gpt_to_mbr || return 1
+    #         else
+    #             info "GPT disk detected; skipping MBR conversion (CONVERT_GPT not set)"
+    #         fi
+    #     fi
+    #     # Interactive case already handled in tui()
+    # fi
+    # TODO: GPT to MBR conversion seems to fail. Below is the manual way:
     # gdisk "$DEVP"
     # r
     # g
     # w
 
-    echo 'Partition your disk as follows:'
-    echo "- ${DEVP}1: boot"
-    echo "- ${DEVP}2: swap"
-    echo "- ${DEVP}3: root"
-    echo "- ${DEVP}4: home (optional)"
-    echo 'Press enter to proceed'
-    read -r
-    echo
-
-    # TODO: add auto partitioning as a default option
-    # installation types:
-    #
-    # - tiny: (disk < 8G and ram < 2G)
-    #   - no swap
-    #   - one part
-    #   - dots base
-    #
-    # - mini: (disk ~ 8G and ram >= 2G)
-    #   - no swap
-    #   - boot and root
-    #   - dots base base-gui
-    #
-    # - normal: (disk >> (8G + 2 * ram) and ram >= 2G)
-    #   - swap 200% of ram
-    #   - enable hibernation
-    #   - boot, root, and home
-    #   - dots base base-gui
-
-    cfdisk "$DEV"
-    echo
+    # Partitioning
+    if [ "$AUTO_PART" ]; then
+        autopart || return 1
+    else
+        echo 'Partition your disk as follows:'
+        echo "- ${DEVP}1: boot"
+        echo "- ${DEVP}2: swap"
+        echo "- ${DEVP}3: root"
+        echo "- ${DEVP}4: home (optional)"
+        if [ "$UNATTENDED" != 1 ]; then
+            echo 'Press enter to proceed'
+            read -r _
+            echo
+            cfdisk "$DEV"
+            echo
+            sleep 3
+        fi
+    fi
 
     if [ -e "$DEV" ] &&
            [ -e "${DEVP}1" ] &&
-           [ -e "${DEVP}2" ] &&
            [ -e "${DEVP}3" ]; then
-        info 'Partitions seems to be ok'
+        info 'Partitions seem to be ok'
     else
         err 'bad partitioning'
-        ls "${DEVP}1"
-        ls "${DEVP}2"
-        ls "${DEVP}3"
+        ls "${DEVP}1" 2>/dev/null
+        ls "${DEVP}3" 2>/dev/null
         return 1
     fi
     echo
 
-    info 'Installation will start now'
-    echo 'Press enter to proceed'
-    read -r
-    echo
+    if [ "$UNATTENDED" != 1 ]; then
+        info 'Installation will start now'
+        echo 'Press enter to proceed'
+        read -r _
+        echo
+    fi
 
     start=$(date) &&
         mkfss &&
@@ -455,7 +723,7 @@ main() {
 
     unmountall
 
-    [ $status = 0 ] || err 'Installation faild :('
+    [ $status = 0 ] || err 'Installation failed :('
 
 }
 

@@ -8,7 +8,7 @@ for inpdf; do
     mkdir "$tmp"
 
     echo 'Generating images...'
-    pdftoppm "$inpdf" "$tmp/i" -jpeg
+    pdftoppm "$inpdf" "$tmp/i" -jpeg -jpegopt quality=60
 
     echo 'Merging to a PDF...'
     convert "$tmp"/i-*.jpg "$outpdf"
