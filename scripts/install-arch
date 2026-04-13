@@ -282,7 +282,7 @@ profile_packages() {
             echo 'xorg xfce4 xfce4-goodies lightdm lightdm-gtk-greeter' ;;
 
         cinnamon)
-            echo 'xorg cinnamon lightdm lightdm-gtk-greeter' ;;
+            echo 'xorg cinnamon lightdm lightdm-gtk-greeter gnome-console' ;;
     esac
 }
 
@@ -686,9 +686,9 @@ main() {
             echo
             cfdisk "$DEV"
             echo
-            sleep 3
         fi
     fi
+    sleep 3
 
     if [ -e "$DEV" ] &&
            [ -e "${DEVP}1" ] &&
