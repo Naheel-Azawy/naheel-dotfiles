@@ -77,11 +77,11 @@ vars() {
     echo "export DEV=$DEV"
     echo "export MP=$MP"
     echo "export USERNAME=$USERNAME"
-    [ "$1" = --all ] && echo "export PASSWORD=$PASSWORD"
+    [ "$1" = --all ] && echo "export PASSWORD='$(printf '%s' "$PASSWORD" | sed "s/'/'\\\\''/g")'"
     echo "export HOSTNAME=$HOSTNAME"
     echo "export ZONE=$ZONE"
     echo "export LUKS=$LUKS"
-    [ "$1" = --all ] && echo "export LUKS_PASS=${LUKS_PASS:-$PASSWORD}"
+    [ "$1" = --all ] && echo "export LUKS_PASS='$(printf '%s' "${LUKS_PASS:-$PASSWORD}" | sed "s/'/'\\\\''/g")'"
     echo "export PROFILE=$PROFILE"
     echo "export AUTO_PART=$AUTO_PART"
 }
@@ -272,7 +272,6 @@ mountall() {
 profile_packages() {
     case "$PROFILE" in
         server)
-            # TODO: parabola may not have all of these
             echo 'docker nginx certbot certbot-nginx php php-fpm mariadb goaccess fail2ban imagemagick php-imagick php-gd dua-cli nodejs wp-cli jq' ;;
 
         gnome)
@@ -653,23 +652,6 @@ main() {
         *)
             DEVP="$DEV" ;;
     esac
-
-    # GPT check (unattended: auto-skip conversion unless CONVERT_GPT=1)
-    # if is_gpt "$DEV"; then
-    #     if [ "$UNATTENDED" = 1 ]; then
-    #         if [ "$CONVERT_GPT" = 1 ]; then
-    #             convert_gpt_to_mbr || return 1
-    #         else
-    #             info "GPT disk detected; skipping MBR conversion (CONVERT_GPT not set)"
-    #         fi
-    #     fi
-    #     # Interactive case already handled in tui()
-    # fi
-    # TODO: GPT to MBR conversion seems to fail. Below is the manual way:
-    # gdisk "$DEVP"
-    # r
-    # g
-    # w
 
     # Partitioning
     if [ "$AUTO_PART" ]; then
