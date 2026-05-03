@@ -84,3 +84,12 @@ save 5892f6fcc1e1ce3c6ebd483d242f6193 x1-sg-lab-where-is-my-monitor xrandr \
 
 save f8730d16ceaf80a0c3b1875bce13d3d3 x1-sg-lab-whatever xrandr \
      --output eDP-1 --off --output HDMI-1 --off --output DP-1 --off --output DP-2 --off --output DP-3 --off --output DP-4 --off --output DP-3-1 --off --output DP-3-2 --off --output DP-3-8 --primary --mode 1920x1080 --pos 0x0 --rotate normal --output DP-3-9 --mode 1680x1050 --pos 1920x0 --rotate left
+
+save 153f837f93daed15390177f85974a3a6 x1-sg-lab-again xrandr \
+     --output eDP-1 --off --output HDMI-1 --off --output DP-1 --off --output DP-2 --off --output DP-3 --off --output DP-4 --off --output DP-3-1 --off --output DP-3-2 --off --output DP-3-9 --mode 1680x1050 --pos 1920x0 --rotate left --output DP-3-8 --primary --mode 1920x1080 --pos 0x0 --rotate normal
+
+save 85e56aecaf50b4852c6c29e7b7ed7b59 dt-pres xrandr \
+     --output eDP-1 --primary --mode 1920x1200 --pos 0x0 --rotate normal --output HDMI-1 --mode 1920x1080 --pos 1920x0 --rotate normal --output DP-1 --off --output DP-2 --off --output DP-3 --off --output DP-4 --off --output DP-3-1 --off --output DP-3-2 --off
+
+save 5b3673e45765d668905b0278adf2ff84 x1-p15-qeeri-lab xrandr \
+     --output eDP-1 --off --output DP-1-1 --off --output DP-1-2 --off --output DP-1-3 --off --output DP-1-2-1 --mode 1920x1080 --pos 1920x0 --rotate left --output DP-1-2-2 --primary --mode 1920x1080 --pos 0x0 --rotate normal

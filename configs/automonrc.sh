@@ -23,6 +23,8 @@ post() {
     rearrange_desktops
     run_if_exists thinkpadutils x1_touch_screen_fix
     run_if_exists ndg input init
+
+    xinput --map-to-output 'Linux 4.9.113 with dwc_otg_pcd Built-in Touch' HDMI-1 >/dev/null 2>/dev/null
 }
 
 rearrange_desktops() {
