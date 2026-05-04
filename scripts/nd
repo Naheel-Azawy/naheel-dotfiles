@@ -98,27 +98,6 @@ fi
 
 export TINY=$(istiny && echo t)
 
-# systemd service to run lockscreen on suspend
-lock_service() {
-    echo "[Unit]
-Description = Lock screen when going to sleep/suspend
-Before=sleep.target
-Before=suspend.target
-
-[Service]
-User=%i
-Type=forking
-Environment=DISPLAY=:0
-ExecStart=$D/scripts/ndg lockscreen
-TimeoutSec=infinity
-
-[Install]
-WantedBy=sleep.target
-WantedBy=suspend.target" |
-        sudo tee /etc/systemd/system/wakelock@.service >/dev/null
-    run sudo systemctl enable "wakelock@$USER.service"
-}
-
 # keyboard remapping
 keyd_config() {
     run sudo cp "$D/configs/keyd.conf" '/etc/keyd/default.conf'
@@ -270,7 +249,6 @@ dots_install() {
     info "Setting up systemd services"
     run sudo systemctl enable NetworkManager
     run sudo systemctl enable org.cups.cupsd
-    lock_service
 
     info "Setting up sensors"
     run sudo sensors-detect --auto

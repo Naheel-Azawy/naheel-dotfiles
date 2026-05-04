@@ -6,6 +6,7 @@
 
 HERE=$(realpath "$(dirname "$0")")
 NOTIF_ID=123
+XDG_CONFIG_HOME=${XDG_CONFIG_HOME:-$HOME/.config}
 
 export WINDOW_MANAGER='bspwm'
 #export WINDOW_MANAGER='i3'
@@ -18,7 +19,6 @@ export WINDOW_MANAGER='bspwm'
 export XDG_SESSION_TYPE=x11
 export GDK_BACKEND=x11
 
-#export FONT_MONO='Iosevka Fixed'
 export FONT_MONO='CaskaydiaMono NF'
 export FONT_SANS='Liberation Sans'
 export FONT="$FONT_MONO"
@@ -222,7 +222,7 @@ brightness() {
     fi
 
     xbacklight "$@"
-    v=$(xbacklight -get)
+    v=$(printf '%.0f\n' "$(xbacklight -get)")
     notify -h int:value:"$v" "Brightness: $v%"
 }
 
@@ -245,7 +245,7 @@ picom_invert_window() {
         err 'GNU sed is expected but not found'
         return 1
     }
-    cfg=$(realpath ~/.config/picom.conf)
+    cfg=$(realpath "$XDG_CONFIG_HOME/picom.conf")
     [ -f "$cfg" ] || {
         err 'No picom config found'
         return 2
@@ -472,13 +472,13 @@ systraytog() {
 }
 
 wallpaper() {
-    f=~/.config/wall
+    f="$XDG_CONFIG_HOME/wall"
     [ "$1" = rm ] && {
         rm "$f" && wallpaper reset
         return
     }
     [ -f "$f" ] ||
-        ln -s "$DOTFILES_DIR/configs/wall.png" "$f"
+        ln -s "$DOTFILES_DIR/configs/wall.png" "$f" # TODO: update
     [ "$1" = get ] && realpath "$f" && return
     [ "$1" ] && [ "$1" != reset ] && {
         if [ -f "$1" ]; then
@@ -573,8 +573,21 @@ mon_prim_y_offset() {
     echo "${y:-0}"
 }
 
+lockscreen_daemon() {
+    dbus-monitor --system "type='signal',sender='org.freedesktop.login1',interface='org.freedesktop.login1.Manager',member='PrepareForSleep'" \
+                 2>/dev/null | while read -r line; do
+        case "$line" in
+            *"boolean true"*)
+                echo "$(date '+%F %T') PRE-SLEEP"
+                lockscreen ;;
+            *"boolean false"*)
+                echo "$(date '+%F %T') POST-RESUME" ;;
+        esac
+    done
+}
+
 lockscreen() {
-    pgrep i3lock && {
+    lockscreen_islocked && {
         echo Already locked
         return 0
     }
@@ -643,7 +656,7 @@ browser() {
         scale=1
     fi
 
-    AGENT_FILE="$HOME/.config/ndg/browser_agent"
+    AGENT_FILE="$XDG_CONFIG_HOME/ndg/browser_agent"
     [ -f "$AGENT_FILE" ] || {
         err 'No agent file found'
         return 1
@@ -904,7 +917,7 @@ org.onboard.theme-settings key-label-font'
     export SSH_AUTH_SOCK="$XDG_RUNTIME_DIR/gcr/ssh"
 
     # logs dir
-    logdir="/tmp/xinitlogs-$USER"
+    logdir="/tmp/ndglogs-$USER"
     mkdir -p "$logdir"
     rm -r "$logdir:?"/*
 
@@ -930,6 +943,7 @@ org.onboard.theme-settings key-label-font'
     autostart nm-applet                     # network applet
     autostart blueman-applet                # bluetooth applet
     autostart battery_watch                 # low battery daemon
+    autostart lockscreen_daemon             # lock screen before suspend
     autostart /usr/lib/gsd-xsettings        # gnome's settings daemon
 
     # start the window manager
@@ -948,6 +962,7 @@ list() {
     echo display
     echo lang
     echo lockscreen
+    echo lockscreen_daemon
     echo wait_fingerprint
     echo music
     echo notiftog

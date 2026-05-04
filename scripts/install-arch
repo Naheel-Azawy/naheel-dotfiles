@@ -287,7 +287,7 @@ profile_packages() {
 
 installarch() {
     pacs='base base-devel networkmanager grub efibootmgr dosfstools'
-    pacs="$pacs sudo dialog tmux nano ufw openssh"
+    pacs="$pacs arch-install-scripts sudo dialog tmux nano ufw openssh"
     pacs="$pacs rsync htop zip unzip cronie sl"
     [ "$LUKS" ] && pacs="$pacs cryptsetup"
 

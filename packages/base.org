@@ -25,7 +25,7 @@
 | pacman     | zsh                  | N.A.                                         | a good shell                                                 |
 | pacman     | emacs                | N.A.                                         | the best editor on this planet                               |
 | pacman     | nano                 | N.A.                                         | the tiny text editor                                         |
-| pacgit     | edit                 | https://github.com/Naheel-Azawy/edit         | editors' wrapper                                             |
+| git        | edit                 | https://github.com/Naheel-Azawy/edit         | editors' wrapper                                             |
 | pacman     | ispell               | N.A.                                         | spell checker                                                |
 | pacman     | aspell-en            | N.A.                                         | English dictionary for ispell                                |
 | pacman     | acpi                 | N.A.                                         | laptop battery information                                   |
